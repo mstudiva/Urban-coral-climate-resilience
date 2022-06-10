@@ -64,7 +64,7 @@ urban_treatment_nostats_multiplot<-ggarrange(survival_ofav_treat$plot,
                                      ncol = 2, nrow = 2)
 urban_treatment_nostats_multiplot
 
-ggsave("sctld urban survivorship treatment nostats.pdf", urban_treatment_nostats_multiplot, width=10, height=8,dpi = 300)
+ggsave("urban survivorship treatment nostats.pdf", urban_treatment_nostats_multiplot, width=10, height=8,dpi = 300)
 
 
 #### survivorship by treatment subset ####
@@ -128,11 +128,11 @@ urban_treatment_multiplot<-ggarrange(survival_ofav_treat_sub$plot,
                                  survival_ssid_treat_sub$table,
                                  hazplot_ofav_treat,
                                  hazplot_ssid_treat,
-                                 heights = c(2, 0.5, 0.75),
+                                 heights = c(2, 0.5, 0.5),
                                  ncol = 2, nrow = 3)
 urban_treatment_multiplot
 
-ggsave("sctld urban survivorship treatment.pdf", urban_treatment_multiplot, width=10, height=10,dpi = 300)
+ggsave("urban survivorship treatment.pdf", urban_treatment_multiplot, width=10, height=10,dpi = 300)
 
 
 #### survivorship by site ####
@@ -241,11 +241,11 @@ urban_ofav_site_multiplot<-ggarrange(survival_ofav_ch$plot,
                                      survival_ofav_lh$table,
                                      hazplot_ofav_ch,
                                      hazplot_ofav_lh,
-                                    heights = c(2, 0.5, 0.75),
+                                    heights = c(2, 0.5, 0.5),
                                     ncol = 2, nrow = 3)
 urban_ofav_site_multiplot
 
-ggsave("sctld urban survivorship ofav site.pdf", urban_ofav_site_multiplot, width=10, height=10,dpi = 300)
+ggsave("urban survivorship ofav site.pdf", urban_ofav_site_multiplot, width=10, height=10,dpi = 300)
 
 urban_ssid_site_multiplot<-ggarrange(survival_ssid_ch$plot,
                                      survival_ssid_lh$plot, 
@@ -253,11 +253,11 @@ urban_ssid_site_multiplot<-ggarrange(survival_ssid_ch$plot,
                                      survival_ssid_lh$table,
                                      hazplot_ssid_ch,
                                      hazplot_ssid_lh,
-                                     heights = c(2, 0.5, 0.75),
+                                     heights = c(2, 0.5, 0.5),
                                      ncol = 2, nrow = 3)
 urban_ssid_site_multiplot
 
-ggsave("sctld urban survivorship ssid site.pdf", urban_ssid_site_multiplot, width=10, height=10,dpi = 300)
+ggsave("urban survivorship ssid site.pdf", urban_ssid_site_multiplot, width=10, height=10,dpi = 300)
 
 
 #### surviviorship by site type ####
@@ -379,11 +379,11 @@ urban_ofav_type_multiplot<-ggarrange(survival_ofav_site_ch$plot,
                                      survival_ofav_site_lh$table,
                                      hazplot_ofav_site_ch,
                                      hazplot_ofav_site_lh,
-                                     heights = c(2, 0.5, 0.75),
+                                     heights = c(2, 0.5, 0.5),
                                      ncol = 2, nrow = 3)
 urban_ofav_type_multiplot
 
-ggsave("sctld urban survivorship ofav site type.pdf", urban_ofav_type_multiplot, width=10, height=10,dpi = 300)
+ggsave("urban survivorship ofav site type.pdf", urban_ofav_type_multiplot, width=10, height=10,dpi = 300)
 
 urban_ssid_type_multiplot<-ggarrange(survival_ssid_site_ch$plot,
                                      survival_ssid_site_lh$plot, 
@@ -391,8 +391,8 @@ urban_ssid_type_multiplot<-ggarrange(survival_ssid_site_ch$plot,
                                      survival_ssid_site_lh$table,
                                      hazplot_ssid_site_ch,
                                      hazplot_ssid_site_lh,
-                                     heights = c(2, 0.5, 0.75),
+                                     heights = c(2, 0.5, 0.5),
                                      ncol = 2, nrow = 3)
 urban_ssid_type_multiplot
 
-ggsave("sctld urban survivorship ssid site type.pdf", urban_ssid_type_multiplot, width=10, height=10,dpi = 300)
+ggsave("urban survivorship ssid site type.pdf", urban_ssid_type_multiplot, width=10, height=10,dpi = 300)
