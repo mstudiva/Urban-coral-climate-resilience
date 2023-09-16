@@ -18,7 +18,7 @@ str(tank)
 
 incubations <- read.csv("urban carbonate incubations.csv", head=T) # incubation samples for alkalinity anomaly/calcification
 incubations$incubation <- as.factor(incubations$incubation)
-incubations$site <- as.factor(incubations$site)
+incubations$site <- factor(incubations$site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North"))
 incubations$genotype <- as.factor(incubations$genotype)
 incubations$species <- as.factor(incubations$species)
 incubations$treatment <- as.factor(incubations$treatment)
@@ -266,21 +266,22 @@ cld_ssid_night
 
 fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
 
+
 stats_ofav_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,41 = 0.5, p = 0.5") # creating dummy variables for stats labels on plot
 stats_ofav_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,41 = 0.8, p = 0.5")
-stats_ofav_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,41 = 1.9 , p = 0.09")
+stats_ofav_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,41 = 1.9, p = 0.09")
 
 stats_ofav_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 20.1, p < 0.001*") # creating dummy variables for stats labels on plot
 stats_ofav_night_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 0.3, p = 0.9")
-stats_ofav_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,39 = 0.7 , p = 0.8")
+stats_ofav_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,39 = 0.7, p = 0.8")
 
 stats_ssid_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 10.2, p = 0.006*") # creating dummy variables for stats labels on plot
 stats_ssid_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 8.3, p = 0.001*")
-stats_ssid_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 1.5 , p = 0.2")
+stats_ssid_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 1.5, p = 0.2")
 
 stats_ssid_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 30.2, p < 0.001*") # creating dummy variables for stats labels on plot
 stats_ssid_night_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 7.4, p = 0.003*")
-stats_ssid_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 2.2 , p = 0.06")
+stats_ssid_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 2.2, p = 0.06")
 
 ofav_day <- ggboxplot(incubations_ofav_day,
                   x = "site",
@@ -292,7 +293,7 @@ ofav_day <- ggboxplot(incubations_ofav_day,
                   legend = "none") +
   facet_grid(~treatment) +
   xlab(element_blank()) +
-  ylab("Growth Rate (mg cm2 hr-1)") +
+  ylab("Calcification (mg cm2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
@@ -334,7 +335,7 @@ ssid_day <- ggboxplot(incubations_ssid_day,
                       legend = "none") +
   facet_grid(~treatment) +
   xlab(element_blank()) +
-  ylab("Growth Rate (mg cm2 hr-1)") +
+  ylab("Calcification (mg cm2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5)) +
