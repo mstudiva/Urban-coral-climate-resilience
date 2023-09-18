@@ -142,13 +142,13 @@ fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color pal
 # stats_genotype <- data.frame(species = "Ssid", growthadj = 0.6,lab = "genotype: F33,170=2.4, p<0.001*")
 # stats_interaction <- data.frame(species = "Ssid", growthadj = 0.6,lab = "site:species: F4,170=8.3, p<0.001*")
 
-stats_ofav_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,82 = 0.2, p = 0.7")
+stats_ofav_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,82 = 0.2, p = 0.6")
 stats_ofav_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = "site: F3,82 = 18.2, p < 0.001*")
-stats_ofav_genotype <- data.frame(pH = "control pH", growthadj = 0.6, lab = "genotype: F17,82 = 4.1 , p < 0.001*")
+stats_ofav_genotype <- data.frame(pH = "control pH", growthadj = 0.6, lab = "geno: F17,82 = 4.1, p < 0.001*")
 
-stats_ssid_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,79 = 4.2, p = 0.045*")
+stats_ssid_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,79 = 8.4, p = 0.005*")
 stats_ssid_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = "site: F3,79 = 4.3, p = 0.008*")
-stats_ssid_genotype <- data.frame(pH = "control pH", growthadj = 0.6, lab = "genotype: F16,79 = 1.6, p = 0.1")
+stats_ssid_genotype <- data.frame(pH = "control pH", growthadj = 0.6, lab = "geno: F16,79 = 1.6, p = 0.1")
 
 # plot <- ggboxplot(bw_subset,
 #                   x = "site",
@@ -185,7 +185,7 @@ ofav <- ggboxplot(bw_ofav,
                   legend = "none") +
   facet_grid(~pH) +
   xlab(element_blank()) +
-  ylab("Growth Rate (g cm2 yr-1)") +
+  ylab("Growth Rate (g cm-2 yr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
@@ -206,7 +206,7 @@ ssid <- ggboxplot(bw_ssid,
                   legend = "none") +
   facet_grid(~pH) +
   xlab(element_blank()) +
-  ylab("Growth Rate (g cm2 yr-1)") +
+  ylab("Growth Rate (g cm-2 yr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5)) +
