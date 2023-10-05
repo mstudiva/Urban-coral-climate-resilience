@@ -28,7 +28,7 @@ library(arrayQualityMetrics)
 library(dplyr)
 
 #read in counts
-counts = read.table("allcounts_host.txt")
+counts = read.table("../../../../raw/ofav/allcounts_host.txt")
 
 # how many genes we have total?
 nrow(counts) 
@@ -50,7 +50,7 @@ ncol(counts4wgcna)
 write.csv(counts4wgcna, file="counts4wgcna.csv")
 
 # importing a design .csv file
-design = read.csv("design_ofav.csv", head=TRUE)
+design = read.csv("../../../../raw/design_ofav.csv", head=TRUE)
 design
 design$site <- as.factor(design$site)
 design$tank <- as.factor(design$tank)
