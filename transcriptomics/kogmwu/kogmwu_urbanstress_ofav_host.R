@@ -3,14 +3,13 @@
 # install.packages("KOGMWU")
 library(KOGMWU)
 
-
-#### pairwise all (lpv) ####
-
 # loading KOG annotations
 gene2kog=read.table("../../../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",sep="\t", fill=T)
 head(gene2kog)
 
-# treatment comparisons
+
+#### treatment all ####
+
 LC_CC=load('../../../DESeq2/ofav/host/LC_CC_lpv.RData')
 LC_CC # names of datasets in the package
 lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
@@ -78,7 +77,9 @@ corrPlot(x="CH_LC",y="LH_CH",ktable)
 corrPlot(x="LH_LC",y="LH_CH",ktable)
 dev.off()
 
-# site comparisons
+
+#### site all ####
+
 Rainbow_Emerald=load('../../../DESeq2/ofav/host/Rainbow_Emerald_lpv.RData')
 Rainbow_Emerald # names of datasets in the package
 lpv.Rainbow_Emerald=kog.mwu(Rainbow_Emerald.p,gene2kog) 
@@ -144,145 +145,8 @@ corrPlot(x="MacN_Rainbow",y="MacN_Star",ktable)
 dev.off()
 
 
-#### pairwise all (fc) ####
+#### treatment filtered ####
 
-# treatment comparisons
-LC_CC=load('../../../DESeq2/ofav/host/LC_CC_fc.RData')
-LC_CC # names of datasets in the package
-fc.LC_CC=kog.mwu(LC_CC.fc,gene2kog) 
-fc.LC_CC 
-
-CH_CC=load('../../../DESeq2/ofav/host/CH_CC_fc.RData')
-CH_CC # names of datasets in the package
-fc.CH_CC=kog.mwu(CH_CC.fc,gene2kog) 
-fc.CH_CC
-
-LH_CC=load('../../../DESeq2/ofav/host/LH_CC_fc.RData')
-LH_CC # names of datasets in the package
-fc.LH_CC=kog.mwu(LH_CC.fc,gene2kog) 
-fc.LH_CC 
-
-CH_LC=load('../../../DESeq2/ofav/host/CH_LC_fc.RData')
-CH_LC # names of datasets in the package
-fc.CH_LC=kog.mwu(CH_LC.fc,gene2kog) 
-fc.CH_LC
-
-LH_LC=load('../../../DESeq2/ofav/host/LH_LC_fc.RData')
-LH_LC # names of datasets in the package
-fc.LH_LC=kog.mwu(LH_LC.fc,gene2kog) 
-fc.LH_LC
-
-LH_CH=load('../../../DESeq2/ofav/host/LH_CH_fc.RData')
-LH_CH # names of datasets in the package
-fc.LH_CH=kog.mwu(LH_CH.fc,gene2kog) 
-fc.LH_CH
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("LC_CC"=fc.LC_CC,"CH_CC"=fc.CH_CC,"LH_CC"=fc.LH_CC,"CH_LC"=fc.CH_LC,"LH_LC"=fc.LH_LC,"LH_CH"=fc.LH_CH))
-
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# Making a heatmap with hierarchical clustering trees: 
-pdf(file="KOG_urbanstress_ofav_host_treatment_fc.pdf", width=7, height=8)
-pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white") 
-while (!is.null(dev.list()))  dev.off()
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-pdf(file="KOG_urbanstress_ofav_host_treatment_corr_fc.pdf", width=10, height=10)
-par(mfrow=c(4,4))
-corrPlot(x="LC_CC",y="CH_CC",ktable)
-corrPlot(x="LC_CC",y="LH_CC",ktable)
-corrPlot(x="LC_CC",y="CH_LC",ktable)
-corrPlot(x="LC_CC",y="LH_LC",ktable)
-corrPlot(x="LC_CC",y="LH_CH",ktable)
-corrPlot(x="CH_CC",y="LH_CC",ktable)
-corrPlot(x="CH_CC",y="CH_LC",ktable)
-corrPlot(x="CH_CC",y="LH_LC",ktable)
-corrPlot(x="CH_CC",y="LH_CH",ktable)
-corrPlot(x="LH_CC",y="CH_LC",ktable)
-corrPlot(x="LH_CC",y="LH_LC",ktable)
-corrPlot(x="LH_CC",y="LH_CH",ktable)
-corrPlot(x="CH_LC",y="LH_LC",ktable)
-corrPlot(x="CH_LC",y="LH_CH",ktable)
-corrPlot(x="LH_LC",y="LH_CH",ktable)
-dev.off()
-
-# site comparisons
-Rainbow_Emerald=load('../../../DESeq2/ofav/host/Rainbow_Emerald_fc.RData')
-Rainbow_Emerald # names of datasets in the package
-fc.Rainbow_Emerald=kog.mwu(Rainbow_Emerald.fc,gene2kog) 
-fc.Rainbow_Emerald 
-
-Star_Emerald=load('../../../DESeq2/ofav/host/Star_Emerald_fc.RData')
-Star_Emerald # names of datasets in the package
-fc.Star_Emerald=kog.mwu(Star_Emerald.fc,gene2kog) 
-fc.Star_Emerald 
-
-MacN_Emerald=load('../../../DESeq2/ofav/host/MacN_Emerald_fc.RData')
-MacN_Emerald # names of datasets in the package
-fc.MacN_Emerald=kog.mwu(MacN_Emerald.fc,gene2kog) 
-fc.MacN_Emerald 
-
-Star_Rainbow=load('../../../DESeq2/ofav/host/Star_Rainbow_fc.RData')
-Star_Rainbow # names of datasets in the package
-fc.Star_Rainbow=kog.mwu(Star_Rainbow.fc,gene2kog) 
-fc.Star_Rainbow 
-
-MacN_Rainbow=load('../../../DESeq2/ofav/host/MacN_Rainbow_fc.RData')
-MacN_Rainbow # names of datasets in the package
-fc.MacN_Rainbow=kog.mwu(MacN_Rainbow.fc,gene2kog) 
-fc.MacN_Rainbow 
-
-MacN_Star=load('../../../DESeq2/ofav/host/MacN_Star_fc.RData')
-MacN_Star # names of datasets in the package
-fc.MacN_Star=kog.mwu(MacN_Star.fc,gene2kog) 
-fc.MacN_Star 
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("Rainbow_Emerald"=fc.Rainbow_Emerald,"Star_Emerald"=fc.Star_Emerald,"MacN_Emerald"=fc.MacN_Emerald,"Star_Rainbow"=fc.Star_Rainbow,"MacN_Rainbow"=fc.MacN_Rainbow,"MacN_Star"=fc.MacN_Star))
-
-# Making a heatmap with hierarStarical clustering trees: 
-pdf(file="KOG_urbanstress_ofav_host_site_fc.pdf", width=7, height=7)
-pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, celMacNeight=15, border_color="white") 
-while (!is.null(dev.list()))  dev.off()
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-pdf(file="KOG_urbanstress_ofav_host_site_corr_fc.pdf", width=10, height=10)
-par(mfrow=c(4,4))
-corrPlot(x="Rainbow_Emerald",y="Star_Emerald",ktable)
-corrPlot(x="Rainbow_Emerald",y="MacN_Emerald",ktable)
-corrPlot(x="Rainbow_Emerald",y="Star_Rainbow",ktable)
-corrPlot(x="Rainbow_Emerald",y="MacN_Rainbow",ktable)
-corrPlot(x="Rainbow_Emerald",y="MacN_Star",ktable)
-corrPlot(x="Star_Emerald",y="MacN_Emerald",ktable)
-corrPlot(x="Star_Emerald",y="Star_Rainbow",ktable)
-corrPlot(x="Star_Emerald",y="MacN_Rainbow",ktable)
-corrPlot(x="Star_Emerald",y="MacN_Star",ktable)
-corrPlot(x="MacN_Emerald",y="Star_Rainbow",ktable)
-corrPlot(x="MacN_Emerald",y="MacN_Rainbow",ktable)
-corrPlot(x="MacN_Emerald",y="MacN_Star",ktable)
-corrPlot(x="Star_Rainbow",y="MacN_Rainbow",ktable)
-corrPlot(x="Star_Rainbow",y="MacN_Star",ktable)
-corrPlot(x="MacN_Rainbow",y="MacN_Star",ktable)
-dev.off()
-
-
-#### pairwise filtered (lpv) ####
-
-# treatment comparisons
 LC_CC=load('../../../DESeq2/ofav/host/LC_CC_lpv.RData')
 LC_CC # names of datasets in the package
 lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
@@ -323,7 +187,9 @@ corrPlot(x="LC_CC",y="LH_CC",ktable)
 corrPlot(x="CH_CC",y="LH_CC",ktable)
 dev.off()
 
-# site comparisons
+
+#### site filtered ####
+
 Rainbow_Emerald=load('../../../DESeq2/ofav/host/Rainbow_Emerald_lpv.RData')
 Rainbow_Emerald # names of datasets in the package
 lpv.Rainbow_Emerald=kog.mwu(Rainbow_Emerald.p,gene2kog) 
@@ -361,84 +227,3 @@ corrPlot(x="Rainbow_Emerald",y="MacN_Emerald",ktable)
 corrPlot(x="Star_Emerald",y="MacN_Emerald",ktable)
 dev.off()
 
-
-#### pairwise filtered (fc) ####
-
-# treatment comparisons
-LC_CC=load('../../../DESeq2/ofav/host/LC_CC_fc.RData')
-LC_CC # names of datasets in the package
-fc.LC_CC=kog.mwu(LC_CC.fc,gene2kog) 
-fc.LC_CC 
-
-CH_CC=load('../../../DESeq2/ofav/host/CH_CC_fc.RData')
-CH_CC # names of datasets in the package
-fc.CH_CC=kog.mwu(CH_CC.fc,gene2kog) 
-fc.CH_CC
-
-LH_CC=load('../../../DESeq2/ofav/host/LH_CC_fc.RData')
-LH_CC # names of datasets in the package
-fc.LH_CC=kog.mwu(LH_CC.fc,gene2kog) 
-fc.LH_CC 
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("LC_CC"=fc.LC_CC,"CH_CC"=fc.CH_CC,"LH_CC"=fc.LH_CC))
-
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# Making a heatmap with hierarchical clustering trees: 
-pdf(file="KOG_urbanstress_ofav_host_treatment_filtered_fc.pdf", width=7, height=8)
-pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white") 
-while (!is.null(dev.list()))  dev.off()
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-pdf(file="KOG_urbanstress_ofav_host_treatment_filtered_corr_fc.pdf", width=7, height=2.5)
-par(mfrow=c(1,3))
-corrPlot(x="LC_CC",y="CH_CC",ktable)
-corrPlot(x="LC_CC",y="LH_CC",ktable)
-corrPlot(x="CH_CC",y="LH_CC",ktable)
-dev.off()
-
-# site comparisons
-Rainbow_Emerald=load('../../../DESeq2/ofav/host/Rainbow_Emerald_fc.RData')
-Rainbow_Emerald # names of datasets in the package
-fc.Rainbow_Emerald=kog.mwu(Rainbow_Emerald.fc,gene2kog) 
-fc.Rainbow_Emerald 
-
-Star_Emerald=load('../../../DESeq2/ofav/host/Star_Emerald_fc.RData')
-Star_Emerald # names of datasets in the package
-fc.Star_Emerald=kog.mwu(Star_Emerald.fc,gene2kog) 
-fc.Star_Emerald 
-
-MacN_Emerald=load('../../../DESeq2/ofav/host/MacN_Emerald_fc.RData')
-MacN_Emerald # names of datasets in the package
-fc.MacN_Emerald=kog.mwu(MacN_Emerald.fc,gene2kog) 
-fc.MacN_Emerald 
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("Rainbow_Emerald"=fc.Rainbow_Emerald,"Star_Emerald"=fc.Star_Emerald,"MacN_Emerald"=fc.MacN_Emerald))
-
-# Making a heatmap with hierarStarical clustering trees: 
-pdf(file="KOG_urbanstress_ofav_host_site_filtered_fc.pdf", width=7, height=7)
-pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, celMacNeight=15, border_color="white") 
-while (!is.null(dev.list()))  dev.off()
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-pdf(file="KOG_urbanstress_ofav_host_site_filtered_corr_fc.pdf", width=7, height=2.5)
-par(mfrow=c(1,3))
-corrPlot(x="Rainbow_Emerald",y="Star_Emerald",ktable)
-corrPlot(x="Rainbow_Emerald",y="MacN_Emerald",ktable)
-corrPlot(x="Star_Emerald",y="MacN_Emerald",ktable)
-dev.off()

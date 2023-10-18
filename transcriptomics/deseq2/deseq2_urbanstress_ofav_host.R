@@ -342,18 +342,7 @@ dev.off()
 load("realModels.RData")
 load("pvals.RData")
 
-# fold change (fc) can only be used for binary factors, such as control/treatment, or specific contrasts comparing two factor levels
-# log p value (lpv) is for multi-level factors, including binary factors
-
 # site contrasts
-
-# log2 fold changes:
-source=Rainbow_Emerald[!is.na(Rainbow_Emerald$padj),]
-Rainbow_Emerald.fc=data.frame("gene"=row.names(source))
-Rainbow_Emerald.fc$lfc=source[,"log2FoldChange"]
-head(Rainbow_Emerald.fc)
-write.csv(Rainbow_Emerald.fc,file="Rainbow_Emerald_fc.csv",row.names=F,quote=F)
-save(Rainbow_Emerald.fc,file="Rainbow_Emerald_fc.RData")
 
 # signed log p-values: -log(padj)* direction:
 Rainbow_Emerald.p=data.frame("gene"=row.names(source))
@@ -363,15 +352,6 @@ head(Rainbow_Emerald.p)
 write.csv(Rainbow_Emerald.p,file="Rainbow_Emerald_lpv.csv",row.names=F,quote=F)
 save(Rainbow_Emerald.p,file="Rainbow_Emerald_lpv.RData")
 
-# log2 fold changes:
-source=Star_Emerald[!is.na(Star_Emerald$padj),]
-Star_Emerald.fc=data.frame("gene"=row.names(source))
-Star_Emerald.fc$lfc=source[,"log2FoldChange"]
-head(Star_Emerald.fc)
-write.csv(Star_Emerald.fc,file="Star_Emerald_fc.csv",row.names=F,quote=F)
-save(Star_Emerald.fc,file="Star_Emerald_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 Star_Emerald.p=data.frame("gene"=row.names(source))
 Star_Emerald.p$lpv=-log(source[,"padj"],10)
 Star_Emerald.p$lpv[source$stat<0]=Star_Emerald.p$lpv[source$stat<0]*-1
@@ -379,15 +359,6 @@ head(Star_Emerald.p)
 write.csv(Star_Emerald.p,file="Star_Emerald_lpv.csv",row.names=F,quote=F)
 save(Star_Emerald.p,file="Star_Emerald_lpv.RData")
 
-# log2 fold changes:
-source=MacN_Emerald[!is.na(MacN_Emerald$padj),]
-MacN_Emerald.fc=data.frame("gene"=row.names(source))
-MacN_Emerald.fc$lfc=source[,"log2FoldChange"]
-head(MacN_Emerald.fc)
-write.csv(MacN_Emerald.fc,file="MacN_Emerald_fc.csv",row.names=F,quote=F)
-save(MacN_Emerald.fc,file="MacN_Emerald_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 MacN_Emerald.p=data.frame("gene"=row.names(source))
 MacN_Emerald.p$lpv=-log(source[,"padj"],10)
 MacN_Emerald.p$lpv[source$stat<0]=MacN_Emerald.p$lpv[source$stat<0]*-1
@@ -395,15 +366,6 @@ head(MacN_Emerald.p)
 write.csv(MacN_Emerald.p,file="MacN_Emerald_lpv.csv",row.names=F,quote=F)
 save(MacN_Emerald.p,file="MacN_Emerald_lpv.RData")
 
-# log2 fold changes:
-source=Star_Rainbow[!is.na(Star_Rainbow$padj),]
-Star_Rainbow.fc=data.frame("gene"=row.names(source))
-Star_Rainbow.fc$lfc=source[,"log2FoldChange"]
-head(Star_Rainbow.fc)
-write.csv(Star_Rainbow.fc,file="Star_Rainbow_fc.csv",row.names=F,quote=F)
-save(Star_Rainbow.fc,file="Star_Rainbow_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 Star_Rainbow.p=data.frame("gene"=row.names(source))
 Star_Rainbow.p$lpv=-log(source[,"padj"],10)
 Star_Rainbow.p$lpv[source$stat<0]=Star_Rainbow.p$lpv[source$stat<0]*-1
@@ -411,15 +373,6 @@ head(Star_Rainbow.p)
 write.csv(Star_Rainbow.p,file="Star_Rainbow_lpv.csv",row.names=F,quote=F)
 save(Star_Rainbow.p,file="Star_Rainbow_lpv.RData")
 
-# log2 fold changes:
-source=MacN_Rainbow[!is.na(MacN_Rainbow$padj),]
-MacN_Rainbow.fc=data.frame("gene"=row.names(source))
-MacN_Rainbow.fc$lfc=source[,"log2FoldChange"]
-head(MacN_Rainbow.fc)
-write.csv(MacN_Rainbow.fc,file="MacN_Rainbow_fc.csv",row.names=F,quote=F)
-save(MacN_Rainbow.fc,file="MacN_Rainbow_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 MacN_Rainbow.p=data.frame("gene"=row.names(source))
 MacN_Rainbow.p$lpv=-log(source[,"padj"],10)
 MacN_Rainbow.p$lpv[source$stat<0]=MacN_Rainbow.p$lpv[source$stat<0]*-1
@@ -427,15 +380,6 @@ head(MacN_Rainbow.p)
 write.csv(MacN_Rainbow.p,file="MacN_Rainbow_lpv.csv",row.names=F,quote=F)
 save(MacN_Rainbow.p,file="MacN_Rainbow_lpv.RData")
 
-# log2 fold changes:
-source=MacN_Star[!is.na(MacN_Star$padj),]
-MacN_Star.fc=data.frame("gene"=row.names(source))
-MacN_Star.fc$lfc=source[,"log2FoldChange"]
-head(MacN_Star.fc)
-write.csv(MacN_Star.fc,file="MacN_Star_fc.csv",row.names=F,quote=F)
-save(MacN_Star.fc,file="MacN_Star_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 MacN_Star.p=data.frame("gene"=row.names(source))
 MacN_Star.p$lpv=-log(source[,"padj"],10)
 MacN_Star.p$lpv[source$stat<0]=MacN_Star.p$lpv[source$stat<0]*-1
@@ -445,14 +389,6 @@ save(MacN_Star.p,file="MacN_Star_lpv.RData")
 
 # treatment contrasts
 
-# log2 fold changes:
-source=LC_CC[!is.na(LC_CC$padj),]
-LC_CC.fc=data.frame("gene"=row.names(source))
-LC_CC.fc$lfc=source[,"log2FoldChange"]
-head(LC_CC.fc)
-write.csv(LC_CC.fc,file="LC_CC_fc.csv",row.names=F,quote=F)
-save(LC_CC.fc,file="LC_CC_fc.RData")
-
 # signed log p-values: -log(padj)* direction:
 LC_CC.p=data.frame("gene"=row.names(source))
 LC_CC.p$lpv=-log(source[,"padj"],10)
@@ -461,15 +397,6 @@ head(LC_CC.p)
 write.csv(LC_CC.p,file="LC_CC_lpv.csv",row.names=F,quote=F)
 save(LC_CC.p,file="LC_CC_lpv.RData")
 
-# log2 fold changes:
-source=CH_CC[!is.na(CH_CC$padj),]
-CH_CC.fc=data.frame("gene"=row.names(source))
-CH_CC.fc$lfc=source[,"log2FoldChange"]
-head(CH_CC.fc)
-write.csv(CH_CC.fc,file="CH_CC_fc.csv",row.names=F,quote=F)
-save(CH_CC.fc,file="CH_CC_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 CH_CC.p=data.frame("gene"=row.names(source))
 CH_CC.p$lpv=-log(source[,"padj"],10)
 CH_CC.p$lpv[source$stat<0]=CH_CC.p$lpv[source$stat<0]*-1
@@ -477,15 +404,6 @@ head(CH_CC.p)
 write.csv(CH_CC.p,file="CH_CC_lpv.csv",row.names=F,quote=F)
 save(CH_CC.p,file="CH_CC_lpv.RData")
 
-# log2 fold changes:
-source=LH_CC[!is.na(LH_CC$padj),]
-LH_CC.fc=data.frame("gene"=row.names(source))
-LH_CC.fc$lfc=source[,"log2FoldChange"]
-head(LH_CC.fc)
-write.csv(LH_CC.fc,file="LH_CC_fc.csv",row.names=F,quote=F)
-save(LH_CC.fc,file="LH_CC_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 LH_CC.p=data.frame("gene"=row.names(source))
 LH_CC.p$lpv=-log(source[,"padj"],10)
 LH_CC.p$lpv[source$stat<0]=LH_CC.p$lpv[source$stat<0]*-1
@@ -493,15 +411,6 @@ head(LH_CC.p)
 write.csv(LH_CC.p,file="LH_CC_lpv.csv",row.names=F,quote=F)
 save(LH_CC.p,file="LH_CC_lpv.RData")
 
-# log2 fold changes:
-source=CH_LC[!is.na(CH_LC$padj),]
-CH_LC.fc=data.frame("gene"=row.names(source))
-CH_LC.fc$lfc=source[,"log2FoldChange"]
-head(CH_LC.fc)
-write.csv(CH_LC.fc,file="CH_LC_fc.csv",row.names=F,quote=F)
-save(CH_LC.fc,file="CH_LC_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 CH_LC.p=data.frame("gene"=row.names(source))
 CH_LC.p$lpv=-log(source[,"padj"],10)
 CH_LC.p$lpv[source$stat<0]=CH_LC.p$lpv[source$stat<0]*-1
@@ -509,15 +418,6 @@ head(CH_LC.p)
 write.csv(CH_LC.p,file="CH_LC_lpv.csv",row.names=F,quote=F)
 save(CH_LC.p,file="CH_LC_lpv.RData")
 
-# log2 fold changes:
-source=LH_LC[!is.na(LH_LC$padj),]
-LH_LC.fc=data.frame("gene"=row.names(source))
-LH_LC.fc$lfc=source[,"log2FoldChange"]
-head(LH_LC.fc)
-write.csv(LH_LC.fc,file="LH_LC_fc.csv",row.names=F,quote=F)
-save(LH_LC.fc,file="LH_LC_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
@@ -525,15 +425,6 @@ head(LH_LC.p)
 write.csv(LH_LC.p,file="LH_LC_lpv.csv",row.names=F,quote=F)
 save(LH_LC.p,file="LH_LC_lpv.RData")
 
-# log2 fold changes:
-source=LH_CH[!is.na(LH_CH$padj),]
-LH_CH.fc=data.frame("gene"=row.names(source))
-LH_CH.fc$lfc=source[,"log2FoldChange"]
-head(LH_CH.fc)
-write.csv(LH_CH.fc,file="LH_CH_fc.csv",row.names=F,quote=F)
-save(LH_CH.fc,file="LH_CH_fc.RData")
-
-# signed log p-values: -log(padj)* direction:
 LH_CH.p=data.frame("gene"=row.names(source))
 LH_CH.p$lpv=-log(source[,"padj"],10)
 LH_CH.p$lpv[source$stat<0]=LH_CH.p$lpv[source$stat<0]*-1
