@@ -21,107 +21,107 @@ library(RColorBrewer)
 
 #### ORTHOLOGS ####
 
-# load("orthofinder_DEGs.RData") # if previously run
+load("orthofinder_DEGs.RData") # if previously run
 orthologs <- read.table(file = "orthofinder/OrthoFinder/Results_Oct09/Orthologues/Orthologues_Durusdinium_out_PRO/Durusdinium_out_PRO__v__Breviolum_out_PRO.tsv", sep = "\t", header = TRUE, quote="", fill=FALSE)
 
 
 #### DESEQ IMPORT TREATMENT ####
 
-symD_LC_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym/LC_CC_lpv.csv") %>%
+symD_LC_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym/LC_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_CH_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym/CH_CC_lpv.csv") %>%
+symD_CH_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym/CH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_LH_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym/LH_CC_lpv.csv") %>%
+symD_LH_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym/LH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_CH_LC_lpv <- read.csv(file = "../../DESeq2/ofav/sym/CH_LC_lpv.csv") %>%
+symD_CH_LC_lpv <- read.csv(file = "../../DESeq2/symD/sym/CH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_LH_CH_lpv <- read.csv(file = "../../DESeq2/ofav/sym/LH_CH_lpv.csv") %>%
+symD_LH_CH_lpv <- read.csv(file = "../../DESeq2/symD/sym/LH_CH_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_LH_LC_lpv <- read.csv(file = "../../DESeq2/ofav/sym/LH_LC_lpv.csv") %>%
+symD_LH_LC_lpv <- read.csv(file = "../../DESeq2/symD/sym/LH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symB_LC_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/LC_CC_lpv.csv") %>%
+symB_LC_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym2/LC_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_CH_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/CH_CC_lpv.csv") %>%
+symB_CH_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym2/CH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_LH_CC_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/LH_CC_lpv.csv") %>%
+symB_LH_CC_lpv <- read.csv(file = "../../DESeq2/symD/sym2/LH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_CH_LC_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/CH_LC_lpv.csv") %>%
+symB_CH_LC_lpv <- read.csv(file = "../../DESeq2/symD/sym2/CH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_LH_CH_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/LH_CH_lpv.csv") %>%
+symB_LH_CH_lpv <- read.csv(file = "../../DESeq2/symD/sym2/LH_CH_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_LH_LC_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/LH_LC_lpv.csv") %>%
+symB_LH_LC_lpv <- read.csv(file = "../../DESeq2/symD/sym2/LH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
 
 #### DESEQ IMPORT SITE ####
-symD_Rainbow_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym/Rainbow_Emerald_lpv.csv") %>%
+symD_Rainbow_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym/Rainbow_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_Star_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym/Star_Emerald_lpv.csv") %>%
+symD_Star_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym/Star_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_MacN_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym/MacN_Emerald_lpv.csv") %>%
+symD_MacN_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym/MacN_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_Star_Rainbow_lpv <- read.csv(file = "../../DESeq2/ofav/sym/Star_Rainbow_lpv.csv") %>%
+symD_Star_Rainbow_lpv <- read.csv(file = "../../DESeq2/symD/sym/Star_Rainbow_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_MacN_Rainbow_lpv <- read.csv(file = "../../DESeq2/ofav/sym/MacN_Rainbow_lpv.csv") %>%
+symD_MacN_Rainbow_lpv <- read.csv(file = "../../DESeq2/symD/sym/MacN_Rainbow_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symD_MacN_Star_lpv <- read.csv(file = "../../DESeq2/ofav/sym/MacN_Star_lpv.csv") %>%
+symD_MacN_Star_lpv <- read.csv(file = "../../DESeq2/symD/sym/MacN_Star_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symD" = lpv)
 
-symB_Rainbow_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/Rainbow_Emerald_lpv.csv") %>%
+symB_Rainbow_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym2/Rainbow_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_Star_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/Star_Emerald_lpv.csv") %>%
+symB_Star_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym2/Star_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_MacN_Emerald_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/MacN_Emerald_lpv.csv") %>%
+symB_MacN_Emerald_lpv <- read.csv(file = "../../DESeq2/symD/sym2/MacN_Emerald_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_Star_Rainbow_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/Star_Rainbow_lpv.csv") %>%
+symB_Star_Rainbow_lpv <- read.csv(file = "../../DESeq2/symD/sym2/Star_Rainbow_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_MacN_Rainbow_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/MacN_Rainbow_lpv.csv") %>%
+symB_MacN_Rainbow_lpv <- read.csv(file = "../../DESeq2/symD/sym2/MacN_Rainbow_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
-symB_MacN_Star_lpv <- read.csv(file = "../../DESeq2/ofav/sym2/MacN_Star_lpv.csv") %>%
+symB_MacN_Star_lpv <- read.csv(file = "../../DESeq2/symD/sym2/MacN_Star_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_symB" = lpv)
 
@@ -922,7 +922,7 @@ MacN_Rainbow %>%
 
 # only plotting comparisons with >10 shared, annotated DEGs
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_symD)
 
@@ -933,7 +933,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_symB)
 
@@ -976,7 +976,7 @@ dev.off()
 
 # only plotting comparisons with >10 shared, annotated DEGs
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_symD)
 
@@ -987,7 +987,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_symB)
 
@@ -1039,7 +1039,7 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 dev.off()
 
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_symD)
 
@@ -1050,7 +1050,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_symB)
 
@@ -1089,7 +1089,7 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 dev.off() # too many genes
 
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_symD)
 
@@ -1100,7 +1100,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_symB)
 
@@ -1139,7 +1139,7 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 dev.off() # too many genes
 
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_symD)
 
@@ -1150,7 +1150,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_symB)
 
@@ -1189,7 +1189,7 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 dev.off() 
 
 # first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
-load("../../DESeq2/ofav/sym/vsd.RData")
+load("../../DESeq2/symD/sym/vsd.RData")
 design_symD <- design
 vsd_symD <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_symD)
 
@@ -1200,7 +1200,7 @@ vsd_symD %>%
   column_to_rownames(var = "Protein_symD") %>%
   as.matrix() -> vsd_symD
 
-load("../../DESeq2/ofav/sym2/vsd.RData")
+load("../../DESeq2/symD/sym2/vsd.RData")
 design_symB <- design
 vsd_symB <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_symB)
 
@@ -1242,18 +1242,160 @@ dev.off()
 save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, file = "orthofinder_DEGs.RData")
 
 
-#### COMMON GOs ####
+#### KOG MATCHING SITE ####
 
-trans_species <- read.csv(file = "trans_species.csv")
-trans_species$direction = as.factor(trans_species$direction)
-trans_species$cat = factor(trans_species$cat, levels = c("MF","BP","CC"))
+# Rainbow vs Emerald for both species
+Rainbow_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD >= 1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_up" = n) -> KOG_symD_up
 
-species_plot <- ggplot(trans_species, aes(x = species, y = name, color = direction)) +
-  geom_point(aes(size = genes)) + 
-  scale_color_manual(values = c("0"="blue","1"="red")) +
-  facet_grid(rows = vars(cat), scales = "free", space="free_y") + 
-  theme_classic()+
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
-species_plot
+Rainbow_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD <= -1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_down" = n) -> KOG_symD_down
 
-ggsave("transmission GO species.pdf", plot= species_plot, width=6.5, height=6.5, units="in", dpi=300)
+Rainbow_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB >= 1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_up" = n) -> KOG_symB_up
+
+Rainbow_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB <= -1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_down" = n) -> KOG_symB_down
+
+# joining all KOG class sums in a single dataframe
+KOG_symD_up %>%
+  left_join(KOG_symB_up, by = "KOG") %>%
+  inner_join(KOG_symD_down, by = "KOG") %>%
+  inner_join(KOG_symB_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_Rainbow_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# Star vs Emerald for both species
+Star_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD >= 1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_up" = n) -> KOG_symD_up
+
+Star_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD <= -1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_down" = n) -> KOG_symD_down
+
+Star_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB >= 1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_up" = n) -> KOG_symB_up
+
+Star_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB <= -1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_down" = n) -> KOG_symB_down
+
+# joining all KOG class sums in a single dataframe
+KOG_symD_up %>%
+  left_join(KOG_symB_up, by = "KOG") %>%
+  inner_join(KOG_symD_down, by = "KOG") %>%
+  inner_join(KOG_symB_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_Star_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# MacN vs Emerald for both species
+MacN_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD >= 1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_up" = n) -> KOG_symD_up
+
+MacN_Emerald %>%
+  mutate(KOG_symD = replace(KOG_symD, KOG_symD == "", NA)) %>%
+  filter(lpv_symD <= -1) %>%
+  count(KOG_symD) %>%
+  rename("KOG" = KOG_symD, "symD_down" = n) -> KOG_symD_down
+
+MacN_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB >= 1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_up" = n) -> KOG_symB_up
+
+MacN_Emerald %>%
+  mutate(KOG_symB = replace(KOG_symB, KOG_symB == "", NA)) %>%
+  filter(lpv_symB <= -1) %>%
+  count(KOG_symB) %>%
+  rename("KOG" = KOG_symB, "symB_down" = n) -> KOG_symB_down
+
+# joining all KOG class sums in a single dataframe
+KOG_symD_up %>%
+  left_join(KOG_symB_up, by = "KOG") %>%
+  inner_join(KOG_symD_down, by = "KOG") %>%
+  inner_join(KOG_symB_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_MacN_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# too few matching genes for Star vs Rainbow in both species
+
+# too few matching genes for MacN vs Rainbow in both species
+
+# no matching genes for MacN vs Star in both species

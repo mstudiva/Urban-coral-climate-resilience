@@ -1397,20 +1397,3 @@ dev.off()
 
 # saving dataframes
 save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_CH_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, MacN_Star_heatmap, file = "orthofinder_DEGs.RData")
-
-
-#### COMMON GOs ####
-
-trans_species <- read.csv(file = "trans_species.csv")
-trans_species$direction = as.factor(trans_species$direction)
-trans_species$cat = factor(trans_species$cat, levels = c("MF","BP","CC"))
-
-species_plot <- ggplot(trans_species, aes(x = species, y = name, color = direction)) +
-  geom_point(aes(size = genes)) + 
-  scale_color_manual(values = c("0"="blue","1"="red")) +
-  facet_grid(rows = vars(cat), scales = "free", space="free_y") + 
-  theme_classic()+
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
-species_plot
-
-ggsave("transmission GO species.pdf", plot= species_plot, width=6.5, height=6.5, units="in", dpi=300)

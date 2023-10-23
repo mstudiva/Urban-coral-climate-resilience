@@ -1120,18 +1120,369 @@ dev.off()
 save(LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, MacN_Rainbow_heatmap, file = "commongenes_DEGs.RData")
 
 
-#### COMMON GOs ####
+#### KOG MATCHING TREATMENT ####
 
-trans_species <- read.csv(file = "trans_species.csv")
-trans_species$direction = as.factor(trans_species$direction)
-trans_species$cat = factor(trans_species$cat, levels = c("MF","BP","CC"))
+load("commongenes_DEGs.RData") # if previously run
 
-species_plot <- ggplot(trans_species, aes(x = species, y = name, color = direction)) +
-  geom_point(aes(size = genes)) + 
-  scale_color_manual(values = c("0"="blue","1"="red")) +
-  facet_grid(rows = vars(cat), scales = "free", space="free_y") + 
-  theme_classic()+
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
-species_plot
+# no matching genes for LC vs CC in both species
 
-ggsave("transmission GO species.pdf", plot= species_plot, width=6.5, height=6.5, units="in", dpi=300)
+# CH vs CC for both species
+CH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+CH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+CH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+CH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_CH_CC.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# LH vs CC for both species
+LH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+LH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+LH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+LH_CC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_LH_CC.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# CH vs LC for both species
+CH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+CH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+CH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+CH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_CH_LC.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# LH vs LC for both species
+LH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+LH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+LH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+LH_LC %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_LH_LC.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# no matching genes for LH vs CH in both species
+
+
+#### KOG MATCHING SITE ####
+
+# Rainbow vs Emerald for both species
+Rainbow_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+Rainbow_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+Rainbow_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+Rainbow_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_Rainbow_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# Star vs Emerald for both species
+Star_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+Star_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+Star_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+Star_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_Star_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# MacN vs Emerald for both species
+MacN_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_up" = n) -> KOG_ofav_up
+
+MacN_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ofav <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ofav_down" = n) -> KOG_ofav_down
+
+MacN_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_up" = n) -> KOG_ssid_up
+
+MacN_Emerald %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv_ssid <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "ssid_down" = n) -> KOG_ssid_down
+
+# joining all KOG class sums in a single dataframe
+KOG_ofav_up %>%
+  inner_join(KOG_ssid_up, by = "KOG") %>%
+  inner_join(KOG_ofav_down, by = "KOG") %>%
+  inner_join(KOG_ssid_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_MacN_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi=300)
+
+# too few matching genes for Star vs Rainbow in both species
+
+# no matching genes for MacN vs Rainbow in both species
+
+# no matching genes for MacN vs Star in both species
