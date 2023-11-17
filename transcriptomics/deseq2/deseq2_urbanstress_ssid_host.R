@@ -257,7 +257,10 @@ LH_LC=results(dds,contrast=c("treat","LH","LC"))
 summary(LH_LC)
 degs_LH_LC=row.names(LH_LC)[LH_LC$padj<0.1 & !(is.na(LH_LC$padj))]
 
-save(Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, file="pvals.RData")
+save(Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, 
+     LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, 
+     degs_Rainbow_Emerald, degs_Star_Emerald, degs_MacN_Emerald, degs_Star_Rainbow, degs_MacN_Rainbow, degs_MacN_Star, 
+     degs_LC_CC, degs_CH_CC, degs_LH_CC, degs_CH_LC, degs_LH_CH, degs_LH_LC, file="pvals.RData")
 
 
 #### VENN DIAGRAMS ####
@@ -268,25 +271,25 @@ library(DESeq2)
 # install.packages("VennDiagram")
 library(VennDiagram)
 
-pairwise_site=list("Rainbow_Emerald"=degs_Rainbow_Emerald, "Star_Emerald"=degs_Star_Emerald, "MacN_Emerald"=degs_MacN_Emerald)
+pairwise_site=list("Star_Emerald"=degs_Star_Emerald, "MacN_Emerald"=degs_MacN_Emerald,"Star_Rainbow"=degs_Star_Rainbow, "MacN_Rainbow"=degs_MacN_Rainbow)
 # pairwise comparisons among treatments
 venn_site=venn.diagram(
   x = pairwise_site,
   filename=NULL,
   col = "transparent",
-  fill = c("#80cdc1","#dfc27d","#a6611a"),
+  fill = c("#762a83","#1b7837","#c2a5cf","#a6dba0"),
   alpha = 0.5,
-  label.col = c("#80cdc1","white","#dfc27d","white","black","white","#a6611a"),
+  label.col = c("#9970ab","white","#5aae61","grey25","white","black","white","grey25","#762a83","white","white","white","white","#1b7837","white"),
   cex = 3.5,
   fontfamily = "sans",
   fontface = "bold",
   cat.default.pos = "text",
-  cat.col =c("#80cdc1","#dfc27d","#a6611a"),
+  cat.col =c("#762a83","#1b7837","#9970ab","#5aae61"),
   cat.cex = 3.5,
   cat.fontfamily = "sans",
-  cat.just = list(c(0.25,0),c(0.75,0),c(0.5,1))
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
 )
-pdf(file="Venn_site.pdf", height=12, width=12)
+pdf(file="Venn_site.pdf", height=10, width=12)
 grid.draw(venn_site)
 dev.off()
 
