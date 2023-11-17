@@ -324,6 +324,7 @@ load("pvals.RData")
 # site contrasts
 
 # signed log p-values: -log(padj)* direction:
+source=Rainbow_Emerald[!is.na(Rainbow_Emerald$pvalue),]
 Rainbow_Emerald.p=data.frame("gene"=row.names(source))
 Rainbow_Emerald.p$lpv=-log(source[,"padj"],10)
 Rainbow_Emerald.p$lpv[source$stat<0]=Rainbow_Emerald.p$lpv[source$stat<0]*-1
@@ -331,6 +332,7 @@ head(Rainbow_Emerald.p)
 write.csv(Rainbow_Emerald.p,file="Rainbow_Emerald_lpv.csv",row.names=F,quote=F)
 save(Rainbow_Emerald.p,file="Rainbow_Emerald_lpv.RData")
 
+source=Star_Emerald[!is.na(Star_Emerald$pvalue),]
 Star_Emerald.p=data.frame("gene"=row.names(source))
 Star_Emerald.p$lpv=-log(source[,"padj"],10)
 Star_Emerald.p$lpv[source$stat<0]=Star_Emerald.p$lpv[source$stat<0]*-1
@@ -338,6 +340,7 @@ head(Star_Emerald.p)
 write.csv(Star_Emerald.p,file="Star_Emerald_lpv.csv",row.names=F,quote=F)
 save(Star_Emerald.p,file="Star_Emerald_lpv.RData")
 
+source=MacN_Emerald[!is.na(MacN_Emerald$pvalue),]
 MacN_Emerald.p=data.frame("gene"=row.names(source))
 MacN_Emerald.p$lpv=-log(source[,"padj"],10)
 MacN_Emerald.p$lpv[source$stat<0]=MacN_Emerald.p$lpv[source$stat<0]*-1
@@ -345,6 +348,7 @@ head(MacN_Emerald.p)
 write.csv(MacN_Emerald.p,file="MacN_Emerald_lpv.csv",row.names=F,quote=F)
 save(MacN_Emerald.p,file="MacN_Emerald_lpv.RData")
 
+source=Star_Rainbow[!is.na(Star_Rainbow$pvalue),]
 Star_Rainbow.p=data.frame("gene"=row.names(source))
 Star_Rainbow.p$lpv=-log(source[,"padj"],10)
 Star_Rainbow.p$lpv[source$stat<0]=Star_Rainbow.p$lpv[source$stat<0]*-1
@@ -352,6 +356,7 @@ head(Star_Rainbow.p)
 write.csv(Star_Rainbow.p,file="Star_Rainbow_lpv.csv",row.names=F,quote=F)
 save(Star_Rainbow.p,file="Star_Rainbow_lpv.RData")
 
+source=MacN_Rainbow[!is.na(MacN_Rainbow$pvalue),]
 MacN_Rainbow.p=data.frame("gene"=row.names(source))
 MacN_Rainbow.p$lpv=-log(source[,"padj"],10)
 MacN_Rainbow.p$lpv[source$stat<0]=MacN_Rainbow.p$lpv[source$stat<0]*-1
@@ -359,6 +364,7 @@ head(MacN_Rainbow.p)
 write.csv(MacN_Rainbow.p,file="MacN_Rainbow_lpv.csv",row.names=F,quote=F)
 save(MacN_Rainbow.p,file="MacN_Rainbow_lpv.RData")
 
+source=MacN_Star[!is.na(MacN_Star$pvalue),]
 MacN_Star.p=data.frame("gene"=row.names(source))
 MacN_Star.p$lpv=-log(source[,"padj"],10)
 MacN_Star.p$lpv[source$stat<0]=MacN_Star.p$lpv[source$stat<0]*-1
@@ -369,6 +375,7 @@ save(MacN_Star.p,file="MacN_Star_lpv.RData")
 # treatment contrasts
 
 # signed log p-values: -log(padj)* direction:
+source=LC_CC[!is.na(LC_CC$pvalue),]
 LC_CC.p=data.frame("gene"=row.names(source))
 LC_CC.p$lpv=-log(source[,"padj"],10)
 LC_CC.p$lpv[source$stat<0]=LC_CC.p$lpv[source$stat<0]*-1
@@ -376,6 +383,7 @@ head(LC_CC.p)
 write.csv(LC_CC.p,file="LC_CC_lpv.csv",row.names=F,quote=F)
 save(LC_CC.p,file="LC_CC_lpv.RData")
 
+source=CH_CC[!is.na(CH_CC$pvalue),]
 CH_CC.p=data.frame("gene"=row.names(source))
 CH_CC.p$lpv=-log(source[,"padj"],10)
 CH_CC.p$lpv[source$stat<0]=CH_CC.p$lpv[source$stat<0]*-1
@@ -383,6 +391,7 @@ head(CH_CC.p)
 write.csv(CH_CC.p,file="CH_CC_lpv.csv",row.names=F,quote=F)
 save(CH_CC.p,file="CH_CC_lpv.RData")
 
+source=LH_CC[!is.na(LH_CC$pvalue),]
 LH_CC.p=data.frame("gene"=row.names(source))
 LH_CC.p$lpv=-log(source[,"padj"],10)
 LH_CC.p$lpv[source$stat<0]=LH_CC.p$lpv[source$stat<0]*-1
@@ -390,6 +399,7 @@ head(LH_CC.p)
 write.csv(LH_CC.p,file="LH_CC_lpv.csv",row.names=F,quote=F)
 save(LH_CC.p,file="LH_CC_lpv.RData")
 
+source=CH_LC[!is.na(CH_LC$pvalue),]
 CH_LC.p=data.frame("gene"=row.names(source))
 CH_LC.p$lpv=-log(source[,"padj"],10)
 CH_LC.p$lpv[source$stat<0]=CH_LC.p$lpv[source$stat<0]*-1
@@ -397,6 +407,7 @@ head(CH_LC.p)
 write.csv(CH_LC.p,file="CH_LC_lpv.csv",row.names=F,quote=F)
 save(CH_LC.p,file="CH_LC_lpv.RData")
 
+source=CH_LC[!is.na(CH_LC$pvalue),]
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
@@ -404,6 +415,7 @@ head(LH_LC.p)
 write.csv(LH_LC.p,file="LH_LC_lpv.csv",row.names=F,quote=F)
 save(LH_LC.p,file="LH_LC_lpv.RData")
 
+source=LH_CH[!is.na(LH_CH$pvalue),]
 LH_CH.p=data.frame("gene"=row.names(source))
 LH_CH.p$lpv=-log(source[,"padj"],10)
 LH_CH.p$lpv[source$stat<0]=LH_CH.p$lpv[source$stat<0]*-1
@@ -411,3 +423,73 @@ head(LH_CH.p)
 write.csv(LH_CH.p,file="LH_CH_lpv.csv",row.names=F,quote=F)
 save(LH_CH.p,file="LH_CH_lpv.RData")
 
+save(Rainbow_Emerald.p, Star_Emerald.p, MacN_Emerald.p, Star_Rainbow.p, MacN_Rainbow.p, MacN_Star.p, 
+     LC_CC.p, CH_CC.p, LH_CC.p, CH_LC.p, LH_CH.p, LH_LC.p, file="exports.RData")
+
+
+#### DEG MATCHING TREATMENT ####
+
+library(DESeq2)
+library(dplyr)
+load("exports.RData")
+
+# This section of code does several things: 1) join -log10(pval) across treatment comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
+
+# stress treatments (LC, CH, and LH) versus control treatment (CC)
+LC_CC.p %>%
+  inner_join(CH_CC.p, by = c("gene" = "gene")) %>%
+  inner_join(LH_CC.p, by = c("gene" = "gene")) %>%
+  rename("lpv.LC_CC" = 
+           lpv.x, "lpv.CH_CC" = 	
+           lpv.y, "lpv.LH_CC" = 	
+           lpv) %>%
+  filter(abs(lpv.LC_CC) >= 1 & abs(lpv.CH_CC) >= 1 & abs(lpv.LH_CC) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  mutate(comparison="stress_control", .before="gene") -> commongenes_treatment
+
+# exporting all DEGs matching across stress vs control treatments
+write.csv(commongenes_treatment, file="commongenes_treatment.csv")
+
+
+#### DEG MATCHING SITE ####
+
+# This section of code does several things: 1) join -log10(pval) across site comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
+
+# urban sites (Star and MacN) versus reef sites (Emerald and Rainbow)
+Star_Emerald.p %>%
+  inner_join(MacN_Emerald.p, by = c("gene" = "gene")) %>%
+  inner_join(Star_Rainbow.p, by = c("gene" = "gene")) %>%
+  inner_join(MacN_Rainbow.p, by = c("gene" = "gene")) %>%
+  rename("lpv.Star_Emerald" = 
+           lpv.x, "lpv.MacN_Emerald" = 	
+           lpv.y, "lpv.Star_Rainbow" = 	
+           lpv.x.x, "lpv.MacN_Rainbow" = 	
+           lpv.y.y) %>%
+  filter(abs(lpv.Star_Emerald) >= 1 & abs(lpv.MacN_Emerald) >= 1 & abs(lpv.Star_Rainbow) >= 1 & abs(lpv.MacN_Rainbow) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  mutate(comparison="urban_reef", .before="gene") -> commongenes_site
+
+# exporting all DEGs matching across stress vs control treatments
+write.csv(commongenes_site, file="commongenes_site.csv")
