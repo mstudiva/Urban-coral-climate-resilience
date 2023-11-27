@@ -427,14 +427,18 @@ save(Rainbow_Emerald.p, Star_Emerald.p, MacN_Emerald.p, Star_Rainbow.p, MacN_Rai
      LC_CC.p, CH_CC.p, LH_CC.p, CH_LC.p, LH_CH.p, LH_LC.p, file="exports.RData")
 
 
-#### DEG MATCHING TREATMENT ####
+#### DEG MATCHING ####
 
 library(DESeq2)
 library(dplyr)
+library(reshape2)
+library(RColorBrewer)
+library(ggplot2)
 load("exports.RData")
 
 # This section of code does several things: 1) join -log10(pval) across treatment comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
 
+# Treatment
 # stress treatments (LC, CH, and LH) versus control treatment (CC)
 LC_CC.p %>%
   inner_join(CH_CC.p, by = c("gene" = "gene")) %>%
@@ -461,9 +465,7 @@ LC_CC.p %>%
 # exporting all DEGs matching across stress vs control treatments
 write.csv(commongenes_treatment, file="commongenes_treatment.csv")
 
-
-#### DEG MATCHING SITE ####
-
+# Site
 # This section of code does several things: 1) join -log10(pval) across site comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
 
 # urban sites (Star and MacN) versus reef sites (Emerald and Rainbow)
@@ -493,3 +495,174 @@ Star_Emerald.p %>%
 
 # exporting all DEGs matching across stress vs control treatments
 write.csv(commongenes_site, file="commongenes_site.csv")
+
+
+#### HEATMAPS ####
+
+# first removing unannotated genes
+commongenes_treatment %>%
+  filter(!is.na(annot)) ->  commongenes_treatment_heatmap
+
+# commongenes_site %>%
+#   filter(!is.na(annot)) ->  commongenes_site_heatmap
+# 0 matching DEGs
+
+load("vsd.RData")
+vsd_treatment <- subset(vsd, rownames(vsd) %in% commongenes_treatment_heatmap$gene)
+# vsd_site <- subset(vsd, rownames(vsd) %in% commongenes_site_heatmap$gene)
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# Treatment
+# creating a lookup table of gene ID to gene annotations
+gene_names <- as.data.frame(cbind(commongenes_treatment_heatmap$gene, commongenes_treatment_heatmap$annot))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_treatment_p0.1.pdf", height=5, width=32)
+uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
+           metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+
+#### KOG MATCHING ####
+
+# Treatment
+# LC vs CC 
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.LC_CC >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "LC_CC_up" = n) -> KOG_LC_CC_up
+
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.LC_CC <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "LC_CC_down" = n) -> KOG_LC_CC_down
+
+# CH vs CC 
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.CH_CC >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "CH_CC_up" = n) -> KOG_CH_CC_up
+
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.CH_CC <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "CH_CC_down" = n) -> KOG_CH_CC_down
+
+# LH vs CC 
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.LH_CC >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "LH_CC_up" = n) -> KOG_LH_CC_up
+
+commongenes_treatment %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.LH_CC <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "LH_CC_down" = n) -> KOG_LH_CC_down
+
+# joining all KOG class sums in a single dataframe
+KOG_LC_CC_up %>%
+  inner_join(KOG_CH_CC_up, by = "KOG") %>%
+  inner_join(KOG_LH_CC_up, by = "KOG") %>%
+  inner_join(KOG_LC_CC_down, by = "KOG") %>%
+  inner_join(KOG_CH_CC_down, by = "KOG") %>%
+  inner_join(KOG_LH_CC_down, by = "KOG") -> KOG_match
+
+# melting dataframe for plotting
+KOG_match %>%
+  melt(id = "KOG") %>%
+  rename(comparison = variable, sum = value) -> KOG_melt
+
+# creating a custom color palette
+colorCount = length(unique(KOG_match$KOG))
+getPalette = colorRampPalette(brewer.pal(8, "Accent"))
+
+# relative abundance plot
+KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Accent"))(colorCount)) +
+  labs(x = "Comparison",
+       y = "Number of DEGs") +
+  theme_classic()
+KOG_sum
+ggsave("KOG_treatment.pdf", plot= KOG_sum, width=10, height=6, units="in", dpi=300)
+
+# Site
+# Star vs Emerald 
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.Star_Emerald >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "Star_Emerald_up" = n) -> KOG_Star_Emerald_up
+
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.Star_Emerald <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "Star_Emerald_down" = n) -> KOG_Star_Emerald_down
+
+# MacN vs Emerald 
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.MacN_Emerald >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "MacN_Emerald_up" = n) -> KOG_MacN_Emerald_up
+
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.MacN_Emerald <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "MacN_Emerald_down" = n) -> KOG_MacN_Emerald_down
+
+# Star vs Rainbow
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.Star_Rainbow >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "Star_Rainbow_up" = n) -> KOG_Star_Rainbow_up
+
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.Star_Rainbow <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "Star_Rainbow_down" = n) -> KOG_Star_Rainbow_down
+
+# MacN vs Rainbow
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.MacN_Rainbow >= 1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "MacN_Rainbow_up" = n) -> KOG_MacN_Rainbow_up
+
+commongenes_site %>%
+  mutate(KOG = replace(KOG, KOG == "", NA)) %>%
+  filter(lpv.MacN_Rainbow <= -1) %>%
+  count(KOG) %>%
+  rename("KOG" = KOG, "MacN_Rainbow_down" = n) -> KOG_MacN_Rainbow_down
+
+# joining all KOG class sums in a single dataframe
+KOG_Star_Emerald_up %>%
+  inner_join(KOG_MacN_Emerald_up, by = "KOG") %>%
+  inner_join(KOG_Star_Rainbow_up, by = "KOG") %>%
+  inner_join(KOG_MacN_Rainbow_up, by = "KOG") %>%
+  inner_join(KOG_Star_Emerald_down, by = "KOG") %>%
+  inner_join(KOG_MacN_Emerald_down, by = "KOG") %>%
+  inner_join(KOG_Star_Rainbow_down, by = "KOG") %>%
+  inner_join(KOG_MacN_Rainbow_down, by = "KOG")-> KOG_match
+# 0 matching KOG classes
