@@ -525,9 +525,9 @@ load(file = "../../../DESeq2/ofav/sym/data4wgcna.RData")
 load(file = "wgcnaData.RData");
 allkME =as.data.frame(signedKME(datt, MEs))
 
-colorh = labels2colors(moduleColors)
-hubgenes <- chooseTopHubInEachModule(datt, colorh, omitColors = "grey", 
-                                     power = 2, 
+# set the power based on the soft threshold used in making modules
+hubgenes <- chooseTopHubInEachModule(datt, moduleColors, omitColors = "grey", 
+                                     power = 12, 
                                      type = "signed")
 hubgenes <-data.frame(hubgenes)
 hubgenes <- tibble::rownames_to_column(hubgenes, "module")
