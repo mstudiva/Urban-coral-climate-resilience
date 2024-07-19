@@ -666,3 +666,70 @@ KOG_Star_Emerald_up %>%
   inner_join(KOG_Star_Rainbow_down, by = "KOG") %>%
   inner_join(KOG_MacN_Rainbow_down, by = "KOG")-> KOG_match
 # 0 matching KOG classes
+
+
+#### CHERRY PICKING ####
+
+library(DESeq2)
+library(tidyverse)
+library(reshape2)
+library(RColorBrewer)
+library(ggplot2)
+load("exports.RData")
+
+MacN_Emerald.p %>%
+  filter(abs(lpv) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  filter(str_detect(annot, 'heat shock|carbonic|digest|pattern recognition|respiration|immun|NF-kappaB|TGF-beta|peroxidas|protein tyrosine kinase|WD repeat-containing protein|fibrinogen|apoptosis|stress|extracellular matrix|photsynthe|thylakoid')) -> cherrypicking_site
+write.csv(cherrypicking_site, file = "cherrypicking_MacN_Emerald.csv")
+
+LH_CC.p %>%
+  filter(abs(lpv) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  filter(str_detect(annot, 'heat shock|carbonic|digest|pattern recognition|respiration|immun|NF-kappaB|TGF-beta|peroxidas|protein tyrosine kinase|WD repeat-containing protein|fibrinogen|apoptosis|stress|extracellular matrix|photsynthe|thylakoid')) -> cherrypicking_treat
+write.csv(cherrypicking_treat, file = "cherrypicking_LH_CC.csv")
+
+
+#### CHERRY GENE EXPORTS ####
+
+library(DESeq2)
+library(ggpubr)
+load("realModels.RData")
+
+# exporting counts of specific genes from cherry picking
+Durusdinium17786 <- plotCounts(dds, gene="Durusdinium17786", intgroup="site", returnData=TRUE)
+write.csv(Durusdinium17786, file = "Durusdinium17786_site.csv")
+
+Durusdinium38691 <- plotCounts(dds, gene="Durusdinium38691", intgroup="site", returnData=TRUE)
+write.csv(Durusdinium38691, file = "Durusdinium38691_site.csv")
+
+Durusdinium11932 <- plotCounts(dds, gene="Durusdinium11932", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium11932, file = "Durusdinium11932_site.csv")
+
+Durusdinium28251 <- plotCounts(dds, gene="Durusdinium28251", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium28251, file = "Durusdinium28251_site.csv")
+
+Durusdinium32556 <- plotCounts(dds, gene="Durusdinium32556", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium32556, file = "Durusdinium32556_site.csv")
+
+Durusdinium35558 <- plotCounts(dds, gene="Durusdinium35558", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium35558, file = "Durusdinium35558_site.csv")
+
+Durusdinium38691 <- plotCounts(dds, gene="Durusdinium38691", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium38691, file = "Durusdinium38691_site.csv")
+
+Durusdinium498 <- plotCounts(dds, gene="Durusdinium498", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium498, file = "Durusdinium498_site.csv")
+
+Durusdinium50438 <- plotCounts(dds, gene="Durusdinium50438", intgroup="treat", returnData=TRUE)
+write.csv(Durusdinium50438, file = "Durusdinium50438_site.csv")

@@ -1397,3 +1397,180 @@ dev.off()
 
 # saving dataframes
 save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_CH_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, MacN_Star_heatmap, file = "orthofinder_DEGs.RData")
+
+
+#### CHERRY PICKING ####
+
+ofav_MacN_Emerald_cherry <- read.csv(file = "../../DESeq2/ofav/host/cherrypicking_MacN_Emerald.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ofav_MacNEmerald"=lpv, "annot_ofav_MacNEmerald"=annot)
+
+ofav_LH_CC_cherry <- read.csv(file = "../../DESeq2/ofav/host/cherrypicking_LH_CC.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ofav_LHCC"=lpv, "annot_ofav_LHCC"=annot)
+
+ssid_MacN_Emerald_cherry <- read.csv(file = "../../DESeq2/ssid/host/cherrypicking_MacN_Emerald.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ssid_MacNEmerald"=lpv, "annot_ssid_MacNEmerald"=annot)
+
+ssid_LH_CC_cherry <- read.csv(file = "../../DESeq2/ssid/host/cherrypicking_LH_CC.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ssid_LHCC"=lpv, "annot_ssid_LHCC"=annot)
+
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Siderastrea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  right_join(ofav_MacN_Emerald_cherry, by = c("Protein_ofav" = "gene")) %>%
+  write.csv(file="ofav_MacN_Emerald_cherry.csv")
+
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Siderastrea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  right_join(ofav_LH_CC_cherry, by = c("Protein_ofav" = "gene")) %>%
+  write.csv(file="ofav_LH_CC_cherry.csv")
+
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Siderastrea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  right_join(ssid_MacN_Emerald_cherry, by = c("Protein_ssid" = "gene")) %>%
+  write.csv(file="ssid_MacN_Emerald_cherry.csv")
+
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Siderastrea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  right_join(ssid_LH_CC_cherry, by = c("Protein_ssid" = "gene")) %>%
+  write.csv(file="ssid_LH_CC_cherry.csv")
+
+
+#### BOXPLOTS MATCHING ####
+
+library(tidyverse)
+library(stringr)
+library(rcompanion)
+library(rstatix)
+library(ggpubr)
+library(scales)
+
+# DEGs with matching orthogroups
+# OG0007874 (Spondin 2b, extracellular matrix protein)
+Ofaveolata007753_site <- read.csv(file = "../../DESeq2/ofav/host/Ofaveolata007753_site.csv")
+Ofaveolata007753_site$site <- factor(Ofaveolata007753_site$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+
+Ofaveolata007753_treat <- read.csv(file = "../../DESeq2/ofav/host/Ofaveolata007753_treat.csv")
+Ofaveolata007753_treat$treat <- factor(Ofaveolata007753_treat$treat, levels = c("CC", "LC", "CH", "LH"))
+
+Siderastrea444176_site <- read.csv(file = "../../DESeq2/ssid/host/Siderastrea444176_site.csv")
+Siderastrea444176_site$site <- factor(Siderastrea444176_site$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+
+# ANOVA and Tukey's
+Ofaveolata007753_site_stats <- aov(count~site,data=Ofaveolata007753_site) %>%
+  tukey_hsd()
+Ofaveolata007753_site_stats
+
+Ofaveolata007753_treat_stats <- aov(count~treat,data=Ofaveolata007753_treat) %>%
+  tukey_hsd()
+Ofaveolata007753_treat_stats
+
+Siderastrea444176_site_stats <- aov(count~site,data=Siderastrea444176_site) %>%
+  tukey_hsd()
+Siderastrea444176_site_stats
+
+Ofaveolata007753_site_plot <-
+  ggboxplot(
+    Ofaveolata007753_site,
+    x = "site",
+    y = "count",
+    color = "grey30",
+    fill = "site",
+    palette = c("#018571","#80cdc1","#dfc27d","#a6611a"),
+    title = "O. faveolata site",
+    add = "jitter",
+    add.params = list(size = 1, jitter = 0.25),
+    width = 0.7,
+    size = 0.5
+  ) + labs(x = element_blank(),
+           y = "Log Normalized Counts",
+           fill = 'site') + 
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),  legend.position = "none") +
+  scale_y_log10(limit = c(0.25,100000), breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  stat_pvalue_manual(Ofaveolata007753_site_stats,label="p.adj.signif",y.position=3.75,step.increase=0.075,inherit.aes=FALSE,size=3)
+Ofaveolata007753_site_plot
+
+Ofaveolata007753_treat_plot <-
+  ggboxplot(
+    Ofaveolata007753_treat,
+    x = "treat",
+    y = "count",
+    color = "grey30",
+    fill = "treat",
+    palette = c("#92c5de","#f4a582","#0571b0","#ca0020"),
+    title = "O. faveolata treat",
+    add = "jitter",
+    add.params = list(size = 1, jitter = 0.25),
+    width = 0.7,
+    size = 0.5
+  ) + labs(x = element_blank(),
+           y = "Log Normalized Counts",
+           fill = 'treat') + 
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),  legend.position = "none") +
+  scale_y_log10(limit = c(0.25,100000), breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  stat_pvalue_manual(Ofaveolata007753_treat_stats,label="p.adj.signif",y.position=3.75,step.increase=0.075,inherit.aes=FALSE,size=3)
+Ofaveolata007753_treat_plot
+
+Siderastrea444176_site_plot <-
+  ggboxplot(
+    Siderastrea444176_site,
+    x = "site",
+    y = "count",
+    color = "grey30",
+    fill = "site",
+    palette = c("#018571","#80cdc1","#dfc27d","#a6611a"),
+    title = "S. siderea site",
+    add = "jitter",
+    add.params = list(size = 1, jitter = 0.25),
+    width = 0.7,
+    size = 0.5
+  ) + labs(x = element_blank(),
+           y = "Log Normalized Counts",
+           fill = 'site') + 
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),  legend.position = "none") +
+  scale_y_log10(limit = c(0.25,100000), breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  stat_pvalue_manual(Siderastrea444176_site_stats,label="p.adj.signif",y.position=3,step.increase=0.1,inherit.aes=FALSE,size=3)
+Siderastrea444176_site_plot
+
+
+#### MULTIPLOT MATCHING ####
+
+species_match<-ggarrange(Ofaveolata007753_site_plot,
+                         Ofaveolata007753_treat_plot,
+                         Siderastrea444176_site_plot,
+                              heights = c(2),
+                              widths = c(6,6,6),
+                              ncol = 3,
+                              nrow = 1)
+species_match<-annotate_figure(species_match, top = text_grob("Spondin 2b, extracellular matrix protein", color = "black", face = "bold", size = 14))
+species_match
+
+ggsave("species_match.pdf", species_match, width=12, height=4,dpi = 300)

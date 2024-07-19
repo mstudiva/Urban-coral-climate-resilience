@@ -1486,3 +1486,122 @@ ggsave("KOG_MacN_Emerald.pdf", plot= KOG_sum, width=8, height=6, units="in", dpi
 # no matching genes for MacN vs Rainbow in both species
 
 # no matching genes for MacN vs Star in both species
+
+
+#### CHERRY PICKING ####
+
+ofav_MacN_Emerald_cherry <- read.csv(file = "../../DESeq2/ofav/sym/cherrypicking_MacN_Emerald.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ofav_MacNEmerald"=lpv, "annot_ofav_MacNEmerald"=annot)
+
+ofav_LH_CC_cherry <- read.csv(file = "../../DESeq2/ofav/sym/cherrypicking_LH_CC.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ofav_LHCC"=lpv, "annot_ofav_LHCC"=annot)
+
+ssid_MacN_Emerald_cherry <- read.csv(file = "../../DESeq2/ssid/sym/cherrypicking_MacN_Emerald.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ssid_MacNEmerald"=lpv, "annot_ssid_MacNEmerald"=annot)
+
+ssid_LH_CC_cherry <- read.csv(file = "../../DESeq2/ssid/sym/cherrypicking_LH_CC.csv") %>%
+  select(gene, lpv, annot) %>%
+  rename("lpv_ssid_LHCC"=lpv, "annot_ssid_LHCC"=annot)
+
+# matching genes between species
+ofav_MacN_Emerald_cherry %>%
+  inner_join(ssid_MacN_Emerald_cherry, by = c("gene" = "gene")) -> MacN_Emerald_cherry_match 
+write.csv(MacN_Emerald_cherry_match, file="MacN_Emerald_cherry_match.csv")
+
+ofav_LH_CC_cherry %>%
+  inner_join(ssid_LH_CC_cherry, by = c("gene" = "gene")) -> LH_CC_cherry_match 
+write.csv(LH_CC_cherry_match, file="LH_CC_cherry_match.csv")
+
+# non-matching genes between species
+ofav_MacN_Emerald_cherry %>%
+  anti_join(ssid_MacN_Emerald_cherry, by = c("gene" = "gene")) -> MacN_Emerald_cherry_ofav 
+write.csv(MacN_Emerald_cherry_ofav, file="MacN_Emerald_cherry_ofav.csv")
+
+ssid_MacN_Emerald_cherry %>%
+  anti_join(ssid_MacN_Emerald_cherry, by = c("gene" = "gene")) -> MacN_Emerald_cherry_ssid
+write.csv(MacN_Emerald_cherry_ssid, file="MacN_Emerald_cherry_ssid.csv")
+
+ofav_LH_CC_cherry %>%
+  anti_join(ssid_LH_CC_cherry, by = c("gene" = "gene")) -> LH_CC_cherry_ofav 
+write.csv(LH_CC_cherry_ofav, file="LH_CC_cherry_ofav.csv")
+
+ssid_LH_CC_cherry %>%
+  anti_join(ssid_LH_CC_cherry, by = c("gene" = "gene")) -> LH_CC_cherry_ssid
+write.csv(LH_CC_cherry_ssid, file="LH_CC_cherry_ssid.csv")
+
+
+#### BOXPLOTS MATCHING SPECIES ####
+
+library(stringr)
+library(rcompanion)
+library(rstatix)
+library(ggpubr)
+library(scales)
+
+# Durusdinium17786 (CAAX protease self-immunity)
+Durusdinium17786_ofav <- read.csv(file = "../../DESeq2/ofav/sym/Durusdinium17786.csv")
+Mcavernosa14879$fate <- factor(Mcavernosa14879$fate, levels = c("healthy", "nai", "diseased"))
+
+Ofaveolata224187 <- read.csv(file = "../DESeq2/ofav/Ofaveolata224187.csv")
+# renaming Ofav treatment to fate
+colnames(Ofaveolata224187)[3] = "fate"
+Ofaveolata224187$fate <- str_replace(Ofaveolata224187$fate, "control", "healthy")
+Ofaveolata224187$fate <- str_replace(Ofaveolata224187$fate, "sctld", "diseased")
+
+# ANOVA and Tukey's
+Mcavernosa14879_stats <- aov(count~fate,data=Mcavernosa14879) %>%
+  tukey_hsd()
+Mcavernosa14879_stats
+
+Ofaveolata224187_stats <- aov(count~fate,data=Ofaveolata224187) %>%
+  tukey_hsd()
+Ofaveolata224187_stats
+
+Mcavernosa14879_plot <-
+  ggboxplot(
+    Mcavernosa14879,
+    x = "fate",
+    y = "count",
+    color = "grey30",
+    fill = "fate",
+    palette = c("green", "orange", "red"),
+    title = "M. cavernosa",
+    add = "jitter",
+    add.params = list(size = 1, jitter = 0.25),
+    width = 0.7,
+    size = 0.5
+  ) + labs(x = element_blank(),
+           y = "Log Normalized Counts",
+           fill = 'fate') + 
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),  legend.position = "none", axis.text.x=element_blank()) +
+  scale_y_log10(limit = c(3,12000), breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  stat_pvalue_manual(Mcavernosa14879_stats,label="p.adj.signif",y.position=3.45,step.increase=0.1,inherit.aes=FALSE,size=3)
+Mcavernosa14879_plot
+
+Ofaveolata224187_plot <-
+  ggboxplot(
+    Ofaveolata224187,
+    x = "fate",
+    y = "count",
+    color = "grey30",
+    fill = "fate",
+    palette = c("green", "red"),
+    title = "O. faveolata",
+    add = "jitter",
+    add.params = list(size = 1, jitter = 0.25),
+    width = 0.7,
+    size = 0.5
+  ) + labs(x = element_blank(),
+           y = element_blank(),
+           fill = 'fate') + 
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),  legend.position = "none", axis.text.y=element_blank(), axis.text.x=element_blank()) +
+  scale_y_log10(limit = c(3,12000), breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x))) +
+  stat_pvalue_manual(Ofaveolata224187_stats,label="p.adj.signif",y.position=3.8,step.increase=0.1,inherit.aes=FALSE,size=3)
+Ofaveolata224187_plot

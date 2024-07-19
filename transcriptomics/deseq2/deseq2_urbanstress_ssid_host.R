@@ -584,3 +584,52 @@ KOG_LC_CC_up %>%
   inner_join(KOG_CH_CC_down, by = "KOG") %>%
   inner_join(KOG_LH_CC_down, by = "KOG") -> KOG_match
 # only unannotated KOG classes
+
+
+#### CHERRY PICKING ####
+
+library(DESeq2)
+library(tidyverse)
+library(reshape2)
+library(RColorBrewer)
+library(ggplot2)
+load("exports.RData")
+
+MacN_Emerald.p %>%
+  filter(abs(lpv) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  filter(str_detect(annot, 'heat shock|carbonic|digest|pattern recognition|respiration|immun|NF-kappaB|TGF-beta|peroxidas|protein tyrosine kinase|WD repeat-containing protein|fibrinogen|apoptosis|stress|extracellular matrix')) -> cherrypicking_site
+write.csv(cherrypicking_site, file = "cherrypicking_MacN_Emerald.csv")
+
+LH_CC.p %>%
+  filter(abs(lpv) >= 1) %>%
+  left_join(read.table(file = "../../../../Annotations/ssid/magana/Siderastrea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot = V2) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  filter(str_detect(annot, 'heat shock|carbonic|digest|pattern recognition|respiration|immun|NF-kappaB|TGF-beta|peroxidas|protein tyrosine kinase|WD repeat-containing protein|fibrinogen|apoptosis|stress|extracellular matrix')) -> cherrypicking_treat
+write.csv(cherrypicking_treat, file = "cherrypicking_LH_CC.csv")
+
+
+#### CHERRY GENE EXPORTS ####
+
+library(DESeq2)
+library(ggpubr)
+load("realModels.RData")
+
+# exporting counts of specific genes from cherry picking
+Siderastrea444176 <- plotCounts(dds, gene="Siderastrea444176", intgroup="site", returnData=TRUE)
+write.csv(Siderastrea444176, file = "Siderastrea444176_site.csv")
+
+Siderastrea451893 <- plotCounts(dds, gene="Siderastrea451893", intgroup="site", returnData=TRUE)
+write.csv(Siderastrea451893, file = "Siderastrea451893_site.csv")
+
+Siderastrea411820 <- plotCounts(dds, gene="Siderastrea411820", intgroup="treat", returnData=TRUE)
+write.csv(Siderastrea411820, file = "Siderastrea411820_treat.csv")
