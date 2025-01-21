@@ -3,7 +3,7 @@
 # run these once, then comment out
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
-# BiocManager::install(version = "3.20")
+# BiocManager::install(version = "3.16")
 # BiocManager::install("DESeq2",dependencies=T)
 # BiocManager::install("arrayQualityMetrics",dependencies=T)  # requires Xquartz, xquartz.org
 # BiocManager::install("BiocParallel")
@@ -28,7 +28,7 @@ library(arrayQualityMetrics)
 library(dplyr)
 
 #read in counts
-counts = read.table("../../../../../raw/ofav/orthogroup/allcounts_sym.txt")
+counts = read.table("../../../../raw/ofav/allcounts_sym.txt")
 
 # how many genes we have total?
 nrow(counts) 
@@ -50,7 +50,7 @@ ncol(counts4wgcna)
 write.csv(counts4wgcna, file="counts4wgcna.csv")
 
 # importing a design .csv file
-design = read.csv("../../../../../raw/design_ofav.csv", head=TRUE)
+design = read.csv("../../../../raw/design_ofav.csv", head=TRUE)
 design
 design$site <- as.factor(design$site)
 design$site <- as.factor(design$site)
@@ -88,16 +88,16 @@ arrayQualityMetrics(e,intgroup=c("site"),force=T)
 # use the array number for removal in the following section
 
 # if there were outliers:
-outs=c(22,56)
-countData=countData[,-outs]
-Vsd=Vsd[,-outs]
-counts4wgcna=counts4wgcna[,-outs]
-design=design[-outs,]
+# outs=c(30,46,48,52,56)
+# countData=countData[,-outs]
+# Vsd=Vsd[,-outs]
+# counts4wgcna=counts4wgcna[,-outs]
+# design=design[-outs,]
 
 # remaking model with outliers removed from dataset
-dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ site+treat)
-dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
+# dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ site+treat)
+# dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+# dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
 
 # save all these dataframes as an Rdata package so you don't need to rerun each time
 save(dds,design,countData,Vsd,counts4wgcna,file="initial.RData")
@@ -155,11 +155,11 @@ dev.off()
 # plotting PCoA by site and treatment
 pdf(file="PCoA_ofav_sym.pdf", width=12, height=6)
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,2,25,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1 (69.3%)", ylab="Coordinate 2 (5.5%)", main="Site")
+plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,2,25,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1 (84.2%)", ylab="Coordinate 2 (2.2%)", main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), fill = c("#018571","#80cdc1","#dfc27d","#a6611a"), bty="n")
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), pch=c(6,2,25,17), bty="n", pt.bg = c(NA,NA,"black",NA))
-plot(scores[,1], scores[,2],col=c("#92c5de","#f4a582","#0571b0","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 1 (69.3%)", ylab="Coordinate 2 (5.5%)", main="Treatment")
+plot(scores[,1], scores[,2],col=c("#92c5de","#f4a582","#0571b0","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 1 (84.2%)", ylab="Coordinate 2 (2.2%)", main="Treatment")
 ordiellipse(scores, conditions$treat, label=F, col=c("#92c5de","#f4a582","#0571b0","#ca0020"))
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), fill = c("#92c5de","#f4a582","#0571b0","#ca0020"), bty="n")
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,16), bty="n")
@@ -173,7 +173,7 @@ dev.off()
 
 # formal analysis of variance in distance matricies: 
 set.seed(25786)
-ad=adonis2(t(vsd)~site*treat, data=conditions, method="manhattan", by = "terms", parallel = getOption("mc.cores"), permutations = 1e6)
+ad=adonis2(t(vsd)~site*treat, data=conditions, method="manhattan", permutations=1e6)
 ad
 write.csv(ad, file = "PERMANOVA_output.csv")
 
@@ -448,21 +448,18 @@ LC_CC.p %>%
            lpv.y, "lpv.LH_CC" = 	
            lpv) %>%
   filter(abs(lpv.LC_CC) >= 1 & abs(lpv.CH_CC) >= 1 & abs(lpv.LH_CC) >= 1) %>%
-  left_join(read.table(file = "../../../../../Annotations/symD/shoguchi/pcli_host/Durusdinium_ortho2geneName.tab",
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
-              mutate(ortho = V1,
+              mutate(gene = V1,
                      annot = V2) %>%
-              distinct(ortho, .keep_all = TRUE) %>%
-              dplyr::select(-V1, -V2), by = c("gene" = "ortho")) %>%
-  left_join(read.table(file = "../../../../../Annotations/symD/shoguchi/pcli_host/Durusdinium_ortho2kogClass.tab",
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2kogClass.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
-              mutate(ortho = V1,
+              mutate(gene = V1,
                      KOG = V2) %>%
-              distinct(ortho, .keep_all = TRUE) %>%
-              dplyr::select(-V1, -V2),
-            by = c("gene" = "ortho")) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
   mutate(comparison="stress_control", .before="gene") -> commongenes_treatment
 
 # exporting all DEGs matching across stress vs control treatments
@@ -482,21 +479,18 @@ Star_Emerald.p %>%
            lpv.x.x, "lpv.MacN_Rainbow" = 	
            lpv.y.y) %>%
   filter(abs(lpv.Star_Emerald) >= 1 & abs(lpv.MacN_Emerald) >= 1 & abs(lpv.Star_Rainbow) >= 1 & abs(lpv.MacN_Rainbow) >= 1) %>%
-  left_join(read.table(file = "../../../../../Annotations/symD/shoguchi/pcli_host/Durusdinium_ortho2geneName.tab",
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
-              mutate(ortho = V1,
+              mutate(gene = V1,
                      annot = V2) %>%
-              distinct(ortho, .keep_all = TRUE) %>%
-              dplyr::select(-V1, -V2), by = c("gene" = "ortho")) %>%
-  left_join(read.table(file = "../../../../../Annotations/symD/shoguchi/pcli_host/Durusdinium_ortho2kogClass.tab",
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2kogClass.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
-              mutate(ortho = V1,
+              mutate(gene = V1,
                      KOG = V2) %>%
-              distinct(ortho, .keep_all = TRUE) %>%
-              dplyr::select(-V1, -V2),
-              by = c("gene" = "ortho")) %>%
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
   mutate(comparison="urban_reef", .before="gene") -> commongenes_site
 
 # exporting all DEGs matching across stress vs control treatments
@@ -526,13 +520,13 @@ gene_names <- as.data.frame(cbind(commongenes_treatment_heatmap$gene, commongene
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
 # p < 0.1
-pdf(file="heatmap_treatment_p0.1.pdf", height=1.5, width=18)
+pdf(file="heatmap_treatment_p0.1.pdf", height=1.75, width=18)
 uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
            metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
            # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1,
+           cutoff=-1, 
            sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id),
+           # sort=order(design_comb$full_id), 
            cex=0.8,
            pdf=F,
 )
@@ -545,7 +539,7 @@ gene_names <- as.data.frame(cbind(commongenes_site_heatmap$gene, commongenes_sit
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
 # p < 0.1
-pdf(file="heatmap_site_p0.1.pdf", height=96, width=32)
+pdf(file="heatmap_site_p0.1.pdf", height=14, width=32)
 uniHeatmap(vsd=vsd_site,gene.names=gene_names,
            metric=-(abs(commongenes_site_heatmap$lpv.MacN_Emerald)), # metric of gene significance
            # metric2=-(abs(MacN_Emerald$lpv_ofav)),
@@ -734,7 +728,7 @@ load("exports.RData")
 
 MacN_Emerald.p %>%
   filter(abs(lpv) >= 1) %>%
-  left_join(read.table(file = "../../../../../Annotations/orthogroup/Durusdinium_ortho2geneName.tab",
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
@@ -745,7 +739,7 @@ write.csv(cherrypicking_site, file = "cherrypicking_MacN_Emerald.csv")
 
 LH_CC.p %>%
   filter(abs(lpv) >= 1) %>%
-  left_join(read.table(file = "../../../../../Annotations/orthogroup/Durusdinium_ortho2geneName.tab",
+  left_join(read.table(file = "../../../../Annotations/symD/shoguchi/Durusdinium_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
