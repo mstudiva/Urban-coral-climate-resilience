@@ -3,7 +3,7 @@
 # run these once, then comment out
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
-# BiocManager::install(version = "3.16")
+# BiocManager::install(version = "3.20")
 # BiocManager::install("DESeq2",dependencies=T)
 # BiocManager::install("arrayQualityMetrics",dependencies=T)  # requires Xquartz, xquartz.org
 # BiocManager::install("BiocParallel")
@@ -28,7 +28,7 @@ library(arrayQualityMetrics)
 library(tidyverse)
 
 #read in counts
-counts = read.table("../../../../raw/ofav/allcounts_host.txt")
+counts = read.table("../../../../../raw/ofav/orthogroup/allcounts_host.txt")
 
 # how many genes we have total?
 nrow(counts) 
@@ -50,7 +50,7 @@ ncol(counts4wgcna)
 write.csv(counts4wgcna, file="counts4wgcna.csv")
 
 # importing a design .csv file
-design = read.csv("../../../../raw/design_ofav.csv", head=TRUE)
+design = read.csv("../../../../../raw/design_ofav.csv", head=TRUE)
 design
 design$site <- as.factor(design$site)
 design$tank <- as.factor(design$tank)
@@ -197,7 +197,7 @@ dev.off()
 
 # formal analysis of variance in distance matricies: 
 set.seed(12935)
-ad=adonis2(t(vsd)~site*treat, data=conditions, method="manhattan", permutations=1e6)
+ad=adonis2(t(vsd)~site*treat, data=conditions, method="manhattan", by = "terms", parallel = getOption("mc.cores"), permutations = 1e6)
 ad
 write.csv(ad, file = "PERMANOVA_output.csv")
 
@@ -472,13 +472,13 @@ LC_CC.p %>%
            lpv.y, "lpv.LH_CC" = 	
            lpv) %>%
   filter(abs(lpv.LC_CC) >= 1 & abs(lpv.CH_CC) >= 1 & abs(lpv.LH_CC) >= 1) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
                      annot = V2) %>%
               dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
@@ -503,13 +503,13 @@ Star_Emerald.p %>%
            lpv.x.x, "lpv.MacN_Rainbow" = 	
            lpv.y.y) %>%
   filter(abs(lpv.Star_Emerald) >= 1 & abs(lpv.MacN_Emerald) >= 1 & abs(lpv.Star_Rainbow) >= 1 & abs(lpv.MacN_Rainbow) >= 1) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
                      annot = V2) %>%
               dplyr::select(-V1, -V2), by = c("gene" = "gene")) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
@@ -791,7 +791,7 @@ load("exports.RData")
 
 MacN_Emerald.p %>%
   filter(abs(lpv) >= 1) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
@@ -802,7 +802,7 @@ write.csv(cherrypicking_site, file = "cherrypicking_MacN_Emerald.csv")
 
 LH_CC.p %>%
   filter(abs(lpv) >= 1) %>%
-  left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+  left_join(read.table(file = "../../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
@@ -1033,9 +1033,6 @@ write.csv(Ofaveolata018959, file = "Ofaveolata018959_treat.csv")
 
 Ofaveolata019944 <- plotCounts(dds, gene="Ofaveolata019944", intgroup="treat", returnData=TRUE)
 write.csv(Ofaveolata019944, file = "Ofaveolata019944_treat.csv")
-
-Ofaveolata021096 <- plotCounts(dds, gene="Ofaveolata021096", intgroup="treat", returnData=TRUE)
-write.csv(Ofaveolata021096, file = "Ofaveolata021096_treat.csv")
 
 Ofaveolata021361 <- plotCounts(dds, gene="Ofaveolata021361", intgroup="treat", returnData=TRUE)
 write.csv(Ofaveolata021361, file = "Ofaveolata021361_treat.csv")
