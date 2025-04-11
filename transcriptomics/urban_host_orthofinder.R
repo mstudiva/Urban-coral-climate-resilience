@@ -1,0 +1,1853 @@
+#### PACKAGES ####
+
+library(tidyverse)
+library(VennDiagram)
+library(pheatmap)
+library(reshape2)
+library(RColorBrewer)
+
+
+#### ORTHOFINDER ####
+
+# Install orthofinder on your local machine using the tutorials (https://davidemms.github.io/menu/tutorials.html)
+
+# Copy your translated protein fasta files (_out_PRO.fas) that you want to compare into a directory called 'orthofinder'
+# If you have not already filtered by the longest contig per isogroup (by using fasta2SBH.pl during transcriptome annotation), follow step 7 of tutorial 2 above
+
+# Run the following command in Terminal: 'orthofinder -f orthofinder/'
+# Check the number of genes assigned to orthogroups (e.g., 'OrthoFinder assigned 39416 genes (89.6% of total) to 13781 orthogroups')
+# Ideally, it should be >80%
+
+
+#### ORTHOLOGS ####
+
+load("orthofinder_DEGs.RData") # if previously run
+orthologs <- read.table(file = "orthofinder/OrthoFinder/Results_Apr10/Orthologues/Orthologues_Ofaveolata_out_PRO/Ofaveolata_out_PRO__v__Ssiderea_out_PRO.tsv", sep = "\t", header = TRUE, quote="", fill=FALSE)
+
+
+#### DESEQ IMPORT TREATMENT ####
+
+ofav_LC_CC_lpv <- read.csv(file = "../DESeq2/ofav/host/LC_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_CH_CC_lpv <- read.csv(file = "../DESeq2/ofav/host/CH_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_LH_CC_lpv <- read.csv(file = "../DESeq2/ofav/host/LH_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_CH_LC_lpv <- read.csv(file = "../DESeq2/ofav/host/CH_LC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_LH_CH_lpv <- read.csv(file = "../DESeq2/ofav/host/LH_CH_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_LH_LC_lpv <- read.csv(file = "../DESeq2/ofav/host/LH_LC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ssid_LC_CC_lpv <- read.csv(file = "../DESeq2/ssid/host/LC_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_CH_CC_lpv <- read.csv(file = "../DESeq2/ssid/host/CH_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_LH_CC_lpv <- read.csv(file = "../DESeq2/ssid/host/LH_CC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_CH_LC_lpv <- read.csv(file = "../DESeq2/ssid/host/CH_LC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_LH_CH_lpv <- read.csv(file = "../DESeq2/ssid/host/LH_CH_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_LH_LC_lpv <- read.csv(file = "../DESeq2/ssid/host/LH_LC_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+
+#### DESEQ IMPORT SITE ####
+ofav_Rainbow_Emerald_lpv <- read.csv(file = "../DESeq2/ofav/host/Rainbow_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_Star_Emerald_lpv <- read.csv(file = "../DESeq2/ofav/host/Star_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_MacN_Emerald_lpv <- read.csv(file = "../DESeq2/ofav/host/MacN_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_Star_Rainbow_lpv <- read.csv(file = "../DESeq2/ofav/host/Star_Rainbow_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_MacN_Rainbow_lpv <- read.csv(file = "../DESeq2/ofav/host/MacN_Rainbow_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ofav_MacN_Star_lpv <- read.csv(file = "../DESeq2/ofav/host/MacN_Star_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ofav" = lpv)
+
+ssid_Rainbow_Emerald_lpv <- read.csv(file = "../DESeq2/ssid/host/Rainbow_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_Star_Emerald_lpv <- read.csv(file = "../DESeq2/ssid/host/Star_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_MacN_Emerald_lpv <- read.csv(file = "../DESeq2/ssid/host/MacN_Emerald_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_Star_Rainbow_lpv <- read.csv(file = "../DESeq2/ssid/host/Star_Rainbow_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_MacN_Rainbow_lpv <- read.csv(file = "../DESeq2/ssid/host/MacN_Rainbow_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+ssid_MacN_Star_lpv <- read.csv(file = "../DESeq2/ssid/host/MacN_Star_lpv.csv") %>%
+  select(gene, lpv) %>%
+  rename("lpv_ssid" = lpv)
+
+
+#### DEG MATCHING TREATMENT ####
+
+# This section of code does several things: 1) rename common orthologs, 2) join with -log10(pval), 3) filter by 0.1 pval cutoff (log10(0.1)=1), 4) adds ofav and ssid gene annotations, and 5) then pulls on corresponding KOG classes
+
+# LC vs CC for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_LC_CC_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_LC_CC_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="LC_CC", .before="Orthogroup") -> LC_CC
+LC_CC$Orthogroup <- make.unique(LC_CC$Orthogroup, sep = "_") 
+
+# CH vs CC for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_CH_CC_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_CH_CC_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="CH_CC", .before="Orthogroup") -> CH_CC
+CH_CC$Orthogroup <- make.unique(CH_CC$Orthogroup, sep = "_") 
+
+# LH vs CC for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_LH_CC_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_LH_CC_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="LH_CC", .before="Orthogroup") -> LH_CC
+LH_CC$Orthogroup <- make.unique(LH_CC$Orthogroup, sep = "_") 
+
+# CH vs LC for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_CH_LC_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_CH_LC_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="CH_LC", .before="Orthogroup") -> CH_LC
+CH_LC$Orthogroup <- make.unique(CH_LC$Orthogroup, sep = "_") 
+
+# LH vs CH for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_LH_CH_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_LH_CH_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="LH_CH", .before="Orthogroup") -> LH_CH
+LH_CH$Orthogroup <- make.unique(LH_CH$Orthogroup, sep = "_") 
+
+# LH vs LC for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_LH_LC_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_LH_LC_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="LH_LC", .before="Orthogroup") -> LH_LC
+LH_LC$Orthogroup <- make.unique(LH_LC$Orthogroup, sep = "_") 
+
+# joining all matching DEGs into a single dataframe
+orthofinder_treatment <- bind_rows(LC_CC,CH_CC,LH_CC,CH_LC,LH_CH,LH_LC)
+write.csv(orthofinder_treatment, file="orthofinder_treatment.csv")
+
+
+#### DEG MATCHING SITE ####
+
+# This section of code does several things: 1) rename common orthologs, 2) join with -log10(pval), 3) filter by 0.1 pval cutoff (log10(0.1)=1), 4) adds ofav and ssid gene annotations, and 5) then pulls on corresponding KOG classes
+
+# Rainbow vs Emerald for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_Rainbow_Emerald_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_Rainbow_Emerald_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="Rainbow_Emerald", .before="Orthogroup") -> Rainbow_Emerald
+Rainbow_Emerald$Orthogroup <- make.unique(Rainbow_Emerald$Orthogroup, sep = "_") 
+
+# Star vs Emerald for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_Star_Emerald_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_Star_Emerald_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="Star_Emerald", .before="Orthogroup") -> Star_Emerald
+Star_Emerald$Orthogroup <- make.unique(Star_Emerald$Orthogroup, sep = "_") 
+
+# MacN vs Emerald for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_MacN_Emerald_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_MacN_Emerald_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="MacN_Emerald", .before="Orthogroup") -> MacN_Emerald
+MacN_Emerald$Orthogroup <- make.unique(MacN_Emerald$Orthogroup, sep = "_") 
+
+# Star vs Rainbow for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_Star_Rainbow_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_Star_Rainbow_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="Star_Rainbow", .before="Orthogroup") -> Star_Rainbow
+Star_Rainbow$Orthogroup <- make.unique(Star_Rainbow$Orthogroup, sep = "_") 
+
+# MacN vs Rainbow for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_MacN_Rainbow_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_MacN_Rainbow_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="MacN_Rainbow", .before="Orthogroup") -> MacN_Rainbow
+MacN_Rainbow$Orthogroup <- make.unique(MacN_Rainbow$Orthogroup, sep = "_") 
+
+# MacN vs Star for both species
+orthologs %>%
+  rename("Protein_ofav" = 
+           Ofaveolata_out_PRO, "Protein_ssid" = 	
+           Ssiderea_out_PRO) %>%
+  separate_rows(., Protein_ofav, sep = ",") %>%
+  separate_rows(., Protein_ssid, sep = ",") %>%
+  unique() %>%
+  inner_join(ssid_MacN_Star_lpv, by = c("Protein_ssid" = "gene")) %>%
+  inner_join(ofav_MacN_Star_lpv, by = c("Protein_ofav" = "gene")) %>%
+  filter(abs(lpv_ssid) >= 1 & abs(lpv_ofav) >= 1) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2geneName.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     annot_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ofav/young/Ofaveolata_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ofav = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ofav" = "gene")) %>%
+  left_join(read.table(file = "../../Annotations/ssid/locatelli/Ssiderea_iso2kogClass.tab",
+                       sep = "\t",
+                       quote="", fill=FALSE) %>%
+              mutate(gene = V1,
+                     KOG_ssid = V2) %>%
+              dplyr::select(-V1, -V2), by = c("Protein_ssid" = "gene")) %>%
+  mutate(comparison="MacN_Star", .before="Orthogroup") -> MacN_Star
+MacN_Star$Orthogroup <- make.unique(MacN_Star$Orthogroup, sep = "_") 
+
+# joining all matching DEGs into a single dataframe
+orthofinder_site <- bind_rows(Rainbow_Emerald,Star_Emerald,MacN_Emerald,Star_Rainbow,MacN_Rainbow,MacN_Star)
+write.csv(orthofinder_site, file="orthofinder_site.csv")
+
+
+#### VENN DIAGRAMS TREATMENT ####
+
+# first creating a set of up/downregulated DEGs by species
+LC_CC %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+LC_CC %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+LC_CC %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+LC_CC %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_LC_CC.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+CH_CC %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+CH_CC %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+CH_CC %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+CH_CC %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_CH_CC.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+LH_CC %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+LH_CC %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+LH_CC %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+LH_CC %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_LH_CC.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+CH_LC %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+CH_LC %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+CH_LC %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+CH_LC %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_CH_LC.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+LH_CH %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+LH_CH %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+LH_CH %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+LH_CH %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_LH_CH.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+LH_LC %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+LH_LC %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+LH_LC %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+LH_LC %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_LH_LC.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+
+#### VENN DIAGRAMS SITE ####
+
+# first creating a set of up/downregulated DEGs by species
+Rainbow_Emerald %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+Rainbow_Emerald %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+Rainbow_Emerald %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+Rainbow_Emerald %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_Rainbow_Emerald.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+Star_Emerald %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+Star_Emerald %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+Star_Emerald %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+Star_Emerald %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_Star_Emerald.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+MacN_Emerald %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+MacN_Emerald %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+MacN_Emerald %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+MacN_Emerald %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_MacN_Emerald.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+Star_Rainbow %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+Star_Rainbow %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+Star_Rainbow %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+Star_Rainbow %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_Star_Rainbow.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+MacN_Star %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+MacN_Star %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+MacN_Star %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+MacN_Star %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_MacN_Star.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+# first creating a set of up/downregulated DEGs by species
+MacN_Rainbow %>%
+  filter(lpv_ssid >= 1) %>%
+  pull(Orthogroup) -> ssid_up
+
+MacN_Rainbow %>%
+  filter(lpv_ssid <= -1) %>%
+  pull(Orthogroup) -> ssid_down
+
+MacN_Rainbow %>%
+  filter(lpv_ofav >= 1) %>%
+  pull(Orthogroup) -> ofav_up
+
+MacN_Rainbow %>%
+  filter(lpv_ofav <= -1) %>%
+  pull(Orthogroup) -> ofav_down
+
+venn=venn.diagram(
+  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
+  alpha = 0.5,
+  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
+  cex = 3.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.default.pos = "text",
+  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
+  cat.cex = 3.5,
+  cat.fontfamily = "sans",
+  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+)
+pdf(file="Venn_MacN_Rainbow.pdf", height=10, width=12)
+grid.draw(venn)
+dev.off()
+
+
+#### HEATMAP DATA SUBSET ####
+
+# first creating a column of combined gene names from both species, then removing unannotated genes
+LC_CC %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  LC_CC_heatmap
+
+CH_CC %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  CH_CC_heatmap
+
+LH_CC %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  LH_CC_heatmap
+
+CH_LC %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  CH_LC_heatmap
+
+LH_CH %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  LH_CH_heatmap
+
+LH_LC %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  LH_LC_heatmap
+
+Rainbow_Emerald %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  Rainbow_Emerald_heatmap
+
+Star_Emerald %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  Star_Emerald_heatmap
+
+MacN_Emerald %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  MacN_Emerald_heatmap
+
+Star_Rainbow %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  Star_Rainbow_heatmap
+
+MacN_Rainbow %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  MacN_Rainbow_heatmap
+
+MacN_Star %>%
+  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
+  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
+  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
+  mutate(gene_name = na_if(gene_name,"")) %>%
+  filter(!is.na(gene_name)) ->  MacN_Star_heatmap
+
+
+#### HEATMAPS TREATMENT ####
+
+# only plotting comparisons with >15 shared, annotated DEGs
+# first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
+
+# LC_CC
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% LC_CC_heatmap$Protein_ofav, LC_CC_heatmap$Orthogroup, LC_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% LC_CC_heatmap$Protein_ssid, LC_CC_heatmap$Orthogroup, LC_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(LC_CC_heatmap$Orthogroup, LC_CC_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1 (all genes)
+pdf(file="heatmap_LC_CC_p0.1.pdf", height=6, width=30)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LC_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05 
+pdf(file="heatmap_LC_CC_p0.05.pdf", height=4, width=30)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LC_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# CH_CC
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% CH_CC_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% CH_CC_heatmap$Protein_ofav, CH_CC_heatmap$Orthogroup, CH_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_CC_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% CH_CC_heatmap$Protein_ssid, CH_CC_heatmap$Orthogroup, CH_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(CH_CC_heatmap$Orthogroup, CH_CC_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.05 
+pdf(file="heatmap_CH_CC_p0.05.pdf", height=30, width=80)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.001 
+pdf(file="heatmap_CH_CC_p0.001.pdf", height=13, width=40)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# LH_CC
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% LH_CC_heatmap$Protein_ofav, LH_CC_heatmap$Orthogroup, LH_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% LH_CC_heatmap$Protein_ssid, LH_CC_heatmap$Orthogroup, LH_CC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(LH_CC_heatmap$Orthogroup, LH_CC_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.05 
+pdf(file="heatmap_LH_CC_p0.05.pdf", height=40, width=80)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.001 
+pdf(file="heatmap_LH_CC_p0.001.pdf", height=15, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# CH_LC
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% CH_LC_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% CH_LC_heatmap$Protein_ofav, CH_LC_heatmap$Orthogroup, CH_LC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_LC_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% CH_LC_heatmap$Protein_ssid, CH_LC_heatmap$Orthogroup, CH_LC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(CH_LC_heatmap$Orthogroup, CH_LC_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.05 
+pdf(file="heatmap_CH_LC_p0.05.pdf", height=65, width=50)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(CH_LC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.001 
+pdf(file="heatmap_CH_LC_p0.001.pdf", height=25, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(CH_LC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# LH_LC
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% LH_LC_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% LH_LC_heatmap$Protein_ofav, LH_LC_heatmap$Orthogroup, LH_LC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_LC_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% LH_LC_heatmap$Protein_ssid, LH_LC_heatmap$Orthogroup, LH_LC_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(LH_LC_heatmap$Orthogroup, LH_LC_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.05
+pdf(file="heatmap_LH_LC_p0.05.pdf", height=65, width=50)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LH_LC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.001
+pdf(file="heatmap_LH_LC_p0.001.pdf", height=25, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LH_LC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Em erald$lpv_ofav)),
+           cutoff=-3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# LH_LC
+# Only 1 DEG, so skipping
+
+
+#### HEATMAPS SITE ####
+
+# only plotting comparisons with >15 shared, annotated DEGs
+# first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
+
+# Rainbow_Emerald
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% Rainbow_Emerald_heatmap$Protein_ofav, Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% Rainbow_Emerald_heatmap$Protein_ssid, Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_Rainbow_Emerald_p0.1.pdf", height=7, width=40)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Rainbow_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Rainbow_Emerald$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_Rainbow_Emerald_p0.05.pdf", height=4, width=40)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Rainbow_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Rainbow_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# Star_Emerald
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% Star_Emerald_heatmap$Protein_ofav, Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Emerald_heatmap$Protein_ssid, Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_Star_Emerald_p0.1.pdf", height=8, width=80)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Star_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Star_Emerald$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_Star_Emerald_p0.05.pdf", height=4, width=24)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Star_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Star_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# MacN_Emerald
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Emerald_heatmap$Protein_ofav, MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Emerald_heatmap$Protein_ssid, MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_MacN_Emerald_p0.1.pdf", height=30, width=50)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_MacN_Emerald_p0.05.pdf", height=20, width=50)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# Star_Rainbow
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% Star_Rainbow_heatmap$Protein_ofav, Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Rainbow_heatmap$Protein_ssid, Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_Star_Rainbow_p0.1.pdf", height=8, width=40)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Star_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Star_Rainbow$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_Star_Rainbow_p0.05.pdf", height=4, width=30)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(Star_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(Star_Rainbow$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# MacN_Rainbow
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Rainbow_heatmap$Protein_ofav, MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Rainbow_heatmap$Protein_ssid, MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_MacN_Rainbow_p0.1.pdf", height=20, width=50)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_MacN_Rainbow_p0.05.pdf", height=10, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# MacN_Star
+load("../DESeq2/ofav/host/vsd.RData")
+design_ofav <- design
+vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Star_heatmap$Protein_ofav)
+
+vsd_ofav %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ofav") %>%
+  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Star_heatmap$Protein_ofav, MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ofav") %>%
+  as.matrix() -> vsd_ofav
+
+load("../DESeq2/ssid/host/vsd.RData")
+design_ssid <- design
+vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Star_heatmap$Protein_ssid)
+
+vsd_ssid %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Protein_ssid") %>%
+  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Star_heatmap$Protein_ssid, MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$Orthogroup)) %>%
+  column_to_rownames(var = "Protein_ssid") %>%
+  as.matrix() -> vsd_ssid
+
+# combining both matrices and design metadata for plotting
+vsd_comb <- cbind(vsd_ofav,vsd_ssid)
+design_comb <- rbind(design_ofav,design_ssid)
+design_comb$id <- as.factor(gsub("-",".", design_comb$id))
+design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
+
+# Make sure the 'uniHeatmap.R' script is in your working directory
+source("uniHeatmap.R")
+
+# creating a lookup table of orthogroup to gene annotations
+gene_names <- as.data.frame(cbind(MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$gene_name))
+
+# heatmaps
+# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
+# p < 0.1
+pdf(file="heatmap_MacN_Star_p0.1.pdf", height=10, width=30)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Star$lpv_ofav)),
+           cutoff=-1, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.05
+pdf(file="heatmap_MacN_Star_p0.05.pdf", height=5, width=25)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Star$lpv_ofav)),
+           cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+
+#### SAVING DATAFRAMES ####
+
+
+# saving dataframes
+save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_CH_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, MacN_Star_heatmap, file = "orthofinder_DEGs.RData")
