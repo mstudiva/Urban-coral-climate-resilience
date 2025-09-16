@@ -300,30 +300,27 @@ ofav_heat_treat <- data.frame(time = 10,ratio = 1,lab = "treat: F1,594=21.0, p<0
 ofav_heat_site <- data.frame(time = 10,ratio = 1,lab = "site: F3,594=98.7, p<0.001*", pH = "low pH", temp="high temp")
 ofav_heat_int <- data.frame(time = 10,ratio = 1,lab = "int: F3,594=9.0, p<0.001*", pH = "low pH", temp="high temp")
 
-ofav <- ggboxplot(ipam_ofav,
-                  x = "time",
-                  y = "ratio",
-                  fill = "site",
-                  palette=fill.color, 
-                  width = 0.7,
-                  size = 0.75,
-                  title = "Ofav",
-                  legend = "bottom") + 
+
+# line plot
+ofav <- ggplot(ipam_ofav, aes(x = time, y = ratio, color = site, group = site)) +
+  stat_summary(fun = mean, geom = "line", size = 0.75) +
+  stat_summary(fun = mean, geom = "point", size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   facet_grid(temp ~ pH) +
-  geom_text(data = ofav_control_time,label = ofav_control_time$lab, aes(x=12.5, y=1)) +
-  geom_text(data = ofav_control_treat,label = ofav_control_treat$lab, aes(x=12.5, y=0.925)) +
-  geom_text(data = ofav_control_site,label = ofav_control_site$lab, aes(x=12.5, y=0.85)) +
-  geom_text(data = ofav_control_int,label = ofav_control_int$lab, aes(x=12.5, y=0.775)) +
-  geom_text(data = ofav_heat_time,label = ofav_heat_time$lab, aes(x=12.5, y=1)) +
-  geom_text(data = ofav_heat_treat,label = ofav_heat_treat$lab, aes(x=12.5, y=0.925)) +
-  geom_text(data = ofav_heat_site,label = ofav_heat_site$lab, aes(x=12.5, y=0.85)) +
-  geom_text(data = ofav_heat_int,label = ofav_heat_int$lab, aes(x=12.5, y=0.775)) +
-  xlab("Day") + 
-  ylab("Proportional Fv/Fm") 
+  scale_color_manual(values = fill.color) +
+  labs(title = "Ofav", x = "Day", y = "Proportional Fv/Fm", color = "Site") +
+  theme_pubr(legend = "bottom") +
+  geom_text(data = ofav_control_time, aes(x = 12.5, y = 1, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_control_treat, aes(x = 12.5, y = 0.925, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_control_site, aes(x = 12.5, y = 0.85, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_control_int, aes(x = 12.5, y = 0.775, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_time, aes(x = 12.5, y = 1, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_treat, aes(x = 12.5, y = 0.925, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_site, aes(x = 12.5, y = 0.85, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_int, aes(x = 12.5, y = 0.775, label = lab), inherit.aes = FALSE)
 ofav
 
 ggsave("urban ipam ofav.pdf", ofav, width=12, height=6,dpi = 300)
-
 
 # creating dummy variables for stats labels on plots
 ssid_control_time <- data.frame(time = 10,ratio = 1,lab = "time: F1,644=35.0, p<0.001*", pH = "low pH", temp="control temp")
@@ -333,24 +330,21 @@ ssid_heat_time <- data.frame(time = 10,ratio = 1,lab = "time: F1,697=6.7, p=0.01
 ssid_heat_treat <- data.frame(time = 10,ratio = 1,lab = "treat: F1,697=76.1, p<0.001*", pH = "low pH", temp="high temp")
 ssid_heat_site <- data.frame(time = 10,ratio = 1,lab = "site: F3,697=5.2, p=0.001*", pH = "low pH", temp="high temp")
 
-ssid <- ggboxplot(ipam_ssid,
-                  x = "time",
-                  y = "ratio",
-                  fill = "site",
-                  palette=fill.color, 
-                  width = 0.7,
-                  size = 0.75,
-                  title = "Ssid",
-                  legend = "bottom") + 
+# line plot
+ssid <- ggplot(ipam_ssid, aes(x = time, y = ratio, color = site, group = site)) +
+  stat_summary(fun = mean, geom = "line", size = 0.75) +
+  stat_summary(fun = mean, geom = "point", size = 2) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   facet_grid(temp ~ pH) +
-  geom_text(data = ssid_control_time,label = ssid_control_time$lab, aes(x=12.5, y=1)) +
-  geom_text(data = ssid_control_treat,label = ssid_control_treat$lab, aes(x=12.5, y=0.9)) +
-  geom_text(data = ssid_control_site,label = ssid_control_site$lab, aes(x=12.5, y=0.8)) +
-  geom_text(data = ssid_heat_time,label = ssid_heat_time$lab, aes(x=12.5, y=1)) +
-  geom_text(data = ssid_heat_treat,label = ssid_heat_treat$lab, aes(x=12.5, y=0.9)) +
-  geom_text(data = ssid_heat_site,label = ssid_heat_site$lab, aes(x=12.5, y=0.8)) +
-  xlab("Day") + 
-  ylab("Proportional Fv/Fm")
+  scale_color_manual(values = fill.color) +
+  labs(title = "Ssid", x = "Day", y = "Proportional Fv/Fm", color = "Site") +
+  theme_pubr(legend = "bottom") +
+  geom_text(data = ssid_control_time, aes(x = 12.5, y = 1, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ssid_control_treat, aes(x = 12.5, y = 0.9, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ssid_control_site, aes(x = 12.5, y = 0.8, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_time, aes(x = 12.5, y = 1, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_treat, aes(x = 12.5, y = 0.9, label = lab), inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_site, aes(x = 12.5, y = 0.8, label = lab), inherit.aes = FALSE)
 ssid
 
 ggsave("urban ipam ssid.pdf", ssid, width=12, height=6,dpi = 300)
