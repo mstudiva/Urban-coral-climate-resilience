@@ -25,7 +25,7 @@ temp_melt$hour <-lubridate::hour(temp_melt$Time) # creates column of simplified 
 
 #### temp plot ####
 
-fill.color<-c("#92c5de","#f4a582") # custom palette
+fill.color<-c("#4393c3","#b2182b") # custom palette
 
 temp_melt %>% # plot of temp means by hour
   filter(Thermal =="thermal") %>%
@@ -66,7 +66,7 @@ ph_melt$hour <-lubridate::hour(ph_melt$Time)
 
 #### ph plot ####
 
-fill.color2<-c("#92c5de","#0571b0")
+fill.color2<-c("#80cdc1","#01665e")
 
 ph_melt %>% 
   filter(OA =="OA") %>%
