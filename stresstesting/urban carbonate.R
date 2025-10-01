@@ -386,11 +386,13 @@ incubations_net_carb %>% # generating mean adjusted calcification per sample (av
   group_by(sampleID, site, species,treatment,genotype)  %>% 
   summarise(calcificationavg = mean(calcificationadj)) -> incubations_meanCalc
 
+write.csv(incubations_meanCalc, file = "urban carbonate incubations daynight calcification.csv")
+
 incubations_meanCalc %>% # generating summary statistics for average adjusted calcification
   group_by(site, species,treatment)  %>% 
   summarise(meanCalc = mean(calcificationavg), sdCalc = sd(calcificationavg), nCalc = n(), seCalc = sdCalc/sqrt(nCalc)) -> incubations_mean_netCalc
 
-write.csv(incubations_mean_netCalc, file = "urban carbonate incubations daynight calcification.csv")
+write.csv(incubations_mean_netCalc, file = "urban carbonate incubations daynight calcification means.csv")
 
 incubations_mean_subset <- subset(incubations_meanCalc, site!="control") # filtering out skeletal controls
 
