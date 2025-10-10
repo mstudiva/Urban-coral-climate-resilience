@@ -21,7 +21,10 @@ library(RColorBrewer)
 
 #### ORTHOLOGS ####
 
-load("orthofinder_DEGs.RData") # if previously run
+# if loading in previously run data
+load("orthofinder_DEGs.RData") 
+
+# if starting from scratch
 orthologs <- read.table(file = "orthofinder/OrthoFinder/Results_Apr10/Orthologues/Orthologues_Ofaveolata_out_PRO/Ofaveolata_out_PRO__v__Ssiderea_out_PRO.tsv", sep = "\t", header = TRUE, quote="", fill=FALSE)
 
 
@@ -1141,9 +1144,10 @@ MacN_Star %>%
 #### HEATMAPS TREATMENT ####
 
 # only plotting comparisons with >15 shared, annotated DEGs
-# first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
+# first loading variance stabilized arrays of gene counts, replacing species-specific gene IDs with orthogroup ID, then reordering by control vs low pH for plotting
 
 # LC_CC
+# O. faveolata
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
 vsd_ofav <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ofav)
@@ -1155,6 +1159,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
+# S. siderea
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ssid)
@@ -1166,6 +1177,12 @@ vsd_ssid %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
 
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
+
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
 design_comb <- rbind(design_ofav,design_ssid)
@@ -1176,7 +1193,8 @@ design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,s
 source("uniHeatmap.R")
 
 # creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LC_CC_heatmap$Orthogroup, LC_CC_heatmap$gene_name))
+gene_names <- as.data.frame(cbind(LC_CC_heatmap$Orthogroup, LC_CC_heatmap$gene_name, LC_CC_heatmap$lpv_ssid, LC_CC_heatmap$lpv_ofav))
+write.csv(gene_names, file = "genenames_LC_CC.csv")
 
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
@@ -1218,6 +1236,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+# rearranging sample order to control vs heat
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_CC_heatmap$Protein_ssid)
@@ -1229,6 +1254,12 @@ vsd_ssid %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
 
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
+
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
 design_comb <- rbind(design_ofav,design_ssid)
@@ -1239,7 +1270,8 @@ design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,s
 source("uniHeatmap.R")
 
 # creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(CH_CC_heatmap$Orthogroup, CH_CC_heatmap$gene_name))
+gene_names <- as.data.frame(cbind(CH_CC_heatmap$Orthogroup, CH_CC_heatmap$gene_name, CH_CC_heatmap$lpv_ssid, CH_CC_heatmap$lpv_ofav))
+write.csv(gene_names, file = "genenames_CH_CC.csv")
 
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
@@ -1269,6 +1301,19 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 )
 dev.off()
 
+# p < 1e-6
+pdf(file="heatmap_CH_CC_p1e-6.pdf", height=6, width=33)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-6, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
 # LH_CC
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
@@ -1281,6 +1326,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+# rearranging sample order to control vs heat
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_ssid)
@@ -1292,6 +1344,12 @@ vsd_ssid %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
 
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
+
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
 design_comb <- rbind(design_ofav,design_ssid)
@@ -1302,7 +1360,8 @@ design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,s
 source("uniHeatmap.R")
 
 # creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LH_CC_heatmap$Orthogroup, LH_CC_heatmap$gene_name))
+gene_names <- as.data.frame(cbind(LH_CC_heatmap$Orthogroup, LH_CC_heatmap$gene_name, LH_CC_heatmap$lpv_ssid, LH_CC_heatmap$lpv_ofav))
+write.csv(gene_names, file = "genenames_LH_CC.csv")
 
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
@@ -1332,6 +1391,19 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 )
 dev.off()
 
+# p < 1e-6
+pdf(file="heatmap_LH_CC_p1e-6.pdf", height=7, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-6, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
 # CH_LC
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
@@ -1344,6 +1416,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+# rearranging sample order to control vs heat
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_LC_heatmap$Protein_ssid)
@@ -1355,6 +1434,12 @@ vsd_ssid %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
 
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
+
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
 design_comb <- rbind(design_ofav,design_ssid)
@@ -1365,7 +1450,8 @@ design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,s
 source("uniHeatmap.R")
 
 # creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(CH_LC_heatmap$Orthogroup, CH_LC_heatmap$gene_name))
+gene_names <- as.data.frame(cbind(CH_LC_heatmap$Orthogroup, CH_LC_heatmap$gene_name, CH_LC_heatmap$lpv_ssid, CH_LC_heatmap$lpv_ofav))
+write.csv(gene_names, file = "genenames_CH_LC.csv")
 
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
@@ -1407,6 +1493,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+# rearranging sample order to control vs heat
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_LC_heatmap$Protein_ssid)
@@ -1418,6 +1511,12 @@ vsd_ssid %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
 
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
+
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
 design_comb <- rbind(design_ofav,design_ssid)
@@ -1428,7 +1527,8 @@ design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,s
 source("uniHeatmap.R")
 
 # creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LH_LC_heatmap$Orthogroup, LH_LC_heatmap$gene_name))
+gene_names <- as.data.frame(cbind(LH_LC_heatmap$Orthogroup, LH_LC_heatmap$gene_name, LH_LC_heatmap$lpv_ssid, LH_LC_heatmap$lpv_ofav))
+write.csv(gene_names, file = "genenames_LH_LC.csv")
 
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
@@ -1465,8 +1565,9 @@ dev.off()
 #### HEATMAPS SITE ####
 
 # only plotting comparisons with >15 shared, annotated DEGs
-# first loading variance stabilized arrays of gene counts, then replacing species-specific gene IDs with orthogroup ID
+# first loading variance stabilized arrays of gene counts, replacing species-specific gene IDs with orthogroup ID, then reordering by site
 
+# O. faveolata
 # Rainbow_Emerald
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
@@ -1479,6 +1580,14 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
+# S. siderea
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_ssid)
@@ -1489,6 +1598,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% Rainbow_Emerald_heatmap$Protein_ssid, Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1542,6 +1658,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_ssid)
@@ -1552,6 +1675,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Emerald_heatmap$Protein_ssid, Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1605,6 +1735,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_ssid)
@@ -1615,6 +1752,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Emerald_heatmap$Protein_ssid, MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1656,6 +1800,19 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 )
 dev.off()
 
+# p < 0.01
+pdf(file="heatmap_MacN_Emerald_p0.01.pdf", height=10, width=45)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
+           cutoff=-2, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
 # Star_Rainbow
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
@@ -1668,6 +1825,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_ssid)
@@ -1678,6 +1842,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Rainbow_heatmap$Protein_ssid, Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1731,6 +1902,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_ssid)
@@ -1741,6 +1919,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Rainbow_heatmap$Protein_ssid, MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1782,6 +1967,19 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
 )
 dev.off()
 
+# p < 0.01
+pdf(file="heatmap_MacN_Rainbow_p0.01.pdf", height=4, width=35)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
+           cutoff=-2, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
 # MacN_Star
 load("../DESeq2/ofav/host/vsd.RData")
 design_ofav <- design
@@ -1794,6 +1992,13 @@ vsd_ofav %>%
   column_to_rownames(var = "Protein_ofav") %>%
   as.matrix() -> vsd_ofav
 
+design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
+sample_order <- design_ofav$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
+vsd_ofav <- vsd_ofav[, col_order]
+
 load("../DESeq2/ssid/host/vsd.RData")
 design_ssid <- design
 vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Star_heatmap$Protein_ssid)
@@ -1804,6 +2009,13 @@ vsd_ssid %>%
   mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Star_heatmap$Protein_ssid, MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$Orthogroup)) %>%
   column_to_rownames(var = "Protein_ssid") %>%
   as.matrix() -> vsd_ssid
+
+design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
+design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
+sample_order <- design_ssid$id
+col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
+vsd_ssid <- vsd_ssid[, col_order]
 
 # combining both matrices and design metadata for plotting
 vsd_comb <- cbind(vsd_ofav,vsd_ssid)
@@ -1838,6 +2050,19 @@ uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
            metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
            # metric2=-(abs(MacN_Star$lpv_ofav)),
            cutoff=-1.3, 
+           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
+           # sort=order(design_comb$full_id), 
+           cex=0.8,
+           pdf=F,
+)
+dev.off()
+
+# p < 0.01
+pdf(file="heatmap_MacN_Star_p0.01.pdf", height=3, width=25)
+uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
+           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
+           # metric2=-(abs(MacN_Star$lpv_ofav)),
+           cutoff=-2, 
            sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
            # sort=order(design_comb$full_id), 
            cex=0.8,
