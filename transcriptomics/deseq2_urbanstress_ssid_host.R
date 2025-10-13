@@ -407,7 +407,7 @@ head(CH_LC.p)
 write.csv(CH_LC.p,file="CH_LC_lpv.csv",row.names=F,quote=F)
 save(CH_LC.p,file="CH_LC_lpv.RData")
 
-source=CH_LC[!is.na(CH_LC$pvalue),]
+source=LH_LC[!is.na(LH_LC$pvalue),]
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
