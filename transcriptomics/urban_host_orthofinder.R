@@ -5,6 +5,11 @@ library(VennDiagram)
 library(pheatmap)
 library(reshape2)
 library(RColorBrewer)
+library(ggplot2)
+library(ggpubr)
+library(patchwork)   
+library(cowplot)
+library(stringr)
 
 
 #### ORTHOFINDER ####
@@ -603,1476 +608,735 @@ orthofinder_site <- bind_rows(Rainbow_Emerald,Star_Emerald,MacN_Emerald,Star_Rai
 write.csv(orthofinder_site, file="orthofinder_site.csv")
 
 
-#### VENN DIAGRAMS TREATMENT ####
+#### CORRELATION PLOTS TREATMENT ####
 
-# first creating a set of up/downregulated DEGs by species
-LC_CC %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
+# --- Unicode-safe symbols (avoid warnings on some devices) ---
+use_unicode <- l10n_info()[["UTF-8"]] && capabilities("cairo")
+LTE   <- if (use_unicode) "\u2264" else "<="
+MINUS <- if (use_unicode) "\u2212" else "-"
 
-LC_CC %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
+# --- Parameters (tweak as needed) ---
+sig_cut1_global <- 1.3  # ~ p = 0.05
+sig_cut2_global <- 2.0  # ~ p = 0.01
+sig_cut3_global <- 6.0  # ~ p = 1e-6  (raise to 4.0 for ~1e-4)
+inf_cap          <- 20   # cap |−log10 p| when p == 0 (Inf)
+REL_NAME <- "Relationship"
+SIG_NAME <- "p Value"
 
-LC_CC %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
+# --- Relationship colors (colorblind-friendly) ---
+REL_LEVELS <- c("Direct", "Inverse")
+rel_cols   <- setNames(c("#009E73", "#D55E00"), REL_LEVELS)  # green, orange
 
-LC_CC %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
+# --- Helpers ---
+sgn <- function(z) ifelse(z > 0, 1, ifelse(z < 0, -1, 0))
 
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+clean_lpv_df <- function(df, cap = inf_cap) {
+  d <- df
+  d$lpv_ofav <- as.numeric(d$lpv_ofav)
+  d$lpv_ssid <- as.numeric(d$lpv_ssid)
+  # Cap infinities from p=0
+  d$lpv_ofav[ is.infinite(d$lpv_ofav) & d$lpv_ofav > 0 ] <- cap
+  d$lpv_ofav[ is.infinite(d$lpv_ofav) & d$lpv_ofav < 0 ] <- -cap
+  d$lpv_ssid[ is.infinite(d$lpv_ssid) & d$lpv_ssid > 0 ] <- cap
+  d$lpv_ssid[ is.infinite(d$lpv_ssid) & d$lpv_ssid < 0 ] <- -cap
+  # Drop non-finite rows
+  d <- d[is.finite(d$lpv_ofav) & is.finite(d$lpv_ssid), , drop = FALSE]
+  d
+}
+
+safe_stats <- function(x, y) {
+  ok <- is.finite(x) & is.finite(y)
+  x <- x[ok]; y <- y[ok]
+  n <- sum(complete.cases(x, y))
+  if (n >= 3 && sd(x) > 0 && sd(y) > 0) {
+    ct <- suppressWarnings(cor.test(x, y, method = "pearson"))
+    r  <- unname(ct$estimate); p <- ct$p.value
+    list(r = r, p = p, n = n)
+  } else list(r = NA_real_, p = NA_real_, n = n)
+}
+
+# --- p-value label helpers (legend shows ACTUAL p ranges) ---
+fmt_p <- function(p) {
+  if (is.na(p)) return("NA")
+  if (p < 1e-4) sprintf("%.0e", p) else sprintf("%.3f", p)
+}
+
+pvalue_labels <- function(c1, c2, c3) {
+  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
+  p1 <- 10^(-c1); p2 <- 10^(-c2); p3 <- 10^(-c3)
+  c(
+    sprintf("p > %s",           fmt_p(p1)),
+    sprintf("%s < p %s %s",     fmt_p(p2), LTE, fmt_p(p1)),
+    sprintf("%s < p %s %s",     fmt_p(p3), LTE, fmt_p(p2)),
+    sprintf("p %s %s",          LTE, fmt_p(p3))
+  )
+}
+
+# Significance tiers (alpha, light -> dark)
+SIG_LEVELS <- pvalue_labels(sig_cut1_global, sig_cut2_global, sig_cut3_global)
+sig_alpha  <- setNames(c(0.15, 0.35, 0.65, 1.00), SIG_LEVELS)
+
+sig_category4 <- function(lpv_ofav, lpv_ssid, c1, c2, c3, levels_vec = SIG_LEVELS) {
+  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
+  lv <- pmin(abs(lpv_ofav), abs(lpv_ssid))  # min significance across species in |−log10 p|
+  out <- cut(
+    lv,
+    breaks = c(-Inf, c1, c2, c3, Inf),
+    labels = pvalue_labels(c1, c2, c3),
+    include.lowest = TRUE, right = TRUE
+  )
+  factor(out, levels = levels_vec)
+}
+
+compute_global_limits <- function(comparisons, min_span = 0.6, pad_frac = 0.05) {
+  vals <- unlist(lapply(comparisons, function(df) {
+    d <- clean_lpv_df(df)
+    c(d$lpv_ofav, d$lpv_ssid)
+  }))
+  max_abs <- max(abs(vals), na.rm = TRUE)
+  if (!is.finite(max_abs)) max_abs <- min_span / 2
+  lim <- max(max_abs * (1 + pad_frac), min_span / 2)
+  c(-lim, lim)
+}
+
+# --- One-panel constructor (returns a ggplot object) ---
+make_panel <- function(df, title,
+                       c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
+  dat <- clean_lpv_df(df)
+  
+  # Relationship class
+  same <- (dat$lpv_ofav >= 0 & dat$lpv_ssid >= 0) | (dat$lpv_ofav <= 0 & dat$lpv_ssid <= 0)
+  dat$rel_class <- factor(ifelse(same, "Direct", "Inverse"), levels = REL_LEVELS)
+  
+  # Significance tiers
+  dat$sig_cat <- sig_category4(dat$lpv_ofav, dat$lpv_ssid, c1, c2, c3, levels_vec = SIG_LEVELS)
+  
+  # --- Data-driven square limits (not forced around 0), with min span ---
+  x_min <- min(dat$lpv_ofav, na.rm = TRUE); x_max <- max(dat$lpv_ofav, na.rm = TRUE)
+  y_min <- min(dat$lpv_ssid, na.rm = TRUE); y_max <- max(dat$lpv_ssid, na.rm = TRUE)
+  x_center <- (x_min + x_max) / 2
+  y_center <- (y_min + y_max) / 2
+  
+  # base spans (handle single-point cases)
+  x_span0 <- max(x_max - x_min, 1e-8)
+  y_span0 <- max(y_max - y_min, 1e-8)
+  
+  # jitter + padding
+  jitter_w <- x_span0 * 0.003
+  jitter_h <- y_span0 * 0.003
+  pad_x <- max(0.04 * x_span0, 6 * jitter_w)
+  pad_y <- max(0.04 * y_span0, 6 * jitter_h)
+  
+  # padded spans
+  x_span <- x_span0 + 2 * pad_x
+  y_span <- y_span0 + 2 * pad_y
+  
+  # enforce a minimum square span so tiny panels don’t collapse
+  min_span <- 0.6
+  final_span <- max(x_span, y_span, min_span)
+  
+  x_limits <- c(x_center - final_span / 2, x_center + final_span / 2)
+  y_limits <- c(y_center - final_span / 2, y_center + final_span / 2)
+  
+  # Stats label
+  st <- safe_stats(dat$lpv_ofav, dat$lpv_ssid)
+  fmt_num <- function(x) if (is.na(x)) "NA" else if (abs(x) < 1e-3) format(x, digits = 2, scientific = TRUE) else sprintf("%.3f", x)
+  lab_text <- if (is.na(st$r)) sprintf("n = %d", st$n) else sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
+  
+  # Legend labels for line types
+  ref_levels <- c("Direct 1:1", "Inverse 1:1")
+  
+  ggplot(dat, aes(x = lpv_ofav, y = lpv_ssid)) +
+    # Draw origin axes only if 0 is inside the panel
+    (if (y_limits[1] < 0 && y_limits[2] > 0) geom_hline(yintercept = 0, color = "grey85") else NULL) +
+    (if (x_limits[1] < 0 && x_limits[2] > 0) geom_vline(xintercept = 0, color = "grey85") else NULL) +
+    
+    # Points (linetype=NA so legend circles stay clean)
+    geom_point(
+      aes(color = rel_class, fill = rel_class, alpha = sig_cat),
+      shape = 21, size = 1.6, stroke = 0.45, linetype = NA,
+      position = position_jitter(width = final_span * 0.003, height = final_span * 0.003)
+    ) +
+    
+    # Alpha legend trainer (invisible)
+    geom_point(
+      data = data.frame(sig_cat = factor(SIG_LEVELS, levels = SIG_LEVELS)),
+      mapping = aes(x = 0, y = 0, alpha = sig_cat),
+      inherit.aes = FALSE, shape = 21, size = 0, stroke = 0, fill = NA, color = NA,
+      show.legend = TRUE
+    ) +
+    
+    # Reference lines (drawn; legend fed by trainer below)
+    geom_abline(intercept = 0, slope =  1, color = "firebrick", linewidth = 1,
+                linetype = "dashed", alpha = 0.5, show.legend = FALSE) +
+    geom_abline(intercept = 0, slope = -1, color = "firebrick", linewidth = 1,
+                linetype = "dotted", alpha = 0.5, show.legend = FALSE) +
+    
+    # Line-type legend trainer (zero-length segments create legend keys)
+    geom_segment(
+      data = data.frame(x = 0, y = 0, xend = 0, yend = 0,
+                        ref = factor(ref_levels, levels = ref_levels)),
+      mapping = aes(x = x, y = y, xend = xend, yend = yend, linetype = ref),
+      inherit.aes = FALSE, color = "firebrick", linewidth = 1, alpha = 0.5,
+      show.legend = TRUE
+    ) +
+    
+    # Stats label (top-left inside the frame)
+    annotate("text", x = x_limits[1], y = y_limits[2], label = lab_text,
+             hjust = 0, vjust = 1.1, size = 4.2) +
+    
+    # Clip inside panel with square limits
+    coord_fixed(xlim = x_limits, ylim = y_limits, expand = FALSE, clip = "on") +
+    
+    # Legends & scales
+    scale_color_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, guide = "none") +
+    scale_fill_manual(values = rel_cols,  breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, name = REL_NAME) +
+    scale_alpha_manual(values = sig_alpha, breaks = SIG_LEVELS, limits = SIG_LEVELS, drop = FALSE, name = SIG_NAME) +
+    scale_linetype_manual(
+      name   = "Reference",
+      values = c("Direct 1:1" = "dashed", "Inverse 1:1" = "dotted")
+    ) +
+    guides(
+      fill  = guide_legend(order = 1, override.aes = list(shape = 21, size = 1.6, stroke = 0.45, linetype = 0)),
+      alpha = guide_legend(order = 2, override.aes = list(shape = 21, fill = "grey50", color = "grey30", size = 1.6, stroke = 0.45, linetype = 0)),
+      linetype = guide_legend(order = 3, override.aes = list(color = "firebrick", linewidth = 1, alpha = 0.5))
+    ) +
+    labs(
+      x = paste0("O. faveolata (signed ", MINUS, "log10 p)"),
+      y = paste0("S. siderea (signed ", MINUS, "log10 p)"),
+      title = str_wrap(title, width = 32)
+    ) +
+    theme_classic(base_size = 13) +
+    theme(
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      axis.title = element_text(face = "bold"),
+      axis.text  = element_text(color = "black"),
+      legend.position = "right",
+      axis.line = element_blank(),
+      plot.margin = margin(8, 20, 8, 8)
+    )
+}
+
+# --- Build all six panels ---
+# Expect these data frames to exist in your environment:
+# LC_CC, CH_CC, LH_CC, CH_LC, LH_LC, LH_CH
+comparisons <- list(
+  "OA" = LC_CC,
+  "Bleaching" = CH_CC,
+  "OA + Bleaching" = LH_CC,
+  "Bleaching vs OA" = CH_LC,
+  "OA + Bleaching vs OA" = LH_LC,
+  "OA + Bleaching vs Bleaching" = LH_CH
 )
-pdf(file="Venn_LC_CC.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-# first creating a set of up/downregulated DEGs by species
-CH_CC %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-CH_CC %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-CH_CC %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-CH_CC %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+panels <- mapply(
+  FUN = function(title, df) make_panel(df, title, sig_cut1_global, sig_cut2_global, sig_cut3_global),
+  title = names(comparisons),
+  df    = comparisons,
+  SIMPLIFY = FALSE
 )
-pdf(file="Venn_CH_CC.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-# first creating a set of up/downregulated DEGs by species
-LH_CC %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
+# --- Hide redundant axis TITLES only (keep ticks & numbers) for 2x3 layout ---
+for (i in seq_along(panels)) {
+  row <- ceiling(i / 3)
+  col <- i - (row - 1) * 3
+  if (col != 1) panels[[i]] <- panels[[i]] + theme(axis.title.y = element_blank())
+  if (row != 2) panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
+}
 
-LH_CC %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
+# --- Single legend workflow ---
+one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
+legend_plot <- cowplot::ggdraw(one_legend)
 
-LH_CC %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
+panels_noleg <- lapply(panels, function(p) p + theme(legend.position = "none"))
 
-LH_CC %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
+grid  <- wrap_plots(panels_noleg, ncol = 3)
+panel <- grid | legend_plot
+panel <- panel + plot_layout(widths = c(1, 0.30))
 
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+# --- Show & Save ---
+print(panel)
+# Use Cairo devices if you want true Unicode glyphs in output:
+# ggsave("orthogroup_correlation_treatment.pdf", panel, width = 14, height = 9, device = cairo_pdf)
+ggsave("orthogroup correlation treatment.pdf", panel, width = 14, height = 9)
+
+
+#### CORRELATION DATAFRAME TREATMENT ####
+
+# knobs
+delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
+ratio_cut_dd <- 100   # p-ratio >= 100
+high_cut_dd  <- sig_cut2_global   # "strong" tier (default: 2.0 ~ p <= 0.01)
+low_cut_dd   <- sig_cut1_global   # "weak"   tier (default: 1.3 ~ p <= 0.05)
+min_sig      <- 0.0               # require at least this |−log10 p| in either species (0 = none)
+
+classify_for_filters <- function(df) {
+  d <- clean_lpv_df(df)
+  same <- (d$lpv_ofav >= 0 & d$lpv_ssid >= 0) | (d$lpv_ofav <= 0 & d$lpv_ssid <= 0)
+  d$rel_class      <- ifelse(same, "Direct", "Inverse")
+  d$abs_ofav       <- abs(d$lpv_ofav)
+  d$abs_ssid       <- abs(d$lpv_ssid)
+  d$delta_log10p   <- abs(d$abs_ofav - d$abs_ssid)            # |Δ −log10 p|
+  d$p_ofav         <- 10^(-d$abs_ofav)
+  d$p_ssid         <- 10^(-d$abs_ssid)
+  d$p_ratio        <- pmax(d$p_ofav, d$p_ssid) / pmin(d$p_ofav, d$p_ssid)  # >= 1
+  d
+}
+
+# helper: align columns across data frames then rbind (base R only)
+rbind_align <- function(...) {
+  dfs <- list(...)
+  cols <- unique(unlist(lapply(dfs, names)))
+  dfs2 <- lapply(dfs, function(x) {
+    if (is.null(x) || !nrow(x)) {
+      # create empty with all cols
+      y <- as.data.frame(setNames(replicate(length(cols), logical(0), simplify = FALSE), cols))
+      return(y)
+    }
+    miss <- setdiff(cols, names(x))
+    for (m in miss) x[[m]] <- NA
+    x[, cols, drop = FALSE]
+  })
+  do.call(rbind, dfs2)
+}
+
+filter_one <- function(df, treatment_name) {
+  d <- classify_for_filters(df)
+  meets_min <- (pmax(d$abs_ofav, d$abs_ssid) >= min_sig)
+  
+  # 1) ALL inverse
+  inverse <- d[d$rel_class == "Inverse" & meets_min, , drop = FALSE]
+  if (nrow(inverse)) {
+    inverse$filter_type           <- "Inverse"
+    inverse$relationship_category <- "Inverse"
+    inverse$discord_direction     <- NA_character_
+    inverse$delta_cut_used        <- NA_real_
+    inverse$high_cut_used         <- NA_real_
+    inverse$low_cut_used          <- NA_real_
+    inverse$ratio_cut_used        <- NA_real_
+    inverse$treatment             <- treatment_name
+  }
+  
+  # 2) STRICT direct-discordant
+  strong_ofav_weak_ssid <- d$abs_ofav >= high_cut_dd & d$abs_ssid <= low_cut_dd
+  strong_ssid_weak_ofav <- d$abs_ssid >= high_cut_dd & d$abs_ofav <= low_cut_dd
+  cross_tier <- strong_ofav_weak_ssid | strong_ssid_weak_ofav
+  
+  dd_idx <- d$rel_class == "Direct" &
+    d$delta_log10p >= delta_cut_dd &
+    d$p_ratio      >= ratio_cut_dd &
+    cross_tier &
+    meets_min
+  
+  direct_discordant <- d[dd_idx, , drop = FALSE]
+  if (nrow(direct_discordant)) {
+    direct_discordant$filter_type           <- "DirectDiscordant"
+    direct_discordant$relationship_category <- "Direct (discordant significance)"
+    # compute direction row-wise inside the subset
+    so <- direct_discordant$abs_ofav >= high_cut_dd & direct_discordant$abs_ssid <= low_cut_dd
+    direct_discordant$discord_direction <- ifelse(so, "Ofav >> Ssid", "Ssid >> Ofav")
+    direct_discordant$delta_cut_used    <- delta_cut_dd
+    direct_discordant$high_cut_used     <- high_cut_dd
+    direct_discordant$low_cut_used      <- low_cut_dd
+    direct_discordant$ratio_cut_used    <- ratio_cut_dd
+    direct_discordant$treatment         <- treatment_name
+  }
+  
+  # align columns before binding
+  rbind_align(inverse, direct_discordant)
+}
+
+# build ONE master dataframe
+treatment_filtered_genes <- do.call(
+  rbind,
+  mapply(
+    FUN = function(nm, df) filter_one(df, nm),
+    nm  = names(comparisons),
+    df  = comparisons,
+    SIMPLIFY = FALSE
+  )
 )
-pdf(file="Venn_LH_CC.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-# first creating a set of up/downregulated DEGs by species
-CH_LC %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
+# sanity checks
+if (exists("treatment_filtered_genes") && nrow(treatment_filtered_genes) > 0) {
+  cat("Rows total:", nrow(treatment_filtered_genes), "\n")
+  print(table(treatment_filtered_genes$relationship_category, useNA = "ifany"))
+  print(table(treatment_filtered_genes$treatment,   useNA = "ifany"))
+} else {
+  warning("treatment_filtered_genes is empty with current strict thresholds.")
+}
 
-CH_LC %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
+# total counts
+dplyr::count(treatment_filtered_genes, treatment, relationship_category)
 
-CH_LC %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
+write.csv(treatment_filtered_genes, file = "orthogroup correlation discordant treatment.csv")
 
-CH_LC %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
 
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+#### CORRELATION PLOTS SITE ####
+
+# --- Unicode-safe symbols (avoid warnings on some devices) ---
+use_unicode <- l10n_info()[["UTF-8"]] && capabilities("cairo")
+LTE   <- if (use_unicode) "\u2264" else "<="
+MINUS <- if (use_unicode) "\u2212" else "-"
+
+# --- Parameters (tweak as needed) ---
+sig_cut1_global <- 1.3  # ~ p = 0.05
+sig_cut2_global <- 2.0  # ~ p = 0.01
+sig_cut3_global <- 6.0  # ~ p = 1e-6  (raise to 4.0 for ~1e-4)
+inf_cap          <- 20   # cap |−log10 p| when p == 0 (Inf)
+REL_NAME <- "Relationship"
+SIG_NAME <- "p Value"
+
+# --- Relationship colors (colorblind-friendly) ---
+REL_LEVELS <- c("Direct", "Inverse")
+rel_cols   <- setNames(c("#009E73", "#D55E00"), REL_LEVELS)  # green, orange
+
+# --- Helpers ---
+sgn <- function(z) ifelse(z > 0, 1, ifelse(z < 0, -1, 0))
+
+clean_lpv_df <- function(df, cap = inf_cap) {
+  d <- df
+  d$lpv_ofav <- as.numeric(d$lpv_ofav)
+  d$lpv_ssid <- as.numeric(d$lpv_ssid)
+  # Cap infinities from p=0
+  d$lpv_ofav[ is.infinite(d$lpv_ofav) & d$lpv_ofav > 0 ] <- cap
+  d$lpv_ofav[ is.infinite(d$lpv_ofav) & d$lpv_ofav < 0 ] <- -cap
+  d$lpv_ssid[ is.infinite(d$lpv_ssid) & d$lpv_ssid > 0 ] <- cap
+  d$lpv_ssid[ is.infinite(d$lpv_ssid) & d$lpv_ssid < 0 ] <- -cap
+  # Drop non-finite rows
+  d <- d[is.finite(d$lpv_ofav) & is.finite(d$lpv_ssid), , drop = FALSE]
+  d
+}
+
+safe_stats <- function(x, y) {
+  ok <- is.finite(x) & is.finite(y)
+  x <- x[ok]; y <- y[ok]
+  n <- sum(complete.cases(x, y))
+  if (n >= 3 && sd(x) > 0 && sd(y) > 0) {
+    ct <- suppressWarnings(cor.test(x, y, method = "pearson"))
+    r  <- unname(ct$estimate); p <- ct$p.value
+    list(r = r, p = p, n = n)
+  } else list(r = NA_real_, p = NA_real_, n = n)
+}
+
+# --- p-value label helpers (legend shows ACTUAL p ranges) ---
+fmt_p <- function(p) {
+  if (is.na(p)) return("NA")
+  if (p < 1e-4) sprintf("%.0e", p) else sprintf("%.3f", p)
+}
+
+pvalue_labels <- function(c1, c2, c3) {
+  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
+  p1 <- 10^(-c1); p2 <- 10^(-c2); p3 <- 10^(-c3)
+  c(
+    sprintf("p > %s",           fmt_p(p1)),
+    sprintf("%s < p %s %s",     fmt_p(p2), LTE, fmt_p(p1)),
+    sprintf("%s < p %s %s",     fmt_p(p3), LTE, fmt_p(p2)),
+    sprintf("p %s %s",          LTE, fmt_p(p3))
+  )
+}
+
+# Significance tiers (alpha, light -> dark)
+SIG_LEVELS <- pvalue_labels(sig_cut1_global, sig_cut2_global, sig_cut3_global)
+sig_alpha  <- setNames(c(0.15, 0.35, 0.65, 1.00), SIG_LEVELS)
+
+sig_category4 <- function(lpv_ofav, lpv_ssid, c1, c2, c3, levels_vec = SIG_LEVELS) {
+  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
+  lv <- pmin(abs(lpv_ofav), abs(lpv_ssid))  # min significance across species in |−log10 p|
+  out <- cut(
+    lv,
+    breaks = c(-Inf, c1, c2, c3, Inf),
+    labels = pvalue_labels(c1, c2, c3),
+    include.lowest = TRUE, right = TRUE
+  )
+  factor(out, levels = levels_vec)
+}
+
+compute_global_limits <- function(comparisons, min_span = 0.6, pad_frac = 0.05) {
+  vals <- unlist(lapply(comparisons, function(df) {
+    d <- clean_lpv_df(df)
+    c(d$lpv_ofav, d$lpv_ssid)
+  }))
+  max_abs <- max(abs(vals), na.rm = TRUE)
+  if (!is.finite(max_abs)) max_abs <- min_span / 2
+  lim <- max(max_abs * (1 + pad_frac), min_span / 2)
+  c(-lim, lim)
+}
+
+# --- One-panel constructor (returns a ggplot object) ---
+make_panel <- function(df, title,
+                       c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
+  dat <- clean_lpv_df(df)
+  
+  # Relationship class
+  same <- (dat$lpv_ofav >= 0 & dat$lpv_ssid >= 0) | (dat$lpv_ofav <= 0 & dat$lpv_ssid <= 0)
+  dat$rel_class <- factor(ifelse(same, "Direct", "Inverse"), levels = REL_LEVELS)
+  
+  # Significance tiers
+  dat$sig_cat <- sig_category4(dat$lpv_ofav, dat$lpv_ssid, c1, c2, c3, levels_vec = SIG_LEVELS)
+  
+  # --- Data-driven square limits (not forced around 0), with min span ---
+  x_min <- min(dat$lpv_ofav, na.rm = TRUE); x_max <- max(dat$lpv_ofav, na.rm = TRUE)
+  y_min <- min(dat$lpv_ssid, na.rm = TRUE); y_max <- max(dat$lpv_ssid, na.rm = TRUE)
+  x_center <- (x_min + x_max) / 2
+  y_center <- (y_min + y_max) / 2
+  
+  # base spans (handle single-point cases)
+  x_span0 <- max(x_max - x_min, 1e-8)
+  y_span0 <- max(y_max - y_min, 1e-8)
+  
+  # jitter + padding
+  jitter_w <- x_span0 * 0.003
+  jitter_h <- y_span0 * 0.003
+  pad_x <- max(0.04 * x_span0, 6 * jitter_w)
+  pad_y <- max(0.04 * y_span0, 6 * jitter_h)
+  
+  # padded spans
+  x_span <- x_span0 + 2 * pad_x
+  y_span <- y_span0 + 2 * pad_y
+  
+  # enforce a minimum square span so tiny panels don’t collapse
+  min_span <- 0.6
+  final_span <- max(x_span, y_span, min_span)
+  
+  x_limits <- c(x_center - final_span / 2, x_center + final_span / 2)
+  y_limits <- c(y_center - final_span / 2, y_center + final_span / 2)
+  
+  # Stats label
+  st <- safe_stats(dat$lpv_ofav, dat$lpv_ssid)
+  fmt_num <- function(x) if (is.na(x)) "NA" else if (abs(x) < 1e-3) format(x, digits = 2, scientific = TRUE) else sprintf("%.3f", x)
+  lab_text <- if (is.na(st$r)) sprintf("n = %d", st$n) else sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
+  
+  # Legend labels for line types
+  ref_levels <- c("Direct 1:1", "Inverse 1:1")
+  
+  ggplot(dat, aes(x = lpv_ofav, y = lpv_ssid)) +
+    # Draw origin axes only if 0 is inside the panel
+    (if (y_limits[1] < 0 && y_limits[2] > 0) geom_hline(yintercept = 0, color = "grey85") else NULL) +
+    (if (x_limits[1] < 0 && x_limits[2] > 0) geom_vline(xintercept = 0, color = "grey85") else NULL) +
+    
+    # Points (linetype=NA so legend circles stay clean)
+    geom_point(
+      aes(color = rel_class, fill = rel_class, alpha = sig_cat),
+      shape = 21, size = 1.6, stroke = 0.45, linetype = NA,
+      position = position_jitter(width = final_span * 0.003, height = final_span * 0.003)
+    ) +
+    
+    # Alpha legend trainer (invisible)
+    geom_point(
+      data = data.frame(sig_cat = factor(SIG_LEVELS, levels = SIG_LEVELS)),
+      mapping = aes(x = 0, y = 0, alpha = sig_cat),
+      inherit.aes = FALSE, shape = 21, size = 0, stroke = 0, fill = NA, color = NA,
+      show.legend = TRUE
+    ) +
+    
+    # Reference lines (drawn; legend fed by trainer below)
+    geom_abline(intercept = 0, slope =  1, color = "firebrick", linewidth = 1,
+                linetype = "dashed", alpha = 0.5, show.legend = FALSE) +
+    geom_abline(intercept = 0, slope = -1, color = "firebrick", linewidth = 1,
+                linetype = "dotted", alpha = 0.5, show.legend = FALSE) +
+    
+    # Line-type legend trainer (zero-length segments create legend keys)
+    geom_segment(
+      data = data.frame(x = 0, y = 0, xend = 0, yend = 0,
+                        ref = factor(ref_levels, levels = ref_levels)),
+      mapping = aes(x = x, y = y, xend = xend, yend = yend, linetype = ref),
+      inherit.aes = FALSE, color = "firebrick", linewidth = 1, alpha = 0.5,
+      show.legend = TRUE
+    ) +
+    
+    # Stats label (top-left inside the frame)
+    annotate("text", x = x_limits[1], y = y_limits[2], label = lab_text,
+             hjust = 0, vjust = 1.1, size = 4.2) +
+    
+    # Clip inside panel with square limits
+    coord_fixed(xlim = x_limits, ylim = y_limits, expand = FALSE, clip = "on") +
+    
+    # Legends & scales
+    scale_color_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, guide = "none") +
+    scale_fill_manual(values = rel_cols,  breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, name = REL_NAME) +
+    scale_alpha_manual(values = sig_alpha, breaks = SIG_LEVELS, limits = SIG_LEVELS, drop = FALSE, name = SIG_NAME) +
+    scale_linetype_manual(
+      name   = "Reference",
+      values = c("Direct 1:1" = "dashed", "Inverse 1:1" = "dotted")
+    ) +
+    guides(
+      fill  = guide_legend(order = 1, override.aes = list(shape = 21, size = 1.6, stroke = 0.45, linetype = 0)),
+      alpha = guide_legend(order = 2, override.aes = list(shape = 21, fill = "grey50", color = "grey30", size = 1.6, stroke = 0.45, linetype = 0)),
+      linetype = guide_legend(order = 3, override.aes = list(color = "firebrick", linewidth = 1, alpha = 0.5))
+    ) +
+    labs(
+      x = paste0("O. faveolata (signed ", MINUS, "log10 p)"),
+      y = paste0("S. siderea (signed ", MINUS, "log10 p)"),
+      title = str_wrap(title, width = 32)
+    ) +
+    theme_classic(base_size = 13) +
+    theme(
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      axis.title = element_text(face = "bold"),
+      axis.text  = element_text(color = "black"),
+      legend.position = "right",
+      axis.line = element_blank(),
+      plot.margin = margin(8, 20, 8, 8)
+    )
+}
+
+# --- Build all six panels ---
+# Expect these data frames to exist in your environment:
+# Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star
+comparisons <- list(
+  "Rainbow Reef vs Emerald Reef" = Rainbow_Emerald,
+  "Star Island vs Emerald Reef" = Star_Emerald,
+  "MacArthur North vs Emerald Reef" = MacN_Emerald,
+  "Star Island vs Rainbow Reef" = Star_Rainbow,
+  "MacArthur North vs Rainbow Reef" = MacN_Rainbow,
+  "MacArthur North vs Star Island" = MacN_Star
 )
-pdf(file="Venn_CH_LC.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-# first creating a set of up/downregulated DEGs by species
-LH_CH %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-LH_CH %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-LH_CH %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-LH_CH %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+panels <- mapply(
+  FUN = function(title, df) make_panel(df, title, sig_cut1_global, sig_cut2_global, sig_cut3_global),
+  title = names(comparisons),
+  df    = comparisons,
+  SIMPLIFY = FALSE
 )
-pdf(file="Venn_LH_CH.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-# first creating a set of up/downregulated DEGs by species
-LH_LC %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
+# --- Hide redundant axis TITLES only (keep ticks & numbers) for 2x3 layout ---
+for (i in seq_along(panels)) {
+  row <- ceiling(i / 3)
+  col <- i - (row - 1) * 3
+  if (col != 1) panels[[i]] <- panels[[i]] + theme(axis.title.y = element_blank())
+  if (row != 2) panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
+}
 
-LH_LC %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
+# --- Single legend workflow ---
+one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
+legend_plot <- cowplot::ggdraw(one_legend)
 
-LH_LC %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
+panels_noleg <- lapply(panels, function(p) p + theme(legend.position = "none"))
 
-LH_LC %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
+grid  <- wrap_plots(panels_noleg, ncol = 3)
+panel <- grid | legend_plot
+panel <- panel + plot_layout(widths = c(1, 0.30))
 
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
+# --- Show & Save ---
+print(panel)
+# Use Cairo devices if you want true Unicode glyphs in output:
+# ggsave("orthogroup_correlation_site.pdf", panel, width = 14, height = 9, device = cairo_pdf)
+ggsave("orthogroup correlation site.pdf", panel, width = 14, height = 9)
+
+
+#### CORRELATION DATAFRAME SITE ####
+
+# knobs
+delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
+ratio_cut_dd <- 100   # p-ratio >= 100
+high_cut_dd  <- sig_cut2_global   # "strong" tier (default: 2.0 ~ p <= 0.01)
+low_cut_dd   <- sig_cut1_global   # "weak"   tier (default: 1.3 ~ p <= 0.05)
+min_sig      <- 0.0               # require at least this |−log10 p| in either species (0 = none)
+
+classify_for_filters <- function(df) {
+  d <- clean_lpv_df(df)
+  same <- (d$lpv_ofav >= 0 & d$lpv_ssid >= 0) | (d$lpv_ofav <= 0 & d$lpv_ssid <= 0)
+  d$rel_class      <- ifelse(same, "Direct", "Inverse")
+  d$abs_ofav       <- abs(d$lpv_ofav)
+  d$abs_ssid       <- abs(d$lpv_ssid)
+  d$delta_log10p   <- abs(d$abs_ofav - d$abs_ssid)            # |Δ −log10 p|
+  d$p_ofav         <- 10^(-d$abs_ofav)
+  d$p_ssid         <- 10^(-d$abs_ssid)
+  d$p_ratio        <- pmax(d$p_ofav, d$p_ssid) / pmin(d$p_ofav, d$p_ssid)  # >= 1
+  d
+}
+
+# helper: align columns across data frames then rbind (base R only)
+rbind_align <- function(...) {
+  dfs <- list(...)
+  cols <- unique(unlist(lapply(dfs, names)))
+  dfs2 <- lapply(dfs, function(x) {
+    if (is.null(x) || !nrow(x)) {
+      # create empty with all cols
+      y <- as.data.frame(setNames(replicate(length(cols), logical(0), simplify = FALSE), cols))
+      return(y)
+    }
+    miss <- setdiff(cols, names(x))
+    for (m in miss) x[[m]] <- NA
+    x[, cols, drop = FALSE]
+  })
+  do.call(rbind, dfs2)
+}
+
+filter_one <- function(df, site_name) {
+  d <- classify_for_filters(df)
+  meets_min <- (pmax(d$abs_ofav, d$abs_ssid) >= min_sig)
+  
+  # 1) ALL inverse
+  inverse <- d[d$rel_class == "Inverse" & meets_min, , drop = FALSE]
+  if (nrow(inverse)) {
+    inverse$filter_type           <- "Inverse"
+    inverse$relationship_category <- "Inverse"
+    inverse$discord_direction     <- NA_character_
+    inverse$delta_cut_used        <- NA_real_
+    inverse$high_cut_used         <- NA_real_
+    inverse$low_cut_used          <- NA_real_
+    inverse$ratio_cut_used        <- NA_real_
+    inverse$site             <- site_name
+  }
+  
+  # 2) STRICT direct-discordant
+  strong_ofav_weak_ssid <- d$abs_ofav >= high_cut_dd & d$abs_ssid <= low_cut_dd
+  strong_ssid_weak_ofav <- d$abs_ssid >= high_cut_dd & d$abs_ofav <= low_cut_dd
+  cross_tier <- strong_ofav_weak_ssid | strong_ssid_weak_ofav
+  
+  dd_idx <- d$rel_class == "Direct" &
+    d$delta_log10p >= delta_cut_dd &
+    d$p_ratio      >= ratio_cut_dd &
+    cross_tier &
+    meets_min
+  
+  direct_discordant <- d[dd_idx, , drop = FALSE]
+  if (nrow(direct_discordant)) {
+    direct_discordant$filter_type           <- "DirectDiscordant"
+    direct_discordant$relationship_category <- "Direct (discordant significance)"
+    # compute direction row-wise inside the subset
+    so <- direct_discordant$abs_ofav >= high_cut_dd & direct_discordant$abs_ssid <= low_cut_dd
+    direct_discordant$discord_direction <- ifelse(so, "Ofav >> Ssid", "Ssid >> Ofav")
+    direct_discordant$delta_cut_used    <- delta_cut_dd
+    direct_discordant$high_cut_used     <- high_cut_dd
+    direct_discordant$low_cut_used      <- low_cut_dd
+    direct_discordant$ratio_cut_used    <- ratio_cut_dd
+    direct_discordant$site         <- site_name
+  }
+  
+  # align columns before binding
+  rbind_align(inverse, direct_discordant)
+}
+
+# build ONE master dataframe
+site_filtered_genes <- do.call(
+  rbind,
+  mapply(
+    FUN = function(nm, df) filter_one(df, nm),
+    nm  = names(comparisons),
+    df  = comparisons,
+    SIMPLIFY = FALSE
+  )
 )
-pdf(file="Venn_LH_LC.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
 
-
-#### VENN DIAGRAMS SITE ####
-
-# first creating a set of up/downregulated DEGs by species
-Rainbow_Emerald %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-Rainbow_Emerald %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-Rainbow_Emerald %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-Rainbow_Emerald %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_Rainbow_Emerald.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-# first creating a set of up/downregulated DEGs by species
-Star_Emerald %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-Star_Emerald %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-Star_Emerald %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-Star_Emerald %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_Star_Emerald.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-# first creating a set of up/downregulated DEGs by species
-MacN_Emerald %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-MacN_Emerald %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-MacN_Emerald %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-MacN_Emerald %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_MacN_Emerald.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-# first creating a set of up/downregulated DEGs by species
-Star_Rainbow %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-Star_Rainbow %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-Star_Rainbow %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-Star_Rainbow %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_Star_Rainbow.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-# first creating a set of up/downregulated DEGs by species
-MacN_Star %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-MacN_Star %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-MacN_Star %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-MacN_Star %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_MacN_Star.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-# first creating a set of up/downregulated DEGs by species
-MacN_Rainbow %>%
-  filter(lpv_ssid >= 1) %>%
-  pull(Orthogroup) -> ssid_up
-
-MacN_Rainbow %>%
-  filter(lpv_ssid <= -1) %>%
-  pull(Orthogroup) -> ssid_down
-
-MacN_Rainbow %>%
-  filter(lpv_ofav >= 1) %>%
-  pull(Orthogroup) -> ofav_up
-
-MacN_Rainbow %>%
-  filter(lpv_ofav <= -1) %>%
-  pull(Orthogroup) -> ofav_down
-
-venn=venn.diagram(
-  x = list("Ssid up"=ssid_up, "Ssid down"=ssid_down,"Ofav up"=ofav_up, "Ofav down"=ofav_down),
-  filename=NULL,
-  col = "transparent",
-  fill = c("#ca0020", "#0571b0", "#f4a582", "#92c5de"),
-  alpha = 0.5,
-  label.col = c("red3","white","cornflowerblue","black","white","white","white", "black","darkred","grey25","white","white","grey25","darkblue","white"),
-  cex = 3.5,
-  fontfamily = "sans",
-  fontface = "bold",
-  cat.default.pos = "text",
-  cat.col =c("darkred", "darkblue", "red3", "cornflowerblue"),
-  cat.cex = 3.5,
-  cat.fontfamily = "sans",
-  cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
-)
-pdf(file="Venn_MacN_Rainbow.pdf", height=10, width=12)
-grid.draw(venn)
-dev.off()
-
-
-#### HEATMAP DATA SUBSET ####
-
-# first creating a column of combined gene names from both species, then removing unannotated genes
-LC_CC %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  LC_CC_heatmap
-
-CH_CC %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  CH_CC_heatmap
-
-LH_CC %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  LH_CC_heatmap
-
-CH_LC %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  CH_LC_heatmap
-
-LH_CH %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  LH_CH_heatmap
-
-LH_LC %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  LH_LC_heatmap
-
-Rainbow_Emerald %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  Rainbow_Emerald_heatmap
-
-Star_Emerald %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  Star_Emerald_heatmap
-
-MacN_Emerald %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  MacN_Emerald_heatmap
-
-Star_Rainbow %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  Star_Rainbow_heatmap
-
-MacN_Rainbow %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  MacN_Rainbow_heatmap
-
-MacN_Star %>%
-  unite("gene_name", annot_ssid:annot_ofav, sep = " / ", remove = FALSE) %>%
-  mutate(gene_name = str_replace(gene_name, "NA / NA","")) %>%
-  mutate(gene_name = str_replace(gene_name, "- / -","")) %>%
-  mutate(gene_name = na_if(gene_name,"")) %>%
-  filter(!is.na(gene_name)) ->  MacN_Star_heatmap
-
-
-#### HEATMAPS TREATMENT ####
-
-# only plotting comparisons with >15 shared, annotated DEGs
-# first loading variance stabilized arrays of gene counts, replacing species-specific gene IDs with orthogroup ID, then reordering by control vs low pH for plotting
-
-# LC_CC
-# O. faveolata
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% LC_CC_heatmap$Protein_ofav, LC_CC_heatmap$Orthogroup, LC_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-# S. siderea
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% LC_CC_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% LC_CC_heatmap$Protein_ssid, LC_CC_heatmap$Orthogroup, LC_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LC_CC_heatmap$Orthogroup, LC_CC_heatmap$gene_name, LC_CC_heatmap$lpv_ssid, LC_CC_heatmap$lpv_ofav))
-write.csv(gene_names, file = "genenames_LC_CC.csv")
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1 (all genes)
-pdf(file="heatmap_LC_CC_p0.1.pdf", height=6, width=30)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LC_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05 
-pdf(file="heatmap_LC_CC_p0.05.pdf", height=4, width=30)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LC_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# CH_CC
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% CH_CC_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% CH_CC_heatmap$Protein_ofav, CH_CC_heatmap$Orthogroup, CH_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-# rearranging sample order to control vs heat
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_CC_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% CH_CC_heatmap$Protein_ssid, CH_CC_heatmap$Orthogroup, CH_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(CH_CC_heatmap$Orthogroup, CH_CC_heatmap$gene_name, CH_CC_heatmap$lpv_ssid, CH_CC_heatmap$lpv_ofav))
-write.csv(gene_names, file = "genenames_CH_CC.csv")
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.05 
-pdf(file="heatmap_CH_CC_p0.05.pdf", height=30, width=80)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.001 
-pdf(file="heatmap_CH_CC_p0.001.pdf", height=13, width=40)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 1e-6
-pdf(file="heatmap_CH_CC_p1e-6.pdf", height=6, width=33)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(CH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-6, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# LH_CC
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% LH_CC_heatmap$Protein_ofav, LH_CC_heatmap$Orthogroup, LH_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-# rearranging sample order to control vs heat
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_CC_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% LH_CC_heatmap$Protein_ssid, LH_CC_heatmap$Orthogroup, LH_CC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LH_CC_heatmap$Orthogroup, LH_CC_heatmap$gene_name, LH_CC_heatmap$lpv_ssid, LH_CC_heatmap$lpv_ofav))
-write.csv(gene_names, file = "genenames_LH_CC.csv")
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.05 
-pdf(file="heatmap_LH_CC_p0.05.pdf", height=40, width=80)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.001 
-pdf(file="heatmap_LH_CC_p0.001.pdf", height=15, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 1e-6
-pdf(file="heatmap_LH_CC_p1e-6.pdf", height=7, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LH_CC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-6, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# CH_LC
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% CH_LC_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% CH_LC_heatmap$Protein_ofav, CH_LC_heatmap$Orthogroup, CH_LC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-# rearranging sample order to control vs heat
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% CH_LC_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% CH_LC_heatmap$Protein_ssid, CH_LC_heatmap$Orthogroup, CH_LC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(CH_LC_heatmap$Orthogroup, CH_LC_heatmap$gene_name, CH_LC_heatmap$lpv_ssid, CH_LC_heatmap$lpv_ofav))
-write.csv(gene_names, file = "genenames_CH_LC.csv")
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.05 
-pdf(file="heatmap_CH_LC_p0.05.pdf", height=65, width=50)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(CH_LC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.001 
-pdf(file="heatmap_CH_LC_p0.001.pdf", height=25, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(CH_LC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# LH_LC
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% LH_LC_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% LH_LC_heatmap$Protein_ofav, LH_LC_heatmap$Orthogroup, LH_LC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-# rearranging sample order to control vs heat
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% LH_LC_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% LH_LC_heatmap$Protein_ssid, LH_LC_heatmap$Orthogroup, LH_LC_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(LH_LC_heatmap$Orthogroup, LH_LC_heatmap$gene_name, LH_LC_heatmap$lpv_ssid, LH_LC_heatmap$lpv_ofav))
-write.csv(gene_names, file = "genenames_LH_LC.csv")
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.05
-pdf(file="heatmap_LH_LC_p0.05.pdf", height=65, width=50)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LH_LC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.001
-pdf(file="heatmap_LH_LC_p0.001.pdf", height=25, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(LH_LC_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Em erald$lpv_ofav)),
-           cutoff=-3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# LH_LC
-# Only 1 DEG, so skipping
-
-
-#### HEATMAPS SITE ####
-
-# only plotting comparisons with >15 shared, annotated DEGs
-# first loading variance stabilized arrays of gene counts, replacing species-specific gene IDs with orthogroup ID, then reordering by site
-
-# O. faveolata
-# Rainbow_Emerald
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% Rainbow_Emerald_heatmap$Protein_ofav, Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-# S. siderea
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% Rainbow_Emerald_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% Rainbow_Emerald_heatmap$Protein_ssid, Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(Rainbow_Emerald_heatmap$Orthogroup, Rainbow_Emerald_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_Rainbow_Emerald_p0.1.pdf", height=7, width=40)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Rainbow_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Rainbow_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_Rainbow_Emerald_p0.05.pdf", height=4, width=40)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Rainbow_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Rainbow_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# Star_Emerald
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% Star_Emerald_heatmap$Protein_ofav, Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Emerald_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Emerald_heatmap$Protein_ssid, Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(Star_Emerald_heatmap$Orthogroup, Star_Emerald_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_Star_Emerald_p0.1.pdf", height=8, width=80)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Star_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Star_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_Star_Emerald_p0.05.pdf", height=4, width=24)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Star_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Star_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# MacN_Emerald
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Emerald_heatmap$Protein_ofav, MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Emerald_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Emerald_heatmap$Protein_ssid, MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(MacN_Emerald_heatmap$Orthogroup, MacN_Emerald_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_MacN_Emerald_p0.1.pdf", height=30, width=50)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_MacN_Emerald_p0.05.pdf", height=20, width=50)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.01
-pdf(file="heatmap_MacN_Emerald_p0.01.pdf", height=10, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Emerald_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-2, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# Star_Rainbow
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% Star_Rainbow_heatmap$Protein_ofav, Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% Star_Rainbow_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% Star_Rainbow_heatmap$Protein_ssid, Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(Star_Rainbow_heatmap$Orthogroup, Star_Rainbow_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_Star_Rainbow_p0.1.pdf", height=8, width=40)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Star_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Star_Rainbow$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_Star_Rainbow_p0.05.pdf", height=4, width=30)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(Star_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(Star_Rainbow$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# MacN_Rainbow
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Rainbow_heatmap$Protein_ofav, MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Rainbow_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Rainbow_heatmap$Protein_ssid, MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(MacN_Rainbow_heatmap$Orthogroup, MacN_Rainbow_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_MacN_Rainbow_p0.1.pdf", height=20, width=50)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_MacN_Rainbow_p0.05.pdf", height=10, width=45)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.01
-pdf(file="heatmap_MacN_Rainbow_p0.01.pdf", height=4, width=35)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Rainbow_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Rainbow$lpv_ofav)),
-           cutoff=-2, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# MacN_Star
-load("../DESeq2/ofav/host/vsd.RData")
-design_ofav <- design
-vsd_ofav <- subset(vsd, rownames(vsd) %in% MacN_Star_heatmap$Protein_ofav)
-
-vsd_ofav %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ofav") %>%
-  mutate(Protein_ofav = if_else(Protein_ofav %in% MacN_Star_heatmap$Protein_ofav, MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ofav") %>%
-  as.matrix() -> vsd_ofav
-
-design_ofav$site <- factor(design_ofav$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ofav$treat <- factor(design_ofav$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ofav <- design_ofav[order(design_ofav$site, design_ofav$treat), ]
-sample_order <- design_ofav$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ofav), value = TRUE))
-vsd_ofav <- vsd_ofav[, col_order]
-
-load("../DESeq2/ssid/host/vsd.RData")
-design_ssid <- design
-vsd_ssid <- subset(vsd, rownames(vsd) %in% MacN_Star_heatmap$Protein_ssid)
-
-vsd_ssid %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Protein_ssid") %>%
-  mutate(Protein_ssid = if_else(Protein_ssid %in% MacN_Star_heatmap$Protein_ssid, MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$Orthogroup)) %>%
-  column_to_rownames(var = "Protein_ssid") %>%
-  as.matrix() -> vsd_ssid
-
-design_ssid$site <- factor(design_ssid$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
-design_ssid$treat <- factor(design_ssid$treat, levels = c("CC", "LC", "CH", "LH"))
-design_ssid <- design_ssid[order(design_ssid$site, design_ssid$treat), ]
-sample_order <- design_ssid$id
-col_order <- sapply(sample_order, function(x) grep(x, colnames(vsd_ssid), value = TRUE))
-vsd_ssid <- vsd_ssid[, col_order]
-
-# combining both matrices and design metadata for plotting
-vsd_comb <- cbind(vsd_ofav,vsd_ssid)
-design_comb <- rbind(design_ofav,design_ssid)
-design_comb$id <- as.factor(gsub("-",".", design_comb$id))
-design_comb$full_id <- paste(design_comb$id,design_comb$site,design_comb$treat,sep=".")
-
-# Make sure the 'uniHeatmap.R' script is in your working directory
-source("uniHeatmap.R")
-
-# creating a lookup table of orthogroup to gene annotations
-gene_names <- as.data.frame(cbind(MacN_Star_heatmap$Orthogroup, MacN_Star_heatmap$gene_name))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="heatmap_MacN_Star_p0.1.pdf", height=10, width=30)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Star$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.05
-pdf(file="heatmap_MacN_Star_p0.05.pdf", height=5, width=25)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Star$lpv_ofav)),
-           cutoff=-1.3, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.01
-pdf(file="heatmap_MacN_Star_p0.01.pdf", height=3, width=25)
-uniHeatmap(vsd=vsd_comb,gene.names=gene_names,
-           metric=-(abs(MacN_Star_heatmap$lpv_ssid)), # metric of gene significance
-           # metric2=-(abs(MacN_Star$lpv_ofav)),
-           cutoff=-2, 
-           sort=c(1:ncol(vsd_comb)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
+# sanity checks
+if (exists("site_filtered_genes") && nrow(site_filtered_genes) > 0) {
+  cat("Rows total:", nrow(site_filtered_genes), "\n")
+  print(table(site_filtered_genes$relationship_category, useNA = "ifany"))
+  print(table(site_filtered_genes$site,   useNA = "ifany"))
+} else {
+  warning("site_filtered_genes is empty with current strict thresholds.")
+}
+
+# total counts
+dplyr::count(site_filtered_genes, site, relationship_category)
+
+write.csv(site_filtered_genes, file = "orthogroup correlation discordant site.csv")
 
 
 #### SAVING DATAFRAMES ####
-
 
 # saving dataframes
 save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_CH_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, MacN_Star_heatmap, file = "orthofinder_DEGs.RData")
