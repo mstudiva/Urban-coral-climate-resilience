@@ -702,7 +702,9 @@ compute_global_limits <- function(comparisons, min_span = 0.6, pad_frac = 0.05) 
 # --- One-panel constructor (returns a ggplot object) ---
 make_panel <- function(df, title,
                        c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
-  dat <- clean_lpv_df(df)
+  dat <- clean_lpv_df(df)   # Apply lpv threshold of 1 to plotted points (max across species)   dat <- subset(dat, pmax(abs(lpv_ofav), abs(lpv_ssid)) >= 1.0)
+  # Apply lpv threshold of 1 to plotted points (max across species)
+  dat <- subset(dat, pmax(abs(lpv_ofav), abs(lpv_ssid)) >= 1.0)
   
   # Relationship class
   same <- (dat$lpv_ofav >= 0 & dat$lpv_ssid >= 0) | (dat$lpv_ofav <= 0 & dat$lpv_ssid <= 0)
@@ -868,7 +870,7 @@ delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
 ratio_cut_dd <- 100   # p-ratio >= 100
 high_cut_dd  <- sig_cut2_global   # "strong" tier (default: 2.0 ~ p <= 0.01)
 low_cut_dd   <- sig_cut1_global   # "weak"   tier (default: 1.3 ~ p <= 0.05)
-min_sig      <- 0.0               # require at least this |−log10 p| in either species (0 = none)
+min_sig      <- 1               # require at least this |−log10 p| in either species (0 = none)
 
 classify_for_filters <- function(df) {
   d <- clean_lpv_df(df)
@@ -1066,7 +1068,7 @@ compute_global_limits <- function(comparisons, min_span = 0.6, pad_frac = 0.05) 
 # --- One-panel constructor (returns a ggplot object) ---
 make_panel <- function(df, title,
                        c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
-  dat <- clean_lpv_df(df)
+  dat <- clean_lpv_df(df)   # Apply lpv threshold of 1 to plotted points (max across species)   dat <- subset(dat, pmax(abs(lpv_ofav), abs(lpv_ssid)) >= 1.0)
   
   # Relationship class
   same <- (dat$lpv_ofav >= 0 & dat$lpv_ssid >= 0) | (dat$lpv_ofav <= 0 & dat$lpv_ssid <= 0)
@@ -1185,12 +1187,12 @@ make_panel <- function(df, title,
 # Expect these data frames to exist in your environment:
 # Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star
 comparisons <- list(
-  "Rainbow Reef vs Emerald Reef" = Rainbow_Emerald,
-  "Star Island vs Emerald Reef" = Star_Emerald,
   "MacArthur North vs Emerald Reef" = MacN_Emerald,
-  "Star Island vs Rainbow Reef" = Star_Rainbow,
   "MacArthur North vs Rainbow Reef" = MacN_Rainbow,
-  "MacArthur North vs Star Island" = MacN_Star
+  "MacArthur North vs Star Island" = MacN_Star,
+  "Star Island vs Emerald Reef" = Star_Emerald,
+  "Star Island vs Rainbow Reef" = Star_Rainbow,
+  "Rainbow Reef vs Emerald Reef" = Rainbow_Emerald
 )
 
 panels <- mapply(
@@ -1232,7 +1234,7 @@ delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
 ratio_cut_dd <- 100   # p-ratio >= 100
 high_cut_dd  <- sig_cut2_global   # "strong" tier (default: 2.0 ~ p <= 0.01)
 low_cut_dd   <- sig_cut1_global   # "weak"   tier (default: 1.3 ~ p <= 0.05)
-min_sig      <- 0.0               # require at least this |−log10 p| in either species (0 = none)
+min_sig      <- 1               # require at least this |−log10 p| in either species (0 = none)
 
 classify_for_filters <- function(df) {
   d <- clean_lpv_df(df)
@@ -1339,4 +1341,4 @@ write.csv(site_filtered_genes, file = "orthogroup correlation discordant site.cs
 #### SAVING DATAFRAMES ####
 
 # saving dataframes
-save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, LC_CC_heatmap, CH_CC_heatmap, LH_CC_heatmap, CH_LC_heatmap, LH_CH_heatmap, LH_LC_heatmap, Rainbow_Emerald_heatmap, Star_Emerald_heatmap, MacN_Emerald_heatmap, Star_Rainbow_heatmap, MacN_Rainbow_heatmap, MacN_Star_heatmap, file = "orthofinder_DEGs.RData")
+save(orthologs, LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, file = "orthofinder_DEGs.RData")

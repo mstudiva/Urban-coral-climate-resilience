@@ -506,6 +506,7 @@ library(tidyverse)
 library(reshape2)
 library(RColorBrewer)
 library(ggplot2)
+library(patchwork)
 load("exports.RData")
 
 # This section of code does several things: 1) join -log10(pval) across treatment comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
@@ -582,6 +583,10 @@ CH_CC.p %>%
                      KOG = V2) %>%
               dplyr::select(-V1, -V2), by = c("gene" = "gene")) -> bleaching_oableaching
 
+# joining all matching DEGs into a single dataframe
+commongenes_pairwise_treatment <- bind_rows(bleaching_oa,oableaching_oa,bleaching_oableaching)
+write.csv(commongenes_pairwise_treatment, file="commongenes_pairwise_treatment.csv")
+
 # Site
 # This section of code does several things: 1) join -log10(pval) across site comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
 
@@ -610,8 +615,8 @@ write.csv(commongenes_site, file="commongenes_site.csv")
 
 # pairwise site comparisons
 Star_Emerald.p %>%
-  dplyr::inner_join(Star_Rainbow.p, by = "gene", suffix =c(".Star_Emerald", ".Star_Rainbow")) %>%
-  filter(abs(lpv.Star_Emerald) >= 1 & abs(lpv.Star_Rainbow) >= 1) %>%
+  dplyr::inner_join(MacN_Emerald.p, by = "gene", suffix =c(".Star_Emerald", ".MacN_Emerald")) %>%
+  filter(abs(lpv.Star_Emerald) >= 1 & abs(lpv.MacN_Emerald) >= 1) %>%
   left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
@@ -623,11 +628,11 @@ Star_Emerald.p %>%
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
                      KOG = V2) %>%
-              dplyr::select(-V1, -V2), by = c("gene" = "gene")) -> Star_reef
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) -> urban_Emerald
 
-MacN_Emerald.p %>%
-  dplyr::inner_join(MacN_Rainbow.p, by = "gene", suffix =c(".MacN_Emerald", ".MacN_Rainbow")) %>%
-  filter(abs(lpv.MacN_Emerald) >= 1 & abs(lpv.MacN_Rainbow) >= 1) %>%
+Star_Rainbow.p %>%
+  dplyr::inner_join(MacN_Rainbow.p, by = "gene", suffix =c(".Star_Rainbow", ".MacN_Rainbow")) %>%
+  filter(abs(lpv.Star_Rainbow) >= 1 & abs(lpv.MacN_Rainbow) >= 1) %>%
   left_join(read.table(file = "../../../../Annotations/ofav/young/Ofaveolata_iso2geneName.tab",
                        sep = "\t",
                        quote="", fill=FALSE) %>%
@@ -639,8 +644,11 @@ MacN_Emerald.p %>%
                        quote="", fill=FALSE) %>%
               mutate(gene = V1,
                      KOG = V2) %>%
-              dplyr::select(-V1, -V2), by = c("gene" = "gene")) -> MacN_reef
+              dplyr::select(-V1, -V2), by = c("gene" = "gene")) -> urban_Rainbow
 
+# joining all matching DEGs into a single dataframe
+commongenes_pairwise_site <- bind_rows(urban_Emerald,urban_Rainbow)
+write.csv(commongenes_pairwise_site, file="commongenes_pairwise_site.csv")
 
 #### CORRELATION PLOTS TREATMENT ####
 # --- Unicode-safe symbols (avoid warnings on some devices) ---
@@ -1268,15 +1276,15 @@ make_panel <- function(df, title, col_x, col_y, x_lab, y_lab,
 # MacN_reef:   x = lpv.MacN_Emerald,  y = lpv.MacN_Rainbow
 
 comparisons <- list(
-  list(title = "Star: Emerald vs Rainbow",
-       df    = Star_reef,
-       col_x = "lpv.Star_Emerald", col_y = "lpv.Star_Rainbow",
+  list(title = "Star and MacN vs Emerald",
+       df    = urban_Emerald,
+       col_x = "lpv.Star_Emerald", col_y = "lpv.MacN_Emerald",
        x_lab = "Star Island vs Emerald Reef",
-       y_lab = "Star Island vs Rainbow Reef"),
-  list(title = "MacN: Emerald vs Rainbow",
-       df    = MacN_reef,
-       col_x = "lpv.MacN_Emerald", col_y = "lpv.MacN_Rainbow",
-       x_lab = "MacArthur North vs Emerald Reef",
+       y_lab = "MacArthur North vs Emerald Reef"),
+  list(title = "Star and MacN vs Rainbow",
+       df    = urban_Rainbow,
+       col_x = "lpv.Star_Rainbow", col_y = "lpv.MacN_Rainbow",
+       x_lab = "Star Island vs Rainbow Reef",
        y_lab = "MacArthur North vs Rainbow Reef")
 )
 
@@ -1329,15 +1337,15 @@ min_sig      <- 0.0
 
 # --- site comparison definitions (columns & pretty axis names) ---
 comparisons_df <- list(
-  list(name = "Star Island vs Natural Reefs",
-       df   = Star_reef,
-       col_x = "lpv.Star_Emerald",  col_y = "lpv.Star_Rainbow",
+  list(name = "Urban Sites vs Emerald Reef",
+       df   = urban_Emerald,
+       col_x = "lpv.Star_Emerald",  col_y = "lpv.MacN_Emerald",
        x_nm = "Star Island vs Emerald Reef",
-       y_nm = "Star Island vs Rainbow Reef"),
-  list(name = "MacArthur North vs Natural Reefs",
-       df   = MacN_reef,
-       col_x = "lpv.MacN_Emerald",  col_y = "lpv.MacN_Rainbow",
-       x_nm = "MacArthur North vs Emerald Reef",
+       y_nm = "MacArthur North vs Emerald Reef"),
+  list(name = "Urban Sites vs Rainbow Reef",
+       df   = urban_Rainbow,
+       col_x = "lpv.Star_Rainbow",  col_y = "lpv.MacN_Rainbow",
+       x_nm = "Star Island vs Rainbow Reef",
        y_nm = "MacArthur North vs Rainbow Reef")
 )
 
