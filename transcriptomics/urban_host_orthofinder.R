@@ -1366,32 +1366,88 @@ suppressPackageStartupMessages({
 for (fn in c("filter","select","mutate","arrange","summarize","slice"))
   assign(fn, get(fn, envir = asNamespace("dplyr")), envir = globalenv())
 
-set.seed(42)                  # reproducible point jitter
-options(ggplot2.useDingbats = FALSE)  # keep text editable in PDFs
-
+set.seed(42)                                  # reproducible point jitter
+options(ggplot2.useDingbats = FALSE)          # keep text editable in PDFs
 
 # ---- Helpers ----
 .safe <- function(x) gsub("[^[:alnum:]_\\-\\.]+", "_", x)
 
-# --- NEW: draw significant Tukey brackets manually (star-aware), with lane packing ---
+# ---- Top-height calculator for brackets (top-level; used by make_boxplot) ----
+.bracket_required_top <- function(df, tukey_tbl, lvls,
+                                  pad_dex   = 0.15,
+                                  gap_dex   = 0.15,
+                                  lbl_dex   = 0.005,
+                                  min_sep_dex = 0.08,
+                                  micro_dex = 0.020) {
+  if (is.null(tukey_tbl) || !nrow(tukey_tbl)) return(NA_real_)
+
+  tuk <- tukey_tbl
+  tuk$group1 <- as.character(tuk$group1)
+  tuk$group2 <- as.character(tuk$group2)
+  tuk <- tuk[tuk$group1 %in% lvls & tuk$group2 %in% lvls, , drop=FALSE]
+  if (!nrow(tuk)) return(NA_real_)
+
+  if ("p.adj.signif" %in% names(tuk)) {
+    tuk <- dplyr::filter(tuk, !is.na(p.adj.signif) & tolower(p.adj.signif) != "ns")
+  } else if ("p.adj" %in% names(tuk)) {
+    tuk <- dplyr::filter(tuk, !is.na(p.adj) & p.adj < 0.05)
+  } else if ("p" %in% names(tuk)) {
+    tuk <- dplyr::filter(tuk, !is.na(p) & p < 0.05)
+  } else return(NA_real_)
+  if (!nrow(tuk)) return(NA_real_)
+
+  # pack by span
+  x1 <- match(tuk$group1, lvls); x2 <- match(tuk$group2, lvls)
+  span <- abs(x2 - x1)
+  tuk  <- tuk[order(span), , drop=FALSE]
+
+  overlaps <- function(a1,a2,b1,b2) !(a2 < b1 || b2 < a1)
+  lanes <- list(); lane_id <- integer(nrow(tuk))
+  for (i in seq_len(nrow(tuk))) {
+    a1 <- min(x1[i], x2[i]); a2 <- max(x1[i], x2[i]); placed <- FALSE
+    for (L in seq_along(lanes)) {
+      lane_ok <- TRUE
+      for (j in seq_len(nrow(lanes[[L]]))) {
+        if (overlaps(a1,a2, lanes[[L]]$a1[j], lanes[[L]]$a2[j])) { lane_ok <- FALSE; break }
+      }
+      if (lane_ok) { lanes[[L]] <- rbind(lanes[[L]], data.frame(a1=a1,a2=a2)); lane_id[i] <- L; placed <- TRUE; break }
+    }
+    if (!placed) { lanes[[length(lanes)+1]] <- data.frame(a1=a1,a2=a2); lane_id[i] <- length(lanes) }
+  }
+
+  df_pos <- df %>% dplyr::filter(is.finite(count), count > 0)
+  group_max <- tapply(df_pos$count, factor(df_pos$grp, levels=lvls), max, na.rm=TRUE)
+  group_max[is.infinite(group_max) | is.na(group_max)] <- 1
+  base_h   <- pmax(group_max[tuk$group1], group_max[tuk$group2])
+  base_log <- log10(pmax(base_h, 1))
+
+  within_lane_idx <- ave(seq_along(lane_id), lane_id, FUN=function(ix) rank(ix, ties.method="first"))
+  y_log   <- base_log + pad_dex + (lane_id - 1)*gap_dex + (within_lane_idx - 1)*pmax(micro_dex, min_sep_dex)
+  lbl_log <- y_log + lbl_dex
+
+  need_top_log <- max(lbl_log, na.rm=TRUE) + 0.010
+  10^need_top_log
+}
+
+# ---- Draw significant Tukey brackets manually (lane-packed, star-aware) ----
 .add_sig_brackets <- function(p, tukey_tbl, lvls, top_y, df,
-                              pad_dex   = 0.2,  # gap above taller box (log10 units)
-                              gap_dex   = 0.15,  # spacing between lanes (log10 units)
-                              tip_dex   = 0.025, # vertical tick height (log10 units)
-                              lbl_dex   = 0.005, # label offset above bracket (log10 units)
-                              cap_dex   = 0.010, # clearance below panel top (log10 units)
-                              min_clr   = 0.06,  # minimum clearance above taller box (log10 units)
-                              min_sep_dex = 0.08 # NEW: minimum separation between brackets in same lane
+                              pad_dex   = 0.2,   # primary lift above taller box (dex)
+                              gap_dex   = 0.15,  # spacing between lanes (dex)
+                              tip_dex   = 0.025, # tick height (dex)
+                              lbl_dex   = 0.005, # label offset above bracket (dex)
+                              cap_dex   = 0.010, # clearance below panel top (dex)
+                              min_clr   = 0.06,  # minimum clearance above box (dex)
+                              min_sep_dex = 0.08 # minimum separation within lane (dex)
 ){
   if (is.null(tukey_tbl) || !nrow(tukey_tbl)) return(p)
-  
+
   tuk <- tukey_tbl
   tuk$group1 <- as.character(tuk$group1)
   tuk$group2 <- as.character(tuk$group2)
   tuk <- tuk[tuk$group1 %in% lvls & tuk$group2 %in% lvls, , drop = FALSE]
   if (!nrow(tuk)) return(p)
-  
-  # Significant only (stars first)
+
+  # Significant only
   if ("p.adj.signif" %in% names(tuk)) {
     tuk <- dplyr::filter(tuk, !is.na(p.adj.signif) & tolower(p.adj.signif) != "ns")
   } else if ("p.adj" %in% names(tuk)) {
@@ -1400,14 +1456,15 @@ options(ggplot2.useDingbats = FALSE)  # keep text editable in PDFs
     tuk <- dplyr::filter(tuk, !is.na(p) & p < 0.05)
   } else return(p)
   if (!nrow(tuk)) return(p)
-  
-  # Lane packing by span (avoid x-overlap within a lane)
+
+  # Order by span then p-value, and recompute indices after sorting
   x1 <- match(tuk$group1, lvls); x2 <- match(tuk$group2, lvls)
   span <- abs(x2 - x1)
   p_val <- if ("p.adj" %in% names(tuk)) tuk$p.adj else if ("p" %in% names(tuk)) tuk$p else NA_real_
-  tuk$..span <- span; tuk$..p <- p_val
-  tuk <- tuk %>% dplyr::arrange(..span, dplyr::coalesce(..p, Inf))
-  
+  ord  <- order(span, dplyr::coalesce(p_val, Inf))
+  tuk  <- tuk[ord, , drop = FALSE]
+  x1   <- x1[ord]; x2 <- x2[ord]; span <- span[ord]
+
   overlaps <- function(a1, a2, b1, b2) !(a2 < b1 || b2 < a1)
   lanes <- list(); lane_id <- integer(nrow(tuk))
   for (i in seq_len(nrow(tuk))) {
@@ -1421,167 +1478,70 @@ options(ggplot2.useDingbats = FALSE)  # keep text editable in PDFs
     }
     if (!placed) { lanes[[length(lanes)+1]] <- data.frame(a1=a1,a2=a2); lane_id[i] <- length(lanes) }
   }
-  
-  # Group maxima → log space
-  df_pos <- df %>% dplyr::filter(count > 0)
+
+  # group maxima in log space
+  df_pos <- df %>% dplyr::filter(is.finite(count), count > 0)
   group_max <- tapply(df_pos$count, factor(df_pos$grp, levels = lvls), max, na.rm = TRUE)
   group_max[is.infinite(group_max) | is.na(group_max)] <- 1
-  
   base_h   <- pmax(group_max[tuk$group1], group_max[tuk$group2])
   base_log <- log10(pmax(base_h, 1))
   top_log  <- log10(pmax(top_y, 1))
-  
-  # Initial (pre-resolve) bracket heights (log units)
-  y_log   <- base_log + pmax(pad_dex, min_clr) + (lane_id - 1) * pmax(gap_dex, min_clr)
-  tip_log <- y_log - tip_dex
-  lbl_log <- y_log + lbl_dex
-  
-  # ---------- NEW: collision resolution within each lane ----------
-  # ensure a minimum separation 'min_sep_dex' and respect top cap
+
+  # Initial heights
+  y_log <- base_log + pmax(pad_dex, min_clr) + (lane_id - 1) * pmax(gap_dex, min_clr)
+
+  # Resolve collisions per lane, respect panel cap
   cap <- top_log - cap_dex
-  idx_all <- seq_along(y_log)
-  
   for (L in unique(lane_id)) {
     idx <- which(lane_id == L)
     if (length(idx) <= 1) next
-    
-    # Sort by initial y (lower first) to place them bottom-up
-    ord <- idx[order(y_log[idx], na.last = NA)]
-    # Upward pass: enforce min separation
-    for (k in seq_along(ord)) {
-      i <- ord[k]
-      # minimum allowed for this bracket from its base (per-comparison)
+    ordL <- idx[order(y_log[idx], na.last = NA)]
+    for (k in seq_along(ordL)) {
+      i <- ordL[k]
       min_i <- base_log[i] + min_clr + (L - 1) * pmax(gap_dex, min_clr)
       y_log[i] <- max(y_log[i], min_i)
-      if (k > 1) {
-        prev <- ord[k - 1]
-        y_log[i] <- max(y_log[i], y_log[prev] + min_sep_dex)
-      }
+      if (k > 1) y_log[i] <- max(y_log[i], y_log[ordL[k-1]] + min_sep_dex)
     }
-    
-    # If top is exceeded, shift the whole lane down uniformly
-    lane_lbl_top <- max(y_log[ord] + lbl_dex, na.rm = TRUE)
+    lane_lbl_top <- max(y_log[ordL] + lbl_dex, na.rm = TRUE)
     if (lane_lbl_top > cap) {
       shift <- lane_lbl_top - cap
-      y_log[ord] <- y_log[ord] - shift
-      # Downward safety: keep above each bracket's minimum
-      for (k in seq_along(ord)) {
-        i <- ord[k]
+      y_log[ordL] <- y_log[ordL] - shift
+      for (k in seq_along(ordL)) {
+        i <- ordL[k]
         min_i <- base_log[i] + min_clr + (L - 1) * pmax(gap_dex, min_clr)
         if (y_log[i] < min_i) y_log[i] <- min_i
-        if (k > 1) {
-          prev <- ord[k - 1]
-          y_log[i] <- max(y_log[i], y_log[prev] + min_sep_dex)
-        }
+        if (k > 1) y_log[i] <- max(y_log[i], y_log[ordL[k-1]] + min_sep_dex)
       }
-      # Final cap clip (rare)
-      lane_lbl_top <- max(y_log[ord] + lbl_dex, na.rm = TRUE)
-      if (lane_lbl_top > cap) {
-        overflow <- lane_lbl_top - cap
-        y_log[ord] <- y_log[ord] - overflow
-      }
-    }
-    # simple visibility check (optional console hint)
-    if (any(log10(ylbl) > log10(top_y) - 1e-8, na.rm = TRUE)) {
-      message("⚠️ Some bracket labels at/above top; consider lowering lbl_dex or raising cap_dex.")
     }
   }
-  
-  .bracket_required_top <- function(df, tukey_tbl, lvls,
-                                    pad_dex   = 0.15,
-                                    gap_dex   = 0.15,
-                                    lbl_dex   = 0.005,
-                                    min_sep_dex = 0.08,
-                                    micro_dex = 0.020) {
-    if (is.null(tukey_tbl) || !nrow(tukey_tbl)) return(NA_real_)
-    
-    tuk <- tukey_tbl
-    tuk$group1 <- as.character(tuk$group1)
-    tuk$group2 <- as.character(tuk$group2)
-    tuk <- tuk[tuk$group1 %in% lvls & tuk$group2 %in% lvls, , drop=FALSE]
-    if (!nrow(tuk)) return(NA_real_)
-    
-    # Significant only (stars first)
-    if ("p.adj.signif" %in% names(tuk)) {
-      tuk <- dplyr::filter(tuk, !is.na(p.adj.signif) & tolower(p.adj.signif) != "ns")
-    } else if ("p.adj" %in% names(tuk)) {
-      tuk <- dplyr::filter(tuk, !is.na(p.adj) & p.adj < 0.05)
-    } else if ("p" %in% names(tuk)) {
-      tuk <- dplyr::filter(tuk, !is.na(p) & p < 0.05)
-    } else return(NA_real_)
-    if (!nrow(tuk)) return(NA_real_)
-    
-    # Lane packing by span
-    x1 <- match(tuk$group1, lvls); x2 <- match(tuk$group2, lvls)
-    span <- abs(x2 - x1)
-    tuk  <- tuk[order(span), , drop=FALSE]
-    overlaps <- function(a1,a2,b1,b2) !(a2 < b1 || b2 < a1)
-    lanes <- list(); lane_id <- integer(nrow(tuk))
-    for (i in seq_len(nrow(tuk))) {
-      a1 <- min(x1[i], x2[i]); a2 <- max(x1[i], x2[i]); placed <- FALSE
-      for (L in seq_along(lanes)) {
-        lane_ok <- TRUE
-        for (j in seq_len(nrow(lanes[[L]]))) {
-          if (overlaps(a1,a2, lanes[[L]]$a1[j], lanes[[L]]$a2[j])) { lane_ok <- FALSE; break }
-        }
-        if (lane_ok) { lanes[[L]] <- rbind(lanes[[L]], data.frame(a1=a1,a2=a2)); lane_id[i] <- L; placed <- TRUE; break }
-      }
-      if (!placed) { lanes[[length(lanes)+1]] <- data.frame(a1=a1,a2=a2); lane_id[i] <- length(lanes) }
-    }
-    
-    # Group maxima → log space base
-    df_pos <- df %>% dplyr::filter(is.finite(count), count > 0)
-    group_max <- tapply(df_pos$count, factor(df_pos$grp, levels=lvls), max, na.rm=TRUE)
-    group_max[is.infinite(group_max) | is.na(group_max)] <- 1
-    base_h   <- pmax(group_max[tuk$group1], group_max[tuk$group2])
-    base_log <- log10(pmax(base_h, 1))
-    
-    # Within-lane order (for stagger & min separation approximation)
-    within_lane_idx <- ave(seq_along(lane_id), lane_id, FUN=function(ix) rank(ix, ties.method="first"))
-    
-    # Approx label height in log10 units (matches your bracket logic)
-    y_log   <- base_log + pad_dex + (lane_id - 1)*gap_dex +
-      (within_lane_idx - 1)*pmax(micro_dex, min_sep_dex)
-    lbl_log <- y_log + lbl_dex
-    
-    need_top_log <- max(lbl_log, na.rm=TRUE) + 0.010  # small cap
-    10^need_top_log
-  }
-  
-  # ---------------------------------------------------------------
-  
-  # Recompute tips/labels (log space)
+
   tip_log <- y_log - tip_dex
   lbl_log <- y_log + lbl_dex
-  
+
   # Back to data space
   y    <- 10^y_log
   y0   <- 10^tip_log
   ylbl <- 10^lbl_log
   xm   <- (pmin(x1, x2) + pmax(x1, x2)) / 2
-  
+
   # Labels: stars preferred, else numeric
   lab <- if ("p.adj.signif" %in% names(tuk)) as.character(tuk$p.adj.signif)
-  else if ("p.adj" %in% names(tuk)) sprintf("p=%.3g", tuk$p.adj)
-  else sprintf("p=%.3g", tuk$p)
-  
+         else if ("p.adj" %in% names(tuk)) sprintf("p=%.3g", tuk$p.adj)
+         else sprintf("p=%.3g", tuk$p)
+
   seg_df <- data.frame(
     x1 = pmin(x1, x2), x2 = pmax(x1, x2),
     y = y, y0 = y0, xm = xm, lab = lab, ylbl = ylbl
   )
-  
+
   p +
-    geom_segment(data = seg_df,
-                 aes(x = x1, xend = x2, y = y, yend = y),
+    geom_segment(data = seg_df, aes(x = x1, xend = x2, y = y, yend = y),
                  linewidth = 0.5, lineend = "butt", inherit.aes = FALSE) +
-    geom_segment(data = seg_df,  # left 90° tick
-                 aes(x = x1, xend = x1, y = y0, yend = y),
+    geom_segment(data = seg_df, aes(x = x1, xend = x1, y = y0, yend = y),
                  linewidth = 0.5, lineend = "butt", inherit.aes = FALSE) +
-    geom_segment(data = seg_df,  # right 90° tick
-                 aes(x = x2, xend = x2, y = y0, yend = y),
+    geom_segment(data = seg_df, aes(x = x2, xend = x2, y = y0, yend = y),
                  linewidth = 0.5, lineend = "butt", inherit.aes = FALSE) +
-    annotate("text",
-             x = seg_df$xm, y = seg_df$ylbl,
+    annotate("text", x = seg_df$xm, y = seg_df$ylbl,
              label = seg_df$lab, size = 3, vjust = 0, hjust = 0.5)
 }
 
@@ -1701,50 +1661,42 @@ res_counts <- list(
 # ========= 4) Read count CSVs back to long data =========
 csv_files <- list.files(counts_root, pattern="\\.csv$", full.names = TRUE, recursive = TRUE)
 
+# Cross-platform path parsing (works on Windows/macOS/Linux)
 read_gene_file <- function(file_path){
   dfc <- suppressMessages(readr::read_csv(file_path, show_col_types = FALSE))
-  
-  # Parse path parts: .../counts/<SUBSET>/<Species>/<file>.csv
-  parts <- str_split(file_path, "/", simplify = TRUE)
-  n <- ncol(parts)
-  species <- parts[, n-1, drop=TRUE]        # "Ofaveolata" or "Ssiderea"
-  subset  <- parts[, n-2, drop=TRUE]        # e.g., "Treatment_Inverse"
-  
-  # Decode subset -> factor/relationship
+
+  species <- basename(dirname(file_path))                  # "Ofaveolata"/"Ssiderea"
+  subset  <- basename(dirname(dirname(file_path)))         # e.g., "Treatment_Inverse"
+
   subset_bits <- str_split(subset, "_", simplify = TRUE)
-  factor_name <- subset_bits[,1, drop=TRUE]       # "Site" or "Treatment"
-  relationship <- subset_bits[,2, drop=TRUE]      # "Direct" or "Inverse"
-  
+  factor_name <- subset_bits[,1, drop=TRUE]                # "Site" or "Treatment"
+  relationship <- subset_bits[,2, drop=TRUE]               # "Direct" or "Inverse"
+
   gene_id <- tools::file_path_sans_ext(basename(file_path))
   id_col      <- if (species == "Ofaveolata") "Ofaveolata_ID" else "Ssiderea_ID"
   id_col_safe <- paste0(id_col, "_safe")
-  
-  # IMPORTANT: match within the SAME subset to get the right OG row
+
   meta_row <- df_norm %>%
     filter(
       factor == factor_name,
       relationship == relationship,
       (!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)
-    ) %>%
-    slice(1)
-  
+    ) %>% slice(1)
+
   if (!nrow(meta_row)) {
-    # Fallback: try any subset (should rarely happen)
     meta_row <- df_norm %>%
-      filter(
-        (!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)
-      ) %>%
+      filter((!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)) %>%
       slice(1)
   }
-  
+
   tibble(
     species       = species,
     gene_id       = gene_id,
     orthogroup_ID = meta_row$orthogroup_ID %||% NA_character_,
     gene_name     = meta_row$gene_name %||% NA_character_,
     stress_family = meta_row$stress_family %||% NA_character_,
-    relationship  = relationship,                 # from folder
-    factor        = factor_name,                  # from folder
+    relationship  = relationship,
+    factor        = factor_name,
     subset        = paste(factor_name, relationship, sep = "_"),
     count_data    = list(dfc)
   )
@@ -1800,53 +1752,121 @@ treat_labels <- c(
 )
 
 panel_with_colored_title <- function(left_plot, right_plot, title_text, stress_family){
-  # colored title strip color
   fill_col <- if (!is.null(stress_family) && stress_family %in% names(stress_family_palette)) {
     stress_family_palette[stress_family]
   } else "#6B7280"
-  
-  # align and equalize left grob widths so y-axis label widths don't change panel size
+
   gL <- ggplotGrob(left_plot)
   gR <- ggplotGrob(right_plot)
-  
-  # columns 2:5 are the left-side layout columns that include axis/labels
+
   maxw <- grid::unit.pmax(gL$widths[2:5], gR$widths[2:5])
   gL$widths[2:5] <- maxw
   gR$widths[2:5] <- maxw
-  
-  # Build the core two-column layout using fixed grobs
+
   core <- cowplot::plot_grid(
     cowplot::as_grob(gL),
     cowplot::as_grob(gR),
     ncol = 2,
     rel_widths = c(1, 0.92)
   )
-  
-  # Title strip on top
+
   title_strip <- ggplot() +
     geom_rect(aes(xmin=-Inf,xmax=Inf,ymin=-Inf,ymax=Inf), fill=fill_col, color=NA) +
     annotate("text", x=0, y=0, label=title_text, color="white", fontface="bold", size=4.2,
              hjust=0.5, vjust=0.5) +
     coord_cartesian(xlim=c(-1,1), ylim=c(-1,1), expand=FALSE) + theme_void()
-  
+
   cowplot::plot_grid(title_strip, core, ncol=1, rel_heights=c(0.12, 1))
 }
 
 compute_stats <- function(df_grp){
-  valid <- df_grp %>% filter(!is.na(grp))
-  out <- list(aov_text=NULL, aov_table=NULL, tukey=NULL)
-  if (nrow(valid)==0L) return(out)
-  if (dplyr::n_distinct(valid$grp) >= 2L){
-    fit <- aov(count ~ grp, data = valid)
-    sm  <- summary(fit)[[1]]
+  # Keep rows with real counts and a valid group
+  df2 <- df_grp %>% dplyr::filter(!is.na(grp), is.finite(count))
+  
+  out <- list(aov_text = NULL, aov_table = NULL, tukey = NULL, aov_label = NULL)
+  if (!nrow(df2)) return(out)
+  
+  # Need at least 2 levels with data
+  lvl_counts <- table(droplevels(df2$grp))
+  if (sum(lvl_counts > 0) < 2L) return(out)
+  
+  # ---------- Try classic ANOVA ----------
+  aov_res <- tryCatch(aov(count ~ grp, data = df2), error = function(e) NULL)
+  got_aov <- !is.null(aov_res)
+  pv <- NA_real_; Fv <- NA_real_; df1 <- NA_integer_; df2res <- NA_integer_
+  
+  if (got_aov) {
+    sm <- summary(aov_res)[[1]]
     out$aov_table <- as.data.frame(sm) %>% tibble::rownames_to_column("Term") %>%
-      mutate(across(where(is.numeric), ~round(.x, 4)))
-    if (all(c("grp","Residuals") %in% rownames(sm))){
-      df1 <- sm["grp","Df"]; df2 <- sm["Residuals","Df"]; Fv <- sm["grp","F value"]; pv <- sm["grp","Pr(>F)"]
-      out$aov_text <- sprintf("ANOVA: F(%d,%d)=%.2f, p=%.3g", df1, df2, Fv, pv)
+      dplyr::mutate(across(where(is.numeric), ~ round(.x, 4)))
+    # find the treatment term row robustly
+    term_names <- attr(terms(aov_res), "term.labels")
+    term <- if (length(term_names)) term_names[1] else "grp"
+    row_idx <- which(rownames(sm) == term)
+    if (!length(row_idx)) row_idx <- which(grepl(paste0("^", term, "$"), rownames(sm)))
+    if (length(row_idx)) {
+      df1     <- sm[row_idx, "Df"]
+      df2res  <- sm["Residuals", "Df"]
+      Fv      <- sm[row_idx, "F value"]
+      pv      <- sm[row_idx, "Pr(>F)"]
     }
-    out$tukey <- tryCatch(rstatix::tukey_hsd(fit), error=function(e) NULL)
   }
+  
+  # ---------- Fallback: Welch one-way ANOVA (unequal variances) ----------
+  if (!is.finite(pv)) {
+    welch <- tryCatch(oneway.test(count ~ grp, data = df2, var.equal = FALSE), error = function(e) NULL)
+    if (!is.null(welch)) {
+      pv <- as.numeric(welch$p.value)
+      # df from Welch are fractional; keep nice strings
+      df1 <- unname(signif(welch$parameter[1], 3))
+      df2res <- unname(signif(welch$parameter[2], 3))
+      Fv <- unname(signif(welch$statistic[[1]], 3))
+    }
+  }
+  
+  # ---------- Fallback: Kruskal–Wallis ----------
+  if (!is.finite(pv)) {
+    kw <- tryCatch(kruskal.test(count ~ grp, data = df2), error = function(e) NULL)
+    if (!is.null(kw)) {
+      pv <- as.numeric(kw$p.value)
+      Fv <- NA_real_; df1 <- NA; df2res <- NA  # KW uses chi-sq; we’ll omit F
+    }
+  }
+  
+  # ---------- Build labels (never empty) ----------
+  pv_str <- if (is.finite(pv)) formatC(pv, format = "g", digits = 3) else "NA"
+  # Plain text (for CSV/logs)
+  if (is.finite(Fv) && is.finite(pv) && is.finite(as.numeric(df1)) && is.finite(as.numeric(df2res))) {
+    out$aov_text <- sprintf("ANOVA: F(%s,%s)=%.2f, p=%s", df1, df2res, as.numeric(Fv), pv_str)
+  } else if (is.finite(pv)) {
+    out$aov_text <- sprintf("ANOVA: p=%s", pv_str)  # Welch/KW fallback
+  } else {
+    out$aov_text <- "ANOVA: p=NA"
+  }
+  
+  # Parsed label (italic p) only when p is numeric
+  # Parse-safe label using plotmath paste()
+  if (is.finite(pv)) {
+    if (is.finite(Fv) && is.finite(as.numeric(df1)) && is.finite(as.numeric(df2res))) {
+      out$aov_label <- sprintf(
+        "paste('ANOVA: F(%s,%s)=', %s, ', ', italic(p), '==', %s)",
+        df1, df2res,
+        formatC(as.numeric(Fv), format = 'f', digits = 2),
+        formatC(pv, format = 'g', digits = 3)
+      )
+    } else {
+      # F or dfs not finite → show p only
+      out$aov_label <- sprintf(
+        "paste('ANOVA: ', italic(p), '==', %s)",
+        formatC(pv, format = 'g', digits = 3)
+      )
+    }
+  } else {
+    out$aov_label <- NULL
+  }
+  
+  # Tukey (only makes sense for classic AOV)
+  out$tukey <- if (got_aov) tryCatch(rstatix::tukey_hsd(aov_res), error = function(e) NULL) else NULL
   out
 }
 
@@ -1866,13 +1886,11 @@ order_tukey_by_levels <- function(tukey_tbl, levels_vec){
     select(-order_key)
 }
 
-# (legacy helper kept; no longer used for positions)
-
 make_boxplot <- function(df, factor_name, species_label,
                          species_name,
-                         tukey_tbl = NULL, aov_text = NULL,
+                         tukey_tbl = NULL, aov_label = NULL, aov_text = NULL,
                          y_limits = NULL) {
-  
+
   # determine levels, colors, and labels
   if (factor_name == "Site") {
     lvls <- site_levels
@@ -1883,9 +1901,9 @@ make_boxplot <- function(df, factor_name, species_label,
     cols <- treat_colors
     label_map <- treat_labels
   }
-  
+
   df$grp <- factor(df$grp, levels = lvls)
-  
+
   # build plot
   p <- ggpubr::ggboxplot(df, x="grp", y="count", color="grey30", fill="grp",
                          add="jitter", add.params=list(size=1, jitter=0.25),
@@ -1908,18 +1926,13 @@ make_boxplot <- function(df, factor_name, species_label,
       axis.text.y  = if (species_name == "Ssiderea") element_blank() else element_text(),
       axis.ticks.y = if (species_name == "Ssiderea") element_blank() else element_line(),
       plot.margin = margin(t = 6, r = 6, b = 18, l = 6),
-      
-      # rectangular border matching axes (kept as in your version)
       panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-      
-      # remove grid lines for cleaner look
       panel.grid = element_blank()
     ) +
     scale_fill_manual(values = setNames(cols, lvls)) +
     scale_x_discrete(labels = label_map)
-  
+
   # --- unified y scale (shared across both species for this OG) ---
-  # 1) decide the visible y-range from the data
   if (!is.null(y_limits)) {
     ylims_used <- y_limits
   } else {
@@ -1936,8 +1949,8 @@ make_boxplot <- function(df, factor_name, species_label,
     }
     ylims_used <- c(ymin, ymax)
   }
-  
-  # 2) if Tukey exists, ensure the top fits the highest label
+
+  # ensure room for highest label if Tukey exists
   if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
     need_top <- .bracket_required_top(
       df, tukey_tbl, lvls,
@@ -1951,33 +1964,50 @@ make_boxplot <- function(df, factor_name, species_label,
       ylims_used[2] <- max(ylims_used[2], need_top)
     }
   }
-  
-  # 3) add the log scale WITHOUT limits, then zoom with coord_cartesian
+
   p <- p + scale_y_log10(
     breaks = scales::trans_breaks("log10", function(x) 10^x),
     labels = scales::trans_format("log10", scales::math_format(10^.x)),
     expand = expansion(mult = c(0.02, 0.12))
-  ) +
-    coord_cartesian(ylim = ylims_used, clip = "off")
-  
-  # 4) near-top reference for bracket placement
+  ) + coord_cartesian(ylim = ylims_used, clip = "off")
+
+  # near-top reference for bracket placement
   top_y <- ylims_used[2] * 0.98
-  
-  # --- NEW: draw significant Tukey brackets (manual; star-aware) ---
+
+  # draw significant Tukey brackets
   if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
     p <- .add_sig_brackets(
       p, tukey_tbl, lvls, top_y, df,
-      pad_dex = 0.2,   # try 0.12–0.15 if still tight
-      gap_dex = 0.15,   # try 0.12–0.15 for more lane spacing
-      tip_dex = 0.025,  # vertical tick length
-      lbl_dex = 0.005   # label offset above bracket
+      pad_dex = 0.2,
+      gap_dex = 0.15,
+      tip_dex = 0.025,
+      lbl_dex = 0.005
     )
   }
+
+  # --- ANOVA label (top-left), robust for discrete x ---
+  left_level <- levels(df$grp)[1]
+  lab_text   <- if (!is.null(aov_label) && nzchar(aov_label)) aov_label else aov_text
+  use_parse  <- !is.null(aov_label) && nzchar(aov_label)
   
-  # ANOVA text
-  if (!is.null(aov_text) && nzchar(aov_text)) {
-    p <- p + annotate("text", x = 1, y = top_y, hjust = 0, vjust = 1,
-                      label = aov_text, size = 3.3)
+  if (!is.null(lab_text) && nzchar(lab_text) && length(left_level) == 1 && !is.na(left_level)) {
+    label_df <- data.frame(
+      grp = factor(left_level, levels = levels(df$grp)),
+      y   = top_y,
+      lab = lab_text
+    )
+    p <- p + geom_text(
+      data = label_df,
+      aes(x = grp, y = y, label = lab),
+      hjust = 0, vjust = 1, size = 3.3,
+      parse = use_parse,
+      inherit.aes = FALSE
+    )
+    message("ANOVA label added at x='", left_level, "', y=", signif(top_y, 5),
+            ", parse=", use_parse, " : ", lab_text)
+  } else {
+    message("ANOVA label skipped: left_level=", left_level %||% "NULL",
+            ", lab_text present? ", !is.null(lab_text) && nzchar(lab_text))
   }
   
   list(plot = p)
@@ -2001,10 +2031,10 @@ for (k in seq_len(nrow(targets))){
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
   dir.create(file.path(out_dir,"tukey"), showWarnings = FALSE)
   dir.create(file.path(out_dir,"anova"), showWarnings = FALSE)
-  
+
   dat_sub <- counts_long %>% filter(factor==fac, relationship==rel)
   if (!nrow(dat_sub)){ message(sprintf("No rows for %s | %s", fac, rel)); next }
-  
+
   if (fac=="Site"){
     stopifnot("site" %in% names(dat_sub))
     dat_sub <- dat_sub %>% mutate(grp = factor(site, levels = site_levels))
@@ -2014,24 +2044,24 @@ for (k in seq_len(nrow(targets))){
     dat_sub <- dat_sub %>% mutate(grp = factor(treat, levels = treat_levels))
     lvls <- treat_levels
   }
-  
+
   # Follow df_norm first-occurrence order for panel sequence
   ogs <- df_norm %>%
     filter(factor==fac, relationship==rel) %>%
     distinct(orthogroup_ID, .keep_all = TRUE) %>%
     pull(orthogroup_ID)
   ogs <- intersect(ogs, unique(dat_sub$orthogroup_ID))
-  
+
   panel_list <- list(); p_i <- 0L
-  
+
   for (og in ogs){
     row_meta <- dat_sub %>% filter(orthogroup_ID==og) %>% slice(1)
     gname <- row_meta$gene_name %>% .[1]
     sfam  <- row_meta$stress_family %>% .[1]
-    
+
     of_df <- dat_sub %>% filter(orthogroup_ID==og, species=="Ofaveolata")
     ss_df <- dat_sub %>% filter(orthogroup_ID==og, species=="Ssiderea")
-    
+
     if (!nrow(of_df) || !nrow(ss_df)) {
       missing_species <- paste(
         c("Ofaveolata", "Ssiderea")[c(!nrow(of_df), !nrow(ss_df))],
@@ -2040,32 +2070,27 @@ for (k in seq_len(nrow(targets))){
       message(sprintf("Skipping OG=%s (missing species: %s)", og, missing_species))
       next
     }
-    
-    # --- compute shared y-limits across both species for this OG (log-safe) ---
+
+    # shared y-limits across both species for this OG (log-safe)
     counts_both <- c(of_df$count, ss_df$count)
     pos <- counts_both[is.finite(counts_both) & counts_both > 0]
-    
+
     if (length(pos)) {
       min_pos <- min(pos, na.rm = TRUE)
       max_pos <- max(pos, na.rm = TRUE)
-      
-      # multiplicative padding (works naturally on log scale)
-      lower_pad <- 1 / 1.3   # ~ -0.114 dex
-      upper_pad <- 1.3       # ~ +0.114 dex
-      
-      ymin <- max(min_pos * lower_pad, min_pos * 0.5, .Machine$double.eps)  # never hit 0
+      lower_pad <- 1 / 1.3
+      upper_pad <- 1.3
+      ymin <- max(min_pos * lower_pad, min_pos * 0.5, .Machine$double.eps)
       ymax <- max_pos * upper_pad
-      
     } else {
-      # fallback if everything is non-positive or missing
       ymin <- 0.1
       ymax <- 1
     }
     ylims <- c(ymin, ymax)
-    
+
     of_stats <- compute_stats(of_df)
     ss_stats <- compute_stats(ss_df)
-    
+
     # Save stats CSVs
     if (!is.null(of_stats$tukey) && nrow(of_stats$tukey))
       write_csv(order_tukey_by_levels(of_stats$tukey, lvls), file.path(out_dir,"tukey", paste0("Tukey_Ofaveolata_", .safe(og), ".csv")))
@@ -2075,19 +2100,21 @@ for (k in seq_len(nrow(targets))){
       write_csv(of_stats$aov_table, file.path(out_dir,"anova", paste0("ANOVA_Ofaveolata_", .safe(og), ".csv")))
     if (!is.null(ss_stats$aov_table))
       write_csv(ss_stats$aov_table, file.path(out_dir,"anova", paste0("ANOVA_Ssiderea_", .safe(og), ".csv")))
-    
+
     of_plot <- make_boxplot(of_df, fac, species_titles$Ofaveolata,
                             species_name = "Ofaveolata",
                             tukey_tbl = order_tukey_by_levels(of_stats$tukey, lvls),
+                            aov_label = of_stats$aov_label,
                             aov_text  = of_stats$aov_text,
                             y_limits  = ylims)$plot
     
     ss_plot <- make_boxplot(ss_df, fac, species_titles$Ssiderea,
                             species_name = "Ssiderea",
                             tukey_tbl = order_tukey_by_levels(ss_stats$tukey, lvls),
+                            aov_label = ss_stats$aov_label,
                             aov_text  = ss_stats$aov_text,
                             y_limits  = ylims)$plot
-    
+
     panel <- panel_with_colored_title(of_plot, ss_plot, paste0(gname,"  (",og,")"), sfam)
     p_i <- p_i + 1L
     outfile <- file.path(out_dir, paste0("PANEL_", sprintf("%03d", p_i), "_", .safe(og), "_", .safe(gname), ".pdf"))
@@ -2095,13 +2122,13 @@ for (k in seq_len(nrow(targets))){
     message("Wrote panel: ", normalizePath(outfile, mustWork=FALSE))
     panel_list[[p_i]] <- panel
   }
-  
+
   if (length(panel_list)){
     ggexport(plotlist = panel_list,
              filename = file.path(out_dir, paste0("ALL_panels_", fac, "_", rel, ".pdf")),
              nrow=1, ncol=1, width=8, height=4.5, dpi=300)
   }
-  
+
   # ✅ per-subset panel summary
   message(sprintf("📊 %d panels exported for %s | %s → %s",
                   length(panel_list), fac, rel, normalizePath(out_dir, mustWork = FALSE)))
@@ -2126,10 +2153,10 @@ for (k in seq_len(nrow(targets))) {
   subdir  <- file.path("plots_panels", targets$out_subdir[k])
   tuk_dir <- file.path(subdir, "tukey")
   aov_dir <- file.path(subdir, "anova")
-  
+
   ntukey <- if (dir.exists(tuk_dir)) length(list.files(tuk_dir, pattern="\\.csv$", full.names=TRUE)) else 0L
   nanova <- if (dir.exists(aov_dir)) length(list.files(aov_dir, pattern="\\.csv$", full.names=TRUE)) else 0L
-  
+
   message(sprintf("  %s | %s : Tukey=%d, ANOVA=%d",
                   targets$factor_name[k], targets$relationship[k], ntukey, nanova))
 }
