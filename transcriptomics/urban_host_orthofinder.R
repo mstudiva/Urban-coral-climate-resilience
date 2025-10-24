@@ -1844,22 +1844,22 @@ compute_stats <- function(df_grp){
     out$aov_text <- "ANOVA: p=NA"
   }
   
-  # Parsed label (italic p) only when p is numeric
-  # Parse-safe label using plotmath paste()
+  # ---------- Nicely formatted plot label (italic F with df subscript, italic p) ----------
   if (is.finite(pv)) {
+    # pretty p for plotmath: numbers unquoted; inequalities quoted
+    pretty_p <- if (pv < 1e-4) "'< 1e-4'"
+    else if (pv < 0.001) "'< 0.001'"
+    else formatC(pv, format = "g", digits = 3)
+    Fv_str <- if (is.finite(Fv)) formatC(as.numeric(Fv), format = "f", digits = 2) else "NA"
+    
     if (is.finite(Fv) && is.finite(as.numeric(df1)) && is.finite(as.numeric(df2res))) {
+      # italic(F)[df1*','*df2] = Fv, italic(p) = pretty_p
       out$aov_label <- sprintf(
-        "paste('ANOVA: F(%s,%s)=', %s, ', ', italic(p), '==', %s)",
-        df1, df2res,
-        formatC(as.numeric(Fv), format = 'f', digits = 2),
-        formatC(pv, format = 'g', digits = 3)
+        "paste(italic(F)[%s*','*%s], ' = ', %s, ', ', italic(p), ' = ', %s)",
+        df1, df2res, Fv_str, pretty_p
       )
     } else {
-      # F or dfs not finite → show p only
-      out$aov_label <- sprintf(
-        "paste('ANOVA: ', italic(p), '==', %s)",
-        formatC(pv, format = 'g', digits = 3)
-      )
+      out$aov_label <- sprintf("paste(italic(p), ' = ', %s)", pretty_p)
     }
   } else {
     out$aov_label <- NULL
@@ -1890,7 +1890,7 @@ make_boxplot <- function(df, factor_name, species_label,
                          species_name,
                          tukey_tbl = NULL, aov_label = NULL, aov_text = NULL,
                          y_limits = NULL) {
-
+  
   # determine levels, colors, and labels
   if (factor_name == "Site") {
     lvls <- site_levels
@@ -1901,13 +1901,13 @@ make_boxplot <- function(df, factor_name, species_label,
     cols <- treat_colors
     label_map <- treat_labels
   }
-
+  
   df$grp <- factor(df$grp, levels = lvls)
-
-  # build plot
-  p <- ggpubr::ggboxplot(df, x="grp", y="count", color="grey30", fill="grp",
-                         add="jitter", add.params=list(size=1, jitter=0.25),
-                         width=0.7, size=0.5) +
+  
+  # base plot
+  p <- ggpubr::ggboxplot(df, x = "grp", y = "count", color = "grey30", fill = "grp",
+                         add = "jitter", add.params = list(size = 1, jitter = 0.25),
+                         width = 0.7, size = 0.5) +
     labs(
       title = species_label,
       x = NULL,
@@ -1931,12 +1931,12 @@ make_boxplot <- function(df, factor_name, species_label,
     ) +
     scale_fill_manual(values = setNames(cols, lvls)) +
     scale_x_discrete(labels = label_map)
-
-  # --- unified y scale (shared across both species for this OG) ---
+  
+  # --- unified y scale ---
   if (!is.null(y_limits)) {
     ylims_used <- y_limits
   } else {
-    pos  <- df$count[is.finite(df$count) & df$count > 0]
+    pos <- df$count[is.finite(df$count) & df$count > 0]
     if (length(pos)) {
       min_pos <- min(pos, na.rm = TRUE)
       max_pos <- max(pos, na.rm = TRUE)
@@ -1949,8 +1949,8 @@ make_boxplot <- function(df, factor_name, species_label,
     }
     ylims_used <- c(ymin, ymax)
   }
-
-  # ensure room for highest label if Tukey exists
+  
+  # ensure room for Tukey if present
   if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
     need_top <- .bracket_required_top(
       df, tukey_tbl, lvls,
@@ -1960,21 +1960,19 @@ make_boxplot <- function(df, factor_name, species_label,
       min_sep_dex = 0.08,
       micro_dex = 0.020
     )
-    if (is.finite(need_top)) {
-      ylims_used[2] <- max(ylims_used[2], need_top)
-    }
+    if (is.finite(need_top)) ylims_used[2] <- max(ylims_used[2], need_top)
   }
-
-  p <- p + scale_y_log10(
-    breaks = scales::trans_breaks("log10", function(x) 10^x),
-    labels = scales::trans_format("log10", scales::math_format(10^.x)),
-    expand = expansion(mult = c(0.02, 0.12))
-  ) + coord_cartesian(ylim = ylims_used, clip = "off")
-
-  # near-top reference for bracket placement
+  
+  p <- p +
+    scale_y_log10(
+      breaks = scales::trans_breaks("log10", function(x) 10^x),
+      labels = scales::trans_format("log10", scales::math_format(10^.x)),
+      expand = expansion(mult = c(0.02, 0.12))
+    ) +
+    coord_cartesian(ylim = ylims_used, clip = "off")
+  
+  # --- Tukey brackets ---
   top_y <- ylims_used[2] * 0.98
-
-  # draw significant Tukey brackets
   if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
     p <- .add_sig_brackets(
       p, tukey_tbl, lvls, top_y, df,
@@ -1984,30 +1982,30 @@ make_boxplot <- function(df, factor_name, species_label,
       lbl_dex = 0.005
     )
   }
-
-  # --- ANOVA label (top-left), robust for discrete x ---
-  left_level <- levels(df$grp)[1]
-  lab_text   <- if (!is.null(aov_label) && nzchar(aov_label)) aov_label else aov_text
-  use_parse  <- !is.null(aov_label) && nzchar(aov_label)
   
-  if (!is.null(lab_text) && nzchar(lab_text) && length(left_level) == 1 && !is.na(left_level)) {
+  # --- ANOVA label (bottom-center, parsed) ---
+  lab_text  <- if (!is.null(aov_label) && nzchar(aov_label)) aov_label else aov_text
+  use_parse <- !is.null(aov_label) && nzchar(aov_label)
+  center_x  <- mean(seq_along(lvls))  # horizontal center across factor levels
+  bottom_y  <- 10^(log10(ymin) - 0.03)   # just above lower bound (5% up)
+  
+  if (!is.null(lab_text) && nzchar(lab_text)) {
     label_df <- data.frame(
-      grp = factor(left_level, levels = levels(df$grp)),
-      y   = top_y,
-      lab = lab_text
+      grp = factor(lvls[1], levels = lvls),  # anchor not used in aes, just placeholder
+      x = center_x, y = bottom_y, lab = lab_text
     )
+    
     p <- p + geom_text(
       data = label_df,
-      aes(x = grp, y = y, label = lab),
-      hjust = 0, vjust = 1, size = 3.3,
-      parse = use_parse,
-      inherit.aes = FALSE
+      aes(x = x, y = y, label = lab),
+      inherit.aes = FALSE,
+      hjust = 0.5, vjust = 0, size = 3.3,
+      parse = use_parse
     )
-    message("ANOVA label added at x='", left_level, "', y=", signif(top_y, 5),
-            ", parse=", use_parse, " : ", lab_text)
+    
+    message(sprintf("ANOVA label added (bottom-center) at y=%.3f : %s", bottom_y, lab_text))
   } else {
-    message("ANOVA label skipped: left_level=", left_level %||% "NULL",
-            ", lab_text present? ", !is.null(lab_text) && nzchar(lab_text))
+    message("ANOVA label skipped (no label built).")
   }
   
   list(plot = p)
