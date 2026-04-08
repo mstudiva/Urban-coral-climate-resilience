@@ -1,0 +1,3 @@
+Term,Df,Sum Sq,Mean Sq,F value,Pr(>F)
+grp        ,3,828.3148,276.1049,4.2399,0.0086
+Residuals  ,62,4037.4414,65.12,NA,NA

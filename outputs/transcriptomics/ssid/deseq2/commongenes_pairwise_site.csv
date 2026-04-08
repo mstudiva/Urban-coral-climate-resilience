@@ -1,0 +1,1292 @@
+"","gene","lpv.Star_Emerald","lpv.MacN_Emerald","annot","KOG","lpv.Star_Rainbow","lpv.MacN_Rainbow"
+"1","Ssiderea000011",-1.70949349111437,-1.15317659048214,"Clusterin-associated protein 1","Transcription",NA,NA
+"2","Ssiderea000015",-1.0042449159751,-1.54559580731745,NA,NA,NA,NA
+"3","Ssiderea000224",1.54479433391909,1.07941440906401,NA,NA,NA,NA
+"4","Ssiderea000237",-2.18465160481655,-1.14633649174678,"Aminotransferase class-V","Translation, ribosomal structure and biogenesis",NA,NA
+"5","Ssiderea000427",1.37031711226822,1.1999448757879,NA,NA,NA,NA
+"6","Ssiderea000429",1.48674554542556,1.29606338197263,NA,NA,NA,NA
+"7","Ssiderea000611",2.17404247091946,1.11600968043485,"V-myc avian myelocytomatosis viral oncogene homolog","Transcription",NA,NA
+"8","Ssiderea000641",-1.80525008962989,-2.28546297299717,NA,NA,NA,NA
+"9","Ssiderea000666",-2.81193720742504,-2.02037199495735,"rRNA (cytosine-N4-)-methyltransferase activity","Cell wall/membrane/envelope biogenesis",NA,NA
+"10","Ssiderea000887",-1.63400198219898,-1.05156939031905,NA,NA,NA,NA
+"11","Ssiderea000947",-1.02614642642435,-2.15031107255066,NA,NA,NA,NA
+"12","Ssiderea001003",1.26412274069948,1.84574123229839,NA,NA,NA,NA
+"13","Ssiderea001053",1.30826412984483,1.00367047931679,NA,NA,NA,NA
+"14","Ssiderea001099",-3.2768429580319,-2.28546297299717,"electron-transferring-flavoprotein dehydrogenase activity","Function Unknown",NA,NA
+"15","Ssiderea001224",1.11429699765651,1.47116758627242,NA,NA,NA,NA
+"16","Ssiderea001235",-2.02806470510376,-3.28649077520387,NA,NA,NA,NA
+"17","Ssiderea001255",1.01659999049087,1.36606849723778,"Activating transcription factor","Transcription",NA,NA
+"18","Ssiderea001546",1.36351073106027,2.17513486506377,NA,NA,NA,NA
+"19","Ssiderea001555",1.75796217767752,3.29140709333757,NA,NA,NA,NA
+"20","Ssiderea001788",-1.08556968357443,-1.3823023034917,NA,NA,NA,NA
+"21","Ssiderea001912",1.2094640848486,1.47950128663542,NA,NA,NA,NA
+"22","Ssiderea001921",2.81249377359476,2.46720274985374,"axonal fasciculation","Signal transduction mechanisms",NA,NA
+"23","Ssiderea002019",-1.11646889163545,-1.42445306542196,"potassium channel activity","Inorganic ion transport and metabolism",NA,NA
+"24","Ssiderea002032",2.52495940386788,3.48009050049104,"sequence-specific DNA binding","Transcription",NA,NA
+"25","Ssiderea002077",-1.17112008830507,-1.13092056640208,NA,NA,NA,NA
+"26","Ssiderea002092",-3.97156497716633,-4.90222463614378,NA,NA,NA,NA
+"27","Ssiderea002182",-1.89964924408457,-5.69334763758584,"ATPase activity, coupled to transmembrane movement of substances","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"28","Ssiderea002237",-1.31108948925337,-2.35986837016659,"Zona pellucida (ZP) domain","Posttranslational modification, protein turnover, chaperones",NA,NA
+"29","Ssiderea002379",3.29001928982551,2.02349398880915,NA,NA,NA,NA
+"30","Ssiderea002433",2.68528305031765,1.22823187007118,"protein cell adhesion","Signal transduction mechanisms",NA,NA
+"31","Ssiderea002455",1.50014973898119,1.24251986798796,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",NA,NA
+"32","Ssiderea002496",1.39476743559347,1.61802869327373,"Immunoglobulin C-2 Type","Inorganic ion transport and metabolism",NA,NA
+"33","Ssiderea002497",2.83415356081773,2.47518530627299,NA,NA,NA,NA
+"34","Ssiderea002528",-3.97156497716633,-2.31981043282478,"Immunoglobulin C-2 Type","Signal transduction mechanisms",NA,NA
+"35","Ssiderea002562",8.5721205533506,3.98445296597143,"Immunoglobulin C-2 Type","Inorganic ion transport and metabolism",NA,NA
+"36","Ssiderea002621",1.60470931875112,1.17164383150517,"Immunoglobulin C-2 Type","Inorganic ion transport and metabolism",NA,NA
+"37","Ssiderea002654",-1.80552112710381,-1.39848567541322,NA,NA,NA,NA
+"38","Ssiderea002801",-1.64541208213315,-1.20813812099183,"Tetratricopeptide repeat","Posttranslational modification, protein turnover, chaperones",NA,NA
+"39","Ssiderea002911",-2.82331334457319,-1.14832270757054,NA,NA,NA,NA
+"40","Ssiderea003038",-1.25408373804756,-2.10401941353687,"Ribonuclease P","",NA,NA
+"41","Ssiderea003132",-2.43629377196105,-1.98525939230265,"thioesterase binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"42","Ssiderea003344",-1.04071255000046,-1.25510591362373,NA,NA,NA,NA
+"43","Ssiderea003363",1.09024518689381,1.26466149568707,"SAM dependent carboxyl methyltransferase","Function Unknown",NA,NA
+"44","Ssiderea003373",-1.3500513366627,-1.96522771219303,"integrin binding","Signal transduction mechanisms",NA,NA
+"45","Ssiderea003526",3.39506830642255,3.27345569630182,"-","",NA,NA
+"46","Ssiderea003708",-1.17101031668802,-1.34008493258589,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"47","Ssiderea003741",-1.32018841226397,-2.36603652464364,"nuclear receptor transcription coactivator activity","Replication, recombination and repair",NA,NA
+"48","Ssiderea003746",-2.00186324658029,-1.01772602318257,"nuclear receptor transcription coactivator activity","Replication, recombination and repair",NA,NA
+"49","Ssiderea003822",1.78800142866869,1.13791111656178,"rRNA binding","Function Unknown",NA,NA
+"50","Ssiderea003871",-1.11864108285626,-1.34905183084541,"positive regulation of MHC class I biosynthetic process","",NA,NA
+"51","Ssiderea003873",-3.15287288188634,-2.52901094083401,NA,NA,NA,NA
+"52","Ssiderea003887",-2.62196951694035,-2.11327310534496,"Fish-specific NACHT associated domain","Function Unknown",NA,NA
+"53","Ssiderea003910",-1.36991338435373,-2.03768005784922,"ATPase activity, coupled to transmembrane movement of substances","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"54","Ssiderea003920",-1.06541906546477,-2.08324375076932,"cellular calcium ion homeostasis","Function Unknown",NA,NA
+"55","Ssiderea003942",1.16541910827475,1.85907790673189,NA,NA,NA,NA
+"56","Ssiderea003943",-1.68733075366861,-1.57245907317407,NA,NA,NA,NA
+"57","Ssiderea004147",-2.08128661372815,-1.58463175407517,"Endoplasmic reticulum to nucleus signaling","Signal transduction mechanisms",NA,NA
+"58","Ssiderea004283",-2.34164135097166,-1.07724561224373,NA,NA,NA,NA
+"59","Ssiderea004302",-1.37580325335625,-2.38602023012903,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"60","Ssiderea004440",-1.34475961487745,-1.40834641766688,NA,NA,NA,NA
+"61","Ssiderea004449",1.11564645017284,1.36006674222869,"protein glycosylation in Golgi","Function Unknown",NA,NA
+"62","Ssiderea004533",1.97504623412737,2.24105593428402,"cysteine-type peptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"63","Ssiderea004542",2.38263048089432,1.18961919105555,NA,NA,NA,NA
+"64","Ssiderea004652",-2.21644465041948,-1.53374045209113,NA,NA,NA,NA
+"65","Ssiderea004723",-1.16541910827475,-1.04876616529814,"larval turning behavior","Inorganic ion transport and metabolism",NA,NA
+"66","Ssiderea004734",-2.5173503322905,-1.76043444797489,"Ion channel activity. It is involved in the biological process described with ion transport","Inorganic ion transport and metabolism",NA,NA
+"67","Ssiderea004833",4.2256795676156,1.29459277276932,NA,NA,NA,NA
+"68","Ssiderea004837",2.47676924933633,2.78567696856172,NA,NA,NA,NA
+"69","Ssiderea004900",-1.06971405805015,-2.04357015481988,NA,NA,NA,NA
+"70","Ssiderea004908",1.26412274069948,1.32755107223157,"Belongs to the enoyl-CoA hydratase isomerase family","Lipid transport and metabolism",NA,NA
+"71","Ssiderea005001",-3.74485215298299,-9.07545518755179,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"72","Ssiderea005002",-1.61891471539368,-2.6967047687994,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"73","Ssiderea005039",-1.7449251305367,-1.44079900059809,"carbohydrate binding","Signal transduction mechanisms",NA,NA
+"74","Ssiderea005044",-1.65232780448518,-1.96630674651578,NA,NA,NA,NA
+"75","Ssiderea005272",-1.73360795026693,-1.6663307840378,"endocytic recycling","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"76","Ssiderea005375",8.45219589153796,1.26860581651639,NA,NA,NA,NA
+"77","Ssiderea005418",-1.14750777432516,-1.69681583504487,NA,NA,NA,NA
+"78","Ssiderea005419",1.72425627534481,2.97030343953845,NA,NA,NA,NA
+"79","Ssiderea005706",1.49727218782416,1.01916539443909,"mRNA export","RNA processing and modification",NA,NA
+"80","Ssiderea005709",2.00882760669675,2.18809462909408,NA,NA,NA,NA
+"81","Ssiderea005722",-1.9829625674223,-1.0037724011458,NA,NA,NA,NA
+"82","Ssiderea005770",-3.34323013603563,-2.35113592889506,NA,NA,NA,NA
+"83","Ssiderea005797",1.10470681106869,2.29584467607215,NA,NA,NA,NA
+"84","Ssiderea005820",-1.83988432384562,-1.10521813589607,"e3 ubiquitin-protein ligase","Posttranslational modification, protein turnover, chaperones",NA,NA
+"85","Ssiderea005824",1.27019020741627,1.46794817597353,"DNA replication-independent nucleosome assembly","Chromatin structure and dynamics",NA,NA
+"86","Ssiderea005825",-1.23317884720598,-2.18429690498271,NA,NA,NA,NA
+"87","Ssiderea005881",1.997323873044,1.4639684246702,"WD40 repeats","Amino acid transport and metabolism",NA,NA
+"88","Ssiderea005884",1.41433174608957,1.34008493258589,"TBCC domain-containing protein 1","Function Unknown",NA,NA
+"89","Ssiderea005885",1.62285079186534,1.25843782158755,NA,NA,NA,NA
+"90","Ssiderea006059",-1.14382884330845,-1.13970533883794,NA,NA,NA,NA
+"91","Ssiderea006071",1.1982053678346,1.85907790673189,NA,NA,NA,NA
+"92","Ssiderea006084",1.50270992480368,2.69079435659752,"Complement Clr-like EGF-like","Signal transduction mechanisms",NA,NA
+"93","Ssiderea006090",-1.00866121635726,-3.07913190775731,"axonogenesis involved in innervation","Function Unknown",NA,NA
+"94","Ssiderea006333",-1.40052264335732,-2.20858322025832,"Calcium ion binding. It is involved in the biological process described with regulation of developmental process","Signal transduction mechanisms",NA,NA
+"95","Ssiderea006354",1.92154590184841,1.31894891675639,NA,NA,NA,NA
+"96","Ssiderea006355",1.08700130631189,2.75447612262983,NA,NA,NA,NA
+"97","Ssiderea006567",-1.73358601895706,-1.74188774731408,NA,NA,NA,NA
+"98","Ssiderea006569",1.74572922018809,2.7936375852282,"Coagulation factor 5/8 C-terminal domain, discoidin domain","Signal transduction mechanisms",NA,NA
+"99","Ssiderea006707",1.84990280815301,1.42219653060988,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"100","Ssiderea006712",1.16541910827475,1.39730822419455,"ATP binding","Cytoskeleton",NA,NA
+"101","Ssiderea007355",-2.2450833662382,-1.34905183084541,"metanephric glomerular basement membrane development","Extracellular structures",NA,NA
+"102","Ssiderea007357",-3.21419110258738,-1.01871483204723,"calcium ion transport","",NA,NA
+"103","Ssiderea007529",3.60959622412152,2.81196124378972,NA,NA,NA,NA
+"104","Ssiderea007554",-2.2226904998069,-2.12680853107778,"glucose:sodium symporter activity","Inorganic ion transport and metabolism",NA,NA
+"105","Ssiderea007661",-2.66184719935788,-1.22594850285206,NA,NA,NA,NA
+"106","Ssiderea007706",-1.38815619005224,-2.12630325536346,NA,NA,NA,NA
+"107","Ssiderea007768",-1.26841896092179,-2.48153570084572,NA,NA,NA,NA
+"108","Ssiderea007826",-1.83198970862503,-2.78567696856172,"EGF domain","Signal transduction mechanisms",NA,NA
+"109","Ssiderea007918",-1.06360159929505,-1.19189369018917,"medium-chain fatty acid-CoA ligase activity","Lipid transport and metabolism",NA,NA
+"110","Ssiderea007956",-2.32894195345118,-1.1680452902513,"Belongs to the peptidase C19 family","Posttranslational modification, protein turnover, chaperones",NA,NA
+"111","Ssiderea008044",-1.08478069803308,-2.46932777624611,NA,NA,NA,NA
+"112","Ssiderea008138",1.80062644334319,2.33501385537731,NA,NA,NA,NA
+"113","Ssiderea008285",1.70550593500425,1.94056010546134,"AP-5 complex subunit sigma-1","Function Unknown",NA,NA
+"114","Ssiderea008320",-1.58187312773693,-1.21591200358804,"FAD transmembrane transport","Energy production and conversion",NA,NA
+"115","Ssiderea008343",3.37923538479912,1.90818255977097,NA,NA,NA,NA
+"116","Ssiderea008478",-2.32747731761841,-1.21126330854545,NA,NA,NA,NA
+"117","Ssiderea008532",2.3904868008566,1.84576234254742,"scavenger receptor activity","Signal transduction mechanisms",NA,NA
+"118","Ssiderea008739",-3.0402683712472,-1.51976703366596,NA,NA,NA,NA
+"119","Ssiderea008754",1.2379481798627,1.01544293222495,NA,NA,NA,NA
+"120","Ssiderea008758",-1.08478069803308,-1.61603352242288,NA,NA,NA,NA
+"121","Ssiderea008952",5.88422544325393,1.62202755596891,"G-protein coupled receptor activity","Signal transduction mechanisms",NA,NA
+"122","Ssiderea008973",1.43480463824675,1.07313890096951,NA,NA,NA,NA
+"123","Ssiderea009069",2.08702849191275,2.07164268787853,"Coagulation factor 5/8 C-terminal domain, discoidin domain","Signal transduction mechanisms",NA,NA
+"124","Ssiderea009081",-1.66719940570442,-1.11600968043485,"catalytic activity. It is involved in the biological process described with metabolic process","Lipid transport and metabolism",NA,NA
+"125","Ssiderea009116",1.36509668083821,1.12238587196131,"Lipocalin-like domain","Cell wall/membrane/envelope biogenesis",NA,NA
+"126","Ssiderea009695",-2.2226904998069,-1.32075069414552,NA,NA,NA,NA
+"127","Ssiderea009730",1.31113378341494,2.23721805304699,NA,NA,NA,NA
+"128","Ssiderea009771",1.07743471533793,2.14933608895503,NA,NA,NA,NA
+"129","Ssiderea009801",2.79453223964007,3.54287599284897,NA,NA,NA,NA
+"130","Ssiderea009898",2.82173087359902,4.2160103769129,"Papain family cysteine protease","Posttranslational modification, protein turnover, chaperones",NA,NA
+"131","Ssiderea009987",1.00301521176874,1.47730794715147,"SANT  SWI3, ADA2, N-CoR and TFIIIB'' DNA-binding domains","Transcription",NA,NA
+"132","Ssiderea010003",1.89964924408457,2.73244476148478,NA,NA,NA,NA
+"133","Ssiderea010143",-2.29688671510542,-2.23209974340481,NA,NA,NA,NA
+"134","Ssiderea010168",-1.40619551426575,-1.352710628829,"7 transmembrane receptor (rhodopsin family)","Function Unknown",NA,NA
+"135","Ssiderea010217",-1.79714827935805,-2.08345243460508,NA,NA,NA,NA
+"136","Ssiderea010264",3.56098827756719,3.24218132920427,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"137","Ssiderea010280",1.17248281654977,1.25843782158755,NA,NA,NA,NA
+"138","Ssiderea010348",-2.41548270727933,-1.16046056754778,"Spermine synthase activity. It is involved in the biological process described with spermine biosynthetic process","Coenzyme transport and metabolism",NA,NA
+"139","Ssiderea010376",1.20029119533851,1.93439951497476,"homogentisate 1,2-dioxygenase activity","Amino acid transport and metabolism",NA,NA
+"140","Ssiderea010471",-1.34538130367681,-4.90222463614378,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"141","Ssiderea010741",1.13559262661929,1.18127314228829,"Notch homolog","Signal transduction mechanisms",NA,NA
+"142","Ssiderea010865",1.1476127816781,1.17722972986653,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"143","Ssiderea010960",-1.14558049018176,-1.7659368167265,"nail development","Carbohydrate transport and metabolism",NA,NA
+"144","Ssiderea010964",-1.50240218823498,-1.07724561224373,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"145","Ssiderea011005",1.21639988724327,3.89128487086744,NA,NA,NA,NA
+"146","Ssiderea011080",-2.50455114388353,-1.33417713130351,"Caspase domain","Function Unknown",NA,NA
+"147","Ssiderea011154",1.06582578927063,1.11471419123702,"Hemicentin 1","Signal transduction mechanisms",NA,NA
+"148","Ssiderea011251",1.04291428410781,2.11151934047802,"positive regulation of phosphorylation of RNA polymerase II C-terminal domain","Cell cycle control, cell division, chromosome partitioning",NA,NA
+"149","Ssiderea011304",1.29496563849649,1.61356196580394,"Protein tyrosine phosphatase, catalytic domain","Signal transduction mechanisms",NA,NA
+"150","Ssiderea011491",1.04435355191378,1.32035982470208,"calmodulin-dependent protein kinase activity","Signal transduction mechanisms",NA,NA
+"151","Ssiderea011597",-1.69471982435711,-2.68100999193521,"carbohydrate binding","Function Unknown",NA,NA
+"152","Ssiderea011641",1.45900359505067,1.52637008621937,"Hemicentin 1","Signal transduction mechanisms",NA,NA
+"153","Ssiderea011646",1.94933993429397,1.10521813589607,"Scavenger receptor Cys-rich","Signal transduction mechanisms",NA,NA
+"154","Ssiderea011678",1.24504924900107,1.69028960119038,"CUB domain containing protein 2","Signal transduction mechanisms",NA,NA
+"155","Ssiderea011718",-1.19711470054102,-1.15115303491844,"cellular response to vasopressin","",NA,NA
+"156","Ssiderea011810",1.07800364951654,1.24145703498549,NA,NA,NA,NA
+"157","Ssiderea011981",6.22711043799228,4.3409739974631,NA,NA,NA,NA
+"158","Ssiderea011982",5.59779723825941,5.33650114651689,NA,NA,NA,NA
+"159","Ssiderea012006",1.18352548839784,1.87823310029996,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"160","Ssiderea012150",1.06582578927063,1.21766493285114,NA,NA,NA,NA
+"161","Ssiderea012151",1.73048694315025,3.16690424595097,NA,NA,NA,NA
+"162","Ssiderea012163",1.46269842685277,1.03769148554222,"extracellular ligand-gated ion channel activity","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"163","Ssiderea012245",1.31403415730996,3.48872941101416,NA,NA,NA,NA
+"164","Ssiderea012262",1.40914664291385,1.84395067577908,NA,NA,NA,NA
+"165","Ssiderea012317",1.37950881833979,1.01892978518059,NA,NA,NA,NA
+"166","Ssiderea012341",1.97624311063184,1.96432588819381,NA,NA,NA,NA
+"167","Ssiderea012391",1.7308546991433,2.22415879504928,"Catalyzes the irreversible cleavage of the glycosidic bond in both 5'-methylthioadenosine (MTA) and S- adenosylhomocysteine (SAH AdoHcy) to adenine and the corresponding thioribose, 5'-methylthioribose and S-ribosylhomocysteine, respectively","Nucleotide transport and metabolism",NA,NA
+"168","Ssiderea012713",1.80062644334319,3.58609349370183,"negative regulation of growth rate","Signal transduction mechanisms",NA,NA
+"169","Ssiderea012715",1.15662229346686,6.66766413440269,"hyaluronic acid binding","Signal transduction mechanisms",NA,NA
+"170","Ssiderea012743",2.37956504521264,2.89518577833824,"collagen","Extracellular structures",NA,NA
+"171","Ssiderea012886",1.10095231432116,1.15159668716501,NA,NA,NA,NA
+"172","Ssiderea013067",4.92983012031931,6.29495813272127,"dihydrofolate reductase activity","Coenzyme transport and metabolism",NA,NA
+"173","Ssiderea013167",-4.02006460194221,-2.12027367204,"Fibrinogen-related domains (FReDs)","Function Unknown",NA,NA
+"174","Ssiderea013259",5.63133336361868,2.71909295500695,"arylesterase activity","Function Unknown",NA,NA
+"175","Ssiderea013770",-3.69729161486423,-1.07437440122241,"Galactose-3-O-sulfotransferase","Function Unknown",NA,NA
+"176","Ssiderea013833",2.30305917020803,1.02014245037333,"Ring finger and WD repeat domain 2","Function Unknown",NA,NA
+"177","Ssiderea013867",-1.0359589774208,-1.94736221379314,"CUB and zona pellucida-like domain-containing protein","Function Unknown",NA,NA
+"178","Ssiderea013956",-1.05111082336377,-1.20273676048931,NA,NA,NA,NA
+"179","Ssiderea013981",-2.09237205079847,-1.03019295850838,"-","",NA,NA
+"180","Ssiderea014060",1.02614642642435,1.62640599753985,NA,NA,NA,NA
+"181","Ssiderea014114",-7.59696048871925,-1.26778902807668,"C-type lectin domain family 4 member G-like","",NA,NA
+"182","Ssiderea014159",2.93727562887264,1.74927160031927,"scavenger receptor activity","Signal transduction mechanisms",NA,NA
+"183","Ssiderea014222",1.27090156399057,1.00632488676077,"Tetratricopeptide repeat","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"184","Ssiderea014225",1.21916779935731,1.1500662580827,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"185","Ssiderea014529",1.31903897902804,1.59146822918529,"GMC oxidoreductase","Amino acid transport and metabolism",NA,NA
+"186","Ssiderea014617",1.25197942201639,2.41496645505394,"fucose metabolic process","Carbohydrate transport and metabolism",NA,NA
+"187","Ssiderea014725",-1.75478687273274,-2.09010691238782,NA,NA,NA,NA
+"188","Ssiderea014817",1.9439730433077,1.63356700526127,"o-methyltransferase","Posttranslational modification, protein turnover, chaperones",NA,NA
+"189","Ssiderea014825",-3.46115652067521,-1.71856236784334,"Solute carrier organic anion transporter family, member","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"190","Ssiderea014844",-1.66680293339807,-1.05410896759484,"NLE (NUC135) domain","Function Unknown",NA,NA
+"191","Ssiderea014857",-1.91845056815216,-2.94258152082284,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"192","Ssiderea014913",3.10762865842667,5.96559486511638,"translation elongation factor activity","Translation, ribosomal structure and biogenesis",NA,NA
+"193","Ssiderea015228",1.62316995244829,1.72064130024976,"BPTI/Kunitz family of serine protease inhibitors.","Posttranslational modification, protein turnover, chaperones",NA,NA
+"194","Ssiderea015474",-4.23570176509006,-1.19457600572986,"3'-phosphoadenosine 5'-phosphosulfate transmembrane transporter activity","Carbohydrate transport and metabolism",NA,NA
+"195","Ssiderea015479",2.16079643446128,2.82396660467866,NA,NA,NA,NA
+"196","Ssiderea015564",-1.28438828038432,-1.32047513288001,"Rdx family","Function Unknown",NA,NA
+"197","Ssiderea015736",-3.8345825982688,-1.81864819818869,"molting cycle, collagen and cuticulin-based cuticle","",NA,NA
+"198","Ssiderea015840",-2.53397592163814,-1.00003158664507,"E3 ubiquitin-protein ligase parkin","Posttranslational modification, protein turnover, chaperones",NA,NA
+"199","Ssiderea015915",-1.14896174949945,-1.9879876408791,"Allows the formation of correctly charged Gln-tRNA(Gln) through the transamidation of misacylated Glu-tRNA(Gln) in the mitochondria. The reaction takes place in the presence of glutamine and ATP through an activated gamma-phospho-Glu- tRNA(Gln)","Translation, ribosomal structure and biogenesis",NA,NA
+"200","Ssiderea015986",1.43460117461007,3.45033276805115,NA,NA,NA,NA
+"201","Ssiderea016067",1.46404191794041,1.76048270847527,"cell division cycle 5-like","Transcription",NA,NA
+"202","Ssiderea016088",-3.83710738388703,-3.65771551492784,"alkaline phosphatase activity","Inorganic ion transport and metabolism",NA,NA
+"203","Ssiderea016127",1.70044024167758,3.81876161160305,NA,NA,NA,NA
+"204","Ssiderea016232",-1.3011241364197,-1.53374045209113,NA,NA,NA,NA
+"205","Ssiderea016378",-1.00007474921992,-1.71881004117415,NA,NA,NA,NA
+"206","Ssiderea016562",1.81340738830404,3.28649077520387,NA,NA,NA,NA
+"207","Ssiderea016647",-1.82533655649309,-2.09297410730849,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"208","Ssiderea016663",2.15201056880072,1.31259880321738,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"209","Ssiderea016667",-1.59887294318778,-2.42233342937633,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"210","Ssiderea016812",3.39506830642255,3.67513515291766,NA,NA,NA,NA
+"211","Ssiderea016881",-3.4793213170273,-2.11024932579758,NA,NA,NA,NA
+"212","Ssiderea016945",2.26778511756453,2.77445879649606,"maturation of SSU-rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA, LSU-rRNA)","RNA processing and modification",NA,NA
+"213","Ssiderea017115",1.83909909388532,1.16272176140282,"phosphoenolpyruvate carboxykinase activity","Energy production and conversion",NA,NA
+"214","Ssiderea017216",2.17367406553293,1.16046056754778,"nucleic acid-templated transcription","Function Unknown",NA,NA
+"215","Ssiderea017330",-3.51321779781079,-1.62092090237116,NA,NA,NA,NA
+"216","Ssiderea017365",3.73397589437058,4.86395266469732,"electron carrier activity. It is involved in the biological process described with oxidation-reduction process","Nucleotide transport and metabolism",NA,NA
+"217","Ssiderea017671",-1.35025204045907,-1.04418533783809,NA,NA,NA,NA
+"218","Ssiderea017817",3.33264305597183,1.06513907799609,"CHAT domain","Transcription",NA,NA
+"219","Ssiderea017831",4.93627438768388,1.48234385190819,"propanoyl-CoA C-acyltransferase activity","Lipid transport and metabolism",NA,NA
+"220","Ssiderea017832",-2.18338143464574,-1.23554899284203,NA,NA,NA,NA
+"221","Ssiderea017874",-1.14135834992339,-1.01312750794149,"retinol dehydrogenase","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"222","Ssiderea018152",-1.68477524536557,-1.75784528744813,"collagen","Extracellular structures",NA,NA
+"223","Ssiderea018246",-1.84143711527353,-1.06610527233591,NA,NA,NA,NA
+"224","Ssiderea018266",3.81727665218772,2.33084738972881,NA,NA,NA,NA
+"225","Ssiderea018495",1.74479497811616,1.74188774731408,NA,NA,NA,NA
+"226","Ssiderea018836",-3.48045288013739,-2.58398057495623,NA,NA,NA,NA
+"227","Ssiderea018905",-2.78227405718317,-1.58593576936391,"mitochondrial translational elongation","Translation, ribosomal structure and biogenesis",NA,NA
+"228","Ssiderea018910",-1.46105045348839,-1.51869063943457,"Belongs to the cullin family","Cell cycle control, cell division, chromosome partitioning",NA,NA
+"229","Ssiderea019185",-1.27618529338395,-3.16878517205682,NA,NA,NA,NA
+"230","Ssiderea019349",-1.41702689488413,-1.17163903947573,"protein O-linked mannosylation","Carbohydrate transport and metabolism",NA,NA
+"231","Ssiderea019391",-3.31563189845673,-3.37218774366856,"positive regulation of voltage-gated calcium channel activity","Signal transduction mechanisms",NA,NA
+"232","Ssiderea019397",2.00243737549036,1.88548366635024,"Leucine-rich repeat-containing protein 31","Function Unknown",NA,NA
+"233","Ssiderea019422",1.94146758501125,4.91218712168631,"negative regulation of bile acid biosynthetic process","Signal transduction mechanisms",NA,NA
+"234","Ssiderea019629",5.01063911839981,2.15303235233289,NA,NA,NA,NA
+"235","Ssiderea019630",2.6420120625967,2.49021701774468,NA,NA,NA,NA
+"236","Ssiderea019708",-1.95993276726099,-1.04418533783809,NA,NA,NA,NA
+"237","Ssiderea019780",1.95265097607222,1.32882442693381,"cyclic-di-GMP binding","Function Unknown",NA,NA
+"238","Ssiderea019816",1.59443469388731,1.17801923104887,NA,NA,NA,NA
+"239","Ssiderea019818",1.40965784393995,1.05052118950572,"Glucose-induced degradation protein 8 homolog","Cytoskeleton",NA,NA
+"240","Ssiderea019840",-2.87575098965146,-2.35113592889506,"Sushi, nidogen and EGF-like","Signal transduction mechanisms",NA,NA
+"241","Ssiderea019841",-2.26550625870301,-1.67622288597703,NA,NA,NA,NA
+"242","Ssiderea019899",2.18338143464574,1.62741773231902,"Nodal homolog","Signal transduction mechanisms",NA,NA
+"243","Ssiderea020491",-4.30729315938149,2.33732849112928,NA,NA,NA,NA
+"244","Ssiderea020500",5.4631994275798,5.64321747744593,NA,NA,NA,NA
+"245","Ssiderea020581",-2.02882998631476,-1.82342319234836,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","Signal transduction mechanisms",NA,NA
+"246","Ssiderea020631",-2.01547573664051,-1.67622288597703,"regulation of voltage-gated sodium channel activity","Signal transduction mechanisms",NA,NA
+"247","Ssiderea020718",1.1318428655446,1.69728670709246,NA,NA,NA,NA
+"248","Ssiderea020887",1.05799290827498,1.33305078281368,"tetratricopeptide repeat","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"249","Ssiderea020898",1.06541906546477,2.12069020646966,"protein serine/threonine kinase activity","Signal transduction mechanisms",NA,NA
+"250","Ssiderea020931",1.25803733261957,1.35643058499058,NA,NA,NA,NA
+"251","Ssiderea021127",-1.9829625674223,-1.75162255675472,"ribosomal large subunit biogenesis","Function Unknown",NA,NA
+"252","Ssiderea021182",-1.27737544825565,-1.36158704920792,NA,NA,NA,NA
+"253","Ssiderea021220",2.08748386716861,3.75525615404209,"Synaptic vesicle membrane protein VAT-1 homolog","Energy production and conversion",NA,NA
+"254","Ssiderea021262",-2.52251751472397,-2.61321500740195,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",NA,NA
+"255","Ssiderea021268",-2.93230440229721,-1.23968223365667,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",NA,NA
+"256","Ssiderea021340",1.81340738830404,1.20280768582288,"Ectoine synthase","Function Unknown",NA,NA
+"257","Ssiderea021343",2.26079237434195,2.91437684996649,"-","",NA,NA
+"258","Ssiderea021366",1.4891917521557,1.49820676254946,NA,NA,NA,NA
+"259","Ssiderea021568",1.67930015308202,2.43194621034321,"Ankyrin repeat and SAM domain-containing protein 6","RNA processing and modification",NA,NA
+"260","Ssiderea021609",-1.0512428773555,-2.13457245772514,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"261","Ssiderea021838",1.46797995405995,1.56609321610419,"-","",NA,NA
+"262","Ssiderea021920",1.93114150063196,3.28649520741081,NA,NA,NA,NA
+"263","Ssiderea022000",-2.50139725295373,-1.6695934472195,NA,NA,NA,NA
+"264","Ssiderea022008",3.21419110258738,1.50077629438802,NA,NA,NA,NA
+"265","Ssiderea022066",-1.07645985398892,-1.22222798313893,"octopamine biosynthetic process","Function Unknown",NA,NA
+"266","Ssiderea022145",2.30477305874168,1.42228828365851,NA,NA,NA,NA
+"267","Ssiderea022223",-1.79108022697321,-1.85631307647477,"HEAT repeat-containing protein 4","Function Unknown",NA,NA
+"268","Ssiderea022229",-2.42104558423899,-1.30102705172927,"-","",NA,NA
+"269","Ssiderea022230",1.53938996729345,1.24151241264299,"histone pre-mRNA stem-loop binding","Replication, recombination and repair",NA,NA
+"270","Ssiderea022358",-4.40209843024016,-2.84699931961948,NA,NA,NA,NA
+"271","Ssiderea022367",1.70524347812479,2.07018913989835,"proton-transporting ATPase activity, rotational mechanism","Energy production and conversion",NA,NA
+"272","Ssiderea022438",5.5082546347568,4.3409739974631,"Laminin B domain","Signal transduction mechanisms",NA,NA
+"273","Ssiderea022541",2.2366861859467,3.20009990338955,"protein phosphatase 1, regulatory subunit","",NA,NA
+"274","Ssiderea022549",1.00446023168008,1.98850697897292,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"275","Ssiderea022553",-1.55433271676344,-2.73916649915245,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",NA,NA
+"276","Ssiderea022604",-2.38739787108642,-1.68057662953853,"voltage-gated potassium channel activity","Translation, ribosomal structure and biogenesis",NA,NA
+"277","Ssiderea022680",-1.14760471798839,-1.07672805047082,NA,NA,NA,NA
+"278","Ssiderea022681",-1.64095218036839,-1.66399823089562,NA,NA,NA,NA
+"279","Ssiderea022809",-1.70256713601191,-1.02542681681339,NA,NA,NA,NA
+"280","Ssiderea022857",-1.69189641077335,-1.44357374451394,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",NA,NA
+"281","Ssiderea022859",-1.06641688119902,-1.19439738905096,"DBH-like monooxygenase protein 1","Amino acid transport and metabolism",NA,NA
+"282","Ssiderea022887",-4.57683821987609,-2.47313839647861,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"283","Ssiderea022933",-2.14139180667393,-1.61356196580394,NA,NA,NA,NA
+"284","Ssiderea022973",-2.36308913996509,-1.29363641091542,NA,NA,NA,NA
+"285","Ssiderea022991",3.23973372080104,1.51811456892933,"N-acylsphingosine amidohydrolase activity","Function Unknown",NA,NA
+"286","Ssiderea023032",-2.7796717226228,-2.23721805304699,NA,NA,NA,NA
+"287","Ssiderea023113",-1.28361961556062,-1.35816680133143,"Catechol O-methyltransferase domain-containing protein","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"288","Ssiderea023314",2.39849754592083,1.56594149602116,NA,NA,NA,NA
+"289","Ssiderea023333",1.10598309166349,1.15115303491844,"beta-galactosidase activity","Carbohydrate transport and metabolism",NA,NA
+"290","Ssiderea023339",-1.04758449269386,-1.00822325618423,"glucosaminylgalactosylglucosylceramide beta-galactosyltransferase activity","Carbohydrate transport and metabolism",NA,NA
+"291","Ssiderea023649",-4.66847489702478,-5.07537034585942,NA,NA,NA,NA
+"292","Ssiderea023651",-3.56863866639337,-1.46413411748696,NA,NA,NA,NA
+"293","Ssiderea023735",1.21916779935731,4.3409739974631,NA,NA,NA,NA
+"294","Ssiderea023852",2.79715704599034,2.75728183297089,"Neuronal pentraxin","Signal transduction mechanisms",NA,NA
+"295","Ssiderea023878",1.53483245303458,1.77137414025151,NA,NA,NA,NA
+"296","Ssiderea023900",3.58814605334619,2.26179717982508,"Complement","Posttranslational modification, protein turnover, chaperones",NA,NA
+"297","Ssiderea023904",-1.72151707719859,-1.13133705768698,"UDP-glucoronosyl and UDP-glucosyl transferase","",NA,NA
+"298","Ssiderea023913",1.84066842555734,1.13731615116174,NA,NA,NA,NA
+"299","Ssiderea023975",1.50817964155529,2.37548823500258,NA,NA,NA,NA
+"300","Ssiderea023985",1.33440115760555,1.34762093127962,"nicotinamide phosphoribosyltransferase activity","Coenzyme transport and metabolism",NA,NA
+"301","Ssiderea024034",-1.18233972956005,-1.66413252483599,NA,NA,NA,NA
+"302","Ssiderea024163",-2.13008481518413,-1.03677142234206,"acetyl-CoA hydrolase activity","Lipid transport and metabolism",NA,NA
+"303","Ssiderea024229",-5.45982554696485,-1.98601691050804,NA,NA,NA,NA
+"304","Ssiderea024230",-5.42806667901096,-1.25095359479532,NA,NA,NA,NA
+"305","Ssiderea024535",2.7381335794108,1.98601691050804,NA,NA,NA,NA
+"306","Ssiderea024538",-1.80062644334319,-1.50468602870226,NA,NA,NA,NA
+"307","Ssiderea024585",-6.09060879849897,-3.75557694965085,"Transmembrane amino acid transporter protein","Amino acid transport and metabolism",NA,NA
+"308","Ssiderea024595",-1.48674554542556,-1.03378653835853,"biological adhesion","Extracellular structures",NA,NA
+"309","Ssiderea024607",1.75942080798809,2.11327310534496,NA,NA,NA,NA
+"310","Ssiderea024700",1.2602356496737,1.87460156076844,NA,NA,NA,NA
+"311","Ssiderea024710",-7.74925220982198,-9.20245313659103,NA,NA,NA,NA
+"312","Ssiderea024727",1.03502264354824,1.00439538566624,NA,NA,NA,NA
+"313","Ssiderea024769",1.56614110279337,4.22794611641678,NA,NA,NA,NA
+"314","Ssiderea024838",1.8800526008127,2.36461475560137,"Belongs to the G-protein coupled receptor 1 family","Signal transduction mechanisms",NA,NA
+"315","Ssiderea024844",-1.74769640172041,-1.29271520399083,NA,NA,NA,NA
+"316","Ssiderea024906",2.73051418872094,5.36551800123087,"Galactose binding lectin domain","Posttranslational modification, protein turnover, chaperones",NA,NA
+"317","Ssiderea024910",2.26039144749943,1.67170780123945,NA,NA,NA,NA
+"318","Ssiderea024988",-1.1557603031945,-1.73313014217237,"ephrin receptor binding","Signal transduction mechanisms",NA,NA
+"319","Ssiderea025061",2.47676924933633,1.06304844349187,NA,NA,NA,NA
+"320","Ssiderea025376",-1.10406893701577,-1.29679815836061,"gamma-glutamyl-peptidase activity","Coenzyme transport and metabolism",NA,NA
+"321","Ssiderea025583",-3.40657639815267,-2.27596999082256,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"322","Ssiderea025633",-1.11618665646539,-1.58463175407517,"neurotransmitter:sodium symporter activity","Signal transduction mechanisms",NA,NA
+"323","Ssiderea025659",5.01063911839981,1.72064130024976,"NADP-retinol dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"324","Ssiderea025685",3.60948294912118,-1.17460491597446,"Collagen triple helix","Function Unknown",NA,NA
+"325","Ssiderea025962",2.10838969731846,1.05804094547972,NA,NA,NA,NA
+"326","Ssiderea026077",3.12965129216163,1.4639684246702,NA,NA,NA,NA
+"327","Ssiderea026079",-1.31113378341494,-1.81954248040819,"kynurenine 3-monooxygenase activity","Energy production and conversion",NA,NA
+"328","Ssiderea026130",2.52284606062161,3.16878517205682,"HD domain","Function Unknown",NA,NA
+"329","Ssiderea026182",1.17940885395905,1.61356196580394,"protein phosphatase 1, regulatory subunit 21","Cell cycle control, cell division, chromosome partitioning",NA,NA
+"330","Ssiderea026208",1.50174472986599,3.1973905615017,NA,NA,NA,NA
+"331","Ssiderea026325",-1.66188326448067,-1.0037724011458,"Protein kinase C conserved region 2 (CalB)","Function Unknown",NA,NA
+"332","Ssiderea026331",-2.73587048666775,-5.50818787909098,"Belongs to the ATP guanido phosphotransferase family","Energy production and conversion",NA,NA
+"333","Ssiderea026336",-1.00902807514823,-1.82619782435476,NA,NA,NA,NA
+"334","Ssiderea026458",2.21701298223055,1.352710628829,"guanylate cyclase activity","Signal transduction mechanisms",NA,NA
+"335","Ssiderea026489",-2.31225938444902,-1.34905183084541,NA,NA,NA,NA
+"336","Ssiderea026676",1.16163196371695,3.02997012208026,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",NA,NA
+"337","Ssiderea026681",2.23098860170188,3.43479772062539,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",NA,NA
+"338","Ssiderea026717",-1.6997515745287,-1.20222251677218,NA,NA,NA,NA
+"339","Ssiderea026835",-4.80543289115322,-1.80422673988214,NA,NA,NA,NA
+"340","Ssiderea026844",2.25021370181532,6.69946802936159,"negative regulation of chemokine (C-X-C motif) ligand 2 production","Signal transduction mechanisms",NA,NA
+"341","Ssiderea026847",4.1326749463201,3.42039323480971,NA,NA,NA,NA
+"342","Ssiderea026848",3.11160916748887,1.18710406148062,NA,NA,NA,NA
+"343","Ssiderea026849",1.49067377543496,1.64085539816762,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",NA,NA
+"344","Ssiderea026955",-1.73460169833814,-1.20273676048931,"store-operated calcium channel activity","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"345","Ssiderea026973",1.53805374482674,1.59828866440518,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"346","Ssiderea027084",-2.01485644406479,-1.34417249465134,NA,NA,NA,NA
+"347","Ssiderea027144",1.41553472889956,1.87950222705824,"Selenium-binding protein 1","Inorganic ion transport and metabolism",NA,NA
+"348","Ssiderea027684",-3.55623111964668,-1.12310619527727,NA,NA,NA,NA
+"349","Ssiderea027720",-1.33320065878561,-4.34213589764832,NA,NA,NA,NA
+"350","Ssiderea027774",-6.1094160035009,-2.69570216586758,"MAC/Perforin domain","Function Unknown",NA,NA
+"351","Ssiderea027809",-3.22288552490666,-6.25166057816356,"PPIases accelerate the folding of proteins. It catalyzes the cis-trans isomerization of proline imidic peptide bonds in oligopeptides","Posttranslational modification, protein turnover, chaperones",NA,NA
+"352","Ssiderea027833",-1.13735343660923,-4.88854944473255,NA,NA,NA,NA
+"353","Ssiderea027966",2.76637544204485,5.50818787909098,"tumor necrosis factor (ligand) superfamily, member","Signal transduction mechanisms",NA,NA
+"354","Ssiderea028132",2.44998843640224,1.18491628890637,"Acid sphingomyelinase-like phosphodiesterase 3b","Lipid transport and metabolism",NA,NA
+"355","Ssiderea028215",2.08534137890638,2.76997349161174,NA,NA,NA,NA
+"356","Ssiderea028226",4.75076660716549,1.61642464798074,"positive regulation of gluconeogenesis","Carbohydrate transport and metabolism",NA,NA
+"357","Ssiderea028247",-1.70912061613256,-1.52147054757072,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"358","Ssiderea028253",1.3920474252264,2.76726053379083,NA,NA,NA,NA
+"359","Ssiderea028351",-1.1596580270965,-1.12668720652339,"factor 14","Transcription",NA,NA
+"360","Ssiderea028456",-1.45916179795783,-1.37169599076949,"TeTratriCopeptide repeat","Signal transduction mechanisms",NA,NA
+"361","Ssiderea028667",1.12577528737529,3.14968103909043,"creatine kinase activity","Energy production and conversion",NA,NA
+"362","Ssiderea028697",-1.50353001548459,-1.60587463905349,NA,NA,NA,NA
+"363","Ssiderea028718",-1.79048295729198,-1.33573072503852,NA,NA,NA,NA
+"364","Ssiderea028906",-1.72751520325947,-1.36231137804287,NA,NA,NA,NA
+"365","Ssiderea028966",1.19711470054102,3.75525615404209,"protein-hormone receptor activity","Signal transduction mechanisms",NA,NA
+"366","Ssiderea028973",-3.19594082914515,-1.21450209640785,"Ammonium transporter","Inorganic ion transport and metabolism",NA,NA
+"367","Ssiderea029092",3.40712450691946,2.83572040683114,NA,NA,NA,NA
+"368","Ssiderea029184",1.55669153325687,1.26292537108283,"Fibrillar collagen C-terminal domain","Function Unknown",NA,NA
+"369","Ssiderea029188",2.82302508025604,1.89959438643791,"Cobalamin-independent synthase, Catalytic domain","Amino acid transport and metabolism",NA,NA
+"370","Ssiderea029196",1.30654041499281,1.39620129263983,"positive regulation of TRAIL-activated apoptotic signaling pathway","Posttranslational modification, protein turnover, chaperones",NA,NA
+"371","Ssiderea029278",4.51294146941914,2.90543300589888,NA,NA,NA,NA
+"372","Ssiderea029356",3.23973372080104,1.11760689254052,"positive regulation of epithelial to mesenchymal transition","Function Unknown",NA,NA
+"373","Ssiderea029511",-1.98070599071866,-1.52360179780206,"Microtubule binding","Cytoskeleton",NA,NA
+"374","Ssiderea029577",3.17799031702855,2.18809462909408,"Solute carrier family 46, member 3","Function Unknown",NA,NA
+"375","Ssiderea029687",2.50455114388353,2.6309832009595,"ATP-dependent RNA helicase SUPV3L1, mitochondrial","RNA processing and modification",NA,NA
+"376","Ssiderea029690",1.82932244003753,1.04876616529814,NA,NA,NA,NA
+"377","Ssiderea029805",1.54374321373677,1.40557895342732,NA,NA,NA,NA
+"378","Ssiderea029875",1.26248374786924,1.7148201337702,NA,NA,NA,NA
+"379","Ssiderea030069",1.24690661374865,1.53456968180464,"phosphopyruvate hydratase activity","Carbohydrate transport and metabolism",NA,NA
+"380","Ssiderea030145",-1.28470286109449,-1.89634443667983,NA,NA,NA,NA
+"381","Ssiderea030187",-6.38301060485003,-6.91384587110348,"small GTPase mediated signal transduction","Chromatin structure and dynamics",NA,NA
+"382","Ssiderea030239",1.56986376624874,1.38031816583904,NA,NA,NA,NA
+"383","Ssiderea030250",-1.61891471539368,-1.9147820105341,"biogenesis factor 2","Posttranslational modification, protein turnover, chaperones",NA,NA
+"384","Ssiderea030383",2.30305917020803,3.55604983594483,NA,NA,NA,NA
+"385","Ssiderea030487",1.33320065878561,1.12752699594038,NA,NA,NA,NA
+"386","Ssiderea031266",-1.11576286398892,-1.06304844349187,NA,NA,NA,NA
+"387","Ssiderea031274",-1.01659999049087,-1.97358678019666,NA,NA,NA,NA
+"388","Ssiderea031284",-1.13559262661929,1.40601550218489,NA,NA,NA,NA
+"389","Ssiderea031312",-6.10177423263977,-3.0751860169002,"peroxidase activity","Function Unknown",NA,NA
+"390","Ssiderea031449",-1.88305532459414,-1.69919017794375,NA,NA,NA,NA
+"391","Ssiderea031488",-1.33903534863756,-1.06912607712802,NA,NA,NA,NA
+"392","Ssiderea031597",-1.31492392687032,-1.48849767928099,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",NA,NA
+"393","Ssiderea031624",-1.97624311063184,-1.03938064350447,"Four-disulfide core domains","Extracellular structures",NA,NA
+"394","Ssiderea031650",-1.31055456027825,-2.73916649915245,NA,NA,NA,NA
+"395","Ssiderea031654",1.37762043438182,3.3079106887328,NA,NA,NA,NA
+"396","Ssiderea031792",1.06360159929505,1.00555873982223,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"397","Ssiderea032162",-1.96960670049906,-1.34961151954862,NA,NA,NA,NA
+"398","Ssiderea032399",1.44990830938657,2.78583065862453,"WD repeat domain 74","Function Unknown",NA,NA
+"399","Ssiderea032478",-1.38070735328793,-1.67876092833472,NA,NA,NA,NA
+"400","Ssiderea032636",1.11864108285626,1.29182108525538,NA,NA,NA,NA
+"401","Ssiderea032875",2.56527214986449,5.21092559498443,NA,NA,NA,NA
+"402","Ssiderea032880",1.8800526008127,1.56227524176096,"aldehyde dehydrogenase (NAD) activity","Energy production and conversion",NA,NA
+"403","Ssiderea032939",-1.65232780448518,-2.18581249828586,"G-protein coupled receptor activity","Signal transduction mechanisms",NA,NA
+"404","Ssiderea033023",1.35025204045907,3.34046417703363,NA,NA,NA,NA
+"405","Ssiderea033036",3.76138873260228,1.31044501824895,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"406","Ssiderea033120",-2.2226904998069,-1.18000415718511,"Sulfatase-modifying factor enzyme 1","Function Unknown",NA,NA
+"407","Ssiderea033121",2.33330631512961,3.24893370126442,NA,NA,NA,NA
+"408","Ssiderea033479",1.57968397728259,1.76787195559087,NA,NA,NA,NA
+"409","Ssiderea033487",2.2226904998069,1.83380383694137,NA,NA,NA,NA
+"410","Ssiderea033498",-1.14428809343974,-1.13108568568041,"nuclear-transcribed mRNA catabolic process, nonsense-mediated decay","Replication, recombination and repair",NA,NA
+"411","Ssiderea033510",-1.31403415730996,-1.03938064350447,NA,NA,NA,NA
+"412","Ssiderea033560",-2.47176664385847,-2.1835595152915,NA,NA,NA,NA
+"413","Ssiderea033634",2.27406862937684,2.20484122397725,NA,NA,NA,NA
+"414","Ssiderea033705",2.88966230825633,1.19637498802098,NA,NA,NA,NA
+"415","Ssiderea033761",-2.09874214531867,-1.13122243557701,"Vacuolar protein sorting-associated protein 16 homolog","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"416","Ssiderea033808",2.67935687531175,5.63942895985352,NA,NA,NA,NA
+"417","Ssiderea033839",1.54121508160923,1.84770961744685,NA,NA,NA,NA
+"418","Ssiderea033844",-1.97102657851771,-1.71999816623954,NA,NA,NA,NA
+"419","Ssiderea033902",2.53820902284989,2.42740616554842,NA,NA,NA,NA
+"420","Ssiderea033904",1.34234157249199,1.07338014196274,NA,NA,NA,NA
+"421","Ssiderea034126",-4.49012419736362,-1.16141301761949,"Melanocortin 4 receptor","Signal transduction mechanisms",NA,NA
+"422","Ssiderea034147",-1.01177919223561,-1.07403123577171,"high voltage-gated calcium channel activity","Inorganic ion transport and metabolism",NA,NA
+"423","Ssiderea034163",-1.34371584552515,-2.59413657624213,"Ring finger domain","Posttranslational modification, protein turnover, chaperones",NA,NA
+"424","Ssiderea034234",-3.17799031702855,-2.26908833914726,"negative regulation of non-canonical Wnt signaling pathway","Posttranslational modification, protein turnover, chaperones",NA,NA
+"425","Ssiderea034262",-2.5173503322905,-2.62435700591327,NA,NA,NA,NA
+"426","Ssiderea034394",-8.13197814185506,-6.78082094773503,"defense response to nematode","",NA,NA
+"427","Ssiderea034395",1.60531138871592,2.53706678863504,"carbohydrate binding","",NA,NA
+"428","Ssiderea034401",-4.17944325423103,-8.59068691014832,"carbohydrate binding","",NA,NA
+"429","Ssiderea034405",-3.93672301675555,-1.35854869819637,"carbohydrate binding","",NA,NA
+"430","Ssiderea034406",-3.54591280559701,-2.12027367204,"carbohydrate binding","",NA,NA
+"431","Ssiderea034408",-6.17317893393746,-1.54621911541716,"carbohydrate binding","",NA,NA
+"432","Ssiderea034453",1.86196726814574,2.54897832480196,"mannose binding","Signal transduction mechanisms",NA,NA
+"433","Ssiderea034460",3.71379256286036,3.13230067293205,"Coagulation factor 5/8 C-terminal domain, discoidin domain","Signal transduction mechanisms",NA,NA
+"434","Ssiderea034762",2.01751544011417,1.30299459543896,"Belongs to the peptidase C14A family","Cell cycle control, cell division, chromosome partitioning",NA,NA
+"435","Ssiderea034790",-1.19786520253461,-1.97713486411353,NA,NA,NA,NA
+"436","Ssiderea034841",1.43538311644642,1.56809048560259,"cellular response to calcium ion","Signal transduction mechanisms",NA,NA
+"437","Ssiderea035100",1.74051348110344,2.13457245772514,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"438","Ssiderea035129",-1.00781964175971,-1.44079900059809,"SUMO1 sentrin specific peptidase","Posttranslational modification, protein turnover, chaperones",NA,NA
+"439","Ssiderea035186",1.28830043373105,2.71643007312175,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"440","Ssiderea035418",-1.05546091370633,-1.02635305447883,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"441","Ssiderea035432",1.27090156399057,2.00232985037497,"nuclear localization sequence binding","",NA,NA
+"442","Ssiderea035434",1.79714827935805,1.54064376048424,"16-hydroxypalmitate dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"443","Ssiderea035463",3.83816142977221,1.637129315647,NA,NA,NA,NA
+"444","Ssiderea035576",1.39340637705788,2.52761929117223,"Cupin-like domain","",NA,NA
+"445","Ssiderea035585",1.75435107612419,1.17887134393195,"respiratory chain complex III assembly","Function Unknown",NA,NA
+"446","Ssiderea035606",-1.33010375749388,1.03834614106115,"MAM domain containing 4","Amino acid transport and metabolism",NA,NA
+"447","Ssiderea035653",-1.11587091330205,-1.14720115212337,"guanine nucleotide exchange factor 1","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"448","Ssiderea035978",1.93114150063196,1.20638856930971,NA,NA,NA,NA
+"449","Ssiderea035992",2.8115196150267,1.02545865680061,NA,NA,NA,NA
+"450","Ssiderea035994",3.89359445391223,1.06194219784942,NA,NA,NA,NA
+"451","Ssiderea036015",-1.09170921692534,-1.46632635632524,NA,NA,NA,NA
+"452","Ssiderea036504",-1.4902723190957,-1.26776003820798,"histone H2A-K119 monoubiquitination","Posttranslational modification, protein turnover, chaperones",NA,NA
+"453","Ssiderea036590",-1.0432022416188,-1.87827216284669,"7 transmembrane receptor (rhodopsin family)","Signal transduction mechanisms",NA,NA
+"454","Ssiderea036647",3.51831340135824,2.03773971806891,"lipoprotein receptor-related protein","Signal transduction mechanisms",NA,NA
+"455","Ssiderea036716",2.10598800098766,2.43032576625767,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",NA,NA
+"456","Ssiderea036916",1.43667014349854,1.0153376203317,"NUAK family, SNF1-like kinase, 2","Signal transduction mechanisms",NA,NA
+"457","Ssiderea037477",-1.37977050212358,-1.50954070690222,"-","",NA,NA
+"458","Ssiderea037718",1.41902867009399,1.08142952024282,NA,NA,NA,NA
+"459","Ssiderea037751",1.02653918576254,1.34489288873593,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"460","Ssiderea038011",1.04456828935679,1.37301103936789,NA,NA,NA,NA
+"461","Ssiderea038168",-1.35563521107537,-2.76726053379083,NA,NA,NA,NA
+"462","Ssiderea038178",-1.65965730231481,-2.33084738972881,"Carboxylesterase family","Carbohydrate transport and metabolism",NA,NA
+"463","Ssiderea038319",2.27406862937684,1.14937871997599,NA,NA,NA,NA
+"464","Ssiderea038351",-1.83160152431081,-1.69028145631807,"succinate-hydroxymethylglutarate CoA-transferase activity","Lipid transport and metabolism",NA,NA
+"465","Ssiderea038388",1.7851484079423,1.21591200358804,"mitochondrial translation","Translation, ribosomal structure and biogenesis",NA,NA
+"466","Ssiderea038461",-1.04336837637281,-2.32776687231813,NA,NA,NA,NA
+"467","Ssiderea038529",-1.65819951217987,-1.29239479813002,NA,NA,NA,NA
+"468","Ssiderea038534",-6.57003624365164,-2.07018913989835,NA,NA,NA,NA
+"469","Ssiderea038574",-1.04997944541401,-3.75525615404209,NA,NA,NA,NA
+"470","Ssiderea038658",-1.08601883903981,-1.001597141591,NA,NA,NA,NA
+"471","Ssiderea038766",-2.18452814449871,-1.06433808496908,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"472","Ssiderea038885",1.11587091330205,1.84576234254742,NA,NA,NA,NA
+"473","Ssiderea039101",1.22517116782412,1.30685891153154,NA,NA,NA,NA
+"474","Ssiderea039130",-1.61986204792092,-1.66413252483599,NA,NA,NA,NA
+"475","Ssiderea039177",2.35236255743168,2.98434171156269,"detection of nodal flow","",NA,NA
+"476","Ssiderea039352",2.00243737549036,1.18710406148062,NA,NA,NA,NA
+"477","Ssiderea039526",-2.38743636882901,-1.84576234254742,NA,NA,NA,NA
+"478","Ssiderea039539",-1.73554074785129,-2.26762370085347,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"479","Ssiderea039589",1.997323873044,1.06032905538158,"-","",NA,NA
+"480","Ssiderea039621",1.35433511210392,3.73181061068181,"U11-48K-like CHHC zinc finger","Function Unknown",NA,NA
+"481","Ssiderea039664",1.9791016620144,3.1185703712235,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"482","Ssiderea039722",2.32894195345118,1.05648395533327,NA,NA,NA,NA
+"483","Ssiderea039842",1.21003197133376,1.9728865032394,"positive regulation of interleukin-13 biosynthetic process","Function Unknown",NA,NA
+"484","Ssiderea040040",1.52218700482526,3.68789007746045,"TEK tyrosine kinase, endothelial","Signal transduction mechanisms",NA,NA
+"485","Ssiderea040081",-2.1257312997887,-6.78082094773503,"ATPase activity, coupled to transmembrane movement of substances","Lipid transport and metabolism",NA,NA
+"486","Ssiderea040312",1.3782551199495,2.28536531933531,NA,NA,NA,NA
+"487","Ssiderea040497",-2.36308913996509,-1.31282191236291,NA,NA,NA,NA
+"488","Ssiderea040536",2.14613352206257,1.67115011445136,NA,NA,NA,NA
+"489","Ssiderea040768",1.1095787694131,1.24127386294754,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",NA,NA
+"490","Ssiderea040788",3.63525562019888,2.91437684996649,NA,NA,NA,NA
+"491","Ssiderea040818",1.27737544825565,1.60214941073115,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",NA,NA
+"492","Ssiderea040856",-1.00491643051149,-2.13634122487388,"Immunoglobulin C-2 Type","Signal transduction mechanisms",NA,NA
+"493","Ssiderea040857",-1.61095604133169,-1.82679951065769,"Sialic acid binding Ig-like lectin 1, sialoadhesin","Signal transduction mechanisms",NA,NA
+"494","Ssiderea040882",-4.93412616117876,-3.45119837466844,NA,NA,NA,NA
+"495","Ssiderea040894",-2.82430988195122,-1.71856236784334,NA,NA,NA,NA
+"496","Ssiderea040951",9.93850817720997,1.63002722773863,NA,NA,NA,NA
+"497","Ssiderea040954",1.73460169833814,1.02551293688092,"cytoskeletal protein binding","Function Unknown",NA,NA
+"498","Ssiderea040978",-2.91954648875067,-1.35826748689237,"Immunoglobulin C-2 Type","Inorganic ion transport and metabolism",NA,NA
+"499","Ssiderea041204",-4.59386875326385,-1.17458847886253,"Immunoglobulin C-2 Type","Inorganic ion transport and metabolism",NA,NA
+"500","Ssiderea041264",-2.82432347100387,-1.48234385190819,NA,NA,NA,NA
+"501","Ssiderea041320",-1.09423702214349,-4.56090582034239,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"502","Ssiderea041344",-2.25919178451297,-1.53816643686396,"Pentaxin family","Function Unknown",NA,NA
+"503","Ssiderea041354",-2.72118896195894,-1.52794846103359,NA,NA,NA,NA
+"504","Ssiderea041358",-5.19059743853369,-1.03396391523,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"505","Ssiderea041506",1.64095218036839,1.00873283635539,NA,NA,NA,NA
+"506","Ssiderea041558",2.0129153774563,2.39173527509279,"DBH-like monooxygenase protein 1","Amino acid transport and metabolism",NA,NA
+"507","Ssiderea041600",-1.18510912118375,-2.1414620429271,NA,NA,NA,NA
+"508","Ssiderea041609",5.45523542260324,4.27088493953239,NA,NA,NA,NA
+"509","Ssiderea041620",-4.13838676421946,-1.47415289342359,NA,NA,NA,NA
+"510","Ssiderea041625",2.18452814449871,2.31813677982806,"Collagen triple helix","Function Unknown",NA,NA
+"511","Ssiderea041630",1.41105410425086,1.01279587990342,"DNA repair protein RAD51 homolog","Replication, recombination and repair",NA,NA
+"512","Ssiderea041651",1.82284415322577,1.1929622063679,"PFAM SMP-30 Gluconolaconase","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"513","Ssiderea041679",3.81445779046423,2.40428762272613,"Collagen triple helix","Function Unknown",NA,NA
+"514","Ssiderea041712",2.94710165207515,1.45879523017694,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"515","Ssiderea041724",-1.74580740442716,-1.45879523017694,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"516","Ssiderea041746",2.27352217858208,2.4352102699004,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"517","Ssiderea041999",2.13008481518413,1.55110168507439,"MAP kinase phosphatase activity","Defense mechanisms",NA,NA
+"518","Ssiderea042039",-1.08913532247128,-1.42174428794729,NA,NA,NA,NA
+"519","Ssiderea042098",-1.03944149254245,-1.32882442693381,"cytochrome P450","",NA,NA
+"520","Ssiderea042206",2.67158030611336,3.1177622671343,NA,NA,NA,NA
+"521","Ssiderea042484",2.2158219637902,1.17937412140554,"alpha-galactosidase activity","Carbohydrate transport and metabolism",NA,NA
+"522","Ssiderea042500",-5.08242987055117,-2.32200390533059,NA,NA,NA,NA
+"523","Ssiderea042563",2.96391241362918,2.76726053379083,"protein propionyltransferase activity","Transcription",NA,NA
+"524","Ssiderea042600",2.91023940929975,3.41572482759107,"mannose binding","Signal transduction mechanisms",NA,NA
+"525","Ssiderea042756",2.13998304940997,1.50671719103991,"Transferase activity, transferring phosphorus-containing groups","Function Unknown",NA,NA
+"526","Ssiderea042816",1.38208676223783,2.57459328156704,"Cupin-like domain","",NA,NA
+"527","Ssiderea042963",1.35366866349072,1.49045605742607,NA,NA,NA,NA
+"528","Ssiderea042988",-1.28403292743303,-1.34905183084541,NA,NA,NA,NA
+"529","Ssiderea043077",-1.45916179795783,-1.11600968043485,"Chromatin modification-related protein","Chromatin structure and dynamics",NA,NA
+"530","Ssiderea043100",-2.87002504334867,-2.6374781796067,NA,NA,NA,NA
+"531","Ssiderea043280",-1.02173689778668,-1.32397152120469,NA,NA,NA,NA
+"532","Ssiderea043285",-2.69263506640469,-1.00175876830697,NA,NA,NA,NA
+"533","Ssiderea043293",-2.01767774710997,-1.07459480961344,NA,NA,NA,NA
+"534","Ssiderea043312",-1.37950881833979,-1.38165745643307,NA,NA,NA,NA
+"535","Ssiderea043587",1.15735832117817,1.04627506124522,"cathepsin Z","Posttranslational modification, protein turnover, chaperones",NA,NA
+"536","Ssiderea043627",1.34571492717688,1.39730822419455,NA,NA,NA,NA
+"537","Ssiderea043766",-2.85809929824743,-2.24061228224963,"carbohydrate binding","Signal transduction mechanisms",NA,NA
+"538","Ssiderea043779",-3.63303793543537,-2.92210905602363,"Potassium channel subfamily K member","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"539","Ssiderea044690",-2.26330858101881,-6.11471973599015,NA,NA,NA,NA
+"540","Ssiderea044691",-1.0159141344195,-1.94503248247656,"Required for formation of the RNA induced silencing complex (RISC). Component of the RISC loading complex (RLC), also known as the micro-RNA (miRNA) loading complex (miRLC), which is composed of dicer1, ago2 and tarbp2. Within the RLC miRLC, dicer1 and tarbp2 are required to process precursor miRNAs (pre-miRNAs) to mature miRNAs and then load them onto ago2. ago2 bound to the mature miRNA constitutes the minimal RISC and may subsequently dissociate from dicer1 and tarbp2. May also play a role in the production of short interfering RNAs (siRNAs) from double-stranded RNA (dsRNA) by dicer1","",NA,NA
+"541","Ssiderea044698",-1.00007474921992,-2.49021701774468,"carbonate dehydratase activity","Inorganic ion transport and metabolism",NA,NA
+"542","Ssiderea044854",1.62879585370378,1.08713357961778,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"543","Ssiderea044861",1.16744831005561,1.32397152120469,"tRNA methyltransferase 1 homolog (S. cerevisiae)","Translation, ribosomal structure and biogenesis",NA,NA
+"544","Ssiderea045036",2.08534137890638,1.13364016524082,NA,NA,NA,NA
+"545","Ssiderea045112",2.05600082067077,1.24485543891035,"C-terminal of Roc, COR, domain","Signal transduction mechanisms",NA,NA
+"546","Ssiderea045298",1.02534966565699,1.10957888535368,NA,NA,NA,NA
+"547","Ssiderea045300",1.06582578927063,1.06341568337441,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"548","Ssiderea045355",1.63289649557154,2.6156851032742,"NAADP-sensitive calcium-release channel activity","",NA,NA
+"549","Ssiderea045375",-1.38208676223783,-1.03769148554222,"gamma-aminobutyric acid type B receptor subunit","",NA,NA
+"550","Ssiderea045376",-1.07515916468355,-3.04245607301207,"Transcription factor","Transcription",NA,NA
+"551","Ssiderea045402",1.17449744135924,1.79012468584516,NA,NA,NA,NA
+"552","Ssiderea045481",-1.79048295729198,-1.06753854732482,"protein polyubiquitination","Function Unknown",NA,NA
+"553","Ssiderea045517",-1.11685749808821,-1.97362934023611,NA,NA,NA,NA
+"554","Ssiderea045549",2.20274737087375,2.3614737649844,"WD40 repeats","Amino acid transport and metabolism",NA,NA
+"555","Ssiderea045722",3.05227324876121,1.42219653060988,"dsRNA-gated channel SID-1","Function Unknown",NA,NA
+"556","Ssiderea045845",1.33385592172729,4.93498138883388,"nitric-oxide synthase activity","Energy production and conversion",NA,NA
+"557","Ssiderea045976",-2.23412544483605,-1.85677528266643,NA,NA,NA,NA
+"558","Ssiderea046093",-2.71196949802179,-2.11683838095407,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"559","Ssiderea046106",2.89307621006394,3.47701308253445,"Death effector domain","Function Unknown",NA,NA
+"560","Ssiderea046285",1.23317884720598,2.20718006093564,NA,NA,NA,NA
+"561","Ssiderea046447",1.72598706161875,1.66399823089562,NA,NA,NA,NA
+"562","Ssiderea046462",-1.32138022703933,-1.94542139500548,"positive regulation of Rho guanyl-nucleotide exchange factor activity","Signal transduction mechanisms",NA,NA
+"563","Ssiderea046480",2.27406862937684,1.42874725002315,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",NA,NA
+"564","Ssiderea046539",1.2809582434683,2.1414620429271,NA,NA,NA,NA
+"565","Ssiderea046550",-1.27737544825565,-1.39740475738167,"Belongs to the TPP enzyme family","",NA,NA
+"566","Ssiderea046616",2.78035950768091,1.27290095588,"Acyl-CoA synthetase long-chain family member","Lipid transport and metabolism",NA,NA
+"567","Ssiderea046687",1.12052205939201,1.1721602876777,"sulfuric ester hydrolase activity","Inorganic ion transport and metabolism",NA,NA
+"568","Ssiderea046744",-1.8002623843979,-1.32774208842464,NA,NA,NA,NA
+"569","Ssiderea046837",1.66965163907973,1.1550682975354,"serine-type endopeptidase inhibitor activity","Defense mechanisms",NA,NA
+"570","Ssiderea047198",1.02545678433051,2.31736976582069,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"571","Ssiderea047313",3.26303663749777,1.68473200219234,NA,NA,NA,NA
+"572","Ssiderea047390",1.20715125454606,1.67115011445136,"caveola assembly","Signal transduction mechanisms",NA,NA
+"573","Ssiderea047419",1.00694684694571,6.11471973599015,NA,NA,NA,NA
+"574","Ssiderea047439",-1.14558049018176,-2.40574998328521,"Belongs to the CD36 family","Signal transduction mechanisms",NA,NA
+"575","Ssiderea047501",-1.92824646480129,-2.62206383094622,"hyaluronic acid binding","Signal transduction mechanisms",NA,NA
+"576","Ssiderea047564",-1.42946060567327,-1.67622288597703,NA,NA,NA,NA
+"577","Ssiderea047703",-1.05127466153046,-1.07724561224373,"interleukin-8 biosynthetic process","Function Unknown",NA,NA
+"578","Ssiderea047795",3.14996688711107,1.17887134393195,"Glycosyl transferases group 1","",NA,NA
+"579","Ssiderea047803",2.08453629978019,1.12979316335123,"Glycosyl transferases group 1","",NA,NA
+"580","Ssiderea048064",-2.58965121840093,-1.11893980749548,NA,NA,NA,NA
+"581","Ssiderea048220",-2.8965202930713,-1.62092090237116,"Farnesoic acid 0-methyl transferase","",NA,NA
+"582","Ssiderea048240",-1.64968985005831,-1.75283584248415,"Fibronectin type 3 domain","Signal transduction mechanisms",NA,NA
+"583","Ssiderea048517",1.19352066311992,1.36305737433191,"ATP-dependent microtubule motor activity, minus-end-directed","Cytoskeleton",NA,NA
+"584","Ssiderea048577",-2.18189357300532,-1.44245941360419,"Protein tyrosine kinase","Signal transduction mechanisms",NA,NA
+"585","Ssiderea048596",-3.68062457453198,-1.81954248040819,"mitochondrial fusion","Posttranslational modification, protein turnover, chaperones",NA,NA
+"586","Ssiderea048697",1.38815619005224,1.81325715266971,NA,NA,NA,NA
+"587","Ssiderea049126",-1.63853158884955,-1.34905183084541,"7 transmembrane receptor (rhodopsin family)","Signal transduction mechanisms",NA,NA
+"588","Ssiderea049144",1.16505112273743,1.13234302078448,NA,NA,NA,NA
+"589","Ssiderea049290",-1.34234157249199,-1.29690237230232,NA,NA,NA,NA
+"590","Ssiderea049297",-2.16219783644124,-3.58609349370183,"repeats and IQ motif containing 4","Function Unknown",NA,NA
+"591","Ssiderea049320",-1.62532469514352,-1.20689792814204,NA,NA,NA,NA
+"592","Ssiderea049321",-1.95993276726099,-4.9644236618847,"Glycosyl transferases group 1","Cell wall/membrane/envelope biogenesis",NA,NA
+"593","Ssiderea049326",-1.62532469514352,-1.61116000418881,NA,NA,NA,NA
+"594","Ssiderea049331",-1.73460169833814,-2.456114645206,NA,NA,NA,NA
+"595","Ssiderea049356",-2.45285752172368,-1.20419036567949,NA,NA,NA,NA
+"596","Ssiderea049467",1.88292362021733,3.40773808674638,"mitotic cell cycle checkpoint","Function Unknown",NA,NA
+"597","Ssiderea049613",1.38201564694003,1.29425968713693,"Hairy and enhancer of split-related protein helt","Transcription",NA,NA
+"598","Ssiderea049746",2.11511294638471,1.17678314422976,"ion channel activity","Function Unknown",NA,NA
+"599","Ssiderea050127",-2.04499016719163,-1.3811930580213,"von Willebrand factor (vWF) type A domain","Extracellular structures",NA,NA
+"600","Ssiderea050295",-3.11160916748887,-4.50539172565714,NA,NA,NA,NA
+"601","Ssiderea050493",1.63844216130031,1.44780152890449,"PDZ domain (Also known as DHR or GLGF)","Extracellular structures",NA,NA
+"602","Ssiderea050517",1.79201792666077,4.84952970681311,NA,NA,NA,NA
+"603","Ssiderea050672",-1.85736112509769,-1.46632635632524,"carbohydrate binding","",NA,NA
+"604","Ssiderea050817",2.08534137890638,3.03757707414346,NA,NA,NA,NA
+"605","Ssiderea050830",1.90453546007636,1.01312702364386,"Domain in Tre-2, BUB2p, and Cdc16p. Probable Rab-GAPs.","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"606","Ssiderea050832",-1.91293124906976,-1.90663088212525,"U2 snRNA binding","Amino acid transport and metabolism",NA,NA
+"607","Ssiderea050964",-1.75367140502942,-1.12319014984526,"store-operated calcium channel activity","",NA,NA
+"608","Ssiderea051055",-1.94653104712363,-2.24058525160087,"sodium-coupled neutral amino acid transporter","Amino acid transport and metabolism",NA,NA
+"609","Ssiderea051465",1.05467353183675,-1.39492441685285,"acyl-coenzyme A thioesterase","Function Unknown",NA,NA
+"610","Ssiderea051679",1.06872766902982,1.08739508185585,NA,NA,NA,NA
+"611","Ssiderea051714",1.42400413443619,1.70769635836876,"transferase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"612","Ssiderea051715",-2.00870281839717,-2.64795415513146,"transferase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"613","Ssiderea051716",4.43124343073685,1.36339873675663,"transferase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"614","Ssiderea051779",-1.72935135110624,-2.01337028625514,NA,NA,NA,NA
+"615","Ssiderea051781",2.05935870320894,2.1013779570669,"melanocyte differentiation","RNA processing and modification",NA,NA
+"616","Ssiderea051854",-1.20686949365694,-1.0407775323708,NA,NA,NA,NA
+"617","Ssiderea051892",-2.83700709294282,-3.87517841027306,NA,NA,NA,NA
+"618","Ssiderea052013",1.88135507619577,1.17298749314243,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"619","Ssiderea052173",1.59687023526123,2.07018913989835,"Multidrug resistance-associated protein","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"620","Ssiderea052262",1.31280370816795,1.12707200931105,NA,NA,NA,NA
+"621","Ssiderea052336",-1.13193304762877,-1.00842472502791,"Transposase IS4","Function Unknown",NA,NA
+"622","Ssiderea052407",1.67930015308202,1.03938064350447,"RWD domain containing 1","Function Unknown",NA,NA
+"623","Ssiderea052544",-1.07087709493766,-1.97583050918829,"negative regulation of renal albumin absorption","Signal transduction mechanisms",NA,NA
+"624","Ssiderea052824",-1.55669153325687,-1.08142952024282,"neurogenic locus notch homolog protein","Signal transduction mechanisms",NA,NA
+"625","Ssiderea052956",-1.34744853394122,-1.61303759198046,"Phosphotyrosine-binding domain","Signal transduction mechanisms",NA,NA
+"626","Ssiderea053074",-2.50455114388353,-1.2556753589975,"Pyridoxal (Pyridoxine, vitamin B6) kinase","Coenzyme transport and metabolism",NA,NA
+"627","Ssiderea053080",2.50315367739252,2.82396660467866,"Malic enzyme","Energy production and conversion",NA,NA
+"628","Ssiderea053147",-1.41089431711438,-1.72431891006145,NA,NA,NA,NA
+"629","Ssiderea053221",-3.40126144916322,-1.43197925186548,NA,NA,NA,NA
+"630","Ssiderea053224",-1.0354717751573,-2.12630325536346,NA,NA,NA,NA
+"631","Ssiderea053327",-1.37058323407219,-2.66671803623911,NA,NA,NA,NA
+"632","Ssiderea053371",3.59563690524401,1.31647730837264,"Common central domain of tyrosinase","Amino acid transport and metabolism",NA,NA
+"633","Ssiderea053615",3.16656437118743,2.03584617109724,"myotome development","Transcription",NA,NA
+"634","Ssiderea053627",1.53007344047865,1.25824736860504,"Cupin-like domain","",NA,NA
+"635","Ssiderea053728",-1.04820234422952,-1.06746753023658,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",NA,NA
+"636","Ssiderea053828",5.16199071960996,4.67998377853517,NA,NA,NA,NA
+"637","Ssiderea053849",1.53213459431453,1.33017338048615,NA,NA,NA,NA
+"638","Ssiderea053861",-1.11007013860707,-1.26303544130728,"Flavin containing amine oxidoreductase","Coenzyme transport and metabolism",NA,NA
+"639","Ssiderea053903",1.94692882324959,1.63587781964549,"calcium ion binding","Signal transduction mechanisms",NA,NA
+"640","Ssiderea054047",2.1324861862612,2.86767033047524,"negative regulation of nuclear-transcribed mRNA catabolic process, nonsense-mediated decay","",NA,NA
+"641","Ssiderea054148",-2.47676924933633,-1.31345652024932,NA,NA,NA,NA
+"642","Ssiderea054223",1.49106723662759,1.06753854732482,"chaperone cofactor-dependent protein refolding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"643","Ssiderea054233",3.41612942273939,4.02670955917296,NA,NA,NA,NA
+"644","Ssiderea054275",2.41341808808231,2.00192092680752,"very long-chain fatty acid-CoA ligase activity","Lipid transport and metabolism",NA,NA
+"645","Ssiderea054400",5.16715212885556,5.64598932442972,NA,NA,NA,NA
+"646","Ssiderea054505",1.36509668083821,3.58756734753502,NA,NA,NA,NA
+"647","Ssiderea054509",-1.57974979089872,-1.19328292845425,"Chromosome 1 open reading frame 35","Function Unknown",NA,NA
+"648","Ssiderea054539",5.46590326926504,3.47701308253445,"Mitogen-activated protein kinase kinase kinase","Signal transduction mechanisms",NA,NA
+"649","Ssiderea054712",-1.58864629472301,-1.4742844966451,"Interferon induced with helicase C domain 1","RNA processing and modification",NA,NA
+"650","Ssiderea054735",2.70290983091417,1.57602715445722,"complement activation","Extracellular structures",NA,NA
+"651","Ssiderea054881",-1.79201792666077,-2.71909295500695,NA,NA,NA,NA
+"652","Ssiderea054891",-2.68528305031765,1.06341568337441,"aryl sulfotransferase activity","Function Unknown",NA,NA
+"653","Ssiderea055166",-1.46568845254069,-1.66399823089562,NA,NA,NA,NA
+"654","Ssiderea055338",-1.47349412822821,-2.02778721511521,NA,NA,NA,NA
+"655","Ssiderea055365",1.51749038453546,2.35053158651589,NA,NA,NA,NA
+"656","Ssiderea055415",-1.9439730433077,-3.74372366544329,"Domain found in sea urchin sperm protein, enterokinase, agrin","Signal transduction mechanisms",NA,NA
+"657","Ssiderea055418",-2.00080117009679,-1.04418533783809,"gamma-aminobutyric acid:sodium symporter activity","Signal transduction mechanisms",NA,NA
+"658","Ssiderea055489",-1.05806029646957,-2.23721805304699,"homologous chromosome movement towards spindle pole involved in homologous chromosome segregation","",NA,NA
+"659","Ssiderea055764",2.85076691668562,1.56809048560259,"DnaJ molecular chaperone homology domain","Posttranslational modification, protein turnover, chaperones",NA,NA
+"660","Ssiderea055783",-4.96684875565967,-4.73575721240559,"Pancreatic secretory granule membrane major glycoprotein","Extracellular structures",NA,NA
+"661","Ssiderea055787",-2.44772445213628,-3.39153341508239,NA,NA,NA,NA
+"662","Ssiderea055826",1.49032913658483,1.18710406148062,"Doublecortin domain-containing protein 2","",NA,NA
+"663","Ssiderea055895",1.58146279626515,1.85141060092138,"P or trefoil or TFF domain","Posttranslational modification, protein turnover, chaperones",NA,NA
+"664","Ssiderea055982",2.50455114388353,1.04948972593853,NA,NA,NA,NA
+"665","Ssiderea056079",-1.10850495942079,-2.39555449533638,NA,NA,NA,NA
+"666","Ssiderea056222",-1.20686949365694,-2.32776687231813,"Protein tyrosine phosphatase, receptor type","Signal transduction mechanisms",NA,NA
+"667","Ssiderea056236",-1.52306229975509,-1.69082012787091,NA,NA,NA,NA
+"668","Ssiderea056252",-1.33903534863756,-1.64074210377374,NA,NA,NA,NA
+"669","Ssiderea056310",-1.01543316312498,-1.03226607799837,NA,NA,NA,NA
+"670","Ssiderea056594",-1.3013440456623,-1.24335333123692,NA,NA,NA,NA
+"671","Ssiderea056713",-3.11160916748887,-3.07913190775731,"heparin binding","Signal transduction mechanisms",NA,NA
+"672","Ssiderea056770",1.02881087573072,1.04913381387725,"histidine transport","Amino acid transport and metabolism",NA,NA
+"673","Ssiderea056776",-1.30724626284476,-1.39492441685285,"histidine transport","Amino acid transport and metabolism",NA,NA
+"674","Ssiderea056783",-1.12868023609065,-1.53668138006204,"heparin binding","Signal transduction mechanisms",NA,NA
+"675","Ssiderea056886",-1.0516420378876,-1.20855970988107,"von Willebrand factor D and EGF","Signal transduction mechanisms",NA,NA
+"676","Ssiderea056951",1.00668013624785,3.27662735259771,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",NA,NA
+"677","Ssiderea056972",-1.01099545667022,-3.27345569630182,"Sialic acid binding Ig-like lectin 1, sialoadhesin","Signal transduction mechanisms",NA,NA
+"678","Ssiderea056975",-1.07086218657898,-1.37487147482046,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",NA,NA
+"679","Ssiderea056986",-1.8606730223102,-1.29271520399083,"peroxidase activity","Function Unknown",NA,NA
+"680","Ssiderea057044",1.07059246660157,1.16046056754778,"methylated histone binding","Chromatin structure and dynamics",NA,NA
+"681","Ssiderea057095",3.54938373884987,2.12062496038324,NA,NA,NA,NA
+"682","Ssiderea057106",1.48968707442946,1.56809048560259,NA,NA,NA,NA
+"683","Ssiderea057248",1.25067901885753,5.05884130684631,"-","",NA,NA
+"684","Ssiderea057290",1.07645985398892,1.83952254780443,NA,NA,NA,NA
+"685","Ssiderea057306",-2.05071067169362,-1.65213661169045,NA,NA,NA,NA
+"686","Ssiderea057341",-3.89744081592361,-3.47700207861018,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",NA,NA
+"687","Ssiderea057390",2.0590456771527,2.74753242698073,NA,NA,NA,NA
+"688","Ssiderea057455",-2.22133562219947,-1.81016366889525,"Uncharacterized ACR, YdiU/UPF0061 family","Posttranslational modification, protein turnover, chaperones",NA,NA
+"689","Ssiderea057714",-2.00536651501491,-1.27951276858236,NA,NA,NA,NA
+"690","Ssiderea057744",3.97156497716633,4.94109620456717,"Cytochrome P450","",NA,NA
+"691","Ssiderea057815",1.23504350474512,2.67118431504935,"ATP-binding cassette, subfamily B (MDR TAP), member","Secondary metabolites biosynthesis, transport and catabolism",NA,NA
+"692","Ssiderea057878",-1.24807581533054,-1.15115303491844,NA,NA,NA,NA
+"693","Ssiderea058008",-1.39570908824072,-1.2556753589975,"procollagen-proline 4-dioxygenase activity","Amino acid transport and metabolism",NA,NA
+"694","Ssiderea058012",6.1436699404392,4.71633575832755,"UDP-Gal betaGlcNAc beta 1,4- galactosyltransferase, polypeptide","Carbohydrate transport and metabolism",NA,NA
+"695","Ssiderea058107",-1.73360795026693,-1.76798639137071,"HMG domain-containing protein 3","Transcription",NA,NA
+"696","Ssiderea058217",-1.92268481339467,-1.46632635632524,"Lys63-specific deubiquitinase activity","Function Unknown",NA,NA
+"697","Ssiderea058378",-2.2718480767787,-2.07897373611341,NA,NA,NA,NA
+"698","Ssiderea058415",1.61111266274353,1.20515308703041,NA,NA,NA,NA
+"699","Ssiderea058585",1.24383550931304,3.14653739688403,NA,NA,NA,NA
+"700","Ssiderea058595",1.94443628120847,1.44357374451394,NA,NA,NA,NA
+"701","Ssiderea058633",1.61815854708848,1.82164118031688,"cysteine-type peptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"702","Ssiderea058642",-1.91801320300094,-3.12238480431008,NA,NA,NA,NA
+"703","Ssiderea058708",-2.15689793702686,-1.01118832058828,NA,NA,NA,NA
+"704","Ssiderea058718",-1.79714827935805,-1.49820676254946,"Belongs to the p53 family","Transcription",NA,NA
+"705","Ssiderea058808",-1.65232780448518,-1.12327477565807,NA,NA,NA,NA
+"706","Ssiderea058830",-1.96299231509877,-2.53993551131793,NA,NA,NA,NA
+"707","Ssiderea059052",-2.75289078690527,-1.7011190348103,"C-5 cytosine-specific DNA methylase","Replication, recombination and repair",NA,NA
+"708","Ssiderea059094",3.12895381832423,4.37632900148377,NA,NA,NA,NA
+"709","Ssiderea059140",-1.73970136400642,-2.33292479903063,NA,NA,NA,NA
+"710","Ssiderea59311",-1.73360795026693,-1.22222798313893,NA,NA,NA,NA
+"711","Ssiderea59316",-4.77906273130789,-1.52777974394056,"transposition, RNA-mediated","Replication, recombination and repair",NA,NA
+"712","Ssiderea59347",-2.15875999630317,-1.87259655635138,"Heat shock chaperonin-binding motif.","Posttranslational modification, protein turnover, chaperones",NA,NA
+"713","Ssiderea59378",2.56011385762493,1.17460491597446,NA,NA,NA,NA
+"714","Ssiderea59393",-3.89359445391223,-2.37548823500258,"-","",NA,NA
+"715","Ssiderea59430",-1.12188619946852,-1.34008493258589,NA,NA,NA,NA
+"716","Ssiderea59566",-2.38716185070856,-1.03769148554222,"Glycosyl transferases group 1","Cell wall/membrane/envelope biogenesis",NA,NA
+"717","Ssiderea59585",-1.67321106412473,-1.15159668716501,NA,NA,NA,NA
+"718","Ssiderea59656",-3.59563690524401,-1.44730844029292,"Ribonuclease H protein","Amino acid transport and metabolism",NA,NA
+"719","Ssiderea59681",1.48072147149977,1.579240034355,NA,NA,NA,NA
+"720","Ssiderea59755",-1.02067868931573,-1.41809362105517,"Ribonuclease H protein","Coenzyme transport and metabolism",NA,NA
+"721","Ssiderea59831",-5.32862281683826,-4.02470927273315,NA,NA,NA,NA
+"722","Ssiderea59890",-3.31271764072954,-1.67708515351639,"Reverse transcriptase (RNA-dependent DNA polymerase)","Replication, recombination and repair",NA,NA
+"723","Ssiderea59934",1.60647068268223,1.40703293349577,NA,NA,NA,NA
+"724","Ssiderea59961",3.83816142977221,1.49666400456332,NA,NA,NA,NA
+"725","Ssiderea59973",-3.05779281025529,-1.14226879201866,"DBH-like monooxygenase protein 1","Amino acid transport and metabolism",NA,NA
+"726","Ssiderea60027",-2.20683146519409,-2.40428762272613,NA,NA,NA,NA
+"727","Ssiderea60080",1.93127668797626,1.32753589629316,NA,NA,NA,NA
+"728","Ssiderea60093",1.93127668797626,2.06438835914415,"Collagen triple helix","Function Unknown",NA,NA
+"729","Ssiderea60155",2.47890560539597,2.08324375076932,"cell adhesion","Function Unknown",NA,NA
+"730","Ssiderea60164",1.2809582434683,2.46720274985374,NA,NA,NA,NA
+"731","Ssiderea60172",2.8937918708956,2.73957749489906,NA,NA,NA,NA
+"732","Ssiderea60216",2.98778520624959,3.75525615404209,"K02A2.6-like","Amino acid transport and metabolism",NA,NA
+"733","Ssiderea60282",-1.90839462164039,-1.44357374451394,"Ribonuclease H protein","Amino acid transport and metabolism",NA,NA
+"734","Ssiderea60343",1.18018397373166,1.67115011445136,"DNA binding","Transcription",NA,NA
+"735","Ssiderea60368",1.83198970862503,2.12027367204,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",NA,NA
+"736","Ssiderea60373",-1.20565000858895,-2.88563329234934,NA,NA,NA,NA
+"737","Ssiderea60431",1.07508163181778,1.47149819122645,NA,NA,NA,NA
+"738","Ssiderea60445",-1.30071673167279,-4.19463137867933,"Ribonuclease H protein","Coenzyme transport and metabolism",NA,NA
+"739","Ssiderea60451",1.66150841717161,3.02066038925971,NA,NA,NA,NA
+"740","Ssiderea60521",-3.16656437118743,-1.11893980749548,NA,NA,NA,NA
+"741","Ssiderea60764",-1.67349356877445,-1.03769148554222,NA,NA,NA,NA
+"742","Ssiderea60817",-1.04046839630795,-1.01676455501281,NA,NA,NA,NA
+"743","Ssiderea60824",-1.19711470054102,-2.20908926249858,"Reverse transcriptase (RNA-dependent DNA polymerase)","Carbohydrate transport and metabolism",NA,NA
+"744","Ssiderea60845",1.68125333446769,1.09994014590796,NA,NA,NA,NA
+"745","Ssiderea60968",2.0559192068545,1.11052133567485,"Pao retrotransposon peptidase","Replication, recombination and repair",NA,NA
+"746","Ssiderea61115",-1.51228432861914,-2.456114645206,NA,NA,NA,NA
+"747","Ssiderea61126",-1.55717866230557,-1.2556753589975,NA,NA,NA,NA
+"748","Ssiderea61142",-1.32792132602173,-1.63107220844174,NA,NA,NA,NA
+"749","Ssiderea61320",2.32747731761841,1.33668471602581,NA,NA,NA,NA
+"750","Ssiderea61354",-2.10049345820766,-2.06331509023522,NA,NA,NA,NA
+"751","Ssiderea61447",-3.29207126758327,-2.09297410730849,"Transposase IS4","Function Unknown",NA,NA
+"752","Ssiderea61572",1.07702986746172,1.00767051485752,NA,NA,NA,NA
+"753","Ssiderea61597",-1.15537468795488,-2.29584467607215,NA,NA,NA,NA
+"754","Ssiderea61711",-3.34248956771685,-3.4625586222294,NA,NA,NA,NA
+"755","Ssiderea61861",1.82533655649309,1.12707200931105,NA,NA,NA,NA
+"756","Ssiderea61885",2.72118896195894,2.32776687231813,NA,NA,NA,NA
+"757","Ssiderea61898",-1.20935083359095,-1.03938064350447,NA,NA,NA,NA
+"758","Ssiderea61903",1.04735812108557,3.86798359334126,NA,NA,NA,NA
+"759","Ssiderea61929",-2.56565943933537,-1.59112037909248,NA,NA,NA,NA
+"760","Ssiderea61936",1.12507050970213,1.22242734138444,NA,NA,NA,NA
+"761","Ssiderea61969",-2.90910141731467,-2.42740616554842,NA,NA,NA,NA
+"762","Ssiderea62035",2.21485721783713,1.62923117409518,NA,NA,NA,NA
+"763","Ssiderea62059",3.69729161486423,2.53770836745172,"CENP-B N-terminal DNA-binding domain","",NA,NA
+"764","Ssiderea62240",1.5489347060876,4.45056418261633,"carbohydrate binding","",NA,NA
+"765","Ssiderea62250",12.1128556539753,9.6120558295451,"tumor necrosis factor","Signal transduction mechanisms",NA,NA
+"766","Ssiderea62253",-1.02614642642435,-1.39296645249542,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",NA,NA
+"767","Ssiderea62291",1.21810437516517,1.69036379624442,NA,NA,NA,NA
+"768","Ssiderea62307",-1.89478954314816,-2.0686900543655,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",NA,NA
+"769","Ssiderea62414",-1.9829625674223,-1.16046056754778,"transitional stage B cell differentiation","",NA,NA
+"770","Ssiderea62455",1.18435012813477,1.15159668716501,"distal tubule morphogenesis","Signal transduction mechanisms",NA,NA
+"771","Ssiderea62488",-9.93850817720997,-2.31981043282478,NA,NA,NA,NA
+"772","Ssiderea62565",2.11388373593669,1.02621576537566,"K02A2.6-like","Carbohydrate transport and metabolism",NA,NA
+"773","Ssiderea62592",-1.97102657851771,-1.11946664762481,NA,NA,NA,NA
+"774","Ssiderea62629",-1.31502809774077,-1.32558718747436,NA,NA,NA,NA
+"775","Ssiderea62688",-1.66696827427663,-4.3409739974631,NA,NA,NA,NA
+"776","Ssiderea62732",3.07288377402318,2.13634122487388,NA,NA,NA,NA
+"777","Ssiderea62762",-2.36308913996509,-1.69919017794375,NA,NA,NA,NA
+"778","Ssiderea62821",-2.2666284854886,-1.7803498080197,NA,NA,NA,NA
+"779","Ssiderea62829",-1.5375015094513,-1.46650036810602,"Ribonuclease H protein","Coenzyme transport and metabolism",NA,NA
+"780","Ssiderea62831",1.71436697045828,2.13614675240551,NA,NA,NA,NA
+"781","Ssiderea000261",NA,NA,"DNA-binding transcription factor activity, RNA polymerase II-specific","Function Unknown",1.44268872777407,3.33853086071329
+"782","Ssiderea000744",NA,NA,NA,NA,3.33371917692666,1.73411021309003
+"783","Ssiderea001107",NA,NA,NA,NA,-3.86227854558278,-1.79805852427378
+"784","Ssiderea001161",NA,NA,NA,NA,-2.51895653197181,-1.95354760065245
+"785","Ssiderea001853",NA,NA,NA,NA,2.03628880125046,2.67557339707525
+"786","Ssiderea001879",NA,NA,NA,NA,2.79332885846441,4.37654464856058
+"787","Ssiderea001916",NA,NA,NA,NA,1.35806264888732,4.46941856853408
+"788","Ssiderea001921",NA,NA,"axonal fasciculation","Signal transduction mechanisms",1.63859280471191,1.37006695306522
+"789","Ssiderea001966",NA,NA,"Zinc finger B-box","Function Unknown",1.50367612565817,2.14318580966693
+"790","Ssiderea002005",NA,NA,NA,NA,1.28928837330103,1.33951859528868
+"791","Ssiderea002091",NA,NA,"C2H2-type zinc finger","Transcription",-1.16157203916118,-1.45519386481584
+"792","Ssiderea002138",NA,NA,"thyroid hormone transmembrane transporter activity","Carbohydrate transport and metabolism",-1.75720824177509,-1.04662465779602
+"793","Ssiderea002234",NA,NA,NA,NA,1.96483561297872,2.54898587083248
+"794","Ssiderea002366",NA,NA,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",2.79332885846441,1.78093367564763
+"795","Ssiderea002426",NA,NA,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",-1.53448110314751,-1.37346800388564
+"796","Ssiderea002497",NA,NA,NA,NA,2.56477719135064,2.16557806778632
+"797","Ssiderea002528",NA,NA,"Immunoglobulin C-2 Type","Signal transduction mechanisms",-2.945392114737,-1.4785923349002
+"798","Ssiderea002543",NA,NA,"cell division","Signal transduction mechanisms",-2.21833618234882,-4.5550405135933
+"799","Ssiderea002690",NA,NA,"Hemicentin 1","Signal transduction mechanisms",3.04323320382379,2.05750478964926
+"800","Ssiderea002967",NA,NA,"Ig-like domain on T-cell surface glycoprotein CD3 epsilon chain","Signal transduction mechanisms",-1.92286491436689,-1.40087629243334
+"801","Ssiderea003090",NA,NA,NA,NA,1.80524804861809,1.45776235602791
+"802","Ssiderea003132",NA,NA,"thioesterase binding","Posttranslational modification, protein turnover, chaperones",-2.20407193499592,-1.73139366485846
+"803","Ssiderea003396",NA,NA,NA,NA,-2.63249529704354,-2.54898587083248
+"804","Ssiderea003700",NA,NA,NA,NA,3.71014646915843,2.34405879252812
+"805","Ssiderea003722",NA,NA,"nuclear receptor transcription coactivator activity","Replication, recombination and repair",-1.48655123773847,-1.29270006381117
+"806","Ssiderea003873",NA,NA,NA,NA,-2.22982116996886,-1.70975266461751
+"807","Ssiderea003894",NA,NA,NA,NA,-1.63195430538846,-1.03637768669613
+"808","Ssiderea004205",NA,NA,"Serine threonine-protein phosphatase","Signal transduction mechanisms",-2.09712259785999,-1.73981111453689
+"809","Ssiderea004288",NA,NA,NA,NA,1.47063211350669,1.51088371266787
+"810","Ssiderea004321",NA,NA,NA,NA,1.0227589969931,1.54509339290915
+"811","Ssiderea004697",NA,NA,"SH3/SH2 adaptor activity","Signal transduction mechanisms",-3.25345756952404,-1.74506183473304
+"812","Ssiderea004889",NA,NA,"negative regulation of Arp2/3 complex-mediated actin nucleation","Signal transduction mechanisms",1.32925512637038,1.00135001431358
+"813","Ssiderea004908",NA,NA,"Belongs to the enoyl-CoA hydratase isomerase family","Lipid transport and metabolism",1.42323483826826,1.45331747572615
+"814","Ssiderea004937",NA,NA,NA,NA,2.79332885846441,4.0448426863861
+"815","Ssiderea005086",NA,NA,"DNA binding","Coenzyme transport and metabolism",-2.67667399460545,-1.7477529167517
+"816","Ssiderea005170",NA,NA,NA,NA,-2.30332870745345,-1.86620714961555
+"817","Ssiderea005592",NA,NA,"DEK proto-oncogene","Chromatin structure and dynamics",-1.47611252602924,-1.65793467837884
+"818","Ssiderea006076",NA,NA,NA,NA,-2.19255780211222,-1.4036915696035
+"819","Ssiderea006333",NA,NA,"Calcium ion binding. It is involved in the biological process described with regulation of developmental process","Signal transduction mechanisms",-1.60970521380097,-2.42234254918216
+"820","Ssiderea006355",NA,NA,NA,NA,1.00344812171584,2.54898587083248
+"821","Ssiderea006451",NA,NA,"ST6 (alpha-N-acetyl-neuraminyl-2,3-beta-galactosyl-1,3)-N-acetylgalactosaminide alpha-2,6-sialyltransferase 4","Carbohydrate transport and metabolism",4.85070125270448,1.65991555512405
+"822","Ssiderea006565",NA,NA,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",2.4031651575112,1.40600295843356
+"823","Ssiderea006568",NA,NA,NA,NA,-1.31329555981498,-1.12829365529706
+"824","Ssiderea006663",NA,NA,"Collagen triple helix","Function Unknown",-2.17106370549625,-1.07791757140617
+"825","Ssiderea006718",NA,NA,NA,NA,3.86004270460415,1.24478398659617
+"826","Ssiderea006737",NA,NA,NA,NA,1.73128443613156,1.79688640686554
+"827","Ssiderea006810",NA,NA,"lysosomal lumen pH elevation","Function Unknown",-1.96380591171945,-1.7391299974518
+"828","Ssiderea006828",NA,NA,"protection from non-homologous end joining at telomere","Replication, recombination and repair",-1.42557975178984,-1.92775963803151
+"829","Ssiderea006859",NA,NA,NA,NA,2.92513376094114,1.0184279851765
+"830","Ssiderea006963",NA,NA,NA,NA,1.40938031221098,1.00768705283352
+"831","Ssiderea006965",NA,NA,NA,NA,1.56321382738794,1.64532243416348
+"832","Ssiderea007020",NA,NA,"metal ion binding","Posttranslational modification, protein turnover, chaperones",-2.21028653202439,-2.94317540629446
+"833","Ssiderea007174",NA,NA,NA,NA,-3.3441429918901,-1.8407351935805
+"834","Ssiderea007183",NA,NA,NA,NA,-2.12851756663572,-1.14050621819136
+"835","Ssiderea007320",NA,NA,NA,NA,-1.18879309096731,-1.32389805690804
+"836","Ssiderea007382",NA,NA,"calcium ion transport","",-1.01704815443935,-1.82867999107781
+"837","Ssiderea007427",NA,NA,NA,NA,-2.64367086499721,-4.56295316277805
+"838","Ssiderea007435",NA,NA,NA,NA,-1.40071220480001,-1.08902708124215
+"839","Ssiderea007529",NA,NA,NA,NA,3.75526469401939,2.84310707789679
+"840","Ssiderea007617",NA,NA,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",2.06992096324583,1.41715438168971
+"841","Ssiderea007654",NA,NA,NA,NA,-1.42216151380387,-1.84863432812044
+"842","Ssiderea007782",NA,NA,"G-protein coupled receptor activity","Signal transduction mechanisms",-1.86682841723024,-3.2340164984671
+"843","Ssiderea007807",NA,NA,NA,NA,1.85748328611,1.70684280232913
+"844","Ssiderea008152",NA,NA,"hyaluronic acid binding","Signal transduction mechanisms",-1.90511562182715,-1.23828342439555
+"845","Ssiderea008159",NA,NA,"Deleted in malignant brain tumors 1","Signal transduction mechanisms",1.2024997556599,1.12807650152325
+"846","Ssiderea008285",NA,NA,"AP-5 complex subunit sigma-1","Function Unknown",1.58373735491869,1.78033669130406
+"847","Ssiderea008329",NA,NA,NA,NA,-2.02867424044227,-1.76910118677219
+"848","Ssiderea008750",NA,NA,"positive regulation of interleukin-13 biosynthetic process","Function Unknown",-2.74132931425305,-1.5223436147208
+"849","Ssiderea008934",NA,NA,NA,NA,-1.73501837286972,-2.09018547277716
+"850","Ssiderea008970",NA,NA,"CDK-activating kinase assembly factor","Posttranslational modification, protein turnover, chaperones",1.54270252280443,1.01014427181747
+"851","Ssiderea008985",NA,NA,"carbohydrate binding","",2.14224391613964,2.0440075062846
+"852","Ssiderea009023",NA,NA,"carbohydrate binding","",1.35538409693426,2.17684390657117
+"853","Ssiderea009025",NA,NA,"negative regulation of DNA replication","Function Unknown",1.88943688659128,1.48263064927853
+"854","Ssiderea009026",NA,NA,"carbohydrate binding","",3.99380722381552,1.50385816623548
+"855","Ssiderea009049",NA,NA,"tumor necrosis factor","Function Unknown",4.19502332494857,2.82340536405813
+"856","Ssiderea009069",NA,NA,"Coagulation factor 5/8 C-terminal domain, discoidin domain","Signal transduction mechanisms",4.22464318839079,4.11146058163318
+"857","Ssiderea009157",NA,NA,NA,NA,-1.25460849427593,-2.96873821777501
+"858","Ssiderea009162",NA,NA,"Tumor necrosis factor (ligand) superfamily, member","Function Unknown",2.44161119493521,1.09624695437719
+"859","Ssiderea009188",NA,NA,NA,NA,3.89554563048855,2.04387153709037
+"860","Ssiderea009191",NA,NA,NA,NA,1.89749351362105,2.82406645369682
+"861","Ssiderea009196",NA,NA,NA,NA,2.30703845017591,1.78466624868613
+"862","Ssiderea009336",NA,NA,"Hemicentin-1","Signal transduction mechanisms",-2.0281775160288,-1.79690317029708
+"863","Ssiderea009358",NA,NA,"signaling receptor binding","Cell wall/membrane/envelope biogenesis",1.07847048691483,1.03938668528011
+"864","Ssiderea009444",NA,NA,NA,NA,-2.24855887498233,-2.80337285335214
+"865","Ssiderea009483",NA,NA,NA,NA,-1.11424177774092,-1.00194787785788
+"866","Ssiderea009522",NA,NA,"retinol dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",-3.04323320382379,-3.93270473416709
+"867","Ssiderea009523",NA,NA,"retinol dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",2.6515016427196,1.22824670433477
+"868","Ssiderea009670",NA,NA,"Cobalamin binding. It is involved in the biological process described with cobalamin transport","Function Unknown",3.03606146339008,1.3936350397327
+"869","Ssiderea009736",NA,NA,NA,NA,1.87487618231368,1.55248958795884
+"870","Ssiderea009801",NA,NA,NA,NA,1.58940383093497,2.12630882085995
+"871","Ssiderea009987",NA,NA,"SANT  SWI3, ADA2, N-CoR and TFIIIB'' DNA-binding domains","Transcription",1.60290783869399,2.17684390657117
+"872","Ssiderea010100",NA,NA,NA,NA,-1.36612441236873,-1.40044276932691
+"873","Ssiderea010720",NA,NA,NA,NA,2.56586976557552,3.9235126182767
+"874","Ssiderea010960",NA,NA,"nail development","Carbohydrate transport and metabolism",-1.93258493641737,-2.7017340424896
+"875","Ssiderea011073",NA,NA,NA,NA,1.05097740326489,2.11820764912801
+"876","Ssiderea011220",NA,NA,NA,NA,-6.0868289527242,-5.10808643798233
+"877","Ssiderea011419",NA,NA,NA,NA,1.29276877631562,1.32015900466314
+"878","Ssiderea011465",NA,NA,"arachidonate 5-lipoxygenase activity","Amino acid transport and metabolism",-1.08032206502226,-1.09293416299206
+"879","Ssiderea011584",NA,NA,NA,NA,1.92286491436689,2.88797391305675
+"880","Ssiderea011949",NA,NA,"regulation of canonical Wnt signaling pathway","Function Unknown",-2.64367086499721,-1.53958997976405
+"881","Ssiderea011958",NA,NA,"Tetratricopeptide repeat","Posttranslational modification, protein turnover, chaperones",-7.54701962289982,-5.4015711295667
+"882","Ssiderea011980",NA,NA,NA,NA,1.66250631637304,2.1350278560069
+"883","Ssiderea011982",NA,NA,NA,NA,4.8887710051788,4.56295316277805
+"884","Ssiderea012245",NA,NA,NA,NA,1.09073847900194,3.0818876398983
+"885","Ssiderea012259",NA,NA,NA,NA,2.07962808311083,6.85485923703154
+"886","Ssiderea012290",NA,NA,"response to defense-related nitric oxide production by other organism involved in symbiotic interaction","Nucleotide transport and metabolism",-1.46023283556711,-1.49997617911226
+"887","Ssiderea012406",NA,NA,NA,NA,-1.05556037765084,-4.56295316277805
+"888","Ssiderea012723",NA,NA,"Belongs to the mitochondrial carrier (TC 2.A.29) family","Energy production and conversion",-1.19176934265691,-1.71529182752917
+"889","Ssiderea012976",NA,NA,"chromatin disassembly","Transcription",1.500780509305,1.78033669130406
+"890","Ssiderea013036",NA,NA,"Belongs to the glycosyl hydrolase 31 family","Carbohydrate transport and metabolism",1.38081356253599,1.01973259405804
+"891","Ssiderea013067",NA,NA,"dihydrofolate reductase activity","Coenzyme transport and metabolism",4.10136013992074,5.38910074445913
+"892","Ssiderea013138",NA,NA,NA,NA,3.8287984406392,1.97271040739998
+"893","Ssiderea013640",NA,NA,NA,NA,-1.72541194321883,-1.13436737829815
+"894","Ssiderea013642",NA,NA,"Vesicular inhibitory amino acid","",-1.08206332073647,-1.88171559624713
+"895","Ssiderea013810",NA,NA,NA,NA,1.75235871711485,2.08032572752126
+"896","Ssiderea013891",NA,NA,NA,NA,-1.02648904531551,-1.47158765536749
+"897","Ssiderea013912",NA,NA,"regulation of nitrosative stress-induced intrinsic apoptotic signaling pathway","Posttranslational modification, protein turnover, chaperones",-2.67667399460545,-3.0616409706291
+"898","Ssiderea013935",NA,NA,"Dienelactone hydrolase family","Secondary metabolites biosynthesis, transport and catabolism",1.60578033078581,2.24463744101042
+"899","Ssiderea013956",NA,NA,NA,NA,-1.32212747286868,-1.46007117237445
+"900","Ssiderea014166",NA,NA,NA,NA,1.40234344752608,-1.22824670433477
+"901","Ssiderea014617",NA,NA,"fucose metabolic process","Carbohydrate transport and metabolism",1.84235632239585,3.23142358628496
+"902","Ssiderea015352",NA,NA,"hydrolase activity","Function Unknown",-1.87487618231368,-1.85894211478771
+"903","Ssiderea015433",NA,NA,"-","",-2.64367086499721,-2.34164654101887
+"904","Ssiderea015479",NA,NA,NA,NA,1.13963748244709,1.56048197164251
+"905","Ssiderea015688",NA,NA,"serine threonine-protein kinase","Signal transduction mechanisms",-2.24228422273883,-1.52094239074918
+"906","Ssiderea015912",NA,NA,"ornithine carbamoyltransferase activity","Amino acid transport and metabolism",1.90010655630957,1.70684280232913
+"907","Ssiderea015915",NA,NA,"Allows the formation of correctly charged Gln-tRNA(Gln) through the transamidation of misacylated Glu-tRNA(Gln) in the mitochondria. The reaction takes place in the presence of glutamine and ATP through an activated gamma-phospho-Glu- tRNA(Gln)","Translation, ribosomal structure and biogenesis",-1.01306817884769,-1.75923998507571
+"908","Ssiderea016088",NA,NA,"alkaline phosphatase activity","Inorganic ion transport and metabolism",-2.30703845017591,-2.12679870788797
+"909","Ssiderea016097",NA,NA,"LanC lantibiotic synthetase component C-like 3 (bacterial)","Defense mechanisms",1.84359249916935,2.11820764912801
+"910","Ssiderea016226",NA,NA,NA,NA,-1.49280614576844,-3.38234611408202
+"911","Ssiderea016286",NA,NA,NA,NA,1.55007123959048,1.7477529167517
+"912","Ssiderea016494",NA,NA,NA,NA,1.07058099216622,2.47249180602659
+"913","Ssiderea016706",NA,NA,"C-terminal of Roc, COR, domain","Signal transduction mechanisms",-4.34858702080096,-1.76498701264041
+"914","Ssiderea017365",NA,NA,"electron carrier activity. It is involved in the biological process described with oxidation-reduction process","Nucleotide transport and metabolism",1.20834927529267,1.76498701264041
+"915","Ssiderea017479",NA,NA,"Mab-21","Signal transduction mechanisms",-1.60308631599241,-2.19395156326799
+"916","Ssiderea017517",NA,NA,"fibronectin type III and laminin G domains","Signal transduction mechanisms",4.03489715817939,1.42480124730734
+"917","Ssiderea017732",NA,NA,NA,NA,-4.51204950777778,-2.58067844660054
+"918","Ssiderea017733",NA,NA,NA,NA,-6.1129444044275,-4.10852686194272
+"919","Ssiderea017734",NA,NA,NA,NA,-4.10136013992074,-2.65395706438519
+"920","Ssiderea017743",NA,NA,NA,NA,1.08336113966074,2.92518779275879
+"921","Ssiderea017841",NA,NA,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",-2.00351459811475,-1.55695911548365
+"922","Ssiderea017967",NA,NA,"holocytochrome-c synthase activity","",-2.08606229570369,-2.34075120821701
+"923","Ssiderea018006",NA,NA,NA,NA,-2.54282176177762,-1.71897825145735
+"924","Ssiderea018397",NA,NA,NA,NA,1.49105655222908,1.81847994051036
+"925","Ssiderea018481",NA,NA,"lathosterol oxidase activity","Lipid transport and metabolism",-1.06427920435928,-1.54215733637155
+"926","Ssiderea018606",NA,NA,NA,NA,-1.50367612565817,-1.45697499674248
+"927","Ssiderea018639",NA,NA,"intracellular cholesterol transport","Function Unknown",2.82174051749494,2.7018484212686
+"928","Ssiderea018808",NA,NA,"peroxidase activity","Signal transduction mechanisms",1.88931964418956,1.8550501207852
+"929","Ssiderea018810",NA,NA,"Peyer's patch morphogenesis","Signal transduction mechanisms",1.28975104182603,2.05898199034695
+"930","Ssiderea018828",NA,NA,"NAD(P)H-binding","Defense mechanisms",-1.58701158880471,-1.25801191734408
+"931","Ssiderea018973",NA,NA,"scavenger receptor activity","Posttranslational modification, protein turnover, chaperones",1.29056537601971,1.46484024040759
+"932","Ssiderea018990",NA,NA,"protein heterodimerization activity","Chromatin structure and dynamics",-2.08855181235441,-1.73139366485846
+"933","Ssiderea019217",NA,NA,NA,NA,-1.70919577442588,-1.90069969310308
+"934","Ssiderea019309",NA,NA,"Universal stress protein family","Signal transduction mechanisms",2.90170296989722,1.42480124730734
+"935","Ssiderea019630",NA,NA,NA,NA,1.1638484091503,1.03457828090414
+"936","Ssiderea019840",NA,NA,"Sushi, nidogen and EGF-like","Signal transduction mechanisms",-1.80819723367329,-1.38641002459969
+"937","Ssiderea019841",NA,NA,NA,NA,-2.64367086499721,-1.92715246235652
+"938","Ssiderea019943",NA,NA,"positive regulation of histone H3-K36 methylation","",1.00406089462374,1.17302105572641
+"939","Ssiderea020235",NA,NA,NA,NA,-1.53723675886824,-1.44919492784637
+"940","Ssiderea020347",NA,NA,"7 transmembrane receptor (rhodopsin family)","Function Unknown",-1.13921096269911,-1.04662465779602
+"941","Ssiderea020477",NA,NA,NA,NA,-1.60887584863801,-1.5618247994337
+"942","Ssiderea020491",NA,NA,NA,NA,-4.16504685905433,2.27051479392223
+"943","Ssiderea020495",NA,NA,NA,NA,-1.08539312939558,-1.60080619965133
+"944","Ssiderea020500",NA,NA,NA,NA,4.94554226248839,5.17345303155208
+"945","Ssiderea020988",NA,NA,"von Willebrand factor (vWF) type A domain","Function Unknown",-2.94647071709757,-1.13428078955445
+"946","Ssiderea021039",NA,NA,"structural molecule activity","Signal transduction mechanisms",-6.75027090458089,-2.19435945099859
+"947","Ssiderea021044",NA,NA,"Collagen triple helix","Function Unknown",2.11257245901851,3.49963232968156
+"948","Ssiderea021107",NA,NA,NA,NA,3.18373568796134,6.02688089035383
+"949","Ssiderea021127",NA,NA,"ribosomal large subunit biogenesis","Function Unknown",-2.14047221952826,-1.8550501207852
+"950","Ssiderea021220",NA,NA,"Synaptic vesicle membrane protein VAT-1 homolog","Energy production and conversion",1.60178291250108,3.04743440541296
+"951","Ssiderea021262",NA,NA,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",-1.37899024294865,-1.40265359469655
+"952","Ssiderea021421",NA,NA,"Tyrosine-protein kinase transmembrane receptor ROR2","Signal transduction mechanisms",1.11974378211592,2.04280721402483
+"953","Ssiderea021665",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",2.20265718749014,2.09683831396201
+"954","Ssiderea021826",NA,NA,"-","",1.42067345309756,4.52382553347969
+"955","Ssiderea021831",NA,NA,"-","",3.02121536007593,6.55689134434936
+"956","Ssiderea021902",NA,NA,NA,NA,-4.51775422679983,-2.65395706438519
+"957","Ssiderea021983",NA,NA,NA,NA,-4.94554226248839,-1.27814762074393
+"958","Ssiderea022281",NA,NA,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",1.29704475608679,1.77401739189019
+"959","Ssiderea022318",NA,NA,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",-1.114226621824,1.57803641301286
+"960","Ssiderea022417",NA,NA,"-","",1.5297795660053,2.38534499233238
+"961","Ssiderea022486",NA,NA,"-","",1.28000883333327,1.55536294529408
+"962","Ssiderea022695",NA,NA,"pseudouridine 5'-phosphatase activity","Replication, recombination and repair",1.37119455019954,2.05898199034695
+"963","Ssiderea022747",NA,NA,NA,NA,-3.72251021061834,-1.45763737424905
+"964","Ssiderea022864",NA,NA,"Neural cell adhesion molecule","Signal transduction mechanisms",1.3009006062961,2.0700602193661
+"965","Ssiderea023003",NA,NA,"Extracellular matrix protein","",-1.31987065301433,-1.92186671988873
+"966","Ssiderea023126",NA,NA,NA,NA,-2.79332885846441,-6.46426210534697
+"967","Ssiderea023221",NA,NA,NA,NA,2.89900712133845,1.17917035335945
+"968","Ssiderea023349",NA,NA,"DNA nucleotidylexotransferase activity","Replication, recombination and repair",-1.06059084636173,-1.05604479757077
+"969","Ssiderea023364",NA,NA,"non-membrane spanning protein tyrosine kinase activity","Signal transduction mechanisms",2.12413113650662,1.41045866581678
+"970","Ssiderea023648",NA,NA,NA,NA,-1.21614935190391,-1.29026013181454
+"971","Ssiderea023649",NA,NA,NA,NA,-3.78481108638154,-4.08541663098886
+"972","Ssiderea023975",NA,NA,NA,NA,1.09073847900194,1.79186541455462
+"973","Ssiderea024129",NA,NA,"Belongs to the sodium solute symporter (SSF) (TC 2.A.21) family","Lipid transport and metabolism",-1.45709558919615,-1.0184279851765
+"974","Ssiderea024166",NA,NA,"Protein of unknown function DUF72","Function Unknown",-1.18560955201803,-1.88703226211014
+"975","Ssiderea024229",NA,NA,NA,NA,-4.30509392105304,-1.28178258976343
+"976","Ssiderea024230",NA,NA,NA,NA,-5.67306983595114,-1.28168568146079
+"977","Ssiderea024554",NA,NA,"phytanoyl-CoA dioxygenase activity","Lipid transport and metabolism",1.01464556215127,1.17188578551326
+"978","Ssiderea024595",NA,NA,"biological adhesion","Extracellular structures",-1.99476894450557,-1.41003501913739
+"979","Ssiderea024754",NA,NA,NA,NA,10.9593798929224,7.02396173009884
+"980","Ssiderea024813",NA,NA,"glycine amidinotransferase","Amino acid transport and metabolism",-4.03079189810592,-1.24977206798024
+"981","Ssiderea024906",NA,NA,"Galactose binding lectin domain","Posttranslational modification, protein turnover, chaperones",2.85840700939281,5.56310524015066
+"982","Ssiderea025267",NA,NA,"Domain present in PSD-95, Dlg, and ZO-1/2.","Function Unknown",-1.10044226274177,-1.05517022978884
+"983","Ssiderea025376",NA,NA,"gamma-glutamyl-peptidase activity","Coenzyme transport and metabolism",-1.86356560997988,-2.07731070811859
+"984","Ssiderea025685",NA,NA,"Collagen triple helix","Function Unknown",3.47915056233853,-1.09313941506719
+"985","Ssiderea025794",NA,NA,"Receptor tyrosine phosphatase type r2a","Signal transduction mechanisms",2.79085249906182,2.69229023744288
+"986","Ssiderea025906",NA,NA,"MAC/Perforin domain","Signal transduction mechanisms",-2.41838598301714,-1.12829365529706
+"987","Ssiderea025912",NA,NA,"transcription initiation from RNA polymerase II promoter","Transcription",2.11441492556189,1.95497644975109
+"988","Ssiderea025990",NA,NA,"sequence-specific DNA binding","Transcription",1.40343100484491,1.1320006027129
+"989","Ssiderea026015",NA,NA,NA,NA,-1.16841745476101,-2.27702507709884
+"990","Ssiderea026050",NA,NA,NA,NA,1.67202336216714,2.17039502709697
+"991","Ssiderea026331",NA,NA,"Belongs to the ATP guanido phosphotransferase family","Energy production and conversion",-1.4257869732471,-3.54138073991165
+"992","Ssiderea026350",NA,NA,NA,NA,-1.31993197735386,-1.85753628706464
+"993","Ssiderea026681",NA,NA,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",1.18881019792948,2.01323981410343
+"994","Ssiderea026686",NA,NA,NA,NA,-3.10868157445434,-3.27712916795656
+"995","Ssiderea026694",NA,NA,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)","",2.94843691104391,2.30567890106292
+"996","Ssiderea026904",NA,NA,NA,NA,-3.99839053844318,-2.47417873269183
+"997","Ssiderea026954",NA,NA,NA,NA,-2.78314668065726,-1.33670355170906
+"998","Ssiderea027033",NA,NA,"-","",2.6047112173288,3.04700299968437
+"999","Ssiderea027610",NA,NA,NA,NA,1.19762088782376,1.56130782913757
+"1000","Ssiderea027674",NA,NA,NA,NA,-3.69738622745639,-1.84863432812044
+"1001","Ssiderea027777",NA,NA,"Adenylyl- / guanylyl cyclase, catalytic domain","Signal transduction mechanisms",-1.29484208892362,-1.21101482423889
+"1002","Ssiderea027829",NA,NA,NA,NA,1.54455936933983,1.95718510522572
+"1003","Ssiderea027900",NA,NA,"voltage-gated sodium channel activity","Inorganic ion transport and metabolism",-1.27600394395387,-1.79688640686554
+"1004","Ssiderea027950",NA,NA,NA,NA,-1.36673524666713,-1.08110772075375
+"1005","Ssiderea028078",NA,NA,NA,NA,-1.31861380077683,-1.07420180655995
+"1006","Ssiderea028434",NA,NA,"thyroid hormone transmembrane transporter activity","Carbohydrate transport and metabolism",-2.37114927742782,-2.54857208550283
+"1007","Ssiderea028492",NA,NA,"protein phosphatase regulator activity","Signal transduction mechanisms",1.38081356253599,1.22284089698037
+"1008","Ssiderea028526",NA,NA,NA,NA,-1.14142022021349,-1.18056870904317
+"1009","Ssiderea028718",NA,NA,NA,NA,-2.79332885846441,-2.13495889207231
+"1010","Ssiderea028819",NA,NA,"complement activation, lectin pathway","Replication, recombination and repair",2.99252608449811,4.37654464856058
+"1011","Ssiderea028833",NA,NA,NA,NA,3.49842239127447,4.38833525301472
+"1012","Ssiderea029188",NA,NA,"Cobalamin-independent synthase, Catalytic domain","Amino acid transport and metabolism",2.80155230498677,1.8550501207852
+"1013","Ssiderea029247",NA,NA,NA,NA,-1.11196284770172,-1.49108171723834
+"1014","Ssiderea029278",NA,NA,NA,NA,2.79458310897828,1.5618247994337
+"1015","Ssiderea029713",NA,NA,NA,NA,-1.06690015333757,-1.33766211068271
+"1016","Ssiderea029805",NA,NA,NA,NA,1.8394028662701,1.64947032548721
+"1017","Ssiderea029844",NA,NA,NA,NA,1.30533266338157,1.63850050488457
+"1018","Ssiderea029846",NA,NA,"Cupin-like domain","Lipid transport and metabolism",1.22183685631098,1.12829365529706
+"1019","Ssiderea029875",NA,NA,NA,NA,1.34770608484357,1.7880968371282
+"1020","Ssiderea030041",NA,NA,NA,NA,-1.78194538821611,-1.06895933939678
+"1021","Ssiderea030042",NA,NA,NA,NA,2.15864365519991,1.11857810051757
+"1022","Ssiderea030069",NA,NA,"phosphopyruvate hydratase activity","Carbohydrate transport and metabolism",1.15469039340583,1.38883518711914
+"1023","Ssiderea030145",NA,NA,NA,NA,-1.53657728891657,-2.15476349017128
+"1024","Ssiderea030239",NA,NA,NA,NA,1.56429364669489,1.33926412709543
+"1025","Ssiderea030302",NA,NA,"Folate receptor family","Function Unknown",-1.0229883896784,-1.85459536988623
+"1026","Ssiderea030632",NA,NA,NA,NA,2.28786952010476,1.05604479757077
+"1027","Ssiderea030651",NA,NA,NA,NA,-1.09167285952388,-1.4911258370722
+"1028","Ssiderea030710",NA,NA,NA,NA,-1.48584016091548,-1.44919492784637
+"1029","Ssiderea030985",NA,NA,"Reverse transcriptase (RNA-dependent DNA polymerase)","Function Unknown",-1.06426678177357,-1.29940830544057
+"1030","Ssiderea031066",NA,NA,NA,NA,-2.63889197643568,-3.45046655115445
+"1031","Ssiderea031312",NA,NA,"peroxidase activity","Function Unknown",-3.00843133328787,-1.09553270443332
+"1032","Ssiderea031448",NA,NA,"-","",-1.73322314653401,-1.50953594155441
+"1033","Ssiderea031502",NA,NA,NA,NA,-1.44493930714581,-1.32384506323089
+"1034","Ssiderea031537",NA,NA,"Specifically deglycosylates the denatured form of N- linked glycoproteins in the cytoplasm and assists their proteasome-mediated degradation. Cleaves the beta-aspartyl- glucosamine (GlcNAc) of the glycan and the amide side chain of Asn, converting Asn to Asp. Prefers proteins containing high- mannose over those bearing complex type oligosaccharides. Can recognize misfolded proteins in the endoplasmic reticulum that are exported to the cytosol to be destroyed and deglycosylate them, while it has no activity toward native proteins. Deglycosylation is a prerequisite for subsequent proteasome-mediated degradation of some, but not all, misfolded glycoproteins","Posttranslational modification, protein turnover, chaperones",1.12165932921952,1.07279734690488
+"1035","Ssiderea031553",NA,NA,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",-1.60507517583625,-3.2340164984671
+"1036","Ssiderea031574",NA,NA,NA,NA,-1.615369166042,-1.2650875477899
+"1037","Ssiderea031592",NA,NA,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",-1.06544949692381,-1.10405619400908
+"1038","Ssiderea031654",NA,NA,NA,NA,1.33050963171019,3.22899210375452
+"1039","Ssiderea031692",NA,NA,"LETM1 domain containing 1","Signal transduction mechanisms",-1.19742775421634,-1.8570231668524
+"1040","Ssiderea031743",NA,NA,"determination of stomach left/right asymmetry","Cytoskeleton",-1.30543340514089,-1.16592477254061
+"1041","Ssiderea031931",NA,NA,NA,NA,-3.04323320382379,-1.20362505321008
+"1042","Ssiderea032171",NA,NA,NA,NA,-1.73656418277197,-1.39131824911895
+"1043","Ssiderea032250",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",1.20157805911343,2.10087114538004
+"1044","Ssiderea032352",NA,NA,"tRNA methylation","Translation, ribosomal structure and biogenesis",1.14150330134896,1.89122054601413
+"1045","Ssiderea032491",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",2.10162089798395,2.45996780631838
+"1046","Ssiderea032502",NA,NA,NA,NA,1.12325222520246,2.22668105800163
+"1047","Ssiderea032816",NA,NA,NA,NA,-1.81822333757562,-1.03415971689347
+"1048","Ssiderea033082",NA,NA,"homophilic cell adhesion via plasma membrane adhesion molecules","Carbohydrate transport and metabolism",-5.39062281864567,-1.05189530108983
+"1049","Ssiderea033289",NA,NA,"RNA binding","Intracellular trafficking, secretion, and vesicular transport",-2.14475802940404,-1.24625357554527
+"1050","Ssiderea033477",NA,NA,NA,NA,-2.17150733145909,-1.04511949786581
+"1051","Ssiderea033524",NA,NA,NA,NA,-4.03079189810592,-2.14157069009471
+"1052","Ssiderea033639",NA,NA,NA,NA,1.36302642017117,1.78033669130406
+"1053","Ssiderea033838",NA,NA,NA,NA,1.01704815443935,2.61448609799592
+"1054","Ssiderea034143",NA,NA,NA,NA,2.12737851594689,2.39400014445547
+"1055","Ssiderea034156",NA,NA,NA,NA,1.84894029132494,1.04194808310838
+"1056","Ssiderea034234",NA,NA,"negative regulation of non-canonical Wnt signaling pathway","Posttranslational modification, protein turnover, chaperones",-1.88588780773452,-1.19059966915407
+"1057","Ssiderea034283",NA,NA,"ATP binding. It is involved in the biological process described with protein phosphorylation","Signal transduction mechanisms",-1.92232703223274,-2.10523205671831
+"1058","Ssiderea034394",NA,NA,"defense response to nematode","",-4.26611489366462,-3.49963232968156
+"1059","Ssiderea034395",NA,NA,"carbohydrate binding","",1.63075379434408,2.54898587083248
+"1060","Ssiderea034401",NA,NA,"carbohydrate binding","",-1.87442690589734,-5.02538303090411
+"1061","Ssiderea034505",NA,NA,NA,NA,2.09712259785999,2.14934951383627
+"1062","Ssiderea034545",NA,NA,NA,NA,-1.64483568848111,-1.23131532006896
+"1063","Ssiderea034578",NA,NA,NA,NA,-1.8476477721735,-1.12367738209931
+"1064","Ssiderea034762",NA,NA,"Belongs to the peptidase C14A family","Cell cycle control, cell division, chromosome partitioning",1.83776603301817,1.11656683044128
+"1065","Ssiderea034995",NA,NA,"tumor necrosis factor receptor binding","Posttranslational modification, protein turnover, chaperones",-2.63249529704354,-2.11931655570631
+"1066","Ssiderea035207",NA,NA,NA,NA,-1.36098024148487,-3.76567462522345
+"1067","Ssiderea035259",NA,NA,NA,NA,6.75874416882848,7.98962671490703
+"1068","Ssiderea035261",NA,NA,NA,NA,-1.57022230214397,-2.57710948333697
+"1069","Ssiderea035314",NA,NA,"PTK6 protein tyrosine kinase","Signal transduction mechanisms",-2.31384693055849,-1.4630585778501
+"1070","Ssiderea035315",NA,NA,NA,NA,-1.59470465465929,-1.76498701264041
+"1071","Ssiderea035390",NA,NA,"nutrient reservoir activity","Lipid transport and metabolism",1.65842006141137,2.30486974417621
+"1072","Ssiderea035418",NA,NA,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",-1.0848627491543,-1.0115999801409
+"1073","Ssiderea035521",NA,NA,NA,NA,3.17960789162386,1.71173496415135
+"1074","Ssiderea035586",NA,NA,"Belongs to the protein-tyrosine phosphatase family. Non-receptor class myotubularin subfamily","",2.67249335086279,2.65395706438519
+"1075","Ssiderea035646",NA,NA,NA,NA,-2.68530840840508,-2.27702507709884
+"1076","Ssiderea035992",NA,NA,NA,NA,3.82554526840632,1.54509339290915
+"1077","Ssiderea035994",NA,NA,NA,NA,6.75027090458089,2.38932431692988
+"1078","Ssiderea036092",NA,NA,NA,NA,-2.95212996853513,-1.06895933939678
+"1079","Ssiderea036101",NA,NA,"Tetratricopeptide repeat","Posttranslational modification, protein turnover, chaperones",1.29912200750035,1.24186426736986
+"1080","Ssiderea036254",NA,NA,"recombinational repair","Replication, recombination and repair",-2.63889197643568,-1.5360510754888
+"1081","Ssiderea036716",NA,NA,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",1.8394028662701,2.10087114538004
+"1082","Ssiderea036721",NA,NA,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",2.39456501025498,2.59609563195795
+"1083","Ssiderea036818",NA,NA,NA,NA,2.71725166415284,1.71039498028028
+"1084","Ssiderea036881",NA,NA,NA,NA,-1.55007123959048,-1.97247038475721
+"1085","Ssiderea037047",NA,NA,NA,NA,1.49631116098524,1.76498701264041
+"1086","Ssiderea037401",NA,NA,"identical protein binding","Function Unknown",-2.58086951374875,-1.65335819254804
+"1087","Ssiderea037904",NA,NA,NA,NA,-1.28488351448123,-2.0273888247072
+"1088","Ssiderea038001",NA,NA,"TNF receptor-associated factor","Signal transduction mechanisms",1.04415441823499,1.68336843282166
+"1089","Ssiderea038033",NA,NA,NA,NA,-1.50506556236794,-1.48070474545284
+"1090","Ssiderea038246",NA,NA,NA,NA,-2.35475872637898,-1.28763270375546
+"1091","Ssiderea038311",NA,NA,"positive regulation of Arp2/3 complex-mediated actin nucleation","",1.65798281013997,1.31668936230657
+"1092","Ssiderea038424",NA,NA,NA,NA,-2.48544779380145,-4.37654464856058
+"1093","Ssiderea038513",NA,NA,NA,NA,-6.9416718187742,-1.69650662891464
+"1094","Ssiderea038529",NA,NA,NA,NA,-3.8287984406392,-3.08286516746995
+"1095","Ssiderea038534",NA,NA,NA,NA,-13.6711508489905,-5.88390837800698
+"1096","Ssiderea038540",NA,NA,NA,NA,-8.49838985092485,-1.04194808310838
+"1097","Ssiderea038632",NA,NA,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",-2.80161653240785,-3.32503498122226
+"1098","Ssiderea038648",NA,NA,"positive regulation of interleukin-4-mediated signaling pathway","",-1.24657536922094,-1.01720412898296
+"1099","Ssiderea038847",NA,NA,NA,NA,4.34805676045939,5.77162947570048
+"1100","Ssiderea038854",NA,NA,"tripartite motif containing 71, E3 ubiquitin protein ligase","Posttranslational modification, protein turnover, chaperones",1.11196284770172,1.34719367640124
+"1101","Ssiderea038885",NA,NA,NA,NA,2.95579854980736,4.20926443723645
+"1102","Ssiderea038962",NA,NA,"Bardet-Biedl syndrome 4","Function Unknown",1.29842138897605,1.13164492546161
+"1103","Ssiderea039115",NA,NA,NA,NA,2.10844553201605,1.86642494181256
+"1104","Ssiderea039175",NA,NA,"glycosylceramidase activity","Carbohydrate transport and metabolism",-1.78160864200768,-2.49081626982762
+"1105","Ssiderea039227",NA,NA,NA,NA,1.74397159307006,3.34170671750908
+"1106","Ssiderea039506",NA,NA,"binding of sperm to zona pellucida","",1.34778076885827,2.23641247138748
+"1107","Ssiderea039605",NA,NA,"phosphoethanolamine N-methyltransferase","Lipid transport and metabolism",-1.05649366576689,-3.86215480305447
+"1108","Ssiderea039623",NA,NA,"HELP motif","Function Unknown",2.05642600624817,2.97751022479849
+"1109","Ssiderea039744",NA,NA,NA,NA,-1.56155759587374,-1.03890593385817
+"1110","Ssiderea039926",NA,NA,"Protein tyrosine kinase","Signal transduction mechanisms",2.68501223996146,1.05475206207421
+"1111","Ssiderea039935",NA,NA,NA,NA,3.8287984406392,1.33702423887125
+"1112","Ssiderea040857",NA,NA,"Sialic acid binding Ig-like lectin 1, sialoadhesin","Signal transduction mechanisms",-1.01230495388422,-1.13613164089786
+"1113","Ssiderea040898",NA,NA,"Hemicentin 1","Signal transduction mechanisms",1.42828644708649,1.00911061189073
+"1114","Ssiderea041210",NA,NA,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",1.29286507365773,2.05750478964926
+"1115","Ssiderea041257",NA,NA,NA,NA,1.86990872321261,1.23495436039492
+"1116","Ssiderea041337",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",1.74781840970852,2.0309231696753
+"1117","Ssiderea041532",NA,NA,"DBH-like monooxygenase protein 1","Amino acid transport and metabolism",-1.40343100484491,-1.18645249616344
+"1118","Ssiderea041622",NA,NA,"Collagen triple helix","Function Unknown",2.61360917762235,1.54033800725344
+"1119","Ssiderea041679",NA,NA,"Collagen triple helix","Function Unknown",4.68546987719035,3.03425934956001
+"1120","Ssiderea041712",NA,NA,"Protein tyrosine kinase","Signal transduction mechanisms",5.07364225139988,3.02473448675262
+"1121","Ssiderea041724",NA,NA,"Protein tyrosine kinase","Signal transduction mechanisms",-1.66609441475081,-1.34421682456396
+"1122","Ssiderea041746",NA,NA,"Protein tyrosine kinase","Signal transduction mechanisms",5.01718706925105,5.26881090836314
+"1123","Ssiderea042200",NA,NA,"BTB And C-terminal Kelch","Function Unknown",2.20488669131905,1.0184279851765
+"1124","Ssiderea042386",NA,NA,"HMG box domain containing 3","Transcription",1.88588780773452,1.08091715783879
+"1125","Ssiderea042649",NA,NA,"Lipoxygenase","Amino acid transport and metabolism",2.48797593146061,2.7017340424896
+"1126","Ssiderea042655",NA,NA,"betaine-homocysteine S-methyltransferase activity","Amino acid transport and metabolism",1.06144215757792,1.92186671988873
+"1127","Ssiderea042804",NA,NA,"Histone H1","Chromatin structure and dynamics",1.30688628007549,2.24326766838775
+"1128","Ssiderea043041",NA,NA,NA,NA,-1.87487618231368,-1.50250301487939
+"1129","Ssiderea043085",NA,NA,NA,NA,-1.56577164554211,-3.21962819006813
+"1130","Ssiderea043280",NA,NA,NA,NA,-1.22671630851966,-1.5223436147208
+"1131","Ssiderea043285",NA,NA,NA,NA,-3.34076328438762,-1.29985050059853
+"1132","Ssiderea043312",NA,NA,NA,NA,-4.0521178088597,-3.9264862919172
+"1133","Ssiderea043316",NA,NA,NA,NA,1.0622319798361,1.02458898981949
+"1134","Ssiderea043459",NA,NA,NA,NA,-1.83290013857581,-1.03602235645285
+"1135","Ssiderea043482",NA,NA,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",2.75330018611254,1.2766470860051
+"1136","Ssiderea043956",NA,NA,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-4.68546987719035,-1.31257908174085
+"1137","Ssiderea044482",NA,NA,"Belongs to the small heat shock protein (HSP20) family","Posttranslational modification, protein turnover, chaperones",1.32613331038218,5.26957165033703
+"1138","Ssiderea044483",NA,NA,NA,NA,-1.21430223699234,-1.88415093765666
+"1139","Ssiderea044708",NA,NA,NA,NA,-4.51795831497357,-3.96471572296928
+"1140","Ssiderea044734",NA,NA,NA,NA,-1.1293827047291,-1.41818858820514
+"1141","Ssiderea044854",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",2.9228410028213,2.09232737732248
+"1142","Ssiderea044870",NA,NA,NA,NA,1.59808630828284,4.16452867718254
+"1143","Ssiderea044913",NA,NA,"mannose binding","",3.10445350327063,1.9908514062989
+"1144","Ssiderea045388",NA,NA,"Trypsin-like serine protease","Posttranslational modification, protein turnover, chaperones",1.32115957237427,1.32736338922268
+"1145","Ssiderea045632",NA,NA,NA,NA,-1.16087461921268,-1.622287705415
+"1146","Ssiderea045796",NA,NA,"activation of NF-kappaB-inducing kinase activity","Posttranslational modification, protein turnover, chaperones",1.53657728891657,2.02009166888694
+"1147","Ssiderea045838",NA,NA,NA,NA,7.44213166440392,4.26257813403711
+"1148","Ssiderea045841",NA,NA,NA,NA,4.8887710051788,1.99352054714154
+"1149","Ssiderea045978",NA,NA,"BRCA1 interacting protein C-terminal helicase 1","Replication, recombination and repair",-2.79458310897828,-2.6703593403228
+"1150","Ssiderea045999",NA,NA,"Belongs to the peptidase C14A family","Cell cycle control, cell division, chromosome partitioning",-1.32991119304415,-3.32503498122226
+"1151","Ssiderea046340",NA,NA,"IMP dehydrogenase activity","Nucleotide transport and metabolism",-1.77202780502124,-1.71337912648382
+"1152","Ssiderea046764",NA,NA,NA,NA,1.49626399977153,1.24220218369925
+"1153","Ssiderea046967",NA,NA,NA,NA,1.22671630851966,1.35865568871752
+"1154","Ssiderea047003",NA,NA,NA,NA,1.13058817283758,1.01973259405804
+"1155","Ssiderea047138",NA,NA,NA,NA,1.60578033078581,2.39406799480017
+"1156","Ssiderea047183",NA,NA,"Tripartite motif-containing protein","Posttranslational modification, protein turnover, chaperones",-1.11416415499162,-2.24326766838775
+"1157","Ssiderea047590",NA,NA,"clustering of voltage-gated sodium channels","Function Unknown",-2.15595276599944,-7.25552370455643
+"1158","Ssiderea047591",NA,NA,NA,NA,-3.89554563048855,-1.46955837655131
+"1159","Ssiderea047607",NA,NA,NA,NA,7.32304014561038,2.8900690868384
+"1160","Ssiderea047867",NA,NA,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",-2.91690262176116,-1.76910118677219
+"1161","Ssiderea047913",NA,NA,NA,NA,2.25480658932806,1.64532243416348
+"1162","Ssiderea047925",NA,NA,"activation of NF-kappaB-inducing kinase activity","Posttranslational modification, protein turnover, chaperones",-1.32925512637038,-1.42812616734848
+"1163","Ssiderea047931",NA,NA,"activation of NF-kappaB-inducing kinase activity","Posttranslational modification, protein turnover, chaperones",1.25628483132236,1.2036287935959
+"1164","Ssiderea047942",NA,NA,"activation of NF-kappaB-inducing kinase activity","Posttranslational modification, protein turnover, chaperones",-1.3943237142434,-1.70975266461751
+"1165","Ssiderea048220",NA,NA,"Farnesoic acid 0-methyl transferase","",-2.68501223996146,-1.41538084467021
+"1166","Ssiderea048506",NA,NA,"inositol hexakisphosphate 6-kinase activity","",-1.59808630828284,-2.37050472431263
+"1167","Ssiderea048618",NA,NA,"sequence-specific DNA binding","Transcription",-5.85138511170658,-2.20480515411948
+"1168","Ssiderea048749",NA,NA,NA,NA,-1.13028188046843,-2.38764931216027
+"1169","Ssiderea048803",NA,NA,NA,NA,1.040759468093,2.59356845136905
+"1170","Ssiderea048817",NA,NA,NA,NA,1.41778390555507,1.54521169264999
+"1171","Ssiderea048834",NA,NA,NA,NA,-1.19762088782376,-1.59624825999226
+"1172","Ssiderea048843",NA,NA,"GABA-A receptor activity","Cell wall/membrane/envelope biogenesis",1.84802335720724,1.56978517566291
+"1173","Ssiderea048941",NA,NA,NA,NA,-2.06992096324583,-1.15418112746779
+"1174","Ssiderea049008",NA,NA,"positive regulation of smooth muscle cell-matrix adhesion","Posttranslational modification, protein turnover, chaperones",1.26252818668448,1.30194710363666
+"1175","Ssiderea049012",NA,NA,NA,NA,-1.00498829784021,-1.0345180104722
+"1176","Ssiderea049034",NA,NA,NA,NA,-1.59825544664935,-3.21084337801413
+"1177","Ssiderea049036",NA,NA,NA,NA,-4.26504794498408,-3.46424370200615
+"1178","Ssiderea049067",NA,NA,NA,NA,1.34116419303182,1.11966341152886
+"1179","Ssiderea049260",NA,NA,"receptor localization to synapse","Function Unknown",-3.38922590118111,-2.13980931101442
+"1180","Ssiderea049326",NA,NA,NA,NA,-1.42729284602757,-1.39131824911895
+"1181","Ssiderea049435",NA,NA,"UPF0554 protein C2orf43 homolog","Function Unknown",1.66740582705521,1.24029240133548
+"1182","Ssiderea049467",NA,NA,"mitotic cell cycle checkpoint","Function Unknown",1.90010655630957,3.41354386732981
+"1183","Ssiderea049798",NA,NA,NA,NA,1.4257869732471,1.30216859054203
+"1184","Ssiderea049997",NA,NA,NA,NA,1.79679847494214,2.65395706438519
+"1185","Ssiderea050053",NA,NA,"fructose-bisphosphate aldolase","Carbohydrate transport and metabolism",2.40292208304887,1.06523667650493
+"1186","Ssiderea050623",NA,NA,"Nucleus accumbens associated 1, BEN and BTB (POZ) domain containing","Function Unknown",9.20068352193641,3.28408869768002
+"1187","Ssiderea050930",NA,NA,NA,NA,1.3921978333955,1.38739666040212
+"1188","Ssiderea051110",NA,NA,"DNA-directed DNA polymerase activity","Replication, recombination and repair",-1.87396858082362,-1.16106110883488
+"1189","Ssiderea051186",NA,NA,NA,NA,1.40071220480001,1.41314118949035
+"1190","Ssiderea051572",NA,NA,"HNK-1 sulfotransferase activity","Carbohydrate transport and metabolism",-1.1485052771847,-1.13312362477021
+"1191","Ssiderea051796",NA,NA,"Glycosyl hydrolase family 20, catalytic domain","Carbohydrate transport and metabolism",2.13219494946304,4.46941856853408
+"1192","Ssiderea051914",NA,NA,"axoneme assembly","",-2.2950367485998,-2.45996780631838
+"1193","Ssiderea051932",NA,NA,"coagulation factor V","Signal transduction mechanisms",-1.04408947252039,-1.10664614773381
+"1194","Ssiderea052157",NA,NA,NA,NA,1.61896667096512,1.03329648841774
+"1195","Ssiderea052159",NA,NA,"Lipoxygenase homology 2 (beta barrel) domain","",-1.20834927529267,-2.21038573070902
+"1196","Ssiderea052362",NA,NA,NA,NA,1.52648148574228,1.50258725359018
+"1197","Ssiderea052518",NA,NA,NA,NA,-4.16504685905433,-1.55768911769077
+"1198","Ssiderea052656",NA,NA,"carbohydrate binding","",-3.00353992564951,-5.56310524015066
+"1199","Ssiderea053017",NA,NA,"Interferon induced with helicase C domain 1","RNA processing and modification",1.02841264362956,1.61444795013199
+"1200","Ssiderea053115",NA,NA,"Structural maintenance of chromosomes","Replication, recombination and repair",-5.01718706925105,-4.68949329002826
+"1201","Ssiderea053364",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",2.18692990685883,1.85439097832643
+"1202","Ssiderea053371",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",3.14571781218993,1.00916440616374
+"1203","Ssiderea053696",NA,NA,NA,NA,-1.07725211466337,-4.48852986460766
+"1204","Ssiderea053724",NA,NA,NA,NA,-4.71237099902689,-3.57397505095365
+"1205","Ssiderea053828",NA,NA,NA,NA,3.10445350327063,2.65395706438519
+"1206","Ssiderea054400",NA,NA,NA,NA,2.42667410179726,2.75886282543281
+"1207","Ssiderea054582",NA,NA,"Belongs to the G-protein coupled receptor 2 family","Signal transduction mechanisms",-1.32212747286868,-1.5223436147208
+"1208","Ssiderea054683",NA,NA,NA,NA,-1.09149650932219,-1.0184279851765
+"1209","Ssiderea054891",NA,NA,"aryl sulfotransferase activity","Function Unknown",-1.00011403903185,2.53289600270092
+"1210","Ssiderea055324",NA,NA,"regulation of systemic arterial blood pressure by aortic arch baroreceptor feedback","",-2.59680073641632,-2.49541882833164
+"1211","Ssiderea056118",NA,NA,NA,NA,-1.26832541084142,-2.0309231696753
+"1212","Ssiderea056460",NA,NA,NA,NA,1.05097740326489,7.02396173009884
+"1213","Ssiderea056771",NA,NA,"histidine transport","Amino acid transport and metabolism",1.429631339652,1.10664614773381
+"1214","Ssiderea056809",NA,NA,NA,NA,1.42216151380387,1.37346800388564
+"1215","Ssiderea057248",NA,NA,"-","",2.27047667949466,7.02396173009884
+"1216","Ssiderea057290",NA,NA,NA,NA,1.22989689566931,2.01569479461039
+"1217","Ssiderea057306",NA,NA,NA,NA,-5.30730582033452,-4.53692668407567
+"1218","Ssiderea057323",NA,NA,"Hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides. It is involved in the biological process described with nitrogen compound metabolic process","Amino acid transport and metabolism",-1.2863651454503,-2.0309231696753
+"1219","Ssiderea057744",NA,NA,"Cytochrome P450","",1.32873271510431,1.8033501391378
+"1220","Ssiderea057794",NA,NA,"Peptidase family M28","Posttranslational modification, protein turnover, chaperones",-1.05773455960017,-1.05306968451232
+"1221","Ssiderea057909",NA,NA,NA,NA,-1.01955090962505,-1.37934363954498
+"1222","Ssiderea057978",NA,NA,NA,NA,1.27860987687493,1.12360613593541
+"1223","Ssiderea058012",NA,NA,"UDP-Gal betaGlcNAc beta 1,4- galactosyltransferase, polypeptide","Carbohydrate transport and metabolism",5.79245129222774,4.33264820914445
+"1224","Ssiderea058022",NA,NA,"-","",2.18672313451552,2.0309231696753
+"1225","Ssiderea058081",NA,NA,NA,NA,3.86227854558278,1.75253092790511
+"1226","Ssiderea058082",NA,NA,"Si ch211-69l10.4","Function Unknown",-1.2158020794936,-1.17290176331964
+"1227","Ssiderea058118",NA,NA,"Myb/SANT-like DNA-binding domain","Function Unknown",-1.95381208193415,-1.15273848863465
+"1228","Ssiderea058353",NA,NA,"Common central domain of tyrosinase","Amino acid transport and metabolism",1.03092149712026,1.75274031938644
+"1229","Ssiderea058589",NA,NA,NA,NA,-2.08606229570369,-1.82960812126454
+"1230","Ssiderea058642",NA,NA,NA,NA,-2.80161653240785,-4.2294148921312
+"1231","Ssiderea058877",NA,NA,"positive regulation of glutamate neurotransmitter secretion in response to membrane depolarization","",2.92765248603346,1.9063449074909
+"1232","Ssiderea058965",NA,NA,NA,NA,-2.63889197643568,-1.91241047715731
+"1233","Ssiderea058971",NA,NA,NA,NA,2.05413644963727,5.33511640658121
+"1234","Ssiderea059105",NA,NA,"Translocase of inner mitochondrial membrane 21","Function Unknown",3.21605288965537,1.33926412709543
+"1235","Ssiderea059158",NA,NA,"four-way junction helicase activity","Replication, recombination and repair",-1.40071220480001,-1.03329648841774
+"1236","Ssiderea059167",NA,NA,NA,NA,-1.0381170510811,-1.10479078443576
+"1237","Ssiderea59194",NA,NA,NA,NA,-1.07072988786469,-1.29131959293549
+"1238","Ssiderea59378",NA,NA,NA,NA,2.46622532837787,1.046769038691
+"1239","Ssiderea59438",NA,NA,NA,NA,-2.64367086499721,-1.03074201084938
+"1240","Ssiderea59477",NA,NA,"-","",-2.3032728095049,-2.03252929174618
+"1241","Ssiderea59537",NA,NA,NA,NA,-4.44008555618861,-1.81847994051036
+"1242","Ssiderea59705",NA,NA,NA,NA,1.91658945323432,1.35372662838828
+"1243","Ssiderea59793",NA,NA,NA,NA,-1.15528539212949,-2.2792602458964
+"1244","Ssiderea59845",NA,NA,NA,NA,-3.22850051980899,-2.23372757671175
+"1245","Ssiderea59853",NA,NA,NA,NA,-1.18560955201803,-1.8791707675454
+"1246","Ssiderea59859",NA,NA,NA,NA,1.20989765997445,2.7696168343847
+"1247","Ssiderea59860",NA,NA,"transposition, RNA-mediated","Replication, recombination and repair",-1.10094880531463,-1.08573930673047
+"1248","Ssiderea59884",NA,NA,NA,NA,-1.23616271077275,-1.83925155585171
+"1249","Ssiderea59895",NA,NA,NA,NA,4.05661195316956,3.5624763810286
+"1250","Ssiderea59897",NA,NA,NA,NA,-3.24794718708375,-1.56868292634037
+"1251","Ssiderea60036",NA,NA,NA,NA,1.23733504702423,3.58881321270063
+"1252","Ssiderea60042",NA,NA,"-","",-3.10445350327063,-1.56546738513534
+"1253","Ssiderea60093",NA,NA,"Collagen triple helix","Function Unknown",1.96763436925632,2.05750478964926
+"1254","Ssiderea60182",NA,NA,NA,NA,1.3681227564333,1.13613164089786
+"1255","Ssiderea60183",NA,NA,NA,NA,-1.98097390890271,-1.04234242046132
+"1256","Ssiderea60216",NA,NA,"K02A2.6-like","Amino acid transport and metabolism",2.39435137468171,3.05529175391898
+"1257","Ssiderea60348",NA,NA,NA,NA,-3.04323320382379,-1.1325991805434
+"1258","Ssiderea60368",NA,NA,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",1.21687692391373,1.40044276932691
+"1259","Ssiderea60552",NA,NA,NA,NA,-1.26651626832609,-2.146931729689
+"1260","Ssiderea60684",NA,NA,"Glycosyl transferases group 1","Cell wall/membrane/envelope biogenesis",-7.89342113823371,-3.93270473416709
+"1261","Ssiderea60824",NA,NA,"Reverse transcriptase (RNA-dependent DNA polymerase)","Carbohydrate transport and metabolism",-1.14775056318611,-2.10087114538004
+"1262","Ssiderea60964",NA,NA,"-","",-1.56161997917685,-1.8791707675454
+"1263","Ssiderea60971",NA,NA,"transposition, RNA-mediated","Replication, recombination and repair",-2.0800958640801,-1.56735844128438
+"1264","Ssiderea61137",NA,NA,"-","",2.64367086499721,1.66058298575426
+"1265","Ssiderea61144",NA,NA,NA,NA,-1.37797210898918,-1.69138482382241
+"1266","Ssiderea61192",NA,NA,NA,NA,-1.29959351465996,-1.3098142660121
+"1267","Ssiderea61286",NA,NA,"DNA-binding transcription factor activity, RNA polymerase II-specific","Function Unknown",-2.15864365519991,-2.38932431692988
+"1268","Ssiderea61326",NA,NA,NA,NA,-1.29842138897605,-1.5030572375304
+"1269","Ssiderea61334",NA,NA,NA,NA,-1.87442690589734,-1.9393638666802
+"1270","Ssiderea61461",NA,NA,NA,NA,-2.81327368808078,-3.49963232968156
+"1271","Ssiderea61470",NA,NA,"CUB and zona pellucida-like domain-containing protein","Function Unknown",1.70694950190404,1.01720412898296
+"1272","Ssiderea61644",NA,NA,NA,NA,1.27039609817089,1.9908514062989
+"1273","Ssiderea61670",NA,NA,NA,NA,1.70285324175537,1.0184279851765
+"1274","Ssiderea61730",NA,NA,"Collagen triple helix","Function Unknown",2.52541277992326,1.71337912648382
+"1275","Ssiderea61839",NA,NA,"nuclease HARBI1-like","Replication, recombination and repair",-1.01470155451072,-1.27601738122608
+"1276","Ssiderea61861",NA,NA,NA,NA,2.24391641495651,1.4068453704388
+"1277","Ssiderea61932",NA,NA,NA,NA,-3.71014646915843,-1.22900666306704
+"1278","Ssiderea61934",NA,NA,NA,NA,-1.26892409437182,-1.32352436824138
+"1279","Ssiderea62146",NA,NA,NA,NA,-4.66615190356796,-7.02396173009884
+"1280","Ssiderea62228",NA,NA,NA,NA,-1.14775056318611,-2.10367437257564
+"1281","Ssiderea62250",NA,NA,"tumor necrosis factor","Signal transduction mechanisms",4.16504685905433,2.99332323845926
+"1282","Ssiderea62253",NA,NA,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",-1.033401745116,-1.36196338258836
+"1283","Ssiderea62302",NA,NA,NA,NA,-1.41505016551505,-1.08436373908804
+"1284","Ssiderea62321",NA,NA,NA,NA,-1.09853004030401,-1.31731361550384
+"1285","Ssiderea62437",NA,NA,NA,NA,-1.91050218493631,-2.08032572752126
+"1286","Ssiderea62446",NA,NA,NA,NA,-1.01704815443935,-1.50385816623548
+"1287","Ssiderea62465",NA,NA,NA,NA,-1.03311030741418,-1.70975266461751
+"1288","Ssiderea62527",NA,NA,"distal tubule morphogenesis","Signal transduction mechanisms",1.56482921246858,1.50250301487939
+"1289","Ssiderea62585",NA,NA,NA,NA,-1.88467314709961,-1.13823397431015
+"1290","Ssiderea62739",NA,NA,"transposition, RNA-mediated","Replication, recombination and repair",-2.22822664061922,-2.36646548132723
+"1291","Ssiderea62799",NA,NA,"retrotransposon","Replication, recombination and repair",-1.63557328949597,-1.15651117424138

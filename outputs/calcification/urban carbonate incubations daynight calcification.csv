@@ -1,0 +1,87 @@
+"","sampleID","site","species","treatment","genotype","calcificationavg"
+"1","A074",NA,"control","low pH",NA,0.00104184
+"2","A138",NA,"control","control pH",NA,-0.008734305
+"3","A144",NA,"control","low pH",NA,-0.00104184
+"4","CR046","MacArthur North","Ofav","low pH","21",0.02624901
+"5","CR049","MacArthur North","Ofav","low pH","21",0.04194379
+"6","CR052",NA,"control","control pH",NA,0.008734305
+"7","Eo1-2","Emerald","Ofav","control pH","1",0.04355962
+"8","Eo1-4","Emerald","Ofav","low pH","1",0.053854975
+"9","Eo2-2","Emerald","Ofav","control pH","2",0.01995029
+"10","Eo2-4","Emerald","Ofav","low pH","2",0.04213563
+"11","Eo3-2","Emerald","Ofav","control pH","3",0.04072523
+"12","Eo3-4","Emerald","Ofav","low pH","3",0.017701635
+"13","Eo4-2","Emerald","Ofav","control pH","4",0.042806225
+"14","Eo4-4","Emerald","Ofav","low pH","4",0.024877835
+"15","Eo5-2","Emerald","Ofav","control pH","5",0.03347117
+"16","Eo5-4","Emerald","Ofav","low pH","5",0.029654165
+"17","Es1-2","Emerald","Ssid","control pH","22",0.038161245
+"18","Es1-4","Emerald","Ssid","low pH","22",0.02255773
+"19","Es2-2","Emerald","Ssid","control pH","23",0.039369905
+"20","Es2-4","Emerald","Ssid","low pH","23",0.02006154
+"21","Es3-2","Emerald","Ssid","control pH","24",0.03692619
+"22","Es3-4","Emerald","Ssid","low pH","24",0.046026845
+"23","Es4-2","Emerald","Ssid","control pH","25",0.03493745
+"24","Es4-4","Emerald","Ssid","low pH","25",0.031831265
+"25","Es5-2","Emerald","Ssid","control pH","26",0.0387278
+"26","Es5-4","Emerald","Ssid","low pH","26",0.010154545
+"27","Mo1-2","MacArthur North","Ofav","control pH","16",0.017490185
+"28","Mo1-4","MacArthur North","Ofav","low pH","16",0.053423425
+"29","Mo2-2","MacArthur North","Ofav","control pH","17",0.028925205
+"30","Mo2-4","MacArthur North","Ofav","low pH","17",-0.00013259
+"31","Mo3-2","MacArthur North","Ofav","control pH","18",0.03883874
+"32","Mo3-4","MacArthur North","Ofav","low pH","18",0.02697355
+"33","Mo4-2","MacArthur North","Ofav","control pH","19",0.041142585
+"34","Mo4-4","MacArthur North","Ofav","low pH","19",0.03226725
+"35","Mo5-2","MacArthur North","Ofav","control pH","20",0.030648455
+"36","Mo5-4","MacArthur North","Ofav","low pH","20",-0.00503111
+"37","Ms1-2","MacArthur North","Ssid","control pH","37",0.056663945
+"38","Ms1-4","MacArthur North","Ssid","low pH","37",0.02799075
+"39","Ms2-2","MacArthur North","Ssid","control pH","38",0.05418482
+"40","Ms2-4","MacArthur North","Ssid","low pH","38",0.053357345
+"41","Ms3-2","MacArthur North","Ssid","control pH","39",0.048296955
+"42","Ms3-4","MacArthur North","Ssid","low pH","39",0.042901065
+"43","Ms4-2","MacArthur North","Ssid","control pH","40",0.06670275
+"44","Ms4-4","MacArthur North","Ssid","low pH","40",0.06021033
+"45","Ms5-2","MacArthur North","Ssid","control pH","41",0.068804895
+"46","Ms5-4","MacArthur North","Ssid","low pH","41",0.038302205
+"47","Ro1-2","Rainbow","Ofav","control pH","6",0.017678575
+"48","Ro1-4","Rainbow","Ofav","low pH","6",0.018263095
+"49","Ro2-2","Rainbow","Ofav","control pH","7",0.02048563
+"50","Ro2-4","Rainbow","Ofav","low pH","7",0.01030471
+"51","Ro3-2","Rainbow","Ofav","control pH","8",0.049856325
+"52","Ro3-4","Rainbow","Ofav","low pH","8",0.039300075
+"53","Ro4-2","Rainbow","Ofav","control pH","9",0.05196819
+"54","Ro4-4","Rainbow","Ofav","low pH","9",0.03241901
+"55","Ro5-2","Rainbow","Ofav","control pH","10",0.03442648
+"56","Ro5-4","Rainbow","Ofav","low pH","10",0.05324054
+"57","Rs1-2","Rainbow","Ssid","control pH","27",0.038344685
+"58","Rs1-4","Rainbow","Ssid","low pH","27",0.02677892
+"59","Rs2-2","Rainbow","Ssid","control pH","28",0.0246247
+"60","Rs2-4","Rainbow","Ssid","low pH","28",0.018691365
+"61","Rs3-2","Rainbow","Ssid","control pH","29",0.02232876
+"62","Rs3-4","Rainbow","Ssid","low pH","29",0.01385009
+"63","Rs4-2","Rainbow","Ssid","control pH","30",0.05773021
+"64","Rs4-4","Rainbow","Ssid","low pH","30",0.040272595
+"65","Rs5-2","Rainbow","Ssid","control pH","31",0.047243765
+"66","Rs5-4","Rainbow","Ssid","low pH","31",0.01125586
+"67","So1-2","Star Island","Ofav","control pH","11",0.024919395
+"68","So1-4","Star Island","Ofav","low pH","11",0.03783484
+"69","So2-2","Star Island","Ofav","control pH","12",0.023561355
+"70","So2-4","Star Island","Ofav","low pH","12",0.00757649
+"71","So3-2","Star Island","Ofav","control pH","13",0.04109354
+"72","So3-4","Star Island","Ofav","low pH","13",0.026115895
+"73","So4-2","Star Island","Ofav","control pH","14",0.03730848
+"74","So4-4","Star Island","Ofav","low pH","14",0.008846795
+"75","So5-2","Star Island","Ofav","control pH","15",0.042604965
+"76","So5-4","Star Island","Ofav","low pH","15",0.05301195
+"77","Ss1-2","Star Island","Ssid","control pH","32",0.04664879
+"78","Ss1-4","Star Island","Ssid","low pH","32",0.015840095
+"79","Ss2-2","Star Island","Ssid","control pH","33",0.05796077
+"80","Ss2-4","Star Island","Ssid","low pH","33",0.019879595
+"81","Ss3-2","Star Island","Ssid","control pH","34",0.037309715
+"82","Ss3-4","Star Island","Ssid","low pH","34",0.02564699
+"83","Ss4-2","Star Island","Ssid","control pH","35",0.06337387
+"84","Ss4-4","Star Island","Ssid","low pH","35",0.077813905
+"85","Ss5-2","Star Island","Ssid","control pH","36",0.05450788
+"86","Ss5-4","Star Island","Ssid","low pH","36",0.0395352

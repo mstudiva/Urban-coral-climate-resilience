@@ -1,0 +1,94 @@
+"","comparison","gene","lpv.Star_Emerald","lpv.MacN_Emerald","lpv.Star_Rainbow","lpv.MacN_Rainbow","annot","KOG"
+"1","urban_reef","Ssiderea001921",2.81249377359476,2.46720274985374,1.63859280471191,1.37006695306522,"axonal fasciculation","Signal transduction mechanisms"
+"2","urban_reef","Ssiderea002497",2.83415356081773,2.47518530627299,2.56477719135064,2.16557806778632,NA,NA
+"3","urban_reef","Ssiderea002528",-3.97156497716633,-2.31981043282478,-2.945392114737,-1.4785923349002,"Immunoglobulin C-2 Type","Signal transduction mechanisms"
+"4","urban_reef","Ssiderea003132",-2.43629377196105,-1.98525939230265,-2.20407193499592,-1.73139366485846,"thioesterase binding","Posttranslational modification, protein turnover, chaperones"
+"5","urban_reef","Ssiderea003873",-3.15287288188634,-2.52901094083401,-2.22982116996886,-1.70975266461751,NA,NA
+"6","urban_reef","Ssiderea004908",1.26412274069948,1.32755107223157,1.42323483826826,1.45331747572615,"Belongs to the enoyl-CoA hydratase isomerase family","Lipid transport and metabolism"
+"7","urban_reef","Ssiderea006333",-1.40052264335732,-2.20858322025832,-1.60970521380097,-2.42234254918216,"Calcium ion binding. It is involved in the biological process described with regulation of developmental process","Signal transduction mechanisms"
+"8","urban_reef","Ssiderea006355",1.08700130631189,2.75447612262983,1.00344812171584,2.54898587083248,NA,NA
+"9","urban_reef","Ssiderea007529",3.60959622412152,2.81196124378972,3.75526469401939,2.84310707789679,NA,NA
+"10","urban_reef","Ssiderea008285",1.70550593500425,1.94056010546134,1.58373735491869,1.78033669130406,"AP-5 complex subunit sigma-1","Function Unknown"
+"11","urban_reef","Ssiderea009069",2.08702849191275,2.07164268787853,4.22464318839079,4.11146058163318,"Coagulation factor 5/8 C-terminal domain, discoidin domain","Signal transduction mechanisms"
+"12","urban_reef","Ssiderea009801",2.79453223964007,3.54287599284897,1.58940383093497,2.12630882085995,NA,NA
+"13","urban_reef","Ssiderea009987",1.00301521176874,1.47730794715147,1.60290783869399,2.17684390657117,"SANT  SWI3, ADA2, N-CoR and TFIIIB'' DNA-binding domains","Transcription"
+"14","urban_reef","Ssiderea010960",-1.14558049018176,-1.7659368167265,-1.93258493641737,-2.7017340424896,"nail development","Carbohydrate transport and metabolism"
+"15","urban_reef","Ssiderea011982",5.59779723825941,5.33650114651689,4.8887710051788,4.56295316277805,NA,NA
+"16","urban_reef","Ssiderea012245",1.31403415730996,3.48872941101416,1.09073847900194,3.0818876398983,NA,NA
+"17","urban_reef","Ssiderea013067",4.92983012031931,6.29495813272127,4.10136013992074,5.38910074445913,"dihydrofolate reductase activity","Coenzyme transport and metabolism"
+"18","urban_reef","Ssiderea013956",-1.05111082336377,-1.20273676048931,-1.32212747286868,-1.46007117237445,NA,NA
+"19","urban_reef","Ssiderea014617",1.25197942201639,2.41496645505394,1.84235632239585,3.23142358628496,"fucose metabolic process","Carbohydrate transport and metabolism"
+"20","urban_reef","Ssiderea015479",2.16079643446128,2.82396660467866,1.13963748244709,1.56048197164251,NA,NA
+"21","urban_reef","Ssiderea015915",-1.14896174949945,-1.9879876408791,-1.01306817884769,-1.75923998507571,"Allows the formation of correctly charged Gln-tRNA(Gln) through the transamidation of misacylated Glu-tRNA(Gln) in the mitochondria. The reaction takes place in the presence of glutamine and ATP through an activated gamma-phospho-Glu- tRNA(Gln)","Translation, ribosomal structure and biogenesis"
+"22","urban_reef","Ssiderea016088",-3.83710738388703,-3.65771551492784,-2.30703845017591,-2.12679870788797,"alkaline phosphatase activity","Inorganic ion transport and metabolism"
+"23","urban_reef","Ssiderea017365",3.73397589437058,4.86395266469732,1.20834927529267,1.76498701264041,"electron carrier activity. It is involved in the biological process described with oxidation-reduction process","Nucleotide transport and metabolism"
+"24","urban_reef","Ssiderea019630",2.6420120625967,2.49021701774468,1.1638484091503,1.03457828090414,NA,NA
+"25","urban_reef","Ssiderea019840",-2.87575098965146,-2.35113592889506,-1.80819723367329,-1.38641002459969,"Sushi, nidogen and EGF-like","Signal transduction mechanisms"
+"26","urban_reef","Ssiderea019841",-2.26550625870301,-1.67622288597703,-2.64367086499721,-1.92715246235652,NA,NA
+"27","urban_reef","Ssiderea020491",-4.30729315938149,2.33732849112928,-4.16504685905433,2.27051479392223,NA,NA
+"28","urban_reef","Ssiderea020500",5.4631994275798,5.64321747744593,4.94554226248839,5.17345303155208,NA,NA
+"29","urban_reef","Ssiderea021127",-1.9829625674223,-1.75162255675472,-2.14047221952826,-1.8550501207852,"ribosomal large subunit biogenesis","Function Unknown"
+"30","urban_reef","Ssiderea021220",2.08748386716861,3.75525615404209,1.60178291250108,3.04743440541296,"Synaptic vesicle membrane protein VAT-1 homolog","Energy production and conversion"
+"31","urban_reef","Ssiderea021262",-2.52251751472397,-2.61321500740195,-1.37899024294865,-1.40265359469655,"NFX1-type zinc finger-containing protein","Replication, recombination and repair"
+"32","urban_reef","Ssiderea023649",-4.66847489702478,-5.07537034585942,-3.78481108638154,-4.08541663098886,NA,NA
+"33","urban_reef","Ssiderea023975",1.50817964155529,2.37548823500258,1.09073847900194,1.79186541455462,NA,NA
+"34","urban_reef","Ssiderea024229",-5.45982554696485,-1.98601691050804,-4.30509392105304,-1.28178258976343,NA,NA
+"35","urban_reef","Ssiderea024230",-5.42806667901096,-1.25095359479532,-5.67306983595114,-1.28168568146079,NA,NA
+"36","urban_reef","Ssiderea024595",-1.48674554542556,-1.03378653835853,-1.99476894450557,-1.41003501913739,"biological adhesion","Extracellular structures"
+"37","urban_reef","Ssiderea024906",2.73051418872094,5.36551800123087,2.85840700939281,5.56310524015066,"Galactose binding lectin domain","Posttranslational modification, protein turnover, chaperones"
+"38","urban_reef","Ssiderea025376",-1.10406893701577,-1.29679815836061,-1.86356560997988,-2.07731070811859,"gamma-glutamyl-peptidase activity","Coenzyme transport and metabolism"
+"39","urban_reef","Ssiderea025685",3.60948294912118,-1.17460491597446,3.47915056233853,-1.09313941506719,"Collagen triple helix","Function Unknown"
+"40","urban_reef","Ssiderea026331",-2.73587048666775,-5.50818787909098,-1.4257869732471,-3.54138073991165,"Belongs to the ATP guanido phosphotransferase family","Energy production and conversion"
+"41","urban_reef","Ssiderea026681",2.23098860170188,3.43479772062539,1.18881019792948,2.01323981410343,"C-type lectin (CTL) or carbohydrate-recognition domain (CRD)",""
+"42","urban_reef","Ssiderea028718",-1.79048295729198,-1.33573072503852,-2.79332885846441,-2.13495889207231,NA,NA
+"43","urban_reef","Ssiderea029188",2.82302508025604,1.89959438643791,2.80155230498677,1.8550501207852,"Cobalamin-independent synthase, Catalytic domain","Amino acid transport and metabolism"
+"44","urban_reef","Ssiderea029278",4.51294146941914,2.90543300589888,2.79458310897828,1.5618247994337,NA,NA
+"45","urban_reef","Ssiderea029805",1.54374321373677,1.40557895342732,1.8394028662701,1.64947032548721,NA,NA
+"46","urban_reef","Ssiderea029875",1.26248374786924,1.7148201337702,1.34770608484357,1.7880968371282,NA,NA
+"47","urban_reef","Ssiderea030069",1.24690661374865,1.53456968180464,1.15469039340583,1.38883518711914,"phosphopyruvate hydratase activity","Carbohydrate transport and metabolism"
+"48","urban_reef","Ssiderea030145",-1.28470286109449,-1.89634443667983,-1.53657728891657,-2.15476349017128,NA,NA
+"49","urban_reef","Ssiderea030239",1.56986376624874,1.38031816583904,1.56429364669489,1.33926412709543,NA,NA
+"50","urban_reef","Ssiderea031312",-6.10177423263977,-3.0751860169002,-3.00843133328787,-1.09553270443332,"peroxidase activity","Function Unknown"
+"51","urban_reef","Ssiderea031654",1.37762043438182,3.3079106887328,1.33050963171019,3.22899210375452,NA,NA
+"52","urban_reef","Ssiderea034234",-3.17799031702855,-2.26908833914726,-1.88588780773452,-1.19059966915407,"negative regulation of non-canonical Wnt signaling pathway","Posttranslational modification, protein turnover, chaperones"
+"53","urban_reef","Ssiderea034394",-8.13197814185506,-6.78082094773503,-4.26611489366462,-3.49963232968156,"defense response to nematode",""
+"54","urban_reef","Ssiderea034395",1.60531138871592,2.53706678863504,1.63075379434408,2.54898587083248,"carbohydrate binding",""
+"55","urban_reef","Ssiderea034401",-4.17944325423103,-8.59068691014832,-1.87442690589734,-5.02538303090411,"carbohydrate binding",""
+"56","urban_reef","Ssiderea034762",2.01751544011417,1.30299459543896,1.83776603301817,1.11656683044128,"Belongs to the peptidase C14A family","Cell cycle control, cell division, chromosome partitioning"
+"57","urban_reef","Ssiderea035418",-1.05546091370633,-1.02635305447883,-1.0848627491543,-1.0115999801409,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones"
+"58","urban_reef","Ssiderea035992",2.8115196150267,1.02545865680061,3.82554526840632,1.54509339290915,NA,NA
+"59","urban_reef","Ssiderea035994",3.89359445391223,1.06194219784942,6.75027090458089,2.38932431692988,NA,NA
+"60","urban_reef","Ssiderea036716",2.10598800098766,2.43032576625767,1.8394028662701,2.10087114538004,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning"
+"61","urban_reef","Ssiderea038529",-1.65819951217987,-1.29239479813002,-3.8287984406392,-3.08286516746995,NA,NA
+"62","urban_reef","Ssiderea038534",-6.57003624365164,-2.07018913989835,-13.6711508489905,-5.88390837800698,NA,NA
+"63","urban_reef","Ssiderea038885",1.11587091330205,1.84576234254742,2.95579854980736,4.20926443723645,NA,NA
+"64","urban_reef","Ssiderea040857",-1.61095604133169,-1.82679951065769,-1.01230495388422,-1.13613164089786,"Sialic acid binding Ig-like lectin 1, sialoadhesin","Signal transduction mechanisms"
+"65","urban_reef","Ssiderea041679",3.81445779046423,2.40428762272613,4.68546987719035,3.03425934956001,"Collagen triple helix","Function Unknown"
+"66","urban_reef","Ssiderea041712",2.94710165207515,1.45879523017694,5.07364225139988,3.02473448675262,"Protein tyrosine kinase","Signal transduction mechanisms"
+"67","urban_reef","Ssiderea041724",-1.74580740442716,-1.45879523017694,-1.66609441475081,-1.34421682456396,"Protein tyrosine kinase","Signal transduction mechanisms"
+"68","urban_reef","Ssiderea041746",2.27352217858208,2.4352102699004,5.01718706925105,5.26881090836314,"Protein tyrosine kinase","Signal transduction mechanisms"
+"69","urban_reef","Ssiderea043280",-1.02173689778668,-1.32397152120469,-1.22671630851966,-1.5223436147208,NA,NA
+"70","urban_reef","Ssiderea043285",-2.69263506640469,-1.00175876830697,-3.34076328438762,-1.29985050059853,NA,NA
+"71","urban_reef","Ssiderea043312",-1.37950881833979,-1.38165745643307,-4.0521178088597,-3.9264862919172,NA,NA
+"72","urban_reef","Ssiderea044854",1.62879585370378,1.08713357961778,2.9228410028213,2.09232737732248,"Common central domain of tyrosinase","Amino acid transport and metabolism"
+"73","urban_reef","Ssiderea048220",-2.8965202930713,-1.62092090237116,-2.68501223996146,-1.41538084467021,"Farnesoic acid 0-methyl transferase",""
+"74","urban_reef","Ssiderea049326",-1.62532469514352,-1.61116000418881,-1.42729284602757,-1.39131824911895,NA,NA
+"75","urban_reef","Ssiderea049467",1.88292362021733,3.40773808674638,1.90010655630957,3.41354386732981,"mitotic cell cycle checkpoint","Function Unknown"
+"76","urban_reef","Ssiderea053371",3.59563690524401,1.31647730837264,3.14571781218993,1.00916440616374,"Common central domain of tyrosinase","Amino acid transport and metabolism"
+"77","urban_reef","Ssiderea053828",5.16199071960996,4.67998377853517,3.10445350327063,2.65395706438519,NA,NA
+"78","urban_reef","Ssiderea054400",5.16715212885556,5.64598932442972,2.42667410179726,2.75886282543281,NA,NA
+"79","urban_reef","Ssiderea054891",-2.68528305031765,1.06341568337441,-1.00011403903185,2.53289600270092,"aryl sulfotransferase activity","Function Unknown"
+"80","urban_reef","Ssiderea057248",1.25067901885753,5.05884130684631,2.27047667949466,7.02396173009884,"-",""
+"81","urban_reef","Ssiderea057290",1.07645985398892,1.83952254780443,1.22989689566931,2.01569479461039,NA,NA
+"82","urban_reef","Ssiderea057306",-2.05071067169362,-1.65213661169045,-5.30730582033452,-4.53692668407567,NA,NA
+"83","urban_reef","Ssiderea057744",3.97156497716633,4.94109620456717,1.32873271510431,1.8033501391378,"Cytochrome P450",""
+"84","urban_reef","Ssiderea058012",6.1436699404392,4.71633575832755,5.79245129222774,4.33264820914445,"UDP-Gal betaGlcNAc beta 1,4- galactosyltransferase, polypeptide","Carbohydrate transport and metabolism"
+"85","urban_reef","Ssiderea058642",-1.91801320300094,-3.12238480431008,-2.80161653240785,-4.2294148921312,NA,NA
+"86","urban_reef","Ssiderea59378",2.56011385762493,1.17460491597446,2.46622532837787,1.046769038691,NA,NA
+"87","urban_reef","Ssiderea60093",1.93127668797626,2.06438835914415,1.96763436925632,2.05750478964926,"Collagen triple helix","Function Unknown"
+"88","urban_reef","Ssiderea60216",2.98778520624959,3.75525615404209,2.39435137468171,3.05529175391898,"K02A2.6-like","Amino acid transport and metabolism"
+"89","urban_reef","Ssiderea60368",1.83198970862503,2.12027367204,1.21687692391373,1.40044276932691,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones"
+"90","urban_reef","Ssiderea60824",-1.19711470054102,-2.20908926249858,-1.14775056318611,-2.10087114538004,"Reverse transcriptase (RNA-dependent DNA polymerase)","Carbohydrate transport and metabolism"
+"91","urban_reef","Ssiderea61861",1.82533655649309,1.12707200931105,2.24391641495651,1.4068453704388,NA,NA
+"92","urban_reef","Ssiderea62250",12.1128556539753,9.6120558295451,4.16504685905433,2.99332323845926,"tumor necrosis factor","Signal transduction mechanisms"
+"93","urban_reef","Ssiderea62253",-1.02614642642435,-1.39296645249542,-1.033401745116,-1.36196338258836,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones"

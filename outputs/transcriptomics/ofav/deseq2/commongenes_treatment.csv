@@ -1,0 +1,401 @@
+"","comparison","gene","lpv.LC_CC","lpv.CH_CC","lpv.LH_CC","annot","KOG"
+"1","stress_control","Ofaveolata000010",2.70828345705369,14.1192513772093,9.87557298218378,NA,NA
+"2","stress_control","Ofaveolata000015",1.26238049083396,2.52871825772255,1.09576425439425,"protein dimerization activity","Transcription"
+"3","stress_control","Ofaveolata000053",2.70940856596791,-6.92656780806262,-4.75992343114236,"protein-disulfide reductase (glutathione) activity",NA
+"4","stress_control","Ofaveolata000104",-2.66394824306671,-3.33993242619867,-2.50344708003284,"PX domain","Signal transduction mechanisms"
+"5","stress_control","Ofaveolata000139",-1.38944343872703,-1.46147554997125,-1.67343833232348,NA,NA
+"6","stress_control","Ofaveolata000414",-1.00051099235091,-2.85422780075337,-1.05223803495036,NA,NA
+"7","stress_control","Ofaveolata000449",1.94042193194724,-14.6163340889082,-8.66315378709878,"Lactose-binding lectin l-2-like","Signal transduction mechanisms"
+"8","stress_control","Ofaveolata000572",-1.80715424147465,-4.27357010323894,-3.159609145594,"Cobalamin-independent synthase, Catalytic domain","Amino acid transport and metabolism"
+"9","stress_control","Ofaveolata000742",1.53082792577287,-1.53789789137527,-1.38662032605953,"peptidase inhibitor activity",""
+"10","stress_control","Ofaveolata000882",1.21389610505965,5.98818670915793,2.46209920409403,"cortical actin cytoskeleton organization","Replication, recombination and repair"
+"11","stress_control","Ofaveolata000921",-1.14384984479631,-2.22905978180385,-2.01355636146809,"histone H4-K16 acetylation",NA
+"12","stress_control","Ofaveolata000952",3.24012252413146,-1.40335512254453,-1.73625350758563,NA,NA
+"13","stress_control","Ofaveolata000962",1.6182731455652,-7.8110396131437,-5.79329062880762,NA,NA
+"14","stress_control","Ofaveolata001202",2.44463425877493,-10.5984634754027,-7.8708073976616,NA,NA
+"15","stress_control","Ofaveolata001229",-1.83848636867144,-3.89423696170768,-2.71817456062429,NA,NA
+"16","stress_control","Ofaveolata001235",-3.98494091809697,-5.89951167670529,-5.77313803302099,NA,NA
+"17","stress_control","Ofaveolata001402",-2.70013563311754,-2.53235587752981,-2.00294532439769,"Calcineurin-like phosphoesterase",NA
+"18","stress_control","Ofaveolata001455",1.03347590255697,-1.41208985816606,-1.75298938461166,"transmembrane transport","Carbohydrate transport and metabolism"
+"19","stress_control","Ofaveolata001490",-1.3700122688308,-1.44326309245796,-2.14359732048994,"ATP binding","Posttranslational modification, protein turnover, chaperones"
+"20","stress_control","Ofaveolata001563",-2.51452990634379,-6.27918187735479,-6.90892737920032,"Belongs to the carnitine choline acetyltransferase family","Lipid transport and metabolism"
+"21","stress_control","Ofaveolata001594",1.01965045521319,-10.1016010871147,-7.51561090293556,NA,NA
+"22","stress_control","Ofaveolata001608",1.54400956790803,-4.47230177699447,-3.06477644273394,NA,NA
+"23","stress_control","Ofaveolata001666",-1.24053740558495,-2.09108180813427,-5.75722916114919,"eukaryotic initiation factor 4E binding","Translation, ribosomal structure and biogenesis"
+"24","stress_control","Ofaveolata001713",1.50699431576785,-12.863184463478,-8.33741073943037,NA,NA
+"25","stress_control","Ofaveolata001714",1.71528189177876,-10.6316771746581,-8.22527021572202,NA,NA
+"26","stress_control","Ofaveolata001715",2.1885144281776,-10.0840672289975,-8.00545425343181,NA,NA
+"27","stress_control","Ofaveolata001721",1.84745376793806,-7.29375575129039,-5.35742203873403,NA,NA
+"28","stress_control","Ofaveolata001724",1.04708096591179,-4.72030022619376,-4.6303134407294,NA,NA
+"29","stress_control","Ofaveolata001725",2.17567740218336,-2.93514894237993,-4.91919284993405,NA,NA
+"30","stress_control","Ofaveolata001730",1.46247214699765,-9.20663221321455,-8.16073989883999,NA,NA
+"31","stress_control","Ofaveolata001732",1.76588146293915,-7.67214340060936,-7.49911977028659,NA,NA
+"32","stress_control","Ofaveolata001733",1.96925646890067,-9.43380639580283,-8.03292107264547,NA,NA
+"33","stress_control","Ofaveolata001734",2.574810699973,-13.5128519504807,-11.2743855703508,NA,NA
+"34","stress_control","Ofaveolata001805",1.04368674130592,4.96919963413359,4.37334291621952,"Ligand for members of the frizzled family of seven transmembrane receptors","Signal transduction mechanisms"
+"35","stress_control","Ofaveolata001887",1.86805427290321,-7.18281619804231,-4.97904885827139,"negative regulation of canonical Wnt signaling pathway involved in cardiac muscle cell fate commitment",NA
+"36","stress_control","Ofaveolata001889",1.68408797466061,-6.96012072723714,-4.1831222704389,NA,NA
+"37","stress_control","Ofaveolata002017",1.06091909895595,-5.28436205362325,-2.79165139957776,"phospholipase A2 activity (consuming 1,2-dipalmitoylphosphatidylcholine)","Lipid transport and metabolism"
+"38","stress_control","Ofaveolata002144",-1.26683937844389,-2.15207458301504,-3.16365855185995,"Transmembrane protein 258",NA
+"39","stress_control","Ofaveolata002172",-2.51690119797552,-4.6576239740768,-4.56824916685415,"carboxypeptidase Q",""
+"40","stress_control","Ofaveolata002239",1.78115139879824,-5.47152780311962,-1.91060913826921,NA,NA
+"41","stress_control","Ofaveolata002242",1.51002695538565,-2.45014672864067,-2.16030357868603,NA,NA
+"42","stress_control","Ofaveolata002291",-1.25519986901484,-1.69695843220799,-2.89982910619112,"oxidoreductase activity","Secondary metabolites biosynthesis, transport and catabolism"
+"43","stress_control","Ofaveolata002345",1.76768937436145,-12.9318816453366,-9.99169436926238,NA,NA
+"44","stress_control","Ofaveolata002376",-1.94042193194724,-5.55248199749502,-3.37636661303034,NA,NA
+"45","stress_control","Ofaveolata002478",-2.22384288017756,-1.54428003054541,-1.80795992540466,NA,NA
+"46","stress_control","Ofaveolata002551",-2.0366370797396,-1.84475148096015,-4.5003601852622,NA,NA
+"47","stress_control","Ofaveolata002574",1.36766913987326,-5.6181349845222,-5.4063772232133,NA,NA
+"48","stress_control","Ofaveolata002642",-1.02168384251939,-1.3026684800673,-1.19812961303321,"Fes/CIP4 homology domain","Signal transduction mechanisms"
+"49","stress_control","Ofaveolata002736",-1.14802618645639,-1.37026163464691,-1.57306236776869,NA,NA
+"50","stress_control","Ofaveolata002772",-2.89245407592868,-3.41085878665141,-2.45251182907225,"Nidogen-like","Extracellular structures"
+"51","stress_control","Ofaveolata002790",-1.04716621234019,-6.95143443512314,-9.74234880718195,NA,NA
+"52","stress_control","Ofaveolata002794",-1.36493592932428,-7.0796315890871,-6.24307469618433,NA,NA
+"53","stress_control","Ofaveolata002898",1.34034448830763,-9.89742588423896,-4.8299217303811,NA,NA
+"54","stress_control","Ofaveolata002916",1.5755857857469,-14.6233066935805,-11.1071099940578,NA,NA
+"55","stress_control","Ofaveolata002917",5.0667216275031,-1.47843729899139,-1.63614696310867,NA,NA
+"56","stress_control","Ofaveolata002981",-1.87771206507038,-3.42168537383887,-4.40913452865236,NA,NA
+"57","stress_control","Ofaveolata003085",1.87885383343618,-9.43380639580283,-9.1710580714883,NA,NA
+"58","stress_control","Ofaveolata003086",1.74353165027332,-10.5111089372768,-5.6978427745503,"-",""
+"59","stress_control","Ofaveolata003181",-3.75842660021377,-2.4473405566847,-2.34815833302056,"neurexin family protein binding","Lipid transport and metabolism"
+"60","stress_control","Ofaveolata003229",2.13428114483195,-3.35970342345846,-3.17836227815377,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport"
+"61","stress_control","Ofaveolata003232",1.07558027179455,-8.55975422523034,-5.35430749722693,NA,NA
+"62","stress_control","Ofaveolata003233",1.1093750216164,-8.17504627163247,-5.94423708178159,NA,NA
+"63","stress_control","Ofaveolata003357",-1.64219236817661,-3.01933323608566,-2.46361806696322,"macromolecule localization","Signal transduction mechanisms"
+"64","stress_control","Ofaveolata003478",-1.68597606440008,-5.73166418990998,-4.7512853035614,"MMPL family","Signal transduction mechanisms"
+"65","stress_control","Ofaveolata003589",1.10487083277868,-4.99691332757335,-2.99052901210526,NA,NA
+"66","stress_control","Ofaveolata003639",-3.31154883869411,-1.7702792308156,-6.2272334869438,"ephrin receptor activity","Signal transduction mechanisms"
+"67","stress_control","Ofaveolata003645",2.45204698507145,-2.0093427124256,-1.82137907730758,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones"
+"68","stress_control","Ofaveolata003648",1.4601373712216,-8.26768320584952,-6.94947025567985,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones"
+"69","stress_control","Ofaveolata003661",1.46055299600868,-1.02216475308104,-2.31306136510437,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones"
+"70","stress_control","Ofaveolata003751",1.89503270231937,5.1796364386634,3.82335474357055,"Tachylectin",NA
+"71","stress_control","Ofaveolata003857",1.63193679214206,-1.14286328773651,-1.01454654433254,NA,NA
+"72","stress_control","Ofaveolata003932",-2.50613782739102,-2.17178570308163,-1.22468837136186,"Tissue factor pathway inhibitor","Posttranslational modification, protein turnover, chaperones"
+"73","stress_control","Ofaveolata003972",-1.49503236793454,-1.26308136693495,-1.0982787368508,NA,NA
+"74","stress_control","Ofaveolata003976",-2.45204698507145,-1.22836556295158,-1.76159064984071,NA,NA
+"75","stress_control","Ofaveolata003977",-1.60278987864725,2.90278990719615,1.47686638576201,NA,NA
+"76","stress_control","Ofaveolata004231",-3.50306226096687,-5.90399513066477,-5.93162448401328,NA,NA
+"77","stress_control","Ofaveolata004474",-1.65646814313307,-2.28146101196788,-1.40442704590089,"ubiquitin-like protein ligase activity","Posttranslational modification, protein turnover, chaperones"
+"78","stress_control","Ofaveolata004508",-1.44374307101311,-1.17465060513638,-1.05926863023356,"Thrombospondin type 1 repeats","Signal transduction mechanisms"
+"79","stress_control","Ofaveolata004537",-1.05180362081581,-2.99108988937115,-3.37492152704116,NA,NA
+"80","stress_control","Ofaveolata004538",-1.19918850590652,-2.15013098626166,-1.77361545605422,"Transmembrane protein 181",NA
+"81","stress_control","Ofaveolata004811",-1.74948569970858,3.54764604467852,2.61090644258439,NA,NA
+"82","stress_control","Ofaveolata004828",-3.11443185185854,-2.52069741549901,-2.16510991148596,NA,NA
+"83","stress_control","Ofaveolata004830",-1.53297695326702,-2.98805748166568,-1.39039582620568,NA,NA
+"84","stress_control","Ofaveolata004859",-1.19918850590652,-2.63740937319113,-2.13489708439505,NA,NA
+"85","stress_control","Ofaveolata004949",1.60538096734128,-10.2024846159936,-8.08496333100197,"-",""
+"86","stress_control","Ofaveolata005158",1.35922286300601,-8.25974276228131,-5.75400644973863,NA,NA
+"87","stress_control","Ofaveolata005198",-1.19376770569736,-1.90579779993416,-2.19603173692146,"calcium ion binding","Intracellular trafficking, secretion, and vesicular transport"
+"88","stress_control","Ofaveolata005263",1.49062191343209,-6.72663369539301,-4.46705394724856,"negative chemotaxis",NA
+"89","stress_control","Ofaveolata005301",-1.75093618094183,-3.06108194157872,-3.31033443885908,"iron-sulfur transferase activity","Energy production and conversion"
+"90","stress_control","Ofaveolata005305",-2.70696188636589,-7.56334153896773,-5.70480784405145,"zinc ion binding","Cell cycle control, cell division, chromosome partitioning"
+"91","stress_control","Ofaveolata005370",-1.43758761511755,-8.11257938638221,-4.7158123951043,"cellular iron ion homeostasis","Secondary metabolites biosynthesis, transport and catabolism"
+"92","stress_control","Ofaveolata005418",-2.3794890203152,-3.12522127953291,-4.58807865068343,"molting cycle, collagen and cuticulin-based cuticle",""
+"93","stress_control","Ofaveolata005419",-2.66394824306671,-2.88268212753006,-4.5094564583519,"molting cycle, collagen and cuticulin-based cuticle",""
+"94","stress_control","Ofaveolata005486",-2.55817824809993,-3.39836954461338,-5.30526359556161,"L-iditol 2-dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism"
+"95","stress_control","Ofaveolata005513",-1.39830286844304,-1.4136807189904,-1.03666683086496,"Hemimethylated DNA-binding protein YccV like",""
+"96","stress_control","Ofaveolata005554",-1.1671794491391,-1.03553904053344,-2.7710478492035,NA,NA
+"97","stress_control","Ofaveolata005736",1.9470773631423,-2.67915196291641,-1.48904279536902,"Kinesin motor, catalytic domain. ATPase.","Cytoskeleton"
+"98","stress_control","Ofaveolata005887",-2.76112546492868,-6.62307736408425,-7.27866581413807,"Dienelactone hydrolase family","Posttranslational modification, protein turnover, chaperones"
+"99","stress_control","Ofaveolata005955",-1.77212137843267,-2.73459964672615,-2.04320207936819,"endosomal transport","Intracellular trafficking, secretion, and vesicular transport"
+"100","stress_control","Ofaveolata005956",-2.4735630102041,-1.65950613849696,-1.11255718288425,"skeletal muscle fiber development",NA
+"101","stress_control","Ofaveolata005964",2.22049672329102,1.336983417807,1.26293366038961,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones"
+"102","stress_control","Ofaveolata005998",1.77173390719226,1.95758517808784,1.94011302081397,"CAAX-box protein maturation","Posttranslational modification, protein turnover, chaperones"
+"103","stress_control","Ofaveolata006107",-2.52761318973005,-1.41498432620045,-3.96355719385976,"bisphosphoglycerate 3-phosphatase activity",NA
+"104","stress_control","Ofaveolata006198",-1.21830185912115,-1.09712765558548,-2.70642005434443,NA,NA
+"105","stress_control","Ofaveolata006253",1.75284224130266,-6.47340206230241,-5.52176828000817,NA,NA
+"106","stress_control","Ofaveolata006294",1.73685858325787,2.41256115542051,2.02918236979319,"cell-matrix adhesion","Signal transduction mechanisms"
+"107","stress_control","Ofaveolata006370",1.68585938402095,-24.3087723346476,-18.0000227777138,NA,NA
+"108","stress_control","Ofaveolata006376",-1.77173390719226,-4.19137767912158,-2.30105874818988,NA,NA
+"109","stress_control","Ofaveolata006433",1.2534106617284,3.06593733825988,2.64627892796761,NA,NA
+"110","stress_control","Ofaveolata006443",-1.13182044578935,-1.86483943982746,-1.40685782602653,NA,NA
+"111","stress_control","Ofaveolata006566",-2.63609619412422,-1.81442515496766,-5.05243551391969,"barrier to autointegration factor 1",""
+"112","stress_control","Ofaveolata006691",-1.56747326299723,-2.43032666573282,-1.80795992540466,"rRNA (uridine-2'-O-)-methyltransferase activity","Cell cycle control, cell division, chromosome partitioning"
+"113","stress_control","Ofaveolata006897",-1.21004527366711,-1.33500911287594,-1.96671099059073,NA,NA
+"114","stress_control","Ofaveolata006910",-3.75527196991342,-13.3362638153009,-13.5375683513573,"-",""
+"115","stress_control","Ofaveolata007062",2.69860473187639,-1.06589567228937,-1.00580691056489,"Pentafunctional AROM polypeptide-like","Amino acid transport and metabolism"
+"116","stress_control","Ofaveolata007104",-1.22531660595622,-2.22918560638976,-3.7445648208979,"dynactin binding","Intracellular trafficking, secretion, and vesicular transport"
+"117","stress_control","Ofaveolata007437",1.53502080355042,15.9665557352267,13.5590796028526,"acetyl-CoA metabolic process","Energy production and conversion"
+"118","stress_control","Ofaveolata007460",-1.16993881135695,-1.34158149414455,-1.59470796761809,NA,NA
+"119","stress_control","Ofaveolata007927",-3.11443185185854,-3.57538821925591,-2.99052901210526,"asparaginase activity","Amino acid transport and metabolism"
+"120","stress_control","Ofaveolata007940",1.3764929971942,-2.75272480451081,-1.60376559136273,"Globin","Energy production and conversion"
+"121","stress_control","Ofaveolata007956",-1.77212137843267,-2.79847399840112,-1.85175757633033,"E3 ubiquitin-protein ligase synoviolin","Posttranslational modification, protein turnover, chaperones"
+"122","stress_control","Ofaveolata007989",-1.04368674130592,-3.44108100818614,-3.94349426405518,"subunit of the gamma-secretase complex, an endoprotease complex that catalyzes the intramembrane cleavage of integral membrane proteins such as Notch receptors","Signal transduction mechanisms"
+"123","stress_control","Ofaveolata008090",-1.20597755974371,-1.02897416377692,-1.7143114465357,NA,NA
+"124","stress_control","Ofaveolata008149",-1.50699431576785,-3.67081188974158,-5.69951415661052,NA,NA
+"125","stress_control","Ofaveolata008257",1.53297695326702,-6.50509381087829,-4.81221667014029,NA,NA
+"126","stress_control","Ofaveolata008267",1.03087653412954,-4.17394155779831,-1.93243246644363,"peroxidase activity","Signal transduction mechanisms"
+"127","stress_control","Ofaveolata008394",2.0991352826723,-23.7791279089227,-18.3952301833478,"peptidyl-prolyl cis-trans isomerase activity","Posttranslational modification, protein turnover, chaperones"
+"128","stress_control","Ofaveolata008535",2.15655636550059,-2.57569365622278,-1.3266331668638,NA,NA
+"129","stress_control","Ofaveolata009043",1.04066910020117,-4.51191940839615,-2.7710478492035,NA,NA
+"130","stress_control","Ofaveolata009049",1.26196218079518,-2.44637368134559,-1.67980051714908,NA,NA
+"131","stress_control","Ofaveolata009257",2.50613782739102,-1.52072448122382,-1.04889777994568,"Belongs to the glycosyltransferase 43 family","Posttranslational modification, protein turnover, chaperones"
+"132","stress_control","Ofaveolata009302",2.51452990634379,-9.52944462800291,-5.91813436241795,"neurogenic locus notch homolog protein","Signal transduction mechanisms"
+"133","stress_control","Ofaveolata009338",-1.22683690421796,-2.91098207991236,-3.84253747064121,NA,NA
+"134","stress_control","Ofaveolata009407",-1.2676100009965,-3.62872172044744,-3.82676016422539,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms"
+"135","stress_control","Ofaveolata009599",-2.45204698507145,2.25192370814777,2.27478721927577,NA,NA
+"136","stress_control","Ofaveolata009607",-1.4450259987609,-1.49612283977896,-1.88229016594063,NA,NA
+"137","stress_control","Ofaveolata009789",-1.04368674130592,-1.09386584173779,-1.28369169320455,NA,NA
+"138","stress_control","Ofaveolata010071",-1.45608923166815,2.20424806101115,1.84582712760869,NA,NA
+"139","stress_control","Ofaveolata010190",2.44985647966811,5.0809244415307,4.13398611723233,"neurotrophin receptor activity","Signal transduction mechanisms"
+"140","stress_control","Ofaveolata010222",2.76112546492868,-3.31931184061921,-3.50886499925949,NA,NA
+"141","stress_control","Ofaveolata010299",-1.60278987864725,-1.79466515331773,-3.43754939039081,"acyl-coenzyme A thioesterase",NA
+"142","stress_control","Ofaveolata010384",-2.23659552409882,-2.8554939731791,-3.21528562658931,"procollagen-proline 3-dioxygenase activity",NA
+"143","stress_control","Ofaveolata010491",-1.0852187429104,-1.47149112879792,-1.36618189029529,"Arrestin (or S-antigen), N-terminal domain",NA
+"144","stress_control","Ofaveolata010511",-1.9920992900887,-2.64019005376169,-4.14769096401738,NA,NA
+"145","stress_control","Ofaveolata010570",1.7467672256942,-4.31961685432578,-2.09092242963556,NA,NA
+"146","stress_control","Ofaveolata010732",-1.73601640785883,-4.2094288431406,-2.40875533861056,"positive regulation of TOR signaling",NA
+"147","stress_control","Ofaveolata010794",-1.09608990474356,2.39302469841433,1.09078043115806,"D-arabinitol dehydrogenase 1-like","Secondary metabolites biosynthesis, transport and catabolism"
+"148","stress_control","Ofaveolata010796",1.46856701711333,-6.76400692103824,-4.80529398856716,"glutathione peroxidase activity","Posttranslational modification, protein turnover, chaperones"
+"149","stress_control","Ofaveolata011077",3.75527196991342,1.31402281115521,1.48815185435366,"neuronal",NA
+"150","stress_control","Ofaveolata011147",-2.70696188636589,-2.83626773487227,-3.71916335807287,"cysteine-type endopeptidase inhibitor activity",NA
+"151","stress_control","Ofaveolata011228",-1.2747702071768,-2.39090481598096,-1.86838145225044,"negative regulation of protein localization to centrosome","Nuclear structure"
+"152","stress_control","Ofaveolata011375",-2.50271832199385,-1.27292806899148,-4.24339773151197,"Universal stress protein family","Signal transduction mechanisms"
+"153","stress_control","Ofaveolata011707",-1.05932089822565,-1.61993962284081,-1.6076050111386,NA,NA
+"154","stress_control","Ofaveolata012632",2.07024975351726,-5.9526848521637,-3.97885496324555,NA,NA
+"155","stress_control","Ofaveolata012655",1.33063838993531,-2.66045228689368,-2.08409263000605,"zinc ion binding","Posttranslational modification, protein turnover, chaperones"
+"156","stress_control","Ofaveolata012694",1.33227978177128,-12.587589297146,-10.8266918083731,NA,NA
+"157","stress_control","Ofaveolata012700",2.3582261484006,-1.1171703427108,-1.02417868486577,NA,NA
+"158","stress_control","Ofaveolata012701",1.92434105512238,-4.12516510887478,-1.34984914831171,NA,NA
+"159","stress_control","Ofaveolata012705",1.18657642694193,-9.03174236373255,-6.39921538514677,NA,NA
+"160","stress_control","Ofaveolata012707",1.01169070625315,-4.65651399763957,-2.1636302867768,NA,NA
+"161","stress_control","Ofaveolata012708",1.31377641814493,-4.58717657292032,-5.28826091540357,NA,NA
+"162","stress_control","Ofaveolata012743",-1.21317102157592,-1.32133623239856,-1.97340881359939,NA,NA
+"163","stress_control","Ofaveolata012750",1.89395319267637,1.14849019268965,2.26143453347236,NA,NA
+"164","stress_control","Ofaveolata012781",-1.70267074934397,-2.90278990719615,-2.23770347314656,NA,NA
+"165","stress_control","Ofaveolata012899",1.48928967764195,-3.31527657560434,-1.93495446821308,"sulfuric ester hydrolase activity","Inorganic ion transport and metabolism"
+"166","stress_control","Ofaveolata012935",-1.50310296352595,-2.53803084701144,-1.05410255188071,"histone binding","Replication, recombination and repair"
+"167","stress_control","Ofaveolata012985",-1.21830185912115,-6.00895278995475,-7.65264682438944,NA,NA
+"168","stress_control","Ofaveolata013087",-1.90199470637911,12.3107945565034,9.94259926190258,"calcium ion binding",""
+"169","stress_control","Ofaveolata013095",-2.73057835907215,-8.58680112361213,-8.99716929059722,NA,NA
+"170","stress_control","Ofaveolata013287",-1.09771454828816,-1.81269191959882,-3.62647412051366,"Si dkey-5i3.5","Cell cycle control, cell division, chromosome partitioning"
+"171","stress_control","Ofaveolata013348",-1.03437208819911,-1.24251479437417,-3.69873225506857,NA,NA
+"172","stress_control","Ofaveolata013368",-2.65390160025894,-4.7950974155817,-6.08304464715823,NA,NA
+"173","stress_control","Ofaveolata013370",-2.75704042128282,-6.67304835024071,-6.28327047582608,NA,NA
+"174","stress_control","Ofaveolata013386",-2.3530242027685,-2.13678025332537,-1.77117963751264,NA,NA
+"175","stress_control","Ofaveolata013485",-1.93064546206095,-2.86053552006415,-2.6872262493758,"glycogen (starch) synthase activity","Carbohydrate transport and metabolism"
+"176","stress_control","Ofaveolata013730",-1.26003627448395,-1.77503938454885,-3.09296494722368,NA,NA
+"177","stress_control","Ofaveolata013818",-1.22523667662003,-4.12383651214081,-6.96261743253236,"Glutathione S-transferase, N-terminal domain","Posttranslational modification, protein turnover, chaperones"
+"178","stress_control","Ofaveolata013894",-2.52817472155021,-2.81331282666201,-2.27367759009135,"cilium disassembly","Cytoskeleton"
+"179","stress_control","Ofaveolata013965",-1.54657415998636,-1.88314988846244,-2.08409263000605,NA,NA
+"180","stress_control","Ofaveolata014189",1.8451027477164,-2.79079932949294,-2.10513135665231,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism"
+"181","stress_control","Ofaveolata014321",-1.20388841632919,-2.44809358314255,-2.05183656259848,NA,NA
+"182","stress_control","Ofaveolata014545",-1.2617060226448,-2.39589173110382,-3.50671681788844,"Meiosis expressed gene 1 protein homolog",NA
+"183","stress_control","Ofaveolata014737",-1.22683690421796,-1.14235224393418,-2.57318555485333,"7 transmembrane receptor (rhodopsin family)","Signal transduction mechanisms"
+"184","stress_control","Ofaveolata014914",2.32335254612239,-1.72051281485042,-1.423335853696,"Dermatopontin",NA
+"185","stress_control","Ofaveolata014970",-1.66570905553085,-1.66444813326895,-2.16390970516781,"negative regulation of protein localization to ciliary membrane",NA
+"186","stress_control","Ofaveolata014975",2.08682592207563,-12.0187311964293,-6.5186300094398,NA,NA
+"187","stress_control","Ofaveolata014995",-1.24467395552498,-1.02116757120956,-1.79294230538317,"Functions as actin-binding component of the Arp2 3 complex which is involved in regulation of actin polymerization and together with an activating nucleation-promoting factor (NPF) mediates the formation of branched actin networks","Cytoskeleton"
+"188","stress_control","Ofaveolata015101",-1.41037629814796,-9.02519435130286,-9.94485029822982,NA,NA
+"189","stress_control","Ofaveolata015217",-1.05530810923278,-3.61935782501312,-1.23165790115497,"O-fucosyltransferase 2","Carbohydrate transport and metabolism"
+"190","stress_control","Ofaveolata015357",-1.02605050319736,-4.86687247479937,-4.80529398856716,"vesicle fusion with Golgi apparatus","Intracellular trafficking, secretion, and vesicular transport"
+"191","stress_control","Ofaveolata015516",-1.31325540482869,-2.78161407799695,-1.57750709542782,NA,NA
+"192","stress_control","Ofaveolata015525",-1.27382652985221,1.59054039366827,1.76116606563175,NA,NA
+"193","stress_control","Ofaveolata015532",-1.41152545682127,-1.51984337066718,-1.61533693344449,"ATPase activity, coupled to transmembrane movement of substances","Secondary metabolites biosynthesis, transport and catabolism"
+"194","stress_control","Ofaveolata015761",-1.68597606440008,-1.38366900096074,-1.15223629784604,"carbohydrate binding",""
+"195","stress_control","Ofaveolata015856",-8.93959062440356,-1.02810202912134,-5.01306936586792,NA,NA
+"196","stress_control","Ofaveolata016020",1.70165540738826,5.85963748269041,5.29436852094611,"Universal stress protein family","Signal transduction mechanisms"
+"197","stress_control","Ofaveolata016131",1.05475910964598,-8.58783758380048,-5.07739015081717,NA,NA
+"198","stress_control","Ofaveolata016157",-1.09630831882846,-3.1724800377616,-5.90542783555739,NA,NA
+"199","stress_control","Ofaveolata016246",1.03347590255697,-3.8404847588624,-3.48724141215132,NA,NA
+"200","stress_control","Ofaveolata016252",1.56512081535679,-1.32955254049237,-1.48029167769442,NA,NA
+"201","stress_control","Ofaveolata016255",2.09069410643556,-2.09305188200226,-1.21100822670272,NA,NA
+"202","stress_control","Ofaveolata016258",2.3260250494036,-12.7616230021301,-7.54530584274784,NA,NA
+"203","stress_control","Ofaveolata016260",2.23049486348853,-7.00066871265098,-3.44669146284746,NA,NA
+"204","stress_control","Ofaveolata016327",-1.27210854607477,-2.76844323062574,-3.50799501025243,"ubiquitin-protein transferase activity",NA
+"205","stress_control","Ofaveolata016434",-2.16698919184499,-2.82268496359863,-2.34750497833685,NA,NA
+"206","stress_control","Ofaveolata016491",-2.68717104160046,-1.36988240213359,-3.13345447474842,NA,NA
+"207","stress_control","Ofaveolata016588",1.68668624715093,-19.7113499581748,-13.8100525770299,NA,NA
+"208","stress_control","Ofaveolata016589",1.68597606440008,-6.80785255498171,-4.41399463377332,NA,NA
+"209","stress_control","Ofaveolata016590",2.5053212744702,-9.91753587445421,-7.38253692080384,NA,NA
+"210","stress_control","Ofaveolata016591",1.89621430873026,-5.77037315761922,-3.38258859376813,NA,NA
+"211","stress_control","Ofaveolata016596",1.46055299600868,-12.079804388673,-9.50799297276299,NA,NA
+"212","stress_control","Ofaveolata016643",1.34978853970638,-10.2349603633209,-6.77108941942617,NA,NA
+"213","stress_control","Ofaveolata016659",-1.2747702071768,-1.65435952916062,-2.50024701305601,"mitochondrial electron transport, NADH to ubiquinone","Energy production and conversion"
+"214","stress_control","Ofaveolata016671",3.55370951490299,5.49268762794158,3.1384842055748,"NADH dehydrogenase ubiquinone 1 alpha subcomplex subunit 4",NA
+"215","stress_control","Ofaveolata016958",-1.83059258291608,-2.85364021400483,-6.06444998861986,"organic anion transmembrane transporter activity","Transcription"
+"216","stress_control","Ofaveolata016995",-2.76112546492868,-2.00457442841696,-2.39439931082412,"Thiamin pyrophosphokinase 1","Coenzyme transport and metabolism"
+"217","stress_control","Ofaveolata017057",1.60355682564457,-9.68958361213789,-3.51402267749973,NA,NA
+"218","stress_control","Ofaveolata017058",1.77273589598288,-9.91960592820442,-7.61469828545963,NA,NA
+"219","stress_control","Ofaveolata017062",2.04182510891013,-14.97149561274,-10.055639665714,NA,NA
+"220","stress_control","Ofaveolata017130",2.22884734357478,-2.00243167911632,-1.076012399665,NA,NA
+"221","stress_control","Ofaveolata017138",1.2867135898304,-18.6712704769281,-12.996027311569,NA,NA
+"222","stress_control","Ofaveolata017139",1.18425560821223,-19.400206743368,-12.9706716364868,NA,NA
+"223","stress_control","Ofaveolata017140",1.36493592932428,-14.97149561274,-7.90652850339033,NA,NA
+"224","stress_control","Ofaveolata017141",1.34978853970638,-20.5027937961732,-13.0604522844004,NA,NA
+"225","stress_control","Ofaveolata017142",1.31759816373004,-13.9073054671599,-10.2865446869261,"Galactose binding lectin domain",NA
+"226","stress_control","Ofaveolata017270",1.24129641445093,1.24286029297298,1.80716718778763,"negative regulation of Ras protein signal transduction","Signal transduction mechanisms"
+"227","stress_control","Ofaveolata017337",-1.69608903356911,-2.63740937319113,-4.42646225639518,"Defective in cullin neddylation 1 domain containing",NA
+"228","stress_control","Ofaveolata017468",-2.20204410243059,-3.17375820065368,-3.51764601542332,"Argininosuccinate","Amino acid transport and metabolism"
+"229","stress_control","Ofaveolata017589",-2.1394113467082,-4.15013675663658,-2.61273023961037,NA,NA
+"230","stress_control","Ofaveolata017869",1.78021251121619,-7.83585877427722,-8.29271521570646,NA,NA
+"231","stress_control","Ofaveolata017873",2.45204698507145,3.91376365417485,2.94497547517873,NA,NA
+"232","stress_control","Ofaveolata017910",4.25258419459134,2.09493986605018,1.97556506096537,NA,NA
+"233","stress_control","Ofaveolata018164",-3.24012252413146,-1.2592910872086,-1.93813580961663,NA,NA
+"234","stress_control","Ofaveolata018302",-1.81362692201362,-1.70815496594711,-2.20667597558153,"ectonucleotide pyrophosphatase phosphodiesterase",NA
+"235","stress_control","Ofaveolata018388",-2.79630038081204,-1.68491906803502,-1.11945542063828,"sequence-specific DNA binding","Transcription"
+"236","stress_control","Ofaveolata018491",-1.06824013633952,-2.43549748249935,-5.45802095204781,"translation initiation factor activity","Translation, ribosomal structure and biogenesis"
+"237","stress_control","Ofaveolata018790",-1.24957041541422,-1.08511047151956,-1.14617377539199,NA,NA
+"238","stress_control","Ofaveolata018927",-2.59006401709578,-3.75922580275665,-4.71460465581073,"Belongs to the SelWTH family. Selenoprotein T subfamily",NA
+"239","stress_control","Ofaveolata019014",1.87810439404193,-10.9408060456367,-9.87557298218378,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism"
+"240","stress_control","Ofaveolata019340",-1.38782384635323,-2.72103597148516,-2.32409021902766,"furry homolog","RNA processing and modification"
+"241","stress_control","Ofaveolata019617",-1.10032905918436,-2.8414777859562,-4.07001373393297,"tripeptidyl-peptidase activity","Posttranslational modification, protein turnover, chaperones"
+"242","stress_control","Ofaveolata019732",2.74298533119056,2.18845247009372,2.50089080886806,"NACHT and WD repeat","Chromatin structure and dynamics"
+"243","stress_control","Ofaveolata019868",-2.54083216685446,-2.4473405566847,-1.47307358967581,NA,NA
+"244","stress_control","Ofaveolata019918",3.6889655418075,4.3723852085555,3.67328038168734,"Rho guanyl-nucleotide exchange factor activity","Signal transduction mechanisms"
+"245","stress_control","Ofaveolata019954",-1.59981961280982,-1.31801502919585,-2.29774052729844,"ITP binding",NA
+"246","stress_control","Ofaveolata020644",1.12876742625351,-4.97136345907369,-3.19142455313453,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism"
+"247","stress_control","Ofaveolata021137",1.04177480057793,-2.46702638300407,-1.48192525719124,"Pregnancy-associated plasma protein-A",NA
+"248","stress_control","Ofaveolata021396",2.04319654913076,-4.04135691457011,-2.75610282246124,"glutamic-type peptidase activity","Posttranslational modification, protein turnover, chaperones"
+"249","stress_control","Ofaveolata021422",-1.9470773631423,-1.59147701775228,-3.38787712806097,NA,NA
+"250","stress_control","Ofaveolata021550",-1.51237372920264,-1.49879445312729,-3.14835747393032,"Sparc osteonectin, cwcv and kazal-like domains proteoglycan (testican) 2",NA
+"251","stress_control","Ofaveolata021922",-1.69722988912979,3.53735941661921,2.5253433979694,"Suppression of tumorigenicity 13 (colon carcinoma) (Hsp70 interacting protein)",""
+"252","stress_control","Ofaveolata021968",1.68597606440008,-10.5503672684561,-6.94947025567985,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis"
+"253","stress_control","Ofaveolata022011",-1.49503236793454,3.14536836222228,1.33288923827668,NA,NA
+"254","stress_control","Ofaveolata022018",1.21830185912115,-11.3721336172056,-6.29849510834806,NA,NA
+"255","stress_control","Ofaveolata022092",-1.16925653787703,-3.27616268534502,-5.35430749722693,"pyrimidine nucleotide transmembrane transporter activity","Energy production and conversion"
+"256","stress_control","Ofaveolata022112",-1.54350395706759,-1.44411808530973,-1.24032936119703,NA,NA
+"257","stress_control","Ofaveolata022261",2.3530242027685,-4.47592258138995,-2.82279535042005,NA,NA
+"258","stress_control","Ofaveolata022366",1.61132420259456,-14.655350823485,-7.00701261609446,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones"
+"259","stress_control","Ofaveolata022387",1.68209932874252,4.38512507721468,2.26690482873938,NA,NA
+"260","stress_control","Ofaveolata022464",-1.27847011823998,-4.94213702845535,-6.91911043443471,"Dynein, light chain","Cytoskeleton"
+"261","stress_control","Ofaveolata022639",1.76588146293915,-6.68450826829124,-4.28288938169571,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones"
+"262","stress_control","Ofaveolata022676",-1.28846354978221,-3.05624055053163,-3.79121252535743,"Phosphoenolpyruvate phosphomutase","Energy production and conversion"
+"263","stress_control","Ofaveolata022700",-1.25041226390366,-1.05644814380947,-1.2866739132695,"Functions as component of the Arp2 3 complex which is involved in regulation of actin polymerization and together with an activating nucleation-promoting factor (NPF) mediates the formation of branched actin networks","Cytoskeleton"
+"264","stress_control","Ofaveolata022807",-1.16372970027616,-2.08487865769072,-4.26653672435892,"peptidase inhibitor activity",""
+"265","stress_control","Ofaveolata022881",-1.40531128853772,-6.64826855013435,-5.05351817572253,"bleomycin hydrolase","Amino acid transport and metabolism"
+"266","stress_control","Ofaveolata022899",1.06751075634772,-1.25051483415514,-1.67407006201049,NA,NA
+"267","stress_control","Ofaveolata023024",1.2548796197774,-1.23256175134392,-2.74917504326312,"Isocitrate lyase family","Energy production and conversion"
+"268","stress_control","Ofaveolata023156",-1.64432557984043,-1.84460942433407,-5.94334312834255,"Cystatin-like domain",NA
+"269","stress_control","Ofaveolata023261",-1.04381823419796,-2.27795198695471,-1.89855053234284,"It is involved in the biological process described with chromatin remodeling",""
+"270","stress_control","Ofaveolata023968",-1.39908274048239,-1.00274230129665,-1.15860751342476,"factor 19",NA
+"271","stress_control","Ofaveolata024064",-1.4052888637301,-2.38476289649848,-2.54128368335801,"Amino acid permease","Amino acid transport and metabolism"
+"272","stress_control","Ofaveolata024073",-1.10035856649153,-2.54362101120283,-1.72645925871519,"metal ion binding","Posttranslational modification, protein turnover, chaperones"
+"273","stress_control","Ofaveolata024079",-1.50699431576785,3.90872860889547,1.75289147475628,"RNA-directed 5'-3' RNA polymerase activity","Translation, ribosomal structure and biogenesis"
+"274","stress_control","Ofaveolata024308",-1.42838827356357,-6.62748189679582,-3.91482975214629,"positive regulation of exoribonuclease activity","Transcription"
+"275","stress_control","Ofaveolata024342",1.06824013633952,-4.80550310560018,-2.87604642707143,"Animal haem peroxidase","Signal transduction mechanisms"
+"276","stress_control","Ofaveolata024360",-2.68351564115862,-1.69955205816055,-2.10885643133189,NA,NA
+"277","stress_control","Ofaveolata024364",-1.05937471605533,-2.85419107417347,-3.8755414210802,"acetate-CoA ligase activity","Lipid transport and metabolism"
+"278","stress_control","Ofaveolata024468",-2.76112546492868,-1.12323846436787,-1.65791190557899,"ATP binding. It is involved in the biological process described with protein phosphorylation","Signal transduction mechanisms"
+"279","stress_control","Ofaveolata024492",1.17150471047353,-2.4772813523866,-1.97093498497911,NA,NA
+"280","stress_control","Ofaveolata024494",-1.68597606440008,-8.72056384873704,-7.81399350771707,"Protein of unknown function (DUF2615)",NA
+"281","stress_control","Ofaveolata024742",-2.50613782739102,-1.97761717980299,-4.83218734723611,NA,NA
+"282","stress_control","Ofaveolata024855",-1.54657415998636,-1.18485777313437,-1.61111293360612,"WW domain-containing oxidoreductase","Secondary metabolites biosynthesis, transport and catabolism"
+"283","stress_control","Ofaveolata024904",-2.70696188636589,-2.58184017099427,-1.40757375221704,"Collagen triple helix",NA
+"284","stress_control","Ofaveolata024921",-2.10112192568053,-1.27071350200835,-1.75811007909942,NA,NA
+"285","stress_control","Ofaveolata024927",-5.36644142768254,-3.13077570428694,-4.4290616931488,"TNF receptor-associated factor","Posttranslational modification, protein turnover, chaperones"
+"286","stress_control","Ofaveolata025070",-1.71823535672829,-2.60549407061647,-1.66799091536194,"positive regulation of NLRP3 inflammasome complex assembly","RNA processing and modification"
+"287","stress_control","Ofaveolata025187",1.54290208624802,-3.27914824429758,-3.81233488209309,"-",""
+"288","stress_control","Ofaveolata025189",1.46844551335222,-14.0511042475444,-7.79639104844407,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning"
+"289","stress_control","Ofaveolata025190",1.00106376178653,-17.6072800825802,-11.9460955248228,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning"
+"290","stress_control","Ofaveolata025193",1.3558602063724,-14.422557704266,-9.32047808031163,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning"
+"291","stress_control","Ofaveolata025430",1.74353165027332,-4.30525900657968,-4.03174117538573,NA,NA
+"292","stress_control","Ofaveolata025437",1.66724071961546,-13.8685159627922,-9.40427792990715,"peptidase inhibitor activity",""
+"293","stress_control","Ofaveolata025439",1.26212738750264,-3.64785149565944,-1.88349296919356,"positive regulation of epithelial to mesenchymal transition",NA
+"294","stress_control","Ofaveolata025475",-1.45103176532481,-2.14016564013972,-2.15302016786372,"Dehydrogenase reductase SDR family member","Secondary metabolites biosynthesis, transport and catabolism"
+"295","stress_control","Ofaveolata025486",-1.61243671731311,-18.3087266390295,-19.4533588371248,"dolichyl-diphosphooligosaccharide-protein glycotransferase activity",""
+"296","stress_control","Ofaveolata025694",-1.8451027477164,-13.8052634088092,-11.4397419915061,NA,NA
+"297","stress_control","Ofaveolata025729",-1.00738517272433,-4.19450859206575,-3.13326324671068,"negative regulation of cell growth",NA
+"298","stress_control","Ofaveolata025762",-1.26325865760689,-3.81612339693257,-3.20324512754015,"protein modification by small protein conjugation","Posttranslational modification, protein turnover, chaperones"
+"299","stress_control","Ofaveolata025865",-2.32501984904525,-1.81949530316782,-2.0893064563941,NA,NA
+"300","stress_control","Ofaveolata025891",-5.0667216275031,-9.94799586754967,-10.5356445329604,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones"
+"301","stress_control","Ofaveolata025892",-2.76112546492868,-2.44809358314255,-7.27949602237853,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones"
+"302","stress_control","Ofaveolata026043",-1.73012683315058,-1.82803201797822,-1.39725458266182,NA,NA
+"303","stress_control","Ofaveolata026055",-1.67062550953332,-2.23661746122228,-1.93495446821308,"ubiquitin-like protein-specific protease activity",""
+"304","stress_control","Ofaveolata026139",2.09069410643556,1.80720358345114,1.59929185029035,"adenylate cyclase-activating G-protein coupled receptor signaling pathway","Signal transduction mechanisms"
+"305","stress_control","Ofaveolata026176",-3.64180963442182,-1.54514469498608,-1.0897865943094,"lipid metabolic process","Carbohydrate transport and metabolism"
+"306","stress_control","Ofaveolata026191",-4.66281835413847,-3.91989608230995,-3.39355778751783,NA,NA
+"307","stress_control","Ofaveolata026192",-3.11443185185854,-1.4585304052226,-1.17066034512314,NA,NA
+"308","stress_control","Ofaveolata026239",-1.67081569117031,-2.46307509438819,-4.40703348334025,"Family with sequence similarity 69 member C",NA
+"309","stress_control","Ofaveolata026390",2.05642807258061,-3.32867001855596,-2.39169165513484,NA,NA
+"310","stress_control","Ofaveolata026393",-1.53140547601467,2.94639202474404,3.33334599561502,NA,NA
+"311","stress_control","Ofaveolata026674",1.89664915048427,-2.79079932949294,-2.25947884237902,"structural constituent of cytoskeleton","Cytoskeleton"
+"312","stress_control","Ofaveolata026759",1.01540382817686,-4.66583969601117,-3.7180452947239,"proton channel activity","Translation, ribosomal structure and biogenesis"
+"313","stress_control","Ofaveolata026871",1.89860751650264,2.81319338693483,1.49965344388443,NA,NA
+"314","stress_control","Ofaveolata026978",-1.5755857857469,-1.70086013374864,-1.37415141167112,NA,NA
+"315","stress_control","Ofaveolata027055",-1.68597606440008,-1.51435415830404,-3.17525084974586,"Myosin, light","Cytoskeleton"
+"316","stress_control","Ofaveolata027109",-1.25519986901484,16.3913458578988,11.0601104459174,NA,NA
+"317","stress_control","Ofaveolata027450",1.39495750050306,-19.6411799405788,-14.0224200066319,NA,NA
+"318","stress_control","Ofaveolata027542",-3.54332130708222,-2.36204194245108,-1.0542131332785,"Eukaryotic-type carbonic anhydrase","Inorganic ion transport and metabolism"
+"319","stress_control","Ofaveolata027545",-3.60058499797165,-7.68563367192141,-7.4802450754109,"carbonic anhydrase","Inorganic ion transport and metabolism"
+"320","stress_control","Ofaveolata027747",-2.32823989835467,-2.40554862903983,-3.05115759769955,NA,NA
+"321","stress_control","Ofaveolata027775",1.22660152675895,-3.97566042539644,-2.96469922778488,"protein serine/threonine kinase activity","Signal transduction mechanisms"
+"322","stress_control","Ofaveolata027889",-3.95938040254886,-3.87243828056466,-4.1812978503127,"tachykinin receptor activity",NA
+"323","stress_control","Ofaveolata028098",-2.63609619412422,-1.35533290368626,-2.19942328132333,NA,NA
+"324","stress_control","Ofaveolata028190",-3.72730672978582,-7.05965612495633,-2.7852301224866,"camera-type eye development","Transcription"
+"325","stress_control","Ofaveolata028207",-1.84046334735272,-2.74954022701854,-4.08041719267366,"Cupin-like domain",""
+"326","stress_control","Ofaveolata028767",-1.22803663289184,-8.96415525828793,-8.1753595207042,"PPIases accelerate the folding of proteins. It catalyzes the cis-trans isomerization of proline imidic peptide bonds in oligopeptides","Posttranslational modification, protein turnover, chaperones"
+"327","stress_control","Ofaveolata028919",-1.38693937086338,-1.31662548040442,-1.56351924967142,"SHC (Src homology 2 domain containing) transforming protein","Signal transduction mechanisms"
+"328","stress_control","Ofaveolata029062",-1.53795001274363,-3.3970425054372,-6.59602179278511,"Ankyrin repeat and SOCS box","Cell wall/membrane/envelope biogenesis"
+"329","stress_control","Ofaveolata029114",1.09608990474356,1.67206920892642,2.53223119321802,NA,NA
+"330","stress_control","Ofaveolata029115",1.76588146293915,1.42061296613463,1.94925639266125,NA,NA
+"331","stress_control","Ofaveolata029215",-3.75527196991342,-2.02482040294951,-3.39304775819961,NA,NA
+"332","stress_control","Ofaveolata029232",-3.19540809880706,-3.16746272814648,-4.16451841219406,NA,NA
+"333","stress_control","Ofaveolata029312",-1.4450259987609,-1.04585885328114,-5.13664562123681,NA,NA
+"334","stress_control","Ofaveolata029423",1.64219236817661,-4.85294660189783,-2.61090644258439,"miRNA binding","Posttranslational modification, protein turnover, chaperones"
+"335","stress_control","Ofaveolata029433",-1.18901141373708,-1.4417692491919,-1.10933624947699,"Caspase domain","Signal transduction mechanisms"
+"336","stress_control","Ofaveolata029486",2.22726483984296,1.6307678929545,1.00850101751175,"neuronal calcium sensor","Signal transduction mechanisms"
+"337","stress_control","Ofaveolata029525",-1.85263283831004,1.63901462213604,1.54631253378267,"Interferon induced with helicase C domain 1","RNA processing and modification"
+"338","stress_control","Ofaveolata029659",-1.62354166109037,-1.48993400090991,-1.92748502629867,"Specifically binds 5-hydroxymethylcytosine (5hmC)- containing DNA in stem cells, suggesting that it acts as a specific reader of 5hmC in stem cells. May act as a peptidase",NA
+"339","stress_control","Ofaveolata029736",-1.2747702071768,-2.63740937319113,-3.43773929612646,"Belongs to the uridine kinase family","Nucleotide transport and metabolism"
+"340","stress_control","Ofaveolata029779",1.05542800490367,-4.32642170334821,-2.75097534457865,NA,NA
+"341","stress_control","Ofaveolata029819",1.21830185912115,-4.41913822041006,-3.74584369932424,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport"
+"342","stress_control","Ofaveolata029897",-1.07507055657368,-1.55810112568423,-2.18771252145202,"UDP-glucoronosyl and UDP-glucosyl transferase",""
+"343","stress_control","Ofaveolata030101",-1.02635631528593,-1.24732954096095,-2.39169165513484,"maturation of LSU-rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA, LSU-rRNA)","Translation, ribosomal structure and biogenesis"
+"344","stress_control","Ofaveolata030193",-1.35792151858919,-1.43747423360527,-3.54379358446389,NA,NA
+"345","stress_control","Ofaveolata030220",-1.73758822132899,6.44092241530099,4.61457291931826,"thioesterase binding","Signal transduction mechanisms"
+"346","stress_control","Ofaveolata030360",1.30000042900295,-1.79404984311277,-1.57848279661223,NA,NA
+"347","stress_control","Ofaveolata030362",1.54580718886594,-6.26320904861268,-5.64766271403654,NA,NA
+"348","stress_control","Ofaveolata030363",1.00026781689659,-3.02814590579595,-1.01263742276394,NA,NA
+"349","stress_control","Ofaveolata030373",-1.21378848899657,-2.04240887011134,-2.0625529535054,"thyroid hormone transmembrane transporter activity","Carbohydrate transport and metabolism"
+"350","stress_control","Ofaveolata030409",-1.13870904980888,-3.12918627032167,-5.16022147342614,"sulfiredoxin activity","Replication, recombination and repair"
+"351","stress_control","Ofaveolata030454",-4.20414430039608,-6.00714892124764,-3.62477647152425,NA,NA
+"352","stress_control","Ofaveolata030516",-1.01965045521319,-1.06105843569282,-1.08666114975988,NA,NA
+"353","stress_control","Ofaveolata030623",-1.7991476403657,-2.28921874369781,-2.2115504131706,"RNA splicing",NA
+"354","stress_control","Ofaveolata030847",-2.07888965441745,-4.27357010323894,-2.44548422095867,"regulation of Cdc42 protein signal transduction",NA
+"355","stress_control","Ofaveolata030855",-1.11940974200773,-3.66177811838032,-2.86234744332806,"Proprotein convertase subtilisin kexin type","Posttranslational modification, protein turnover, chaperones"
+"356","stress_control","Ofaveolata030884",-1.26881770685153,-3.99042599772002,-1.30662477695086,"Protein rolling stone-like",NA
+"357","stress_control","Ofaveolata031065",1.65512525917341,1.62204172849479,1.0907027591684,"supervillin","Cytoskeleton"
+"358","stress_control","Ofaveolata031084",2.14457504219313,-2.0506646525413,-2.6268767301248,"Carboxypeptidase","Posttranslational modification, protein turnover, chaperones"
+"359","stress_control","Ofaveolata031172",-4.63874669409802,-2.58184017099427,-3.27763212247302,"sequence-specific DNA binding","Transcription"
+"360","stress_control","Ofaveolata031645",4.63874669409802,-1.58272541512205,-1.51616250355089,NA,NA
+"361","stress_control","Ofaveolata031675",1.17301680128521,-1.79051801476716,-4.37096896011961,NA,NA
+"362","stress_control","Ofaveolata031733",-1.0140825775458,-5.1092858604029,-2.98661005280091,NA,NA
+"363","stress_control","Ofaveolata031858",-1.71823535672829,-2.31333751559175,-3.96880342229,"negative regulation of zinc ion transmembrane import","Inorganic ion transport and metabolism"
+"364","stress_control","Ofaveolata031939",-1.41037629814796,-5.58778832634366,-3.88995497691196,"carnitine O-palmitoyltransferase activity","Lipid transport and metabolism"
+"365","stress_control","Ofaveolata032009",2.11327054650282,3.35039663957093,1.20534894336881,NA,NA
+"366","stress_control","Ofaveolata032073",-4.614102619473,-3.3961946719747,-4.37923288957627,NA,NA
+"367","stress_control","Ofaveolata032312",1.23121992108988,-2.35340949433047,-4.60654781794144,NA,NA
+"368","stress_control","Ofaveolata032785",-1.21317102157592,-1.33854894773349,-3.71097999289818,"Glutathione S-transferase mu","Posttranslational modification, protein turnover, chaperones"
+"369","stress_control","Ofaveolata032816",-1.25937618849822,-4.49594267501899,-3.84253747064121,"Required for protein import into peroxisomes","Posttranslational modification, protein turnover, chaperones"
+"370","stress_control","Ofaveolata032852",1.0852187429104,3.01712096902038,3.06962499128227,NA,NA
+"371","stress_control","Ofaveolata032952",1.45103176532481,-7.51274724035665,-5.93324158679301,"GPCR-Autoproteolysis INducing (GAIN) domain","Signal transduction mechanisms"
+"372","stress_control","Ofaveolata033040",-1.22881183600317,2.56957550085525,1.94715008357461,"basic region leucin zipper","Transcription"
+"373","stress_control","Ofaveolata033143",-1.79665284597971,-1.75421563594033,-2.81561048815687,NA,NA
+"374","stress_control","Ofaveolata033195",-1.82770747384344,-5.90370242589834,-9.16283588781526,NA,NA
+"375","stress_control","Ofaveolata033565",1.9470773631423,-2.32996336515922,-1.28428836821751,NA,NA
+"376","stress_control","Ofaveolata033647",-2.9919961269286,-3.67390264788129,-4.21217238347151,NA,NA
+"377","stress_control","Ofaveolata033678",2.22049672329102,-8.47213028377366,-4.56332673568917,NA,NA
+"378","stress_control","Ofaveolata033690",3.99146608161733,-2.66886579355812,-1.75485917264752,NA,NA
+"379","stress_control","Ofaveolata033695",-1.51566711833014,-2.53012421399723,-3.8684794381311,NA,NA
+"380","stress_control","Ofaveolata033784",-1.21317102157592,-1.02100508244274,-1.39545891927135,"Solute carrier family 35, member G1",""
+"381","stress_control","Ofaveolata033931",-1.02635631528593,-2.91605333547218,-3.34307694774398,NA,NA
+"382","stress_control","Ofaveolata034016",1.38227239475721,-2.63740937319113,-1.5134946928652,NA,NA
+"383","stress_control","Ofaveolata034018",1.41300690232233,-2.88152200690039,-1.85234725346598,NA,NA
+"384","stress_control","Ofaveolata034020",1.68597606440008,-7.33846130492007,-7.60245938798606,NA,NA
+"385","stress_control","Ofaveolata034052",-1.49503236793454,-1.90881806873171,-4.5481502994556,"myelination","Signal transduction mechanisms"
+"386","stress_control","Ofaveolata034304",-1.24957041541422,-1.65509654855353,-1.02907890396907,NA,NA
+"387","stress_control","Ofaveolata034323",-2.98742345656826,-1.09085276449705,-1.18921244731529,NA,NA
+"388","stress_control","Ofaveolata034386",-1.76588146293915,-5.49849260560177,-4.50034070878148,"Component of the BLOC-1 complex, a complex that is required for normal biogenesis of lysosome-related organelles (LRO), such as platelet dense granules and melanosomes. In concert with the AP-3 complex, the BLOC-1 complex is required to target membrane protein cargos into vesicles assembled at cell bodies for delivery into neurites and nerve terminals. The BLOC-1 complex, in association with SNARE proteins, is also proposed to be involved in neurite extension. Plays a role in intracellular vesicle trafficking and synaptic vesicle recycling",NA
+"389","stress_control","Ofaveolata034780",-1.86805427290321,-5.20049000984963,-4.45480540846638,"zinc finger CCCH-type containing",NA
+"390","stress_control","Ofaveolata034812",1.36493592932428,-3.33921961252082,-3.32553348241601,"arachidonic acid secretion","Lipid transport and metabolism"
+"391","stress_control","Ofaveolata034866",1.14672856421011,1.69706514398021,1.02898318148077,"K02A2.6-like","Carbohydrate transport and metabolism"
+"392","stress_control","Ofaveolata035042",1.15240409586326,-8.1493011404853,-6.68394896852379,NA,NA
+"393","stress_control","Ofaveolata035121",-3.24661210493899,-9.72358013458619,-6.50207611687212,"7 transmembrane receptor (rhodopsin family)","Signal transduction mechanisms"
+"394","stress_control","Ofaveolata035248",-1.22920658826242,-1.98955397193297,-1.58232726026287,"semaphorin receptor binding","Signal transduction mechanisms"
+"395","stress_control","Ofaveolata035554",-3.75605963620005,-1.44606185790434,-1.22541180824873,"Kelch-like protein 17","Signal transduction mechanisms"
+"396","stress_control","Ofaveolata035634",-2.71870356357296,-4.03353394718333,-2.7710478492035,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones"
+"397","stress_control","Ofaveolata035638",-4.21299616656403,-14.422557704266,-8.83373982868168,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones"
+"398","stress_control","Ofaveolata035717",2.51690119797552,-2.01718655948198,-2.72278782007313,NA,NA
+"399","stress_control","Ofaveolata036553",1.71823535672829,-4.82715704171115,-3.74611611821906,NA,NA
+"400","stress_control","Ofaveolata036569",-3.12377996421848,-1.76190619410857,-5.86124129619974,"Belongs to the glycosyl hydrolase 18 family","Carbohydrate transport and metabolism"

@@ -1,0 +1,29 @@
+                                                          diff           lwr         upr       p adj
+low pH:Emerald-control pH:Emerald                 -0.011498133 -0.0356316841 0.012635418 0.716471657
+control pH:Rainbow-control pH:Emerald              0.000429906 -0.0237036451 0.024563457 1.000000000
+low pH:Rainbow-control pH:Emerald                 -0.015454752 -0.0395883031 0.008678799 0.391414414
+control pH:Star Island-control pH:Emerald          0.014335687 -0.0097978641 0.038469238 0.478329994
+low pH:Star Island-control pH:Emerald             -0.001881361 -0.0260149121 0.022252190 0.999991886
+control pH:MacArthur North-control pH:Emerald      0.021306155 -0.0028273961 0.045439706 0.104771355
+low pH:MacArthur North-control pH:Emerald          0.006927821 -0.0172057301 0.031061372 0.968830340
+control pH:Rainbow-low pH:Emerald                  0.011928039 -0.0122055121 0.036061590 0.681038015
+low pH:Rainbow-low pH:Emerald                     -0.003956619 -0.0280901701 0.020176932 0.998852154
+control pH:Star Island-low pH:Emerald              0.025833820  0.0017002689 0.049967371 0.031509088
+low pH:Star Island-low pH:Emerald                  0.009616772 -0.0145167791 0.033750323 0.853694381
+control pH:MacArthur North-low pH:Emerald          0.032804288  0.0086707369 0.056937839 0.004519994
+low pH:MacArthur North-low pH:Emerald              0.018425954 -0.0057075971 0.042559505 0.210097773
+low pH:Rainbow-control pH:Rainbow                 -0.015884658 -0.0400182091 0.008248893 0.360439884
+control pH:Star Island-control pH:Rainbow          0.013905781 -0.0102277701 0.038039332 0.513658705
+low pH:Star Island-control pH:Rainbow             -0.002311267 -0.0264448181 0.021822284 0.999967016
+control pH:MacArthur North-control pH:Rainbow      0.020876249 -0.0032573021 0.045009800 0.116749569
+low pH:MacArthur North-control pH:Rainbow          0.006497915 -0.0176356361 0.030631466 0.977880527
+control pH:Star Island-low pH:Rainbow              0.029790439  0.0056568879 0.053923990 0.010500674
+low pH:Star Island-low pH:Rainbow                  0.013573391 -0.0105601601 0.037706942 0.541488759
+control pH:MacArthur North-low pH:Rainbow          0.036760907  0.0126273559 0.060894458 0.001511377
+low pH:MacArthur North-low pH:Rainbow              0.022382573 -0.0017509781 0.046516124 0.079465440
+low pH:Star Island-control pH:Star Island         -0.016217048 -0.0403505991 0.007916503 0.337533813
+control pH:MacArthur North-control pH:Star Island  0.006970468 -0.0171630831 0.031104019 0.967808866
+low pH:MacArthur North-control pH:Star Island     -0.007407866 -0.0315414171 0.016725685 0.955949304
+control pH:MacArthur North-low pH:Star Island      0.023187516 -0.0009460351 0.047321067 0.064340149
+low pH:MacArthur North-low pH:Star Island          0.008809182 -0.0153243691 0.032942733 0.899438949
+low pH:MacArthur North-control pH:MacArthur North -0.014378334 -0.0385118851 0.009755217 0.474874694

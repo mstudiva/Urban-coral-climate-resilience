@@ -1,0 +1,6 @@
+               Df   Sum Sq   Mean Sq F value Pr(>F)
+treatment       1 0.000305 3.054e-04   1.486  0.239
+site            3 0.000278 9.267e-05   0.451  0.720
+treatment:site  3 0.000035 1.170e-05   0.057  0.982
+site:genotype  17 0.004764 2.803e-04   1.364  0.265
+Residuals      17 0.003493 2.055e-04               
