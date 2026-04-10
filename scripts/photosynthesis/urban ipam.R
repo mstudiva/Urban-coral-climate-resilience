@@ -2,10 +2,20 @@
 
 library(ggplot2)
 library(ggpubr)
-library(dplyr)
 library(tidyr)
 library(rstatix)
 library(MASS)
+
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(stringr)
+library(rcompanion)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(multcomp)
 
 
 #### data import ####
@@ -20,16 +30,25 @@ genotypes
 ipam %>%
   inner_join(genotypes, by = "sampleID") -> ipam
 
+# removing the initial data points since the rest of the measurements are proportional to initial values
+ipam <- subset(ipam, ratio!="1")
+
 # coding factors
-ipam$geno <- as.factor(ipam$geno)
-ipam$tank <- as.factor(ipam$tank)
-ipam$time=factor(ipam$time, levels=c("Initial", "0", "3", "7", "10", "14", "17", "21", "24", "28", "31", "35", "39", "42", "45")) 
-ipam$site=factor(ipam$site, levels=c("Emerald", "Rainbow", "Star", "MacN")) 
-ipam$treatment=factor(ipam$treatment, levels=c("CC", "CH", "LC", "LH")) 
+ipam <- ipam %>%
+  mutate(
+    site = factor(site, levels=c("Emerald", "Rainbow", "Star", "MacN")),
+    geno = factor(geno),
+    sampleID = factor(sampleID),
+    pH = factor(pH, levels = c("control pH", "low pH")),
+    temp = factor(temp, levels = c("control temp", "high temp")),
+    time = as.numeric(time)
+  )
 str(ipam)
 
-
-#### data normality and assumption testing ####
+ipam <- ipam %>%
+  mutate(
+    exp_unit = interaction(sampleID, temp, drop = TRUE)
+  )
 
 # subsetting data frames by species
 ipam_ofav <- subset(ipam, species=="Ofav")
@@ -37,15 +56,109 @@ ipam_ssid <- subset(ipam, species=="Ssid")
 str(ipam_ofav)
 str(ipam_ssid)
 
-# now removing the initial data points for statistical tests, since they are all '1'
-ipam_ofav_sub <- subset(ipam_ofav, ratio!="1")
-ipam_ssid_sub <- subset(ipam_ssid, ratio!="1")
 
-# recoding time as numeric for plotting/testing
-ipam_ofav_sub$time  = as.numeric(ipam_ofav_sub$time)
-ipam_ssid_sub$time  = as.numeric(ipam_ssid_sub$time)
-str(ipam_ofav_sub)
-str(ipam_ssid_sub)
+#### subsetting for control timepoints only ####
+ipam_ofav %>%
+  filter(time<21) -> ipam_ofav_control
+
+# checks whether any unique sampleIDs (exp_unit) are duplicated within time points
+any(duplicated(ipam_ofav_control %>% dplyr::select(exp_unit, time))) # FALSE
+
+ipam_ssid %>%
+  filter(time<21) -> ipam_ssid_control
+any(duplicated(ipam_ssid_control %>% dplyr::select(exp_unit, time))) # FALSE
+
+
+
+
+
+ggscatter(
+  ipam_ofav_control, x = "time", y = "ratio",
+  facet.by  = c("treatment", "site")) +
+  geom_smooth(formula = y ~ x, method = "loess", span = 0.9)
+
+ggscatter(
+  ipam_ofav_control, x = "time", y = "ratio",
+  facet.by  = c("treatment", "site")) +
+  geom_smooth(formula = y ~ x, method = "loess", span = 0.9)
+# somewhat linear decline in all combinations of site + treatment over time
+
+# testing for homogeneity of regression slopes
+# check that interaction terms with covariable (time) are not signficant
+ipam_ofav_control %>%
+  anova_test(
+    ratio ~ time + treatment + site + 
+      treatment*site + time*treatment +
+      time*site + time*site*treatment
+  )
+# all time interactions nonsignificant
+
+ipam_ssid_control %>%
+  anova_test(
+    ratio ~ time + treatment + site + 
+      treatment*site + time*treatment +
+      time*site + time*site*treatment
+  )
+# time:treatment interaction significant
+
+# normality of residuals
+ofav_model_control <- lm(ratio ~ time + treatment*site, data = ipam_ofav_control)
+ofav_model_control_metrics <- augment(ofav_model_control)
+
+ssid_model_control <- lm(ratio ~ time + treatment*site, data = ipam_ssid_control)
+ssid_model_control_metrics <- augment(ssid_model_control) 
+
+# assess normality of residuals using Shapiro-Wilk test
+shapiro_test(ofav_model_control_metrics$.resid)
+shapiro_test(ssid_model_control_metrics$.resid)
+# both significant
+
+# assess homogeneity of variances using Levene's Test
+levene_test(.resid ~ treatment*site, data = ofav_model_control_metrics)
+levene_test(.resid ~ treatment*site, data = ssid_model_control_metrics)
+# both significant
+
+# identifying outliers
+ofav_model_control_metrics %>% 
+  filter(abs(.std.resid) > 3) -> ofav_control_outliers
+ssid_model_control_metrics %>% 
+  filter(abs(.std.resid) > 3) -> ssid_control_outliers
+
+# remove outliers
+ipam_ofav_control <- ipam_ofav_control[!rownames(ipam_ofav_control) %in% ofav_control_outliers$.rownames,]
+ipam_ssid_control <- ipam_ssid_control[!rownames(ipam_ssid_control) %in% ssid_control_outliers$.rownames,]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # scatterplots of measurements through time for factors
 pdf("../../outputs/photosynthesis/urban ipam ofav normality.pdf")
@@ -121,75 +234,7 @@ get_anova_table(ssid_aov) # all factors and treatment:site interaction significa
 capture.output(get_anova_table(ssid_aov), file = "../../outputs/photosynthesis/urban ipam ssid ancova.txt")
 
 
-#### subsetting for controls ####
 
-ipam_ofav %>%
-  filter(time!="Initial") %>%
-  mutate(time = as.character(time)) %>%
-  mutate(time = as.numeric(time)) %>%
-  filter(time<21) -> ipam_ofav_control
-
-ipam_ssid %>%
-  filter(time!="Initial") %>%
-  mutate(time = as.character(time)) %>%
-  mutate(time = as.numeric(time)) %>%
-  filter(time<21) -> ipam_ssid_control
-
-ggscatter(
-  ipam_ofav_control, x = "time", y = "ratio",
-  facet.by  = c("treatment", "site")) +
-  geom_smooth(formula = y ~ x, method = "loess", span = 0.9)
-
-ggscatter(
-  ipam_ofav_control, x = "time", y = "ratio",
-  facet.by  = c("treatment", "site")) +
-  geom_smooth(formula = y ~ x, method = "loess", span = 0.9)
-# somewhat linear decline in all combinations of site + treatment over time
-
-# testing for homogeneity of regression slopes
-# check that interaction terms with covariable (time) are not signficant
-ipam_ofav_control %>%
-  anova_test(
-    ratio ~ time + treatment + site + 
-      treatment*site + time*treatment +
-      time*site + time*site*treatment
-  )
-# all time interactions nonsignificant
-
-ipam_ssid_control %>%
-  anova_test(
-    ratio ~ time + treatment + site + 
-      treatment*site + time*treatment +
-      time*site + time*site*treatment
-  )
-# time:treatment interaction significant
-
-# normality of residuals
-ofav_model_control <- lm(ratio ~ time + treatment*site, data = ipam_ofav_control)
-ofav_model_control_metrics <- augment(ofav_model_control)
-
-ssid_model_control <- lm(ratio ~ time + treatment*site, data = ipam_ssid_control)
-ssid_model_control_metrics <- augment(ssid_model_control) 
-
-# assess normality of residuals using Shapiro-Wilk test
-shapiro_test(ofav_model_control_metrics$.resid)
-shapiro_test(ssid_model_control_metrics$.resid)
-# both significant
-
-# assess homogeneity of variances using Levene's Test
-levene_test(.resid ~ treatment*site, data = ofav_model_control_metrics)
-levene_test(.resid ~ treatment*site, data = ssid_model_control_metrics)
-# both significant
-
-# identifying outliers
-ofav_model_control_metrics %>% 
-  filter(abs(.std.resid) > 3) -> ofav_control_outliers
-ssid_model_control_metrics %>% 
-  filter(abs(.std.resid) > 3) -> ssid_control_outliers
-
-# remove outliers
-ipam_ofav_control <- ipam_ofav_control[!rownames(ipam_ofav_control) %in% ofav_control_outliers$.rownames,]
-ipam_ssid_control <- ipam_ssid_control[!rownames(ipam_ssid_control) %in% ssid_control_outliers$.rownames,]
 
 #### ANCOVA with controls ####
 

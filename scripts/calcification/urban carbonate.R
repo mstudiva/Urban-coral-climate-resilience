@@ -6,6 +6,10 @@ library(ggplot2)
 library(ggpubr)
 library(stringr)
 library(rcompanion)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(multcomp)
 
 
 #### data import ####
@@ -120,7 +124,7 @@ incubations_netTA %>% # joining all the summary stats into one table
 write.csv(incubations_netmeans, file = "../../outputs/calcification/urban carbonate incubations net means.csv")
 
 
-#### incubation stats ####
+#### incubation normality and assumption testing ####
 
 incubations_subset <- subset(incubations_net_carb, site!="control") # filtering out skeletal controls
 
@@ -165,100 +169,162 @@ qqnorm(incubations_ssid_night$calcificationadj)
 qqline(incubations_ssid_night$calcificationadj)
 dev.off()
 
-anova_ofav_day <- aov(calcificationadj ~ treatment*site+site/genotype, data=incubations_ofav_day)
-summary(anova_ofav_day) # no factors significant, genotype marginal
-capture.output(summary(anova_ofav_day), file = "../../outputs/calcification/urban carbonate ofav day anova.txt")
 
-anova_ofav_night <- aov(calcificationadj ~ treatment*site+site/genotype, data=incubations_ofav_night)
-summary(anova_ofav_night) # treatment marginal
-capture.output(summary(anova_ofav_night), file = "../../outputs/calcification/urban carbonate ofav night anova.txt")
+#### incubation linear mixed-effect models ####
 
-anova_ssid_day <- aov(calcificationadj ~ treatment*site+site/genotype, data=incubations_ssid_day)
-summary(anova_ssid_day) # treatment and site significant
-capture.output(summary(anova_ssid_day), file = "../../outputs/calcification/urban carbonate ssid day anova.txt")
+# O. faveolata day
+# full model, tank nested within pH, genotype nested within site
+lm_ofav_day <- lmer(calcificationadj ~ treatment * site +
+                  (1 | site:genotype),
+                data = incubations_ofav_day, REML = TRUE)
 
-anova_ssid_night <- aov(calcificationadj ~ treatment*site+site/genotype, data=incubations_ssid_night)
-summary(anova_ssid_night) # treatment and site significant
-capture.output(summary(anova_ssid_night), file = "../../outputs/calcification/urban carbonate ssid night anova.txt")
+# reduced model, no interaction of pH and site
+lm_ofav_day_noint <- lmer(calcificationadj ~ treatment + site +
+                        (1 | site:genotype),
+                      data = incubations_ofav_day, REML = TRUE)
 
-# tukey_ofav_day <- TukeyHSD(anova_ofav_day) # pairwise comparisons
-# tukey_ofav_day$`treatment:site`
-# capture.output(tukey_ofav_day$`treatment:site`, file = "../../outputs/calcification/urban carbonate ofav day tukey.txt")
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ofav_day, REML = FALSE), update(lm_ofav_day_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
 
-# tukey_ofav_night <- TukeyHSD(anova_ofav_night) # pairwise comparisons
-# tukey_ofav_night$`treatment:site`
-# capture.output(tukey_ofav_night$`treatment:site`, file = "../../outputs/calcification/urban carbonate ofav night tukey.txt")
+# reduced model, dropped genotype as factor
+lm_ofav_day_noG <- lm(calcificationadj ~ treatment + site,
+                    data = incubations_ofav_day)
 
-tukey_ssid_day <- TukeyHSD(anova_ssid_day) # pairwise comparisons
-tukey_ssid_day$`treatment:site`
-capture.output(tukey_ssid_day$`treatment:site`, file = "../../outputs/calcification/urban carbonate ssid day tukey.txt")
+# LRT of genotype effect
+anova(update(lm_ofav_day_noint, REML = FALSE), update(lm_ofav_day_noG)) # p > 0.05 and AIC about the same, so keep genotype
 
-tukey_ssid_night <- TukeyHSD(anova_ssid_night) # pairwise comparisons
-tukey_ssid_night$`treatment:site`
-capture.output(tukey_ssid_night$`treatment:site`, file = "../../outputs/calcification/urban carbonate ssid night tukey.txt")
+# model outputs
+summary(lm_ofav_day_noint)
+anova(lm_ofav_day_noint) # no significant factors
+VarCorr(lm_ofav_day_noint)
 
-# letters_ofav_day <- data.frame(tukey_ofav_day$`treatment:site`) # significance letters for plot
-# letters_ofav_day$Var <- rownames(letters_ofav_day)
-# names(letters_ofav_day)[5] <- "comparison"
-# letters_ofav_day$comparison = str_replace_all(letters_ofav_day$comparison,":","_")
-# letters_ofav_day$p.adj[is.na(letters_ofav_day$p.adj)] <- 1
-# letters_ofav_day
+capture.output(anova(lm_ofav_day_noint), file = "../../outputs/calcification/urban incubations ofav day lme.txt")
 
-# letters_ofav_night <- data.frame(tukey_ofav_night$`treatment:site`) # significance letters for plot
-# letters_ofav_night$Var <- rownames(letters_ofav_night)
-# names(letters_ofav_night)[5] <- "comparison"
-# letters_ofav_night$comparison = str_replace_all(letters_ofav_night$comparison,":","_")
-# letters_ofav_night$p.adj[is.na(letters_ofav_night$p.adj)] <- 1
-# letters_ofav_night
+# pairwise tests
+# emm_ofav_day <- emmeans(lm_ofav_day_noint, ~ site | treatment)
+# pairs(emm_ofav_day, adjust = "tukey")
 
-letters_ssid_day <- data.frame(tukey_ssid_day$`treatment:site`) # significance letters for plot
-letters_ssid_day$Var <- rownames(letters_ssid_day)
-names(letters_ssid_day)[5] <- "comparison"
-letters_ssid_day$comparison = str_replace_all(letters_ssid_day$comparison,":","_")
-letters_ssid_day$p.adj[is.na(letters_ssid_day$p.adj)] <- 1
-letters_ssid_day
+# capture.output(pairs(emm_ofav_day, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav day pairwise.txt")
 
-letters_ssid_night <- data.frame(tukey_ssid_night$`treatment:site`) # significance letters for plot
-letters_ssid_night$Var <- rownames(letters_ssid_night)
-names(letters_ssid_night)[5] <- "comparison"
-letters_ssid_night$comparison = str_replace_all(letters_ssid_night$comparison,":","_")
-letters_ssid_night$p.adj[is.na(letters_ssid_night$p.adj)] <- 1
-letters_ssid_night
-
-# cld_ofav_day <- cldList(p.adj ~ comparison, data = letters_ofav_day, threshold = 0.05) # compact letter display for plot
-# cld_ofav_day %>%
-#   separate(Group, c("treatment", "site"), sep="_") %>%
-#   mutate(across('treatment', str_replace, 'controlpH', 'control pH')) %>%
-#   mutate(across('treatment', str_replace, 'lowpH', 'low pH')) %>%
-#   mutate(across('site', str_replace, 'MacArthurNorth', 'MacArthur North')) %>%
-#   mutate(across('site', str_replace, 'StarIsland', 'Star Island')) -> cld_ofav_day
+# Create letters indicating significant differences for plot
+# cld_ofav_day <- cld(emm_ofav_day, adjust = "tukey", Letters = letters, alpha = 0.05)
 # cld_ofav_day
 
-# cld_ofav_night <- cldList(p.adj ~ comparison, data = letters_ofav_night, threshold = 0.05) # compact letter display for plot
-# cld_ofav_night %>%
-#   separate(Group, c("treatment", "site"), sep="_") %>%
-#   mutate(across('treatment', str_replace, 'controlpH', 'control pH')) %>%
-#   mutate(across('treatment', str_replace, 'lowpH', 'low pH')) %>%
-#   mutate(across('site', str_replace, 'MacArthurNorth', 'MacArthur North')) %>%
-#   mutate(across('site', str_replace, 'StarIsland', 'Star Island')) -> cld_ofav_night
-# cld_ofav_night
 
-cld_ssid_day <- cldList(p.adj ~ comparison, data = letters_ssid_day, threshold = 0.05) # compact letter display for plot
-cld_ssid_day %>%
-  separate(Group, c("treatment", "site"), sep="_") %>%
-  mutate(across('treatment', str_replace, 'controlpH', 'control pH')) %>%
-  mutate(across('treatment', str_replace, 'lowpH', 'low pH')) %>%
-  mutate(across('site', str_replace, 'MacArthurNorth', 'MacArthur North')) %>%
-  mutate(across('site', str_replace, 'StarIsland', 'Star Island')) -> cld_ssid_day
+# O. faveolata night
+# full model, tank nested within pH, genotype nested within site
+lm_ofav_night <- lmer(calcificationadj ~ treatment * site +
+                      (1 | site:genotype),
+                    data = incubations_ofav_night, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ofav_night_noint <- lmer(calcificationadj ~ treatment + site +
+                            (1 | site:genotype),
+                          data = incubations_ofav_night, REML = TRUE)
+
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ofav_night, REML = FALSE), update(lm_ofav_night_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+
+# reduced model, dropped genotype as factor
+lm_ofav_night_noG <- lm(calcificationadj ~ treatment + site,
+                      data = incubations_ofav_night)
+
+# LRT of genotype effect
+anova(update(lm_ofav_night_noint, REML = FALSE), update(lm_ofav_night_noG)) # p > 0.05 and AIC about the same, so keep genotype
+
+# model outputs
+summary(lm_ofav_night_noint)
+anova(lm_ofav_night_noint) # treatment effect only 
+VarCorr(lm_ofav_night_noint)
+
+capture.output(anova(lm_ofav_night_noint), file = "../../outputs/calcification/urban incubations ofav night lme.txt")
+
+# pairwise tests
+emm_ofav_night <- emmeans(lm_ofav_night_noint, ~ treatment | site)
+pairs(emm_ofav_night, adjust = "tukey")
+
+capture.output(pairs(emm_ofav_night, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav night pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ofav_night <- cld(emm_ofav_night, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ofav_night
+
+
+# S. siderea day
+# full model, tank nested within pH, genotype nested within site
+lm_ssid_day <- lmer(calcificationadj ~ treatment * site +
+                      (1 | site:genotype),
+                    data = incubations_ssid_day, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_day_noint <- lmer(calcificationadj ~ treatment + site +
+                            (1 | site:genotype),
+                          data = incubations_ssid_day, REML = TRUE)
+
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ssid_day, REML = FALSE), update(lm_ssid_day_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+
+# reduced model, dropped genotype as factor
+lm_ssid_day_noG <- lm(calcificationadj ~ treatment + site,
+                      data = incubations_ssid_day)
+
+# LRT of genotype effect
+anova(update(lm_ssid_day_noint, REML = FALSE), update(lm_ssid_day_noG)) # p > 0.05 and AIC about the same, so keep genotype
+
+# model outputs
+summary(lm_ssid_day_noint)
+anova(lm_ssid_day_noint) # treatment and site significant
+VarCorr(lm_ssid_day_noint)
+
+capture.output(anova(lm_ssid_day_noint), file = "../../outputs/calcification/urban incubations ssid day lme.txt")
+
+# pairwise tests
+emm_ssid_day <- emmeans(lm_ssid_day_noint, ~ site * treatment)
+pairs(emm_ssid_day, adjust = "tukey")
+
+capture.output(pairs(emm_ssid_day, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid day pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid_day <- cld(emm_ssid_day, adjust = "tukey", Letters = letters, alpha = 0.05)
 cld_ssid_day
 
-cld_ssid_night <- cldList(p.adj ~ comparison, data = letters_ssid_night, threshold = 0.05) # compact letter display for plot
-cld_ssid_night %>%
-  separate(Group, c("treatment", "site"), sep="_") %>%
-  mutate(across('treatment', str_replace, 'controlpH', 'control pH')) %>%
-  mutate(across('treatment', str_replace, 'lowpH', 'low pH')) %>%
-  mutate(across('site', str_replace, 'MacArthurNorth', 'MacArthur North')) %>%
-  mutate(across('site', str_replace, 'StarIsland', 'Star Island')) -> cld_ssid_night
+
+# S. siderea night
+# full model, tank nested within pH, genotype nested within site
+lm_ssid_night <- lmer(calcificationadj ~ treatment * site +
+                        (1 | site:genotype),
+                      data = incubations_ssid_night, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_night_noint <- lmer(calcificationadj ~ treatment + site +
+                              (1 | site:genotype),
+                            data = incubations_ssid_night, REML = TRUE)
+
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ssid_night, REML = FALSE), update(lm_ssid_night_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+
+# reduced model, dropped genotype as factor
+lm_ssid_night_noG <- lm(calcificationadj ~ treatment + site,
+                        data = incubations_ssid_night)
+
+# LRT of genotype effect
+anova(update(lm_ssid_night_noint, REML = FALSE), update(lm_ssid_night_noG)) # p > 0.05 and AIC about the same, so keep genotype
+
+# model outputs
+summary(lm_ssid_night_noint)
+anova(lm_ssid_night_noint) # treatment effect, marginally nonsignificant site effect 
+VarCorr(lm_ssid_night_noint)
+
+capture.output(anova(lm_ssid_night_noint), file = "../../outputs/calcification/urban incubations ssid night lme.txt")
+
+# pairwise tests
+emm_ssid_night <- emmeans(lm_ssid_night_noint, ~ treatment | site)
+pairs(emm_ssid_night, adjust = "tukey")
+
+capture.output(pairs(emm_ssid_night, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid night pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid_night <- cld(emm_ssid_night, adjust = "tukey", Letters = letters, alpha = 0.05)
 cld_ssid_night
 
 
@@ -266,22 +332,17 @@ cld_ssid_night
 
 fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
 
+stats_ofav_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,41 = 1.6, p = 0.2") # creating dummy variables for stats labels on plot
+stats_ofav_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,41 = 0.4, p = 0.8")
 
-stats_ofav_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,41 = 1.3, p = 0.3") # creating dummy variables for stats labels on plot
-stats_ofav_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,41 = 0.8, p = 0.5")
-stats_ofav_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,41 = 2.0, p = 0.08")
-
-stats_ofav_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 3.5, p = 0.08") # creating dummy variables for stats labels on plot
+stats_ofav_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 4.6, p = 0.04*") # creating dummy variables for stats labels on plot
 stats_ofav_night_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 0.2, p = 0.9")
-stats_ofav_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,39 = 0.7, p = 0.8")
 
-stats_ssid_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 14.6, p = 0.002*") # creating dummy variables for stats labels on plot
-stats_ssid_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 8.3, p = 0.001*")
-stats_ssid_day_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 1.5, p = 0.2")
+stats_ssid_day_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 13.8, p = 0.001*") # creating dummy variables for stats labels on plot
+stats_ssid_day_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 5.6, p = 0.008*")
 
-stats_ssid_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,37 = 29.6, p < 0.001*") # creating dummy variables for stats labels on plot
-stats_ssid_night_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,37 = 4.9, p = 0.02*")
-stats_ssid_night_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,37 = 1.9, p = 0.1")
+stats_ssid_night_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,37 = 28.6, p < 0.001*") # creating dummy variables for stats labels on plot
+stats_ssid_night_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,37 = 2.7, p = 0.08")
 
 ofav_day <- ggboxplot(incubations_ofav_day,
                   x = "site",
@@ -292,15 +353,14 @@ ofav_day <- ggboxplot(incubations_ofav_day,
                   title = "Orbicella faveolata Day",
                   legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
+  xlab(NULL) +
   ylab("Calcification (mg cm-2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
   geom_text(data = stats_ofav_day_ph,label = stats_ofav_day_ph$lab, aes(x=2, y=0.09)) +
   geom_text(data = stats_ofav_day_site,label = stats_ofav_day_site$lab, aes(x=2, y=0.085)) +
-  geom_text(data = stats_ofav_day_genotype,label = stats_ofav_day_genotype$lab, aes(x=2, y=0.08)) +
-  # geom_text(data=cld_ofav_day, aes(x = site, y=-0.025, label=Letter)) +
+  # geom_text(data=cld_ofav_day, aes(x = site, y=-0.025, label=.group)) +
   ylim(-0.025, 0.09)
 ofav_day
 
@@ -313,15 +373,14 @@ ofav_night <- ggboxplot(incubations_ofav_night,
                       title = "Orbicella faveolata Night",
                       legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
-  ylab(element_blank()) +
+  xlab(NULL) +
+  ylab(NULL) +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank(),axis.text.y = element_blank()) +
   geom_text(data = stats_ofav_night_ph,label = stats_ofav_night_ph$lab, aes(x=2, y=0.09)) +
   geom_text(data = stats_ofav_night_site,label = stats_ofav_night_site$lab, aes(x=2, y=0.085)) +
-  geom_text(data = stats_ofav_night_genotype,label = stats_ofav_night_genotype$lab, aes(x=2, y=0.08)) +
-  # geom_text(data=cld_ofav_night, aes(x = site, y=-0.025, label=Letter)) +
+  geom_text(data=cld_ofav_night, aes(x = site, y=-0.025, label=.group)) +
   ylim(-0.025, 0.09)
 ofav_night
 
@@ -334,15 +393,14 @@ ssid_day <- ggboxplot(incubations_ssid_day,
                       title = "Siderastrea siderea Day",
                       legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
+  xlab(NULL) +
   ylab("Calcification (mg cm-2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_text(data = stats_ssid_day_ph,label = stats_ssid_day_ph$lab, aes(x=2, y=0.09)) +
   geom_text(data = stats_ssid_day_site,label = stats_ssid_day_site$lab, aes(x=2, y=0.085)) +
-  geom_text(data = stats_ssid_day_genotype,label = stats_ssid_day_genotype$lab, aes(x=2, y=0.08)) +
-  geom_text(data=cld_ssid_day, aes(x = site, y=-0.025, label=Letter)) +
+  geom_text(data=cld_ssid_day, aes(x = site, y=-0.025, label=.group)) +
   ylim(-0.025, 0.09)
 ssid_day
 
@@ -355,15 +413,14 @@ ssid_night <- ggboxplot(incubations_ssid_night,
                         title = "Siderastrea siderea Night",
                         legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
-  ylab(element_blank()) +
+  xlab(NULL) +
+  ylab(NULL) +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5),axis.text.y = element_blank()) +
   geom_text(data = stats_ssid_night_ph,label = stats_ssid_night_ph$lab, aes(x=2, y=0.09)) +
   geom_text(data = stats_ssid_night_site,label = stats_ssid_night_site$lab, aes(x=2, y=0.085)) +
-  geom_text(data = stats_ssid_night_genotype,label = stats_ssid_night_genotype$lab, aes(x=2, y=0.08)) +
-  geom_text(data=cld_ssid_night, aes(x = site, y=-0.025, label=Letter)) +
+  geom_text(data=cld_ssid_night, aes(x = site, y=-0.025, label=.group)) +
   ylim(-0.025, 0.09)
 ssid_night
 
@@ -417,43 +474,96 @@ qqnorm(incubations_mean_ssid$calcificationavg)
 qqline(incubations_mean_ssid$calcificationavg)
 dev.off()
 
-anova_mean_ofav <- aov(calcificationavg ~ treatment*site+site/genotype, data=incubations_mean_ofav)
-summary(anova_mean_ofav) # no factors significant
-capture.output(summary(anova_mean_ofav), file = "../../outputs/calcification/urban carbonate mean ofav anova.txt")
 
-anova_mean_ssid <- aov(calcificationavg ~ treatment*site+site/genotype, data=incubations_mean_ssid)
-summary(anova_mean_ssid) # treatment and site significant, genotype marginal
-capture.output(summary(anova_mean_ssid), file = "../../outputs/calcification/urban carbonate mean ssid anova.txt")
+#### incubation day/night linear mixed-effect models ####
 
-tukey_mean_ssid <- TukeyHSD(anova_mean_ssid) # pairwise comparisons
-tukey_mean_ssid$`treatment:site`
-capture.output(tukey_mean_ssid$`treatment:site`, file = "../../outputs/calcification/urban carbonate mean ssid tukey.txt")
+# O. faveolata 
+# full model, tank nested within pH, genotype nested within site
+lm_ofav <- lmer(calcificationavg ~ treatment * site +
+                      (1 | site:genotype),
+                    data = incubations_mean_ofav, REML = TRUE)
 
-letters_mean_ssid <- data.frame(tukey_mean_ssid$`treatment:site`) # significance letters for plot
-letters_mean_ssid$Var <- rownames(letters_mean_ssid)
-names(letters_mean_ssid)[5] <- "comparison"
-letters_mean_ssid$comparison = str_replace_all(letters_mean_ssid$comparison,":","_")
-letters_mean_ssid$p.adj[is.na(letters_mean_ssid$p.adj)] <- 1
-letters_mean_ssid
+# reduced model, no interaction of pH and site
+lm_ofav_noint <- lmer(calcificationavg ~ treatment + site +
+                            (1 | site:genotype),
+                          data = incubations_mean_ofav, REML = TRUE)
 
-cld_mean_ssid <- cldList(p.adj ~ comparison, data = letters_mean_ssid, threshold = 0.05) # compact letter display for plot
-cld_mean_ssid %>%
-  separate(Group, c("treatment", "site"), sep="_") %>%
-  mutate(across('treatment', str_replace, 'controlpH', 'control pH')) %>%
-  mutate(across('treatment', str_replace, 'lowpH', 'low pH')) %>%
-  mutate(across('site', str_replace, 'MacArthurNorth', 'MacArthur North')) %>%
-  mutate(across('site', str_replace, 'StarIsland', 'Star Island')) -> cld_mean_ssid
-cld_mean_ssid
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+
+# reduced model, dropped genotype as factor
+lm_ofav_noG <- lm(calcificationavg ~ treatment + site,
+                      data = incubations_mean_ofav)
+
+# LRT of genotype effect
+anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG)) # p > 0.05 and AIC about the same, so keep genotype
+
+# model outputs
+summary(lm_ofav_noint)
+anova(lm_ofav_noint) # no significant factors
+VarCorr(lm_ofav_noint)
+
+capture.output(anova(lm_ofav_noint), file = "../../outputs/calcification/urban incubations ofav mean lme.txt")
+
+# pairwise tests
+# emm_ofav <- emmeans(lm_ofav_noint, ~ site * treatment)
+# pairs(emm_ofav, adjust = "tukey")
+
+# capture.output(pairs(emm_ofav, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav mean pairwise.txt")
+
+# Create letters indicating significant differences for plot
+# cld_ofav <- cld(emm_ofav, adjust = "tukey", Letters = letters, alpha = 0.05)
+# cld_ofav
+
+
+# S. siderea night
+# full model, tank nested within pH, genotype nested within site
+lm_ssid <- lmer(calcificationavg ~ treatment * site +
+                        (1 | site:genotype),
+                      data = incubations_mean_ssid, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_noint <- lmer(calcificationavg ~ treatment + site +
+                              (1 | site:genotype),
+                            data = incubations_mean_ssid, REML = TRUE)
+
+# likelihood ratio test of interactive vs non-interactive model
+anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+
+# reduced model, dropped genotype as factor
+lm_ssid_noG <- lm(calcificationavg ~ treatment + site,
+                        data = incubations_mean_ssid)
+
+# LRT of genotype effect
+anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG)) # p > 0.05 and AIC about the same, so keep genotype
+
+# model outputs
+summary(lm_ssid_noint)
+anova(lm_ssid_noint) # significant treatment and site effects 
+VarCorr(lm_ssid_noint)
+
+capture.output(anova(lm_ssid_noint), file = "../../outputs/calcification/urban incubations ssid mean lme.txt")
+
+# pairwise tests
+emm_ssid <- emmeans(lm_ssid_noint, ~ site * treatment)
+pairs(emm_ssid, adjust = "tukey")
+
+capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid mean pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid <- cld(emm_ssid, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ssid
+
+
+#### incubation day/night plots ####
 
 fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
 
-stats_mean_ofav_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,41 = 1.5, p = 0.2") # creating dummy variables for stats labels on plot
-stats_mean_ofav_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,41 = 0.5, p = 0.7")
-stats_mean_ofav_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F17,41 = 1.4, p = 0.3")
+stats_mean_ofav_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,41 = 1.7, p = 0.2") # creating dummy variables for stats labels on plot
+stats_mean_ofav_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,41 = 0.3, p = 0.8")
 
-stats_mean_ssid_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 17.3, p < 0.001*") # creating dummy variables for stats labels on plot
-stats_mean_ssid_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 8.6, p = 0.001*")
-stats_mean_ssid_genotype <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "geno: F16,39 = 2.1, p = 0.07")
+stats_mean_ssid_ph <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "pH: F1,39 = 20.2, p < 0.001*") # creating dummy variables for stats labels on plot
+stats_mean_ssid_site <- data.frame(treatment = "control pH", growthadj = 0.6, lab = "site: F3,39 = 4.1, p = 0.025*")
 
 ofav_daynight <- ggboxplot(incubations_mean_ofav,
                       x = "site",
@@ -464,15 +574,14 @@ ofav_daynight <- ggboxplot(incubations_mean_ofav,
                       title = "Orbicella faveolata Mean",
                       legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
+  xlab(NULL) +
   ylab("Calcification (mg cm-2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
   geom_text(data = stats_mean_ofav_ph,label = stats_mean_ofav_ph$lab, aes(x=2, y=0.08)) +
   geom_text(data = stats_mean_ofav_site,label = stats_mean_ofav_site$lab, aes(x=2, y=0.075)) +
-  geom_text(data = stats_mean_ofav_genotype,label = stats_mean_ofav_genotype$lab, aes(x=2, y=0.07)) +
-  # geom_text(data=cld_mean_ofav, aes(x = site, y=-0.025, label=Letter)) +
+  # geom_text(data=cld_ofav, aes(x = site, y=-0.025, label=.group)) +
   ylim(-0.01, 0.08)
 ofav_daynight
 
@@ -485,15 +594,14 @@ ssid_daynight <- ggboxplot(incubations_mean_ssid,
                            title = "Siderastrea siderea Mean",
                            legend = "none") +
   facet_grid(~treatment) +
-  xlab(element_blank()) +
+  xlab(NULL) +
   ylab("Calcification (mg cm-2 hr-1)") +
   scale_fill_manual(values = fill.color) +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_text(data = stats_mean_ssid_ph,label = stats_mean_ssid_ph$lab, aes(x=2, y=0.08)) +
   geom_text(data = stats_mean_ssid_site,label = stats_mean_ssid_site$lab, aes(x=2, y=0.075)) +
-  geom_text(data = stats_mean_ssid_genotype,label = stats_mean_ssid_genotype$lab, aes(x=2, y=0.07)) +
-  geom_text(data=cld_mean_ssid, aes(x = site, y=0.005, label=Letter)) +
+  geom_text(data=cld_ssid, aes(x = site, y=0.005, label=.group)) +
   ylim(-0.01, 0.08)
 ssid_daynight
 

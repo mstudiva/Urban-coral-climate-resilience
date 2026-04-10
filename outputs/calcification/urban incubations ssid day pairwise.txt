@@ -1,0 +1,32 @@
+ contrast                                            estimate      SE   df t.ratio p.value
+ Emerald control pH - Rainbow control pH              0.00306 0.00766 16.0   0.399  0.9999
+ Emerald control pH - Star Island control pH         -0.01136 0.00766 16.0  -1.483  0.8053
+ Emerald control pH - MacArthur North control pH     -0.02515 0.00766 16.0  -3.285  0.0694
+ Emerald control pH - Emerald low pH                  0.01691 0.00456 19.0   3.713  0.0259
+ Emerald control pH - Rainbow low pH                  0.01997 0.00891 26.5   2.241  0.3606
+ Emerald control pH - Star Island low pH              0.00556 0.00891 26.5   0.624  0.9982
+ Emerald control pH - MacArthur North low pH         -0.00824 0.00891 26.5  -0.925  0.9807
+ Rainbow control pH - Star Island control pH         -0.01441 0.00766 16.0  -1.883  0.5797
+ Rainbow control pH - MacArthur North control pH     -0.02821 0.00766 16.0  -3.684  0.0328
+ Rainbow control pH - Emerald low pH                  0.01386 0.00891 26.5   1.555  0.7711
+ Rainbow control pH - Rainbow low pH                  0.01691 0.00456 19.0   3.713  0.0259
+ Rainbow control pH - Star Island low pH              0.00250 0.00891 26.5   0.281  1.0000
+ Rainbow control pH - MacArthur North low pH         -0.01130 0.00891 26.5  -1.268  0.9027
+ Star Island control pH - MacArthur North control pH -0.01380 0.00766 16.0  -1.802  0.6277
+ Star Island control pH - Emerald low pH              0.02827 0.00891 26.5   3.173  0.0637
+ Star Island control pH - Rainbow low pH              0.03133 0.00891 26.5   3.516  0.0295
+ Star Island control pH - Star Island low pH          0.01691 0.00456 19.0   3.713  0.0259
+ Star Island control pH - MacArthur North low pH      0.00312 0.00891 26.5   0.350  1.0000
+ MacArthur North control pH - Emerald low pH          0.04207 0.00891 26.5   4.722  0.0015
+ MacArthur North control pH - Rainbow low pH          0.04512 0.00891 26.5   5.065  0.0006
+ MacArthur North control pH - Star Island low pH      0.03071 0.00891 26.5   3.447  0.0346
+ MacArthur North control pH - MacArthur North low pH  0.01691 0.00456 19.0   3.713  0.0259
+ Emerald low pH - Rainbow low pH                      0.00306 0.00766 16.0   0.399  0.9999
+ Emerald low pH - Star Island low pH                 -0.01136 0.00766 16.0  -1.483  0.8053
+ Emerald low pH - MacArthur North low pH             -0.02515 0.00766 16.0  -3.285  0.0694
+ Rainbow low pH - Star Island low pH                 -0.01441 0.00766 16.0  -1.883  0.5797
+ Rainbow low pH - MacArthur North low pH             -0.02821 0.00766 16.0  -3.684  0.0328
+ Star Island low pH - MacArthur North low pH         -0.01380 0.00766 16.0  -1.802  0.6277
+
+Degrees-of-freedom method: kenward-roger 
+P value adjustment: tukey method for comparing a family of 8 estimates 
