@@ -1,7 +1,0 @@
-ANOVA Table (type II tests)
-
-          Effect DFn DFd       F        p p<.05   ges
-1           time   1 594 348.564 1.49e-61     * 0.370
-2      treatment   1 594  20.972 5.68e-06     * 0.034
-3           site   3 594  98.679 7.80e-52     * 0.333
-4 treatment:site   3 594   8.968 8.12e-06     * 0.043

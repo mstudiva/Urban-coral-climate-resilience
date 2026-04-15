@@ -1,0 +1,1468 @@
+---
+title: "Coral Photosynthetic Efficiency — GAMM Analysis"
+author: "Michael Studivan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+# -----------------------------------------------------------------------------
+# Global chunk options
+# echo = TRUE:     show code in rendered output
+# warning = FALSE: suppress warnings in rendered document
+#                  (warnings still print to console during knitting)
+# message = FALSE: suppress package loading messages
+# -----------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 10,
+  fig.height = 6,
+  dpi        = 300
+)
+```
+
+```{r packages}
+# -----------------------------------------------------------------------------
+# Load all required packages
+# -----------------------------------------------------------------------------
+library(mgcv)      # bam() for generalized additive mixed models
+library(dplyr)     # data wrangling
+library(ggplot2)   # plotting
+library(gratia)    # ggplot2-based visualization of mgcv models
+library(emmeans)   # estimated marginal means and post-hoc contrasts
+library(tibble)    # rownames_to_column() for tidy stats export
+library(writexl)   # export stats tables to Excel
+library(patchwork) # combining multiple ggplot panels (used by gratia::draw)
+library(ggpubr)    # theme_pubr() for publication-ready plot styling
+```
+
+---
+
+# Data import and preparation
+
+```{r data-import}
+# -----------------------------------------------------------------------------
+# Import master iPAM dataset and genotype lookup table
+# -----------------------------------------------------------------------------
+ipam <- read.csv(
+  file = "../../data/photosynthesis/urban ipam.csv",
+  head = TRUE
+)
+
+genotypes <- read.csv(
+  file = "../../data/genotype lookup table.csv",
+  head = TRUE
+)
+
+# Join genotype lookup — makes genotype labels distinct across sites and species
+ipam <- ipam %>%
+  inner_join(genotypes, by = "sampleID")
+```
+
+```{r data-prep}
+# -----------------------------------------------------------------------------
+# Remove baseline timepoints.
+# FvFm values of 1 are the initial measurements that all subsequent values
+# are expressed relative to — excluded from analysis since the model is fit
+# on post-baseline observations only.
+# -----------------------------------------------------------------------------
+ipam <- subset(ipam, ratio != "1")
+
+# -----------------------------------------------------------------------------
+# Code factors with explicit reference level ordering.
+# The first level listed becomes the reference in all model contrasts:
+#   site: "Emerald"      — expected non-resilient reference site
+#   pH:   "control pH"   — ambient pH reference
+#   temp: "control temp" — ambient temperature reference
+#   treatment: "CC"      — contemporary pH, ambient temperature reference
+#
+# geno_id:  unique genotype identifier nested within site and species
+# exp_unit: unique coral fragment identifier and the repeated measures subject.
+#           Combines sampleID with temperature treatment because the same
+#           physical fragment may appear in both temperature conditions.
+# -----------------------------------------------------------------------------
+ipam <- ipam %>%
+  mutate(
+    site     = factor(site,      levels = c("Emerald", "Rainbow", "Star", "MacN")),
+    pH       = factor(pH,        levels = c("control pH",   "low pH")),
+    temp     = factor(temp,      levels = c("control temp", "high temp")),
+    treatment= factor(treatment, levels = c("CC", "LC", "CH", "LH")),
+    time     = as.numeric(time),
+    geno_id  = interaction(site, geno,     drop = TRUE),
+    exp_unit = interaction(sampleID, temp, drop = TRUE)
+  )
+
+str(ipam)
+```
+
+```{r species-subsets}
+# -----------------------------------------------------------------------------
+# Subset by species
+# -----------------------------------------------------------------------------
+ipam_ofav <- subset(ipam, species == "Ofav")
+ipam_ssid <- subset(ipam, species == "Ssid")
+
+str(ipam_ofav)
+str(ipam_ssid)
+```
+
+```{r treatment-subsets}
+# -----------------------------------------------------------------------------
+# Subset by experimental phase
+#
+# Control datasets: timepoints < 21 days (pre-heat-stress phase)
+#   Both pH treatments present; control temperature treatment present
+#
+# Heat datasets: high temperature treatment only, all timepoints
+#   Tests whether pH effects on FvFm differ under thermal stress
+# -----------------------------------------------------------------------------
+
+# O. faveolata
+ipam_ofav %>% filter(time < 21)              -> ipam_ofav_control
+ipam_ofav %>% filter(temp != "control temp") -> ipam_ofav_heat
+
+# S. siderea
+ipam_ssid %>% filter(time < 21)              -> ipam_ssid_control
+ipam_ssid %>% filter(temp != "control temp") -> ipam_ssid_heat
+```
+
+```{r sanity-checks}
+# -----------------------------------------------------------------------------
+# Sanity checks — confirm data structure is correct before modelling
+#
+# Check 1: No exp_unit appears more than once at the same timepoint.
+#          Duplicates indicate a data entry or merge error. Should be FALSE.
+#
+# Check 2: No sampleID maps to more than one geno_id.
+#          Duplicates indicate a genotype lookup join error. Should be 0 rows.
+# -----------------------------------------------------------------------------
+
+cat("--- Duplicate exp_unit x time checks (should all be FALSE) ---\n")
+cat("ofav_control:", any(duplicated(ipam_ofav_control %>% select(exp_unit, time))), "\n")
+cat("ssid_control:", any(duplicated(ipam_ssid_control %>% select(exp_unit, time))), "\n")
+cat("ofav_heat:   ", any(duplicated(ipam_ofav_heat    %>% select(exp_unit, time))), "\n")
+cat("ssid_heat:   ", any(duplicated(ipam_ssid_heat    %>% select(exp_unit, time))), "\n")
+
+cat("\n--- Duplicate sampleID -> geno_id checks (should all be 0 rows) ---\n")
+
+check_geno_dups <- function(dat, label) {
+  dupes <- dat %>%
+    distinct(sampleID, geno_id) %>%
+    count(sampleID) %>%
+    filter(n > 1)
+  cat(label, ":", nrow(dupes), "duplicated sampleIDs\n")
+  if (nrow(dupes) > 0) print(dupes)
+}
+
+check_geno_dups(ipam_ofav_control, "ofav_control")
+check_geno_dups(ipam_ssid_control, "ssid_control")
+check_geno_dups(ipam_ofav_heat,    "ofav_heat")
+check_geno_dups(ipam_ssid_heat,    "ssid_heat")
+```
+
+---
+
+# Exploratory data analysis
+
+Exploratory plots are examined before any modelling decisions to assess:
+
+1. Whether the time trajectory is linear or nonlinear
+2. Whether trajectories diverge across treatments and sites
+3. Whether variance is homogeneous across groups and time
+4. Whether site baseline differences justify treating site as a fixed effect
+5. Whether residuals from a simple linear model show systematic patterns
+   that motivate a GAMM
+
+```{r eda-trajectories, fig.width=14, fig.height=8}
+# -----------------------------------------------------------------------------
+# Plot 1: Mean trajectories by species, site, and treatment
+#
+# Ribbons show ±1 SE across fragments. Overlaid loess smooths (dashed)
+# show the approximate trajectory shape without imposing a parametric form.
+# Curvature in loess lines = nonlinearity a linear model cannot capture.
+# Diverging lines across treatment groups = treatment x time interactions.
+# -----------------------------------------------------------------------------
+
+p_eda_traj <- ipam %>%
+  group_by(species, site, pH, temp, time) %>%
+  summarise(mean_FvFm = mean(FvFm, na.rm = TRUE),
+            se_FvFm   = sd(FvFm,   na.rm = TRUE) / sqrt(n()),
+            .groups   = "drop") %>%
+  ggplot(aes(x      = time,
+             y      = mean_FvFm,
+             colour = interaction(pH, temp, sep = " / "),
+             fill   = interaction(pH, temp, sep = " / "),
+             group  = interaction(pH, temp))) +
+  geom_ribbon(aes(ymin = mean_FvFm - se_FvFm,
+                  ymax = mean_FvFm + se_FvFm),
+              alpha = 0.15, colour = NA) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 2) +
+  geom_smooth(method = "loess", se = TRUE,
+              linewidth = 0.5, linetype = "dashed", alpha = 0.1) +
+  facet_grid(species ~ site) +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette   = "Dark2") +
+  labs(x        = "Time (days)",
+       y        = "Mean Fv/Fm \u00b1 SE",
+       colour   = "pH / Temperature",
+       fill     = "pH / Temperature",
+       title    = "Raw FvFm trajectories by species, site, and treatment",
+       subtitle = "Dashed loess curves show trajectory shape — curvature indicates nonlinearity") +
+  theme_bw(base_size = 12) +
+  theme(legend.position = "bottom")
+
+p_eda_traj
+
+ggsave("../../outputs/photosynthesis/EDA_raw_trajectories.pdf",
+       plot   = p_eda_traj,
+       width  = 14,
+       height = 8,
+       device = pdf)
+```
+
+```{r eda-individual, fig.width=14, fig.height=8}
+# -----------------------------------------------------------------------------
+# Plot 2: Individual fragment trajectories
+#
+# Every exp_unit plotted as a thin line, overlaid with the group mean.
+# High spread of thin lines = high between-fragment variance, which justifies
+# the factor-smooth for exp_unit. If fragments follow very different trajectory
+# shapes, a random intercept alone is insufficient — the GAMM factor-smooth
+# is needed to capture individual-level trajectory variation.
+# -----------------------------------------------------------------------------
+
+p_eda_indiv <- ipam %>%
+  ggplot(aes(x      = time,
+             y      = FvFm,
+             group  = exp_unit,
+             colour = interaction(pH, temp, sep = " / "))) +
+  geom_line(alpha = 0.3, linewidth = 0.4) +
+  stat_summary(aes(group = interaction(pH, temp, sep = " / ")),
+               fun       = mean,
+               geom      = "line",
+               linewidth = 1.2) +
+  facet_grid(species ~ site) +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(x        = "Time (days)",
+       y        = "Fv/Fm",
+       colour   = "pH / Temperature",
+       title    = "Individual fragment trajectories",
+       subtitle = "Thin lines = individual exp_units; thick lines = group means") +
+  theme_bw(base_size = 12) +
+  theme(legend.position = "bottom")
+
+p_eda_indiv
+
+ggsave("../../outputs/photosynthesis/EDA_individual_trajectories.pdf",
+       plot   = p_eda_indiv,
+       width  = 14,
+       height = 8,
+       device = pdf)
+```
+
+```{r eda-boxplots, fig.width=14, fig.height=8}
+# -----------------------------------------------------------------------------
+# Plot 3: FvFm distribution by timepoint and treatment
+#
+# Boxplots at each timepoint reveal whether variance changes over time
+# (heteroscedasticity) or differs between treatment groups. Expanding
+# box widths toward later timepoints, or markedly different spreads
+# between treatments, would violate the Gaussian GAMM assumption of
+# homogeneous residual variance.
+# -----------------------------------------------------------------------------
+
+p_eda_box <- ipam %>%
+  ggplot(aes(x    = factor(time),
+             y    = FvFm,
+             fill = interaction(pH, temp, sep = " / "))) +
+  geom_boxplot(position     = position_dodge(0.8),
+               outlier.size = 1,
+               alpha        = 0.7) +
+  facet_grid(species ~ site) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(x        = "Time (days)",
+       y        = "Fv/Fm",
+       fill     = "pH / Temperature",
+       title    = "FvFm distribution by timepoint and treatment",
+       subtitle = "Expanding variance over time would indicate heteroscedasticity") +
+  theme_bw(base_size = 12) +
+  theme(legend.position = "bottom")
+
+p_eda_box
+
+ggsave("../../outputs/photosynthesis/EDA_boxplots_by_timepoint.pdf",
+       plot   = p_eda_box,
+       width  = 14,
+       height = 8,
+       device = pdf)
+```
+
+```{r eda-site-baseline, fig.width=10, fig.height=5}
+# -----------------------------------------------------------------------------
+# Plot 4: Site differences in starting FvFm
+#
+# Distribution of FvFm at the first post-baseline timepoint across sites.
+# Differences here are biological signal reflecting inherent site resilience —
+# they are not confounds to adjust away with a baseline covariate.
+# This justifies treating site as a fixed effect rather than including
+# baseline FvFm as a covariate, which would partial out the effect of interest.
+# -----------------------------------------------------------------------------
+
+p_eda_site <- ipam %>%
+  group_by(species, site, exp_unit) %>%
+  filter(time == min(time)) %>%
+  ungroup() %>%
+  ggplot(aes(x = site, y = FvFm, fill = site)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 1) +
+  geom_jitter(width = 0.15, alpha = 0.4, size = 1.5) +
+  facet_wrap(~ species) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(x        = "Site",
+       y        = "Fv/Fm at first post-baseline timepoint",
+       title    = "Site differences in starting FvFm",
+       subtitle = "Differences reflect biological resilience signal — site is treated as a fixed effect") +
+  theme_bw(base_size = 12) +
+  theme(legend.position = "none")
+
+p_eda_site
+
+ggsave("../../outputs/photosynthesis/EDA_site_baseline_differences.pdf",
+       plot   = p_eda_site,
+       width  = 10,
+       height = 5,
+       device = pdf)
+```
+
+```{r eda-lm-residuals, fig.width=14, fig.height=8}
+# -----------------------------------------------------------------------------
+# Plot 5: Residuals from a simple linear model
+#
+# Fits a basic lm ignoring repeated measures and plots residuals vs time.
+# Systematic patterns — curvature in loess lines, fanning of points, or
+# group-level trends — directly demonstrate why the linear model is
+# misspecified and motivate the GAMM. This plot provides methods
+# justification and is suitable for supplementary materials.
+# -----------------------------------------------------------------------------
+
+lm_simple <- lm(FvFm ~ treatment * site * time, data = ipam)
+
+p_eda_resid <- ipam %>%
+  mutate(resid_lm = resid(lm_simple)) %>%
+  ggplot(aes(x      = time,
+             y      = resid_lm,
+             colour = interaction(pH, temp, sep = " / "))) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey40") +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(method = "loess", se = FALSE, linewidth = 0.8) +
+  facet_grid(species ~ site) +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(x        = "Time (days)",
+       y        = "Residual (observed \u2212 fitted)",
+       colour   = "pH / Temperature",
+       title    = "Residuals from a simple linear model",
+       subtitle = "Non-random patterns confirm the linear model is misspecified") +
+  theme_bw(base_size = 12) +
+  theme(legend.position = "bottom")
+
+p_eda_resid
+
+ggsave("../../outputs/photosynthesis/EDA_linear_model_residuals.pdf",
+       plot   = p_eda_resid,
+       width  = 14,
+       height = 8,
+       device = pdf)
+```
+
+---
+
+# Helper functions
+
+```{r helper-functions}
+# -----------------------------------------------------------------------------
+# All helper functions defined here and reused across all four datasets.
+# Any change to model structure, plot aesthetics, or export settings
+# propagates automatically to all four analyses.
+# -----------------------------------------------------------------------------
+
+
+# --- add_ar_start() ----------------------------------------------------------
+# Creates the AR.start indicator required by bam() for AR(1) correction.
+# Must be called AFTER subsetting because the first timepoint must be
+# identified within each subset independently — a fragment's first timepoint
+# in the heat subset may differ from its first in the full dataset.
+#
+# The combined treatment factor (CC, LC, CH, LH) is assumed to already exist
+# as a column in the data from the ipam pipeline — it is not created here.
+#
+# Prints the treatment levels present in this subset to console as a
+# sanity check — control subsets should show CC, LC, CH, LH; heat subsets
+# should show only CH and LH.
+#
+# Arguments:
+#   dat: subsetted data frame for one species/treatment combination
+# Returns:
+#   same data frame with ar_start column added (TRUE at first timepoint
+#   per exp_unit, FALSE at all subsequent timepoints)
+
+add_ar_start <- function(dat) {
+
+  # Confirm which treatment levels are present in this subset.
+  # droplevels() removes empty factor levels left over from subsetting
+  # so only levels actually present in this subset are printed.
+  cat("  Treatment levels in this subset:\n")
+  print(levels(droplevels(dat$treatment)))
+
+  dat %>%
+    arrange(exp_unit, time) %>%
+    group_by(exp_unit) %>%
+    mutate(ar_start = row_number() == 1) %>%   # TRUE only at each unit's first timepoint
+    ungroup()
+}
+
+
+# --- estimate_rho() ----------------------------------------------------------
+# Estimates the AR(1) autocorrelation parameter (rho) by fitting a simplified
+# bam() model without AR(1) correction, then extracting the lag-1 value from
+# the residual autocorrelation function (ACF).
+#
+# The lag-0 ACF value is always 1 (perfect self-correlation), so the lag-1
+# value is at index [2] of the $acf vector.
+#
+# Uses the combined treatment factor (CC, LC, CH, LH) rather than separate
+# pH and temp terms. This is necessary because heat subsets contain only one
+# level of temp after subsetting, which makes pH * temp * site unidentifiable
+# and causes model failure.
+#
+# k is calculated dynamically from the number of unique timepoints in the
+# subset rather than hardcoded. This is necessary because not all four
+# datasets have the same number of timepoints — k cannot exceed the number
+# of unique time values in the data being modelled, and setting it too high
+# will cause an error.
+#
+# rho interpretation:
+#   < 0.2:   weak — AR(1) correction omitted (negligible effect on inference)
+#   0.2-0.5: moderate — correction applied
+#   > 0.5:   strong — correction important for valid standard errors and p-values
+#
+# Arguments:
+#   dat: data frame with ar_start column (output of add_ar_start())
+# Returns:
+#   numeric scalar: estimated AR(1) rho
+
+estimate_rho <- function(dat) {
+
+  # k ceiling from the number of unique timepoints in this subset.
+  # Printed to console so you can confirm the correct value is being
+  # used for each dataset.
+  k_val <- length(unique(dat$time))
+  cat("  Unique timepoints:", k_val, "-> using k =", k_val, "\n")
+
+  mod_temp <- bam(
+    FvFm ~ treatment * site +
+      s(time, k = k_val) +
+      s(exp_unit, bs = "re"),   # simple random intercept to absorb fragment variance
+    data   = dat,
+    method = "fREML"
+  )
+
+  rho <- acf(resid(mod_temp), plot = FALSE)$acf[2]
+  cat("  Estimated rho:", round(rho, 3), "\n")
+
+  if      (rho < 0.2) cat("  -> Weak autocorrelation; AR(1) correction will be omitted\n")
+  else if (rho < 0.5) cat("  -> Moderate autocorrelation; AR(1) correction applied\n")
+  else                cat("  -> Strong autocorrelation; AR(1) correction important\n")
+
+  return(rho)
+}
+
+
+# --- fit_bam() ---------------------------------------------------------------
+# Fits the full GAMM with:
+#
+# Fixed effects:
+#   treatment * site — all main effects and interaction. treatment is the
+#   combined pH x temp factor (CC, LC, CH, LH). Tests whether treatment
+#   effects on mean FvFm differ across sites at the reference timepoint
+#   (parametric interpretation). For control subsets all four treatment
+#   levels are present; for heat subsets only CH and LH are present.
+#   Using the combined factor rather than pH * temp * site avoids model
+#   failure in heat subsets where temp has only one level.
+#
+# Smooth terms:
+#   s(time):                    global nonlinear time trajectory shared
+#                               across all groups
+#   s(time, by = treatment):    treatment-specific deviation from the global
+#                               trajectory — captures whether the shape of
+#                               the decline differs between treatment
+#                               combinations over time
+#   s(time, by = site):         site-specific trajectory deviation — key
+#                               term for testing whether resilient sites
+#                               decline differently over time
+#
+# Random smooth:
+#   s(time, exp_unit, bs = "fs"): factor-smooth fitting a smooth trajectory
+#     deviation per fragment. Simultaneously acts as a repeated measures
+#     random effect AND allows individual fragments to follow different
+#     curve shapes. Penalty shrinks all fragment smooths toward zero
+#     (the population curve).
+#
+# k is calculated dynamically from the number of unique timepoints in the
+# subset. Each dataset gets its own correct k ceiling automatically. With
+# fewer timepoints, the smooth has less complexity available, but the
+# penalty will still shrink effective df further below the ceiling.
+# If k.check() flags a problem after fitting, the solution is NOT to
+# increase k (it is already at the maximum possible for the data) —
+# instead revisit the AR(1) correction or random effects structure.
+#
+# Factor levels are preserved from the ipam pipeline — not recoded here.
+#
+# Arguments:
+#   dat:     data frame with ar_start column (output of add_ar_start())
+#   rho_est: numeric scalar from estimate_rho()
+# Returns:
+#   fitted bam model object
+
+fit_bam <- function(dat, rho_est) {
+
+  # k ceiling from the number of unique timepoints in this subset.
+  # Printed to console alongside rho for verification.
+  k_val <- length(unique(dat$time))
+  cat("  Using k =", k_val, "\n")
+
+  formula <- FvFm ~ treatment * site +
+    s(time, k = k_val) +                          # global smooth decline
+    s(time, by = treatment, k = k_val) +          # treatment-specific trajectory
+                                                   # deviation (combined pH x temp —
+                                                   # avoids single-level temp failure
+                                                   # in heat subsets)
+    s(time, by = site,      k = k_val) +          # site-specific trajectory deviation
+    s(time, exp_unit, bs = "fs", k = k_val)       # fragment-level smooth deviations
+                                                   # (repeated measures random effect)
+
+  if (rho_est >= 0.2) {
+    cat("  Fitting with AR(1) correction (rho =", round(rho_est, 3), ")\n")
+    mod <- bam(formula,
+               data     = dat,
+               method   = "fREML",
+               rho      = rho_est,
+               AR.start = dat$ar_start)
+  } else {
+    cat("  Fitting without AR(1) correction (rho =", round(rho_est, 3), ")\n")
+    mod <- bam(formula,
+               data   = dat,
+               method = "fREML")
+  }
+
+  return(mod)
+}
+
+
+# --- extract_stats() ---------------------------------------------------------
+# Extracts parametric coefficients and smooth term significance tables
+# into tidy data frames.
+#
+# Parametric table: coefficients relative to reference levels (CC treatment,
+#   Emerald site). Reflect mean differences at the reference timepoint only —
+#   not overall treatment effects across time. The treatment smooth terms
+#   below are where the temporal treatment effects live.
+#
+# Smooth table: edf (effective df) and p-value per smooth term.
+#   edf = 1: approximately linear. Higher edf = more curvature.
+#   Significant p-values for s(time):treatment terms indicate that those
+#   treatment combinations follow a trajectory shape that differs from the
+#   global trend. Significant s(time):site terms indicate site-specific
+#   trajectory differences — the key signal for your resilience hypothesis.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   mod_name: character label added as "model" column
+# Returns:
+#   list with $parametric and $smooths data frames
+
+extract_stats <- function(mod, mod_name) {
+  s <- summary(mod)
+
+  parametric <- as.data.frame(s$p.table) %>%
+    rownames_to_column("term") %>%
+    mutate(model = mod_name) %>%
+    rename(estimate  = Estimate,
+           std_error = `Std. Error`,
+           t_value   = `t value`,
+           p_value   = `Pr(>|t|)`)
+
+  smooths <- as.data.frame(s$s.table) %>%
+    rownames_to_column("term") %>%
+    mutate(model = mod_name) %>%
+    rename(edf     = edf,
+           ref_df  = Ref.df,
+           F_value = F,
+           p_value = `p-value`)
+
+  list(parametric = parametric, smooths = smooths)
+}
+
+
+# --- extract_kcheck() --------------------------------------------------------
+# Runs k.check() and returns results as a tidy data frame.
+#
+# k-index near 1 = smooth basis dimension is adequate.
+# k-index substantially below 1 with small p = potential underfitting.
+# Because k is set to the number of unique timepoints (the maximum possible),
+# this cannot be resolved by increasing k — if flagged, revisit the AR(1)
+# correction or random effects structure instead.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   mod_name: character label
+# Returns:
+#   data frame of k.check() output
+
+extract_kcheck <- function(mod, mod_name) {
+  kc <- k.check(mod)
+  as.data.frame(kc) %>%
+    rownames_to_column("term") %>%
+    mutate(model = mod_name)
+}
+
+
+# --- extract_emmeans() -------------------------------------------------------
+# Computes estimated marginal means for all treatment x site combinations,
+# evaluated across all observed timepoints, and pairwise contrasts among
+# treatment combinations within each site (Tukey-adjusted).
+#
+# time is a smooth term in the GAMM — it cannot appear in the by argument
+# of contrast(), which only accepts factor variables that exist as discrete
+# grid dimensions. Timepoints are instead specified via the at argument
+# when computing the emmeans grid, so marginal means and contrasts reflect
+# overall treatment differences averaged across the full time course rather
+# than at any specific moment. This is appropriate when the question is
+# about general trajectory differences rather than differences at specific
+# timepoints.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   dat:      data frame (used to extract observed timepoints)
+#   mod_name: character label
+# Returns:
+#   list with $means and $contrasts data frames
+
+extract_emmeans <- function(mod, dat, mod_name) {
+
+  emm <- emmeans(mod,
+                 specs = ~ treatment * site,
+                 at    = list(time = unique(dat$time)),
+                 pbkrtest.limit = 10000)
+
+  # Marginal means averaged across all observed timepoints —
+  # one row per treatment x site combination
+  means <- as.data.frame(emm) %>%
+    mutate(model = mod_name)
+
+  # Pairwise contrasts among treatment combinations within each site,
+  # averaged across timepoints. Reflects overall trajectory differences
+  # rather than differences at specific moments. Tukey adjustment controls
+  # for multiple comparisons within each site.
+  contrasts_out <- as.data.frame(
+    contrast(emm,
+             method = "pairwise",
+             by     = "site",
+             adjust = "tukey")
+  ) %>%
+    mutate(model = mod_name)
+
+  list(means = means, contrasts = contrasts_out)
+}
+
+
+# --- make_trajectory_plot() --------------------------------------------------
+# Plots model-fitted FvFm trajectories over time with 95% CI ribbons,
+# one panel per site, coloured by pH x temp treatment combination.
+# Uses gratia::fitted_values() to extract predictions with uncertainty.
+# Colour and group mappings use interaction(pH, temp) rather than the
+# combined treatment factor so that axis labels remain human-readable.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   dat:      data frame
+#   mod_name: character label used in plot title
+# Returns:
+#   ggplot object
+
+make_trajectory_plot <- function(mod, dat, mod_name) {
+  fitted_vals <- fitted_values(mod, data = dat)
+
+  ggplot(fitted_vals,
+         aes(x      = time,
+             y      = .fitted,
+             colour = interaction(pH, temp, sep = " / "),
+             fill   = interaction(pH, temp, sep = " / "),
+             group  = interaction(pH, temp))) +
+    geom_ribbon(aes(ymin = .lower_ci, ymax = .upper_ci),
+                alpha = 0.15, colour = NA) +
+    geom_line(linewidth = 0.8) +
+    geom_point(size = 2) +
+    facet_wrap(~ site, labeller = label_both) +
+    scale_colour_brewer(palette = "Dark2") +
+    scale_fill_brewer(palette   = "Dark2") +
+    labs(x      = "Time (days)",
+         y      = "Fv/Fm",
+         colour = "pH / Temperature",
+         fill   = "pH / Temperature",
+         title  = paste("Fitted Fv/Fm trajectories —", mod_name)) +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "bottom")
+}
+
+
+# --- make_smooth_plot() ------------------------------------------------------
+# Plots smooth terms using gratia::draw(). The factor-smooth for exp_unit
+# is excluded (too many levels to plot usefully). edf on each panel
+# indicates nonlinearity: edf = 1 is linear, higher values = more curvature.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   mod_name: character label
+# Returns:
+#   patchwork ggplot object
+
+make_smooth_plot <- function(mod, mod_name) {
+  draw(mod,
+       residuals = FALSE,
+       select    = seq_len(length(mod$smooth) - 1)) +  # exclude fs smooth
+    plot_annotation(title = paste("Smooth terms —", mod_name))
+}
+
+
+# --- make_diff_smooth_plot() -------------------------------------------------
+# Plots the treatment-specific smooth terms to show how each treatment
+# trajectory deviates from the global time trend.
+#
+# difference_smooths() is not used here because it produces non-conformable
+# array errors when the treatment factor has different numbers of levels
+# across datasets (4 in control subsets, 2 in heat subsets), causing
+# mismatched prediction matrix dimensions.
+#
+# Instead, the treatment-specific smooth terms are plotted directly using
+# gratia::draw(). Smooths that deviate substantially from zero indicate
+# treatment trajectories that differ meaningfully from the global trend.
+# The emmeans pairwise contrasts provide the formal statistical comparison.
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   mod_name: character label
+# Returns:
+#   patchwork ggplot object
+
+make_diff_smooth_plot <- function(mod, mod_name) {
+
+  # Identify which smooths correspond to the treatment by= terms.
+  # smooth labels follow the pattern "s(time):treatmentXX" —
+  # select these by index to pass to draw()
+  smooth_labels <- sapply(mod$smooth, function(s) s$label)
+  treatment_idx <- grep("treatment", smooth_labels)
+
+  draw(mod,
+       residuals = FALSE,
+       select    = treatment_idx) +
+    plot_annotation(
+      title    = paste("Treatment-specific smooth deviations —", mod_name),
+      subtitle = "Deviation from global time trend; values near zero follow the global trajectory"
+    )
+}
+
+
+# --- save_plot() -------------------------------------------------------------
+# Saves a ggplot or patchwork object as a PDF.
+# Use device = pdf (default PDF device, no dependencies) or
+# device = cairo_pdf (better Unicode and transparency handling, requires
+# XQuartz on macOS — install from xquartz.org if needed).
+#
+# Arguments:
+#   plot:     ggplot or patchwork object
+#   filename: name without extension — saved to outputs/photosynthesis/plots/
+#   w, h:     width and height in inches
+
+save_plot <- function(plot, filename, w = 10, h = 6) {
+  path <- paste0("../../outputs/photosynthesis/", filename, ".pdf")
+  ggsave(filename = path,
+         plot     = plot,
+         width    = w,
+         height   = h,
+         device   = grDevices::pdf)
+  cat("  Saved:", path, "\n")
+}
+
+
+# --- run_full_analysis() -----------------------------------------------------
+# Master wrapper — runs the complete pipeline for one dataset in sequence:
+#   1. Add AR.start indicator and print treatment levels (after subsetting)
+#   2. Estimate rho from simplified model residuals
+#   3. Fit full GAMM with or without AR(1) depending on rho threshold
+#   4. Print model summary and k.check to console
+#   5. Extract tidy stats tables (parametric, smooths, kcheck, emmeans)
+#   6. Build trajectory, smooth term, and difference smooth plots
+#   7. Save all three plots as PDFs
+#
+# Arguments:
+#   dat:      subsetted data frame (e.g. ipam_ofav_control)
+#   mod_name: character label (e.g. "ofav_control")
+# Returns:
+#   named list: model, rho, stats, kcheck, emmeans, plots
+
+run_full_analysis <- function(dat, mod_name) {
+  cat("\n========================================\n")
+  cat("Analysis:", mod_name, "\n")
+  cat("========================================\n")
+
+  cat("Step 1: Adding AR.start indicator...\n")
+  dat <- add_ar_start(dat)
+
+  cat("Step 2: Estimating rho...\n")
+  rho_est <- estimate_rho(dat)
+
+  cat("Step 3: Fitting GAMM...\n")
+  mod <- fit_bam(dat, rho_est)
+
+  cat("Step 4: Model summary\n")
+  print(summary(mod))
+
+  cat("Step 5: k.check\n")
+  print(k.check(mod))
+
+  cat("Step 6: Extracting stats tables...\n")
+  stats   <- extract_stats(mod, mod_name)
+  kcheck  <- extract_kcheck(mod, mod_name)
+  emm_out <- extract_emmeans(mod, dat, mod_name)
+
+  cat("Step 7: Building and saving plots...\n")
+  p_traj   <- make_trajectory_plot(mod, dat, mod_name)
+  p_smooth <- make_smooth_plot(mod, mod_name)
+  p_diff   <- make_diff_smooth_plot(mod, mod_name)
+
+  save_plot(p_traj,   paste0(mod_name, "_trajectories"))
+  save_plot(p_smooth, paste0(mod_name, "_smooths"), w = 14, h = 10)
+  save_plot(p_diff, paste0(mod_name, "_treatment_smooths"), w = 14, h = 8)
+
+  cat("Done:", mod_name, "\n")
+
+  list(
+    model   = mod,
+    rho     = rho_est,
+    stats   = stats,
+    kcheck  = kcheck,
+    emmeans = emm_out,
+    plots   = list(trajectory = p_traj,
+                   smooths    = p_smooth,
+                   diff       = p_diff)
+  )
+}
+```
+
+---
+
+# *Orbicella faveolata* — Control {.tabset}
+
+Control temperature treatment, timepoints < 21 days. Tests whether pH affects
+photosynthetic efficiency prior to heat stress, and whether this differs across sites.
+
+```{r ofav-control, cache=TRUE}
+results_ofav_control <- run_full_analysis(
+  dat      = ipam_ofav_control,
+  mod_name = "ofav_control"
+)
+```
+
+## Trajectories
+
+```{r ofav-control-traj}
+results_ofav_control$plots$trajectory
+```
+
+## Smooth terms
+
+```{r ofav-control-smooth, fig.width=14, fig.height=10}
+results_ofav_control$plots$smooths
+```
+
+## pH difference
+
+```{r ofav-control-diff, fig.width=10, fig.height=5}
+results_ofav_control$plots$diff
+```
+
+## Parametric coefficients
+
+```{r ofav-control-params}
+knitr::kable(
+  results_ofav_control$stats$parametric,
+  digits  = 4,
+  caption = "Fixed effect estimates — O. faveolata control"
+)
+```
+
+## Smooth significance
+
+```{r ofav-control-smoothsig}
+knitr::kable(
+  results_ofav_control$stats$smooths,
+  digits  = 4,
+  caption = "Smooth term significance — O. faveolata control"
+)
+```
+
+## k.check
+
+```{r ofav-control-kcheck}
+knitr::kable(
+  results_ofav_control$kcheck,
+  digits  = 4,
+  caption = "Smooth adequacy — O. faveolata control"
+)
+```
+
+## Marginal means
+
+```{r ofav-control-emm}
+knitr::kable(
+  results_ofav_control$emmeans$means,
+  digits  = 4,
+  caption = "Estimated marginal means — O. faveolata control"
+)
+```
+
+## Pairwise contrasts
+
+```{r ofav-control-contrasts}
+knitr::kable(
+  results_ofav_control$emmeans$contrasts,
+  digits  = 4,
+  caption = "Pairwise contrasts — O. faveolata control"
+)
+```
+
+---
+
+# *Orbicella faveolata* — Heat {.tabset}
+
+High temperature treatment only, all timepoints. Tests whether pH effects on
+photosynthetic efficiency are amplified or modulated under thermal stress.
+
+```{r ofav-heat, cache=TRUE}
+results_ofav_heat <- run_full_analysis(
+  dat      = ipam_ofav_heat,
+  mod_name = "ofav_heat"
+)
+```
+
+## Trajectories
+
+```{r ofav-heat-traj}
+results_ofav_heat$plots$trajectory
+```
+
+## Smooth terms
+
+```{r ofav-heat-smooth, fig.width=14, fig.height=10}
+results_ofav_heat$plots$smooths
+```
+
+## pH difference
+
+```{r ofav-heat-diff, fig.width=10, fig.height=5}
+results_ofav_heat$plots$diff
+```
+
+## Parametric coefficients
+
+```{r ofav-heat-params}
+knitr::kable(
+  results_ofav_heat$stats$parametric,
+  digits  = 4,
+  caption = "Fixed effect estimates — O. faveolata heat"
+)
+```
+
+## Smooth significance
+
+```{r ofav-heat-smoothsig}
+knitr::kable(
+  results_ofav_heat$stats$smooths,
+  digits  = 4,
+  caption = "Smooth term significance — O. faveolata heat"
+)
+```
+
+## k.check
+
+```{r ofav-heat-kcheck}
+knitr::kable(
+  results_ofav_heat$kcheck,
+  digits  = 4,
+  caption = "Smooth adequacy — O. faveolata heat"
+)
+```
+
+## Marginal means
+
+```{r ofav-heat-emm}
+knitr::kable(
+  results_ofav_heat$emmeans$means,
+  digits  = 4,
+  caption = "Estimated marginal means — O. faveolata heat"
+)
+```
+
+## Pairwise contrasts
+
+```{r ofav-heat-contrasts}
+knitr::kable(
+  results_ofav_heat$emmeans$contrasts,
+  digits  = 4,
+  caption = "Pairwise contrasts — O. faveolata heat"
+)
+```
+
+---
+
+# *Siderastrea siderea* — Control {.tabset}
+
+Control temperature treatment, timepoints < 21 days.
+
+```{r ssid-control, cache=TRUE}
+results_ssid_control <- run_full_analysis(
+  dat      = ipam_ssid_control,
+  mod_name = "ssid_control"
+)
+```
+
+## Trajectories
+
+```{r ssid-control-traj}
+results_ssid_control$plots$trajectory
+```
+
+## Smooth terms
+
+```{r ssid-control-smooth, fig.width=14, fig.height=10}
+results_ssid_control$plots$smooths
+```
+
+## pH difference
+
+```{r ssid-control-diff, fig.width=10, fig.height=5}
+results_ssid_control$plots$diff
+```
+
+## Parametric coefficients
+
+```{r ssid-control-params}
+knitr::kable(
+  results_ssid_control$stats$parametric,
+  digits  = 4,
+  caption = "Fixed effect estimates — S. siderea control"
+)
+```
+
+## Smooth significance
+
+```{r ssid-control-smoothsig}
+knitr::kable(
+  results_ssid_control$stats$smooths,
+  digits  = 4,
+  caption = "Smooth term significance — S. siderea control"
+)
+```
+
+## k.check
+
+```{r ssid-control-kcheck}
+knitr::kable(
+  results_ssid_control$kcheck,
+  digits  = 4,
+  caption = "Smooth adequacy — S. siderea control"
+)
+```
+
+## Marginal means
+
+```{r ssid-control-emm}
+knitr::kable(
+  results_ssid_control$emmeans$means,
+  digits  = 4,
+  caption = "Estimated marginal means — S. siderea control"
+)
+```
+
+## Pairwise contrasts
+
+```{r ssid-control-contrasts}
+knitr::kable(
+  results_ssid_control$emmeans$contrasts,
+  digits  = 4,
+  caption = "Pairwise contrasts — S. siderea control"
+)
+```
+
+---
+
+# *Siderastrea siderea* — Heat {.tabset}
+
+High temperature treatment only, all timepoints.
+
+```{r ssid-heat, cache=TRUE}
+results_ssid_heat <- run_full_analysis(
+  dat      = ipam_ssid_heat,
+  mod_name = "ssid_heat"
+)
+```
+
+## Trajectories
+
+```{r ssid-heat-traj}
+results_ssid_heat$plots$trajectory
+```
+
+## Smooth terms
+
+```{r ssid-heat-smooth, fig.width=14, fig.height=10}
+results_ssid_heat$plots$smooths
+```
+
+## pH difference
+
+```{r ssid-heat-diff, fig.width=10, fig.height=5}
+results_ssid_heat$plots$diff
+```
+
+## Parametric coefficients
+
+```{r ssid-heat-params}
+knitr::kable(
+  results_ssid_heat$stats$parametric,
+  digits  = 4,
+  caption = "Fixed effect estimates — S. siderea heat"
+)
+```
+
+## Smooth significance
+
+```{r ssid-heat-smoothsig}
+knitr::kable(
+  results_ssid_heat$stats$smooths,
+  digits  = 4,
+  caption = "Smooth term significance — S. siderea heat"
+)
+```
+
+## k.check
+
+```{r ssid-heat-kcheck}
+knitr::kable(
+  results_ssid_heat$kcheck,
+  digits  = 4,
+  caption = "Smooth adequacy — S. siderea heat"
+)
+```
+
+## Marginal means
+
+```{r ssid-heat-emm}
+knitr::kable(
+  results_ssid_heat$emmeans$means,
+  digits  = 4,
+  caption = "Estimated marginal means — S. siderea heat"
+)
+```
+
+## Pairwise contrasts
+
+```{r ssid-heat-contrasts}
+knitr::kable(
+  results_ssid_heat$emmeans$contrasts,
+  digits  = 4,
+  caption = "Pairwise contrasts — S. siderea heat"
+)
+```
+
+---
+
+# Export stats
+
+```{r export-stats}
+# -----------------------------------------------------------------------------
+# Combine stats tables across all four datasets and export to a single Excel
+# workbook with one sheet per table type. The "model" column identifies the
+# source dataset within each sheet.
+# -----------------------------------------------------------------------------
+
+all_results <- list(
+  results_ofav_control,
+  results_ofav_heat,
+  results_ssid_control,
+  results_ssid_heat
+)
+
+# Stack each table type across all four datasets
+all_parametric <- bind_rows(lapply(all_results, function(r) r$stats$parametric))
+all_smooths    <- bind_rows(lapply(all_results, function(r) r$stats$smooths))
+all_kcheck     <- bind_rows(lapply(all_results, function(r) r$kcheck))
+all_means      <- bind_rows(lapply(all_results, function(r) r$emmeans$means))
+all_contrasts  <- bind_rows(lapply(all_results, function(r) r$emmeans$contrasts))
+
+# Rho summary — report in methods to justify AR(1) decisions per dataset
+rho_summary <- tibble(
+  model       = c("ofav_control", "ofav_heat", "ssid_control", "ssid_heat"),
+  rho         = c(results_ofav_control$rho,
+                  results_ofav_heat$rho,
+                  results_ssid_control$rho,
+                  results_ssid_heat$rho),
+  AR1_applied = rho >= 0.2
+)
+
+# Export to a single Excel workbook
+write_xlsx(
+  list(
+    "Rho estimates"            = rho_summary,
+    "Parametric coefficients"  = all_parametric,
+    "Smooth significance"      = all_smooths,
+    "k.check"                  = all_kcheck,
+    "Estimated marginal means" = all_means,
+    "Pairwise contrasts"       = all_contrasts
+  ),
+  path = "../../outputs/photosynthesis/coral_FvFm_GAMM_stats.xlsx"
+)
+
+cat("Stats exported to: ../../outputs/photosynthesis/coral_FvFm_GAMM_stats.xlsx\n")
+
+knitr::kable(rho_summary,
+             digits  = 3,
+             caption = "AR(1) autocorrelation estimates — all models")
+```
+
+---
+
+# Summary line plots
+
+Mean FvFm ± SE over time for each site, faceted by pH and temperature
+treatment. Stats labels are drawn from GAMM smooth significance output —
+update the Ofav label data frames once models have been run.
+
+```{r plot-colors}
+# -----------------------------------------------------------------------------
+# Site color palette — applied in factor level order: Emerald, Rainbow,
+# Star, MacN
+# -----------------------------------------------------------------------------
+fill.color <- c("#018571", "#80cdc1", "#dfc27d", "#a6611a")
+```
+
+```{r ofav-line-plot, fig.width=12, fig.height=6}
+# -----------------------------------------------------------------------------
+# Stats label data frames for O. faveolata
+#
+# Each data frame places one annotation in a specific facet panel, matched
+# by the pH and temp column values. x and y control label position.
+#
+# UPDATE THESE VALUES from the GAMM smooth significance table once models
+# have been run. Report the F-statistic and p-value for s(time), s(time):pH,
+# s(time):site, and s(time):pH:site (or equivalent interaction terms).
+# Format: "term: F[edf,n]=value, p=value*"
+# -----------------------------------------------------------------------------
+
+# Control temperature panel (low pH / control temp facet)
+ofav_control_time  <- data.frame(
+  time = 12.5, FvFm = 1.000,
+  lab  = "time: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "control temp"
+)
+ofav_control_treat <- data.frame(
+  time = 12.5, FvFm = 0.925,
+  lab  = "treat: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "control temp"
+)
+ofav_control_site  <- data.frame(
+  time = 12.5, FvFm = 0.850,
+  lab  = "site: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "control temp"
+)
+ofav_control_int   <- data.frame(
+  time = 12.5, FvFm = 0.775,
+  lab  = "interaction: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "control temp"
+)
+
+# Heat temperature panel (low pH / high temp facet)
+ofav_heat_time  <- data.frame(
+  time = 12.5, FvFm = 1.000,
+  lab  = "time: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "high temp"
+)
+ofav_heat_treat <- data.frame(
+  time = 12.5, FvFm = 0.925,
+  lab  = "treat: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "high temp"
+)
+ofav_heat_site  <- data.frame(
+  time = 12.5, FvFm = 0.850,
+  lab  = "site: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "high temp"
+)
+ofav_heat_int   <- data.frame(
+  time = 12.5, FvFm = 0.775,
+  lab  = "interaction: UPDATE FROM GAMM OUTPUT",
+  pH = "low pH", temp = "high temp"
+)
+
+ofav <- ggplot(ipam_ofav,
+               aes(x = time, y = FvFm, color = site, group = site)) +
+  stat_summary(fun      = mean,
+               geom     = "line",
+               size     = 0.75) +
+  stat_summary(fun  = mean,
+               geom = "point",
+               size = 2) +
+  stat_summary(fun.data = mean_se,
+               geom     = "errorbar",
+               width    = 0.2) +
+  facet_grid(temp ~ pH) +
+  scale_color_manual(values = fill.color) +
+  labs(title = "Ofav",
+       x     = "Day",
+       y     = "Proportional Fv/Fm",
+       color = "Site") +
+  theme_pubr(legend = "bottom") +
+  geom_text(data = ofav_control_time,
+            aes(x = 12.5, y = 1.000, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_control_treat,
+            aes(x = 12.5, y = 0.925, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_control_site,
+            aes(x = 12.5, y = 0.850, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_control_int,
+            aes(x = 12.5, y = 0.775, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_time,
+            aes(x = 12.5, y = 1.000, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_treat,
+            aes(x = 12.5, y = 0.925, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_site,
+            aes(x = 12.5, y = 0.850, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ofav_heat_int,
+            aes(x = 12.5, y = 0.775, label = lab),
+            inherit.aes = FALSE)
+
+ofav
+
+ggsave("../../outputs/photosynthesis/urban ipam ofav.pdf",
+       plot   = ofav,
+       width  = 12,
+       height = 6,
+       device = pdf)
+```
+
+```{r ssid-line-plot, fig.width=12, fig.height=6}
+# -----------------------------------------------------------------------------
+# Stats label data frames for S. siderea
+# -----------------------------------------------------------------------------
+
+ssid_control_time  <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "time: F1,644=35.0, p<0.001*",
+  pH = "low pH", temp = "control temp"
+)
+ssid_control_treat <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "treat: F3,644=115.1, p<0.001*",
+  pH = "low pH", temp = "control temp"
+)
+ssid_control_site  <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "site: F3,644=1.4, p=0.24",
+  pH = "low pH", temp = "control temp"
+)
+ssid_heat_time  <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "time: F1,697=6.7, p=0.01*",
+  pH = "low pH", temp = "high temp"
+)
+ssid_heat_treat <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "treat: F1,697=76.1, p<0.001*",
+  pH = "low pH", temp = "high temp"
+)
+ssid_heat_site  <- data.frame(
+  time = 10, FvFm = 1.0,
+  lab  = "site: F3,697=5.2, p=0.001*",
+  pH = "low pH", temp = "high temp"
+)
+
+ssid <- ggplot(ipam_ssid,
+               aes(x = time, y = FvFm, color = site, group = site)) +
+  stat_summary(fun      = mean,
+               geom     = "line",
+               size     = 0.75) +
+  stat_summary(fun  = mean,
+               geom = "point",
+               size = 2) +
+  stat_summary(fun.data = mean_se,
+               geom     = "errorbar",
+               width    = 0.2) +
+  facet_grid(temp ~ pH) +
+  scale_color_manual(values = fill.color) +
+  labs(title = "Ssid",
+       x     = "Day",
+       y     = "Proportional Fv/Fm",
+       color = "Site") +
+  theme_pubr(legend = "bottom") +
+  geom_text(data = ssid_control_time,
+            aes(x = 12.5, y = 1.0, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ssid_control_treat,
+            aes(x = 12.5, y = 0.9, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ssid_control_site,
+            aes(x = 12.5, y = 0.8, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_time,
+            aes(x = 12.5, y = 1.0, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_treat,
+            aes(x = 12.5, y = 0.9, label = lab),
+            inherit.aes = FALSE) +
+  geom_text(data = ssid_heat_site,
+            aes(x = 12.5, y = 0.8, label = lab),
+            inherit.aes = FALSE)
+
+ssid
+
+ggsave("../../outputs/photosynthesis/urban ipam ssid.pdf",
+       plot   = ssid,
+       width  = 12,
+       height = 6,
+       device = pdf)
+```
+
+---
+
+# Session info
+
+```{r session-info}
+# -----------------------------------------------------------------------------
+# Record R and package versions for reproducibility.
+# Include this output in supplementary materials when submitting.
+# -----------------------------------------------------------------------------
+sessionInfo()
+```

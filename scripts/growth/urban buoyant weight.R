@@ -10,6 +10,7 @@ library(lme4)
 library(lmerTest)
 library(emmeans)
 library(multcomp)
+library(MuMIn)
 
 
 #### data import ####
@@ -89,12 +90,48 @@ anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG, REML = FALSE)) # 
 tank_means <- aggregate(growthadj ~ pH + tank, bw_ofav, mean)
 summary(lm(growthadj ~ pH, data = tank_means)) # p > 0.05, no tank effect
 
-# model outputs
-summary(lm_ofav_noint)
-anova(lm_ofav_noint) # site effect only 
-VarCorr(lm_ofav_noint)
+# Random effects variance components
+vc <- as.data.frame(VarCorr(lm_ofav_noint))
+total_var <- sum(vc$vcov)
+vc$pct_var <- round(100 * vc$vcov / total_var, 2)
+colnames(vc)[colnames(vc) == "grp"] <- "component"
 
-capture.output(anova(lm_ofav_noint), file = "../../outputs/growth/urban bw ofav lme.txt")
+# Fixed effects R² (marginal = fixed only, conditional = fixed + random)
+r2 <- r.squaredGLMM(lm_ofav_noint)
+
+# Individual fixed effect contributions (requires REML = FALSE for comparison)
+lm_noint_ml  <- update(lm_ofav_noint, REML = FALSE)
+lm_no_pH     <- update(lm_noint_ml, . ~ . - pH)
+lm_no_site   <- update(lm_noint_ml, . ~ . - site)
+
+r2_full    <- r.squaredGLMM(lm_noint_ml)[, "R2m"]
+delta_pH   <- round(100 * (r2_full - r.squaredGLMM(lm_no_pH)[, "R2m"]),  2)
+delta_site <- round(100 * (r2_full - r.squaredGLMM(lm_no_site)[, "R2m"]), 2)
+
+# --- Console output ---
+summary(lm_ofav_noint)
+anova(lm_ofav_noint)
+print(vc[, c("component", "vcov", "pct_var")])
+cat("Marginal R² (fixed effects):", round(100 * r2[, "R2m"], 2), "%\n")
+cat("Conditional R² (fixed + random):", round(100 * r2[, "R2c"], 2), "%\n")
+cat("Delta R² pH:", delta_pH, "%\n")
+cat("Delta R² site:", delta_site, "%\n")
+
+# --- txt output ---
+capture.output({
+  cat("=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2[, "R2c"], 2), "%\n")
+  cat("Delta R² pH:", delta_pH, "%\n")
+  cat("Delta R² site:", delta_site, "%\n")
+  
+}, file = "../../outputs/growth/urban bw ofav lme.txt")
 
 # pairwise site tests
 emm_ofav <- emmeans(lm_ofav_noint, ~ site | pH)
