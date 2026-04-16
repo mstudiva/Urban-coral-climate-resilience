@@ -1,3 +1,34 @@
+=== LRT: pH x Site Interaction (Fixed) ===
+Data: bw_ofav
+Models:
+update(lm_ofav_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+update(lm_ofav, REML = FALSE): growthadj ~ pH * site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)
+update(lm_ofav_noint, REML = FALSE)    8 -84.242 -64.892 50.121   -100.24                     
+update(lm_ofav, REML = FALSE)         11 -81.439 -54.832 51.719   -103.44 3.1966  3     0.3623
+
+=== LRT: Tank Effect (pH:tank) ===
+Data: bw_ofav
+Models:
+update(lm_ofav_noT, REML = FALSE): growthadj ~ pH + site + (1 | site:genotype)
+update(lm_ofav_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)    
+update(lm_ofav_noT, REML = FALSE)      7 -72.255 -55.323 43.127   -86.255                         
+update(lm_ofav_noint, REML = FALSE)    8 -84.242 -64.892 50.121  -100.242 13.987  1   0.000184 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== LRT: Genotype Effect (site:genotype) ===
+Data: bw_ofav
+Models:
+update(lm_ofav_noG, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank)
+update(lm_ofav_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)    
+update(lm_ofav_noG, REML = FALSE)      7 -62.958 -46.026 38.479   -76.958                         
+update(lm_ofav_noint, REML = FALSE)    8 -84.242 -64.892 50.121  -100.242 23.284  1  1.397e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
 === ANOVA (Fixed Effects) ===
 Type III Analysis of Variance Table with Satterthwaite's method
        Sum Sq  Mean Sq NumDF   DenDF F value Pr(>F)  

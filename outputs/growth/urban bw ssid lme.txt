@@ -1,6 +1,52 @@
+=== LRT: pH x Site Interaction (Fixed) ===
+Data: bw_ssid
+Models:
+update(lm_ssid_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+update(lm_ssid, REML = FALSE): growthadj ~ pH * site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)  
+update(lm_ssid_noint, REML = FALSE)    8 -98.006 -78.950 57.003   -114.01                       
+update(lm_ssid, REML = FALSE)         11 -99.318 -73.116 60.659   -121.32 7.3118  3     0.0626 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== LRT: Tank Effect (pH:tank) ===
+Data: bw_ssid
+Models:
+update(lm_ssid_noT, REML = FALSE): growthadj ~ pH + site + (1 | site:genotype)
+update(lm_ssid_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)    
+update(lm_ssid_noT, REML = FALSE)      7 -83.233 -66.559 48.617   -97.233                         
+update(lm_ssid_noint, REML = FALSE)    8 -98.006 -78.950 57.003  -114.006 16.773  1  4.214e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== LRT: Genotype Effect (site:genotype) ===
+Data: bw_ssid
+Models:
+update(lm_ssid_noG, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank)
+update(lm_ssid_noint, REML = FALSE): growthadj ~ pH + site + (1 | pH:tank) + (1 | site:genotype)
+                                    npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)  
+update(lm_ssid_noG, REML = FALSE)      7 -96.332 -79.658 55.166   -110.33                       
+update(lm_ssid_noint, REML = FALSE)    8 -98.006 -78.950 57.003   -114.01 3.6736  1    0.05528 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== ANOVA (Fixed Effects) ===
 Type III Analysis of Variance Table with Satterthwaite's method
        Sum Sq   Mean Sq NumDF DenDF F value  Pr(>F)  
 pH   0.007739 0.0077393     1     2  0.7235 0.48460  
 site 0.089796 0.0299319     3    16  2.7980 0.07363 .
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== Variance Components (Random Effects) ===
+      component        vcov pct_var
+1 site:genotype 0.003671072   15.75
+2       pH:tank 0.008945175   38.37
+3      Residual 0.010697634   45.89
+
+=== R² (Fixed Effects) ===
+Marginal R² (fixed effects only): 15.98 %
+Conditional R² (fixed + random): 61.45 %
+Delta R² pH: 7.86 %
+Delta R² site: 12.27 %

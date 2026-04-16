@@ -62,7 +62,10 @@ dev.off()
 
 #### linear mixed-effect models ####
 
+# ========================
 # O. faveolata
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ofav <- lmer(growthadj ~ pH * site + 
                   (1 | pH:tank) + 
@@ -75,68 +78,91 @@ lm_ofav_noint <- lmer(growthadj ~ pH + site +
                         (1 | site:genotype),
                       data = bw_ofav, REML = TRUE)
 
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE)) # p > 0.05 and AIC lower for noint model, so use reduced model
+# LRT: interaction effect
+lrt_int_ofav <- anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE))
+lrt_int_ofav
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
 
 # reduced model, dropped genotype as factor
 lm_ofav_noG <- lmer(growthadj ~ pH + site + 
                       (1 | pH:tank),
                     data = bw_ofav, REML = TRUE)
 
-# LRT of genotype effect
-anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG, REML = FALSE)) # p < 0.05 and AIC much lower for noint model, so keep genotype
+# reduced model, dropped tank as factor
+lm_ofav_noT <- lmer(growthadj ~ pH + site + 
+                      (1 | site:genotype),
+                    data = bw_ofav, REML = TRUE)
+
+# LRT: genotype effect
+lrt_geno_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG, REML = FALSE))
+lrt_geno_ofav
+# p value significant, and AIC much lower for noint model, so proceed with genotype term
+
+# LRT: tank effect
+lrt_tank_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noT, REML = FALSE))
+lrt_tank_ofav
+# p value significant, and AIC much lower for noint model, so proceed with tank
 
 # sanity check: is there a pH effect when looking at growth just across tanks?
-tank_means <- aggregate(growthadj ~ pH + tank, bw_ofav, mean)
-summary(lm(growthadj ~ pH, data = tank_means)) # p > 0.05, no tank effect
+tank_means_ofav <- aggregate(growthadj ~ pH + tank, bw_ofav, mean)
+summary(lm(growthadj ~ pH, data = tank_means_ofav))
+# p value nonsignificant, so likely not a strong tank influence
 
 # Random effects variance components
-vc <- as.data.frame(VarCorr(lm_ofav_noint))
-total_var <- sum(vc$vcov)
-vc$pct_var <- round(100 * vc$vcov / total_var, 2)
-colnames(vc)[colnames(vc) == "grp"] <- "component"
+vc_ofav <- as.data.frame(VarCorr(lm_ofav_noint))
+total_var_ofav <- sum(vc_ofav$vcov)
+vc_ofav$pct_var <- round(100 * vc_ofav$vcov / total_var_ofav, 2)
+colnames(vc_ofav)[colnames(vc_ofav) == "grp"] <- "component"
 
-# Fixed effects R² (marginal = fixed only, conditional = fixed + random)
-r2 <- r.squaredGLMM(lm_ofav_noint)
+# Fixed effects R²
+r2_ofav <- r.squaredGLMM(lm_ofav_noint)
 
-# Individual fixed effect contributions (requires REML = FALSE for comparison)
-lm_noint_ml  <- update(lm_ofav_noint, REML = FALSE)
-lm_no_pH     <- update(lm_noint_ml, . ~ . - pH)
-lm_no_site   <- update(lm_noint_ml, . ~ . - site)
+# Individual fixed effect contributions
+lm_ofav_ml      <- update(lm_ofav_noint, REML = FALSE)
+lm_ofav_no_pH   <- update(lm_ofav_ml, . ~ . - pH)
+lm_ofav_no_site <- update(lm_ofav_ml, . ~ . - site)
 
-r2_full    <- r.squaredGLMM(lm_noint_ml)[, "R2m"]
-delta_pH   <- round(100 * (r2_full - r.squaredGLMM(lm_no_pH)[, "R2m"]),  2)
-delta_site <- round(100 * (r2_full - r.squaredGLMM(lm_no_site)[, "R2m"]), 2)
+r2_ofav_full    <- r.squaredGLMM(lm_ofav_ml)[, "R2m"]
+delta_pH_ofav   <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_pH)[, "R2m"]), 2)
+delta_site_ofav <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_site)[, "R2m"]), 2)
 
 # --- Console output ---
 summary(lm_ofav_noint)
 anova(lm_ofav_noint)
-print(vc[, c("component", "vcov", "pct_var")])
-cat("Marginal R² (fixed effects):", round(100 * r2[, "R2m"], 2), "%\n")
-cat("Conditional R² (fixed + random):", round(100 * r2[, "R2c"], 2), "%\n")
-cat("Delta R² pH:", delta_pH, "%\n")
-cat("Delta R² site:", delta_site, "%\n")
+print(vc_ofav[, c("component", "vcov", "pct_var")])
+cat("Marginal R² (fixed effects):", round(100 * r2_ofav[, "R2m"], 2), "%\n")
+cat("Conditional R² (fixed + random):", round(100 * r2_ofav[, "R2c"], 2), "%\n")
+cat("Delta R² pH:", delta_pH_ofav, "%\n")
+cat("Delta R² site:", delta_site_ofav, "%\n")
 
 # --- txt output ---
 capture.output({
-  cat("=== ANOVA (Fixed Effects) ===\n")
+  cat("=== LRT: pH x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav)
+  
+  cat("\n=== LRT: Tank Effect (pH:tank) ===\n")
+  print(lrt_tank_ofav)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
   print(anova(lm_ofav_noint))
   
   cat("\n=== Variance Components (Random Effects) ===\n")
-  print(vc[, c("component", "vcov", "pct_var")])
+  print(vc_ofav[, c("component", "vcov", "pct_var")])
   
   cat("\n=== R² (Fixed Effects) ===\n")
-  cat("Marginal R² (fixed effects only):", round(100 * r2[, "R2m"], 2), "%\n")
-  cat("Conditional R² (fixed + random):", round(100 * r2[, "R2c"], 2), "%\n")
-  cat("Delta R² pH:", delta_pH, "%\n")
-  cat("Delta R² site:", delta_site, "%\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav[, "R2c"], 2), "%\n")
+  cat("Delta R² pH:", delta_pH_ofav, "%\n")
+  cat("Delta R² site:", delta_site_ofav, "%\n")
   
 }, file = "../../outputs/growth/urban bw ofav lme.txt")
 
 # pairwise site tests
 emm_ofav <- emmeans(lm_ofav_noint, ~ site | pH)
 pairs(emm_ofav, adjust = "tukey")
-
 capture.output(pairs(emm_ofav, adjust = "tukey"), file = "../../outputs/growth/urban bw ofav pairwise.txt")
 
 # Create letters indicating significant differences for plot
@@ -144,7 +170,10 @@ cld_ofav <- cld(emm_ofav, adjust = "tukey", Letters = letters, alpha = 0.05)
 cld_ofav
 
 
+# ========================
 # S. siderea
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ssid <- lmer(growthadj ~ pH * site + 
                   (1 | pH:tank) + 
@@ -157,33 +186,94 @@ lm_ssid_noint <- lmer(growthadj ~ pH + site +
                         (1 | site:genotype),
                       data = bw_ssid, REML = TRUE)
 
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE)) # p = 0.06 and only marginally AIC lower for full model, so use reduced model 
+# LRT: interaction effect
+lrt_int_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE))
+lrt_int_ssid
+# nonsignificant p value, and marginal reduction in AIC with interaction, so proceed without interaction terms
 
 # reduced model, dropped genotype as factor
 lm_ssid_noG <- lmer(growthadj ~ pH + site + 
                       (1 | pH:tank),
                     data = bw_ssid, REML = TRUE)
 
-# LRT of genotype effect
-anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG, REML = FALSE)) # p = 0.05 and AIC lower for noint model, so keep genotype
+# reduced model, dropped tank as factor
+lm_ssid_noT <- lmer(growthadj ~ pH + site + 
+                      (1 | site:genotype),
+                    data = bw_ssid, REML = TRUE)
+
+# LRT: genotype effect
+lrt_geno_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG, REML = FALSE))
+lrt_geno_ssid
+# significant p value, and AIC lower for noint model, so proceed with genotype term
+
+# LRT: tank effect
+lrt_tank_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noT, REML = FALSE))
+lrt_tank_ssid
+# p value significant, and AIC much lower for noint model, so proceed with tank
 
 # sanity check: is there a pH effect when looking at growth just across tanks?
-tank_means <- aggregate(growthadj ~ pH + tank, bw_ssid, mean)
-summary(lm(growthadj ~ pH, data = tank_means)) # p > 0.05, no tank effect
+tank_means_ssid <- aggregate(growthadj ~ pH + tank, bw_ssid, mean)
+summary(lm(growthadj ~ pH, data = tank_means_ssid))
+# p value nonsignificant, so likely not a strong tank influence
 
-# model outputs
+# Random effects variance components
+vc_ssid <- as.data.frame(VarCorr(lm_ssid_noint))
+total_var_ssid <- sum(vc_ssid$vcov)
+vc_ssid$pct_var <- round(100 * vc_ssid$vcov / total_var_ssid, 2)
+colnames(vc_ssid)[colnames(vc_ssid) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid <- r.squaredGLMM(lm_ssid_noint)
+
+# Individual fixed effect contributions
+lm_ssid_ml      <- update(lm_ssid_noint, REML = FALSE)
+lm_ssid_no_pH   <- update(lm_ssid_ml, . ~ . - pH)
+lm_ssid_no_site <- update(lm_ssid_ml, . ~ . - site)
+
+r2_ssid_full    <- r.squaredGLMM(lm_ssid_ml)[, "R2m"]
+delta_pH_ssid   <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_pH)[, "R2m"]), 2)
+delta_site_ssid <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_site)[, "R2m"]), 2)
+
+# --- Console output ---
 summary(lm_ssid_noint)
-anova(lm_ssid_noint) # marginally nonsignificant site effect
-VarCorr(lm_ssid_noint)
+anova(lm_ssid_noint)
+print(vc_ssid[, c("component", "vcov", "pct_var")])
+cat("Marginal R² (fixed effects):", round(100 * r2_ssid[, "R2m"], 2), "%\n")
+cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
+cat("Delta R² pH:", delta_pH_ssid, "%\n")
+cat("Delta R² site:", delta_site_ssid, "%\n")
 
-capture.output(anova(lm_ssid_noint), file = "../../outputs/growth/urban bw ssid lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: pH x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid)
+  
+  cat("\n=== LRT: Tank Effect (pH:tank) ===\n")
+  print(lrt_tank_ssid)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ssid[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
+  cat("Delta R² pH:", delta_pH_ssid, "%\n")
+  cat("Delta R² site:", delta_site_ssid, "%\n")
+  
+}, file = "../../outputs/growth/urban bw ssid lme.txt")
 
-# # pairwise site tests
+# pairwise site tests
 # emm_ssid <- emmeans(lm_ssid_noint, ~ site | pH)
 # pairs(emm_ssid, adjust = "tukey")
-# 
-# # Create letters indicating significant differences for plot
+# capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/growth/urban bw ssid pairwise.txt")
+
+# Create letters indicating significant differences for plot
 # cld_ssid <- cld(emm_ssid, adjust = "tukey", Letters = letters, alpha = 0.05)
 # cld_ssid
 
