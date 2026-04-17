@@ -10,6 +10,7 @@ library(lme4)
 library(lmerTest)
 library(emmeans)
 library(multcomp)
+library(dplyr)
 
 
 #### data import ####
@@ -79,9 +80,9 @@ incubations %>% # running the seacarb function to calculate other parameters fro
   mutate(carb(flag=8, finalpH, finalTA_mol, S=salinity, T=temp)) -> incubations_final_carb
 
 incubations_initial_carb %>% # pulls the initial and final DIC, pCO2, and aragonite saturation columns from the respective dataframes
-  select(1:32, 41, 48, 50) %>%
+  dplyr::select(1:32, 41, 48, 50) %>%
   rename('initialpCO2'='pCO2','initialDIC'='DIC','initialAr'='OmegaAragonite') %>%
-  left_join(select(incubations_final_carb, 1, 41, 48, 50), by='bottle') %>%
+  left_join(dplyr::select(incubations_final_carb, 1, 41, 48, 50), by='bottle') %>%
   rename('finalpCO2'='pCO2','finalDIC'='DIC','finalAr'='OmegaAragonite') -> incubations_carb
 
 incubations_carb %>% # calculating net pH, DIC, pCO2, and aragonite saturation
@@ -172,33 +173,78 @@ dev.off()
 
 #### incubation linear mixed-effect models ####
 
+# ========================
 # O. faveolata day
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ofav_day <- lmer(calcificationadj ~ treatment * site +
-                  (1 | site:genotype),
-                data = incubations_ofav_day, REML = TRUE)
+                      (1 | site:genotype),
+                    data = incubations_ofav_day, REML = TRUE)
 
 # reduced model, no interaction of pH and site
 lm_ofav_day_noint <- lmer(calcificationadj ~ treatment + site +
-                        (1 | site:genotype),
-                      data = incubations_ofav_day, REML = TRUE)
-
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ofav_day, REML = FALSE), update(lm_ofav_day_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+                            (1 | site:genotype),
+                          data = incubations_ofav_day, REML = TRUE)
 
 # reduced model, dropped genotype as factor
 lm_ofav_day_noG <- lm(calcificationadj ~ treatment + site,
-                    data = incubations_ofav_day)
+                      data = incubations_ofav_day)
 
-# LRT of genotype effect
-anova(update(lm_ofav_day_noint, REML = FALSE), update(lm_ofav_day_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ofav_day <- anova(update(lm_ofav_day, REML = FALSE), update(lm_ofav_day_noint, REML = FALSE))
+lrt_int_ofav_day
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav_day <- anova(update(lm_ofav_day_noint, REML = FALSE), update(lm_ofav_day_noG))
+lrt_geno_ofav_day
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ofav_day <- as.data.frame(VarCorr(lm_ofav_day_noint))
+total_var_ofav_day <- sum(vc_ofav_day$vcov)
+vc_ofav_day$pct_var <- round(100 * vc_ofav_day$vcov / total_var_ofav_day, 2)
+colnames(vc_ofav_day)[colnames(vc_ofav_day) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav_day <- r.squaredGLMM(lm_ofav_day_noint)
+
+# Individual fixed effect contributions
+lm_ofav_day_ml      <- update(lm_ofav_day_noint, REML = FALSE)
+lm_ofav_day_no_trt  <- update(lm_ofav_day_ml, . ~ . - treatment)
+lm_ofav_day_no_site <- update(lm_ofav_day_ml, . ~ . - site)
+
+r2_ofav_day_full    <- r.squaredGLMM(lm_ofav_day_ml)[, "R2m"]
+delta_trt_ofav_day  <- round(100 * (r2_ofav_day_full - r.squaredGLMM(lm_ofav_day_no_trt)[, "R2m"]), 2)
+delta_site_ofav_day <- round(100 * (r2_ofav_day_full - r.squaredGLMM(lm_ofav_day_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ofav_day_noint)
 anova(lm_ofav_day_noint) # no significant factors
 VarCorr(lm_ofav_day_noint)
 
-capture.output(anova(lm_ofav_day_noint), file = "../../outputs/calcification/urban incubations ofav day lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav_day)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav_day)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_day_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ofav_day[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav_day[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav_day[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav_day, "%\n")
+  cat("Delta R² site:", delta_site_ofav_day, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav day lme.txt")
 
 # pairwise tests
 # emm_ofav_day <- emmeans(lm_ofav_day_noint, ~ site | treatment)
@@ -211,33 +257,78 @@ capture.output(anova(lm_ofav_day_noint), file = "../../outputs/calcification/urb
 # cld_ofav_day
 
 
+# ========================
 # O. faveolata night
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ofav_night <- lmer(calcificationadj ~ treatment * site +
-                      (1 | site:genotype),
-                    data = incubations_ofav_night, REML = TRUE)
+                        (1 | site:genotype),
+                      data = incubations_ofav_night, REML = TRUE)
 
 # reduced model, no interaction of pH and site
 lm_ofav_night_noint <- lmer(calcificationadj ~ treatment + site +
-                            (1 | site:genotype),
-                          data = incubations_ofav_night, REML = TRUE)
-
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ofav_night, REML = FALSE), update(lm_ofav_night_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+                              (1 | site:genotype),
+                            data = incubations_ofav_night, REML = TRUE)
 
 # reduced model, dropped genotype as factor
 lm_ofav_night_noG <- lm(calcificationadj ~ treatment + site,
-                      data = incubations_ofav_night)
+                        data = incubations_ofav_night)
 
-# LRT of genotype effect
-anova(update(lm_ofav_night_noint, REML = FALSE), update(lm_ofav_night_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ofav_night <- anova(update(lm_ofav_night, REML = FALSE), update(lm_ofav_night_noint, REML = FALSE))
+lrt_int_ofav_night
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav_night <- anova(update(lm_ofav_night_noint, REML = FALSE), update(lm_ofav_night_noG))
+lrt_geno_ofav_night
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ofav_night <- as.data.frame(VarCorr(lm_ofav_night_noint))
+total_var_ofav_night <- sum(vc_ofav_night$vcov)
+vc_ofav_night$pct_var <- round(100 * vc_ofav_night$vcov / total_var_ofav_night, 2)
+colnames(vc_ofav_night)[colnames(vc_ofav_night) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav_night <- r.squaredGLMM(lm_ofav_night_noint)
+
+# Individual fixed effect contributions
+lm_ofav_night_ml      <- update(lm_ofav_night_noint, REML = FALSE)
+lm_ofav_night_no_trt  <- update(lm_ofav_night_ml, . ~ . - treatment)
+lm_ofav_night_no_site <- update(lm_ofav_night_ml, . ~ . - site)
+
+r2_ofav_night_full    <- r.squaredGLMM(lm_ofav_night_ml)[, "R2m"]
+delta_trt_ofav_night  <- round(100 * (r2_ofav_night_full - r.squaredGLMM(lm_ofav_night_no_trt)[, "R2m"]), 2)
+delta_site_ofav_night <- round(100 * (r2_ofav_night_full - r.squaredGLMM(lm_ofav_night_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ofav_night_noint)
-anova(lm_ofav_night_noint) # treatment effect only 
+anova(lm_ofav_night_noint) # treatment effect only
 VarCorr(lm_ofav_night_noint)
 
-capture.output(anova(lm_ofav_night_noint), file = "../../outputs/calcification/urban incubations ofav night lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav_night)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav_night)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_night_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ofav_night[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav_night[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav_night[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav_night, "%\n")
+  cat("Delta R² site:", delta_site_ofav_night, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav night lme.txt")
 
 # pairwise tests
 emm_ofav_night <- emmeans(lm_ofav_night_noint, ~ treatment | site)
@@ -250,7 +341,10 @@ cld_ofav_night <- cld(emm_ofav_night, adjust = "tukey", Letters = letters, alpha
 cld_ofav_night
 
 
+# ========================
 # S. siderea day
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ssid_day <- lmer(calcificationadj ~ treatment * site +
                       (1 | site:genotype),
@@ -261,22 +355,64 @@ lm_ssid_day_noint <- lmer(calcificationadj ~ treatment + site +
                             (1 | site:genotype),
                           data = incubations_ssid_day, REML = TRUE)
 
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ssid_day, REML = FALSE), update(lm_ssid_day_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
-
 # reduced model, dropped genotype as factor
 lm_ssid_day_noG <- lm(calcificationadj ~ treatment + site,
                       data = incubations_ssid_day)
 
-# LRT of genotype effect
-anova(update(lm_ssid_day_noint, REML = FALSE), update(lm_ssid_day_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ssid_day <- anova(update(lm_ssid_day, REML = FALSE), update(lm_ssid_day_noint, REML = FALSE))
+lrt_int_ssid_day
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid_day <- anova(update(lm_ssid_day_noint, REML = FALSE), update(lm_ssid_day_noG))
+lrt_geno_ssid_day
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ssid_day <- as.data.frame(VarCorr(lm_ssid_day_noint))
+total_var_ssid_day <- sum(vc_ssid_day$vcov)
+vc_ssid_day$pct_var <- round(100 * vc_ssid_day$vcov / total_var_ssid_day, 2)
+colnames(vc_ssid_day)[colnames(vc_ssid_day) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid_day <- r.squaredGLMM(lm_ssid_day_noint)
+
+# Individual fixed effect contributions
+lm_ssid_day_ml      <- update(lm_ssid_day_noint, REML = FALSE)
+lm_ssid_day_no_trt  <- update(lm_ssid_day_ml, . ~ . - treatment)
+lm_ssid_day_no_site <- update(lm_ssid_day_ml, . ~ . - site)
+
+r2_ssid_day_full    <- r.squaredGLMM(lm_ssid_day_ml)[, "R2m"]
+delta_trt_ssid_day  <- round(100 * (r2_ssid_day_full - r.squaredGLMM(lm_ssid_day_no_trt)[, "R2m"]), 2)
+delta_site_ssid_day <- round(100 * (r2_ssid_day_full - r.squaredGLMM(lm_ssid_day_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ssid_day_noint)
 anova(lm_ssid_day_noint) # treatment and site significant
 VarCorr(lm_ssid_day_noint)
 
-capture.output(anova(lm_ssid_day_noint), file = "../../outputs/calcification/urban incubations ssid day lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid_day)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid_day)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_day_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ssid_day[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid_day[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid_day[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid_day, "%\n")
+  cat("Delta R² site:", delta_site_ssid_day, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid day lme.txt")
 
 # pairwise tests
 emm_ssid_day <- emmeans(lm_ssid_day_noint, ~ site * treatment)
@@ -289,7 +425,10 @@ cld_ssid_day <- cld(emm_ssid_day, adjust = "tukey", Letters = letters, alpha = 0
 cld_ssid_day
 
 
+# ========================
 # S. siderea night
+# ========================
+
 # full model, tank nested within pH, genotype nested within site
 lm_ssid_night <- lmer(calcificationadj ~ treatment * site +
                         (1 | site:genotype),
@@ -300,22 +439,64 @@ lm_ssid_night_noint <- lmer(calcificationadj ~ treatment + site +
                               (1 | site:genotype),
                             data = incubations_ssid_night, REML = TRUE)
 
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ssid_night, REML = FALSE), update(lm_ssid_night_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
-
 # reduced model, dropped genotype as factor
 lm_ssid_night_noG <- lm(calcificationadj ~ treatment + site,
                         data = incubations_ssid_night)
 
-# LRT of genotype effect
-anova(update(lm_ssid_night_noint, REML = FALSE), update(lm_ssid_night_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ssid_night <- anova(update(lm_ssid_night, REML = FALSE), update(lm_ssid_night_noint, REML = FALSE))
+lrt_int_ssid_night
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid_night <- anova(update(lm_ssid_night_noint, REML = FALSE), update(lm_ssid_night_noG))
+lrt_geno_ssid_night
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ssid_night <- as.data.frame(VarCorr(lm_ssid_night_noint))
+total_var_ssid_night <- sum(vc_ssid_night$vcov)
+vc_ssid_night$pct_var <- round(100 * vc_ssid_night$vcov / total_var_ssid_night, 2)
+colnames(vc_ssid_night)[colnames(vc_ssid_night) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid_night <- r.squaredGLMM(lm_ssid_night_noint)
+
+# Individual fixed effect contributions
+lm_ssid_night_ml      <- update(lm_ssid_night_noint, REML = FALSE)
+lm_ssid_night_no_trt  <- update(lm_ssid_night_ml, . ~ . - treatment)
+lm_ssid_night_no_site <- update(lm_ssid_night_ml, . ~ . - site)
+
+r2_ssid_night_full    <- r.squaredGLMM(lm_ssid_night_ml)[, "R2m"]
+delta_trt_ssid_night  <- round(100 * (r2_ssid_night_full - r.squaredGLMM(lm_ssid_night_no_trt)[, "R2m"]), 2)
+delta_site_ssid_night <- round(100 * (r2_ssid_night_full - r.squaredGLMM(lm_ssid_night_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ssid_night_noint)
-anova(lm_ssid_night_noint) # treatment effect, marginally nonsignificant site effect 
+anova(lm_ssid_night_noint) # treatment effect, marginally nonsignificant site effect
 VarCorr(lm_ssid_night_noint)
 
-capture.output(anova(lm_ssid_night_noint), file = "../../outputs/calcification/urban incubations ssid night lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid_night)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid_night)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_night_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ssid_night[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid_night[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid_night[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid_night, "%\n")
+  cat("Delta R² site:", delta_site_ssid_night, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid night lme.txt")
 
 # pairwise tests
 emm_ssid_night <- emmeans(lm_ssid_night_noint, ~ treatment | site)
@@ -477,38 +658,81 @@ dev.off()
 
 #### incubation day/night linear mixed-effect models ####
 
-# O. faveolata 
+# ========================
+# O. faveolata day-averaged
+# ========================
 # full model, tank nested within pH, genotype nested within site
 lm_ofav <- lmer(calcificationavg ~ treatment * site +
-                      (1 | site:genotype),
-                    data = incubations_mean_ofav, REML = TRUE)
+                  (1 | site:genotype),
+                data = incubations_mean_ofav, REML = TRUE)
 
 # reduced model, no interaction of pH and site
 lm_ofav_noint <- lmer(calcificationavg ~ treatment + site +
-                            (1 | site:genotype),
-                          data = incubations_mean_ofav, REML = TRUE)
-
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+                        (1 | site:genotype),
+                      data = incubations_mean_ofav, REML = TRUE)
 
 # reduced model, dropped genotype as factor
 lm_ofav_noG <- lm(calcificationavg ~ treatment + site,
-                      data = incubations_mean_ofav)
+                  data = incubations_mean_ofav)
 
-# LRT of genotype effect
-anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ofav <- anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE))
+lrt_int_ofav
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG))
+lrt_geno_ofav
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ofav <- as.data.frame(VarCorr(lm_ofav_noint))
+total_var_ofav <- sum(vc_ofav$vcov)
+vc_ofav$pct_var <- round(100 * vc_ofav$vcov / total_var_ofav, 2)
+colnames(vc_ofav)[colnames(vc_ofav) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav <- r.squaredGLMM(lm_ofav_noint)
+
+# Individual fixed effect contributions
+lm_ofav_ml      <- update(lm_ofav_noint, REML = FALSE)
+lm_ofav_no_trt  <- update(lm_ofav_ml, . ~ . - treatment)
+lm_ofav_no_site <- update(lm_ofav_ml, . ~ . - site)
+
+r2_ofav_full    <- r.squaredGLMM(lm_ofav_ml)[, "R2m"]
+delta_trt_ofav  <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_trt)[, "R2m"]), 2)
+delta_site_ofav <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ofav_noint)
 anova(lm_ofav_noint) # no significant factors
 VarCorr(lm_ofav_noint)
 
-capture.output(anova(lm_ofav_noint), file = "../../outputs/calcification/urban incubations ofav mean lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ofav[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav, "%\n")
+  cat("Delta R² site:", delta_site_ofav, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav mean lme.txt")
 
 # pairwise tests
 # emm_ofav <- emmeans(lm_ofav_noint, ~ site * treatment)
 # pairs(emm_ofav, adjust = "tukey")
-
 # capture.output(pairs(emm_ofav, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav mean pairwise.txt")
 
 # Create letters indicating significant differences for plot
@@ -516,38 +740,81 @@ capture.output(anova(lm_ofav_noint), file = "../../outputs/calcification/urban i
 # cld_ofav
 
 
-# S. siderea night
+# ========================
+# S. siderea day-averaged
+# ========================
 # full model, tank nested within pH, genotype nested within site
 lm_ssid <- lmer(calcificationavg ~ treatment * site +
-                        (1 | site:genotype),
-                      data = incubations_mean_ssid, REML = TRUE)
+                  (1 | site:genotype),
+                data = incubations_mean_ssid, REML = TRUE)
 
 # reduced model, no interaction of pH and site
 lm_ssid_noint <- lmer(calcificationavg ~ treatment + site +
-                              (1 | site:genotype),
-                            data = incubations_mean_ssid, REML = TRUE)
-
-# likelihood ratio test of interactive vs non-interactive model
-anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE)) # p > 0.05 but AIC lower for noint model, so use reduced model
+                        (1 | site:genotype),
+                      data = incubations_mean_ssid, REML = TRUE)
 
 # reduced model, dropped genotype as factor
 lm_ssid_noG <- lm(calcificationavg ~ treatment + site,
-                        data = incubations_mean_ssid)
+                  data = incubations_mean_ssid)
 
-# LRT of genotype effect
-anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG)) # p > 0.05 and AIC about the same, so keep genotype
+# LRT: interaction effect
+lrt_int_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE))
+lrt_int_ssid
+# nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG))
+lrt_geno_ssid
+# nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+vc_ssid <- as.data.frame(VarCorr(lm_ssid_noint))
+total_var_ssid <- sum(vc_ssid$vcov)
+vc_ssid$pct_var <- round(100 * vc_ssid$vcov / total_var_ssid, 2)
+colnames(vc_ssid)[colnames(vc_ssid) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid <- r.squaredGLMM(lm_ssid_noint)
+
+# Individual fixed effect contributions
+lm_ssid_ml      <- update(lm_ssid_noint, REML = FALSE)
+lm_ssid_no_trt  <- update(lm_ssid_ml, . ~ . - treatment)
+lm_ssid_no_site <- update(lm_ssid_ml, . ~ . - site)
+
+r2_ssid_full    <- r.squaredGLMM(lm_ssid_ml)[, "R2m"]
+delta_trt_ssid  <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_trt)[, "R2m"]), 2)
+delta_site_ssid <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_site)[, "R2m"]), 2)
 
 # model outputs
 summary(lm_ssid_noint)
-anova(lm_ssid_noint) # significant treatment and site effects 
+anova(lm_ssid_noint) # significant treatment and site effects
 VarCorr(lm_ssid_noint)
 
-capture.output(anova(lm_ssid_noint), file = "../../outputs/calcification/urban incubations ssid mean lme.txt")
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  print(vc_ssid[, c("component", "vcov", "pct_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid, "%\n")
+  cat("Delta R² site:", delta_site_ssid, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid mean lme.txt")
 
 # pairwise tests
 emm_ssid <- emmeans(lm_ssid_noint, ~ site * treatment)
 pairs(emm_ssid, adjust = "tukey")
-
 capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid mean pairwise.txt")
 
 # Create letters indicating significant differences for plot

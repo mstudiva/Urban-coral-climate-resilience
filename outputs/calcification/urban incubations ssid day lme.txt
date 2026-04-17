@@ -1,6 +1,36 @@
+=== LRT: Treatment x Site Interaction (Fixed) ===
+Data: incubations_ssid_day
+Models:
+update(lm_ssid_day_noint, REML = FALSE): calcificationadj ~ treatment + site + (1 | site:genotype)
+update(lm_ssid_day, REML = FALSE): calcificationadj ~ treatment * site + (1 | site:genotype)
+                                        npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)
+update(lm_ssid_day_noint, REML = FALSE)    7 -210.28 -198.45 112.14   -224.28                     
+update(lm_ssid_day, REML = FALSE)         10 -208.82 -191.93 114.41   -228.82 4.5467  3     0.2082
+
+=== LRT: Genotype Effect (site:genotype) ===
+Data: incubations_ssid_day
+Models:
+update(lm_ssid_day_noG): calcificationadj ~ treatment + site
+update(lm_ssid_day_noint, REML = FALSE): calcificationadj ~ treatment + site + (1 | site:genotype)
+                                        npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)
+update(lm_ssid_day_noG)                    6 -212.12 -201.99 112.06   -224.12                     
+update(lm_ssid_day_noint, REML = FALSE)    7 -210.28 -198.45 112.14   -224.28 0.1502  1     0.6984
+
+=== ANOVA (Fixed Effects) ===
 Type III Analysis of Variance Table with Satterthwaite's method
              Sum Sq   Mean Sq NumDF DenDF F value   Pr(>F)   
 treatment 0.0028610 0.0028610     1    19 13.7849 0.001476 **
 site      0.0034781 0.0011594     3    16  5.5861 0.008127 **
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+=== Variance Components (Random Effects) ===
+      component         vcov pct_var
+1 site:genotype 4.279331e-05   17.09
+2      Residual 2.075441e-04   82.91
+
+=== R² (Fixed Effects) ===
+Marginal R² (fixed effects only): 44.33 %
+Conditional R² (fixed + random): 53.84 %
+Delta R² treatment: 17.54 %
+Delta R² site: 30.21 %

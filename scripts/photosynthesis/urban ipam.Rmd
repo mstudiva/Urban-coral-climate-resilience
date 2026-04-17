@@ -146,10 +146,10 @@ ipam_ssid %>% filter(temp != "control temp") -> ipam_ssid_heat
 # -----------------------------------------------------------------------------
 
 cat("--- Duplicate exp_unit x time checks (should all be FALSE) ---\n")
-cat("ofav_control:", any(duplicated(ipam_ofav_control %>% select(exp_unit, time))), "\n")
-cat("ssid_control:", any(duplicated(ipam_ssid_control %>% select(exp_unit, time))), "\n")
-cat("ofav_heat:   ", any(duplicated(ipam_ofav_heat    %>% select(exp_unit, time))), "\n")
-cat("ssid_heat:   ", any(duplicated(ipam_ssid_heat    %>% select(exp_unit, time))), "\n")
+cat("ofav_control:", any(duplicated(ipam_ofav_control %>% dplyr::select(exp_unit, time))), "\n")
+cat("ssid_control:", any(duplicated(ipam_ssid_control %>% dplyr::select(exp_unit, time))), "\n")
+cat("ofav_heat:   ", any(duplicated(ipam_ofav_heat    %>% dplyr::select(exp_unit, time))), "\n")
+cat("ssid_heat:   ", any(duplicated(ipam_ssid_heat    %>% dplyr::select(exp_unit, time))), "\n")
 
 cat("\n--- Duplicate sampleID -> geno_id checks (should all be 0 rows) ---\n")
 
@@ -607,7 +607,19 @@ extract_stats <- function(mod, mod_name) {
            F_value = F,
            p_value = `p-value`)
 
-  list(parametric = parametric, smooths = smooths)
+  # Overall model fit statistics
+  # dev_expl: proportion of deviance explained by the full model —
+  #           the GAMM equivalent of R-squared. Printed in summary()
+  #           as "Deviance explained".
+  # r_sq_adj: adjusted R-squared, also from summary(). May differ
+  #           from dev_expl when the response distribution is non-Gaussian.
+  fit <- tibble(
+    model    = mod_name,
+    dev_expl = summary(mod)$dev.expl,
+    r_sq_adj = summary(mod)$r.sq
+  )
+
+  list(parametric = parametric, smooths = smooths, fit = fit)
 }
 
 
@@ -680,6 +692,58 @@ extract_emmeans <- function(mod, dat, mod_name) {
     mutate(model = mod_name)
 
   list(means = means, contrasts = contrasts_out)
+}
+
+
+# --- extract_joint_tests() ---------------------------------------------------
+# Computes omnibus F-tests for each fixed factor (treatment, site, and their
+# interaction) using emmeans::joint_tests(). This produces a single F-statistic
+# and p-value per factor, analogous to a Type III ANOVA, averaged across all
+# observed timepoints.
+#
+# This addresses a key limitation of the parametric table, which only reports
+# individual contrast coefficients relative to the reference level rather than
+# an overall factor effect. joint_tests() is preferred over car::Anova() here
+# because it operates on the emmeans grid (averaged over time) rather than
+# requiring model refitting with ML, and it handles the GAMM structure cleanly.
+#
+# Interpretation:
+#   treatment:      Is there any overall difference in mean FvFm between
+#                   treatment combinations, averaged across sites and timepoints?
+#   site:           Is there any overall difference in mean FvFm between sites,
+#                   averaged across treatments and timepoints?
+#   treatment:site: Does the treatment effect differ across sites?
+#
+# Arguments:
+#   mod:      fitted bam model object
+#   dat:      data frame (used to extract observed timepoints)
+#   mod_name: character label
+# Returns:
+#   data frame of joint_tests() output with model column added
+
+extract_joint_tests <- function(mod, dat, mod_name) {
+
+  emm <- emmeans(mod,
+                 specs = ~ treatment * site,
+                 at    = list(time = unique(dat$time)),
+                 pbkrtest.limit = 10000)
+
+  jt <- as.data.frame(joint_tests(emm)) %>%
+    mutate(model = mod_name) %>%
+    rename(df1     = df1,
+           df2     = df2,
+           F_value = `F.ratio`,
+           p_value = `p.value`) %>%
+    mutate(
+      # Partial eta-squared: proportion of variance explained by each factor
+      # after accounting for all other terms in the model.
+      # Calculated from F and degrees of freedom as:
+      #   eta_p^2 = (F * df1) / (F * df1 + df2)
+      # Interpretation: 0.01 = small, 0.06 = medium, 0.14 = large effect
+      partial_R2 = (F_value * df1) / (F_value * df1 + df2)
+    )
+
+  return(jt)
 }
 
 
@@ -788,7 +852,7 @@ make_diff_smooth_plot <- function(mod, mod_name) {
 #
 # Arguments:
 #   plot:     ggplot or patchwork object
-#   filename: name without extension — saved to outputs/photosynthesis/plots/
+#   filename: name without extension — saved to outputs/photosynthesis/
 #   w, h:     width and height in inches
 
 save_plot <- function(plot, filename, w = 10, h = 6) {
@@ -808,7 +872,8 @@ save_plot <- function(plot, filename, w = 10, h = 6) {
 #   2. Estimate rho from simplified model residuals
 #   3. Fit full GAMM with or without AR(1) depending on rho threshold
 #   4. Print model summary and k.check to console
-#   5. Extract tidy stats tables (parametric, smooths, kcheck, emmeans)
+#   5. Extract tidy stats tables (parametric, smooths, kcheck, emmeans,
+#      joint tests)
 #   6. Build trajectory, smooth term, and difference smooth plots
 #   7. Save all three plots as PDFs
 #
@@ -816,7 +881,7 @@ save_plot <- function(plot, filename, w = 10, h = 6) {
 #   dat:      subsetted data frame (e.g. ipam_ofav_control)
 #   mod_name: character label (e.g. "ofav_control")
 # Returns:
-#   named list: model, rho, stats, kcheck, emmeans, plots
+#   named list: model, rho, stats, kcheck, emmeans, joint_tests, plots
 
 run_full_analysis <- function(dat, mod_name) {
   cat("\n========================================\n")
@@ -842,6 +907,7 @@ run_full_analysis <- function(dat, mod_name) {
   stats   <- extract_stats(mod, mod_name)
   kcheck  <- extract_kcheck(mod, mod_name)
   emm_out <- extract_emmeans(mod, dat, mod_name)
+  jt_out  <- extract_joint_tests(mod, dat, mod_name)
 
   cat("Step 7: Building and saving plots...\n")
   p_traj   <- make_trajectory_plot(mod, dat, mod_name)
@@ -850,19 +916,20 @@ run_full_analysis <- function(dat, mod_name) {
 
   save_plot(p_traj,   paste0(mod_name, "_trajectories"))
   save_plot(p_smooth, paste0(mod_name, "_smooths"), w = 14, h = 10)
-  save_plot(p_diff, paste0(mod_name, "_treatment_smooths"), w = 14, h = 8)
+  save_plot(p_diff,   paste0(mod_name, "_treatment_smooths"), w = 14, h = 8)
 
   cat("Done:", mod_name, "\n")
 
   list(
-    model   = mod,
-    rho     = rho_est,
-    stats   = stats,
-    kcheck  = kcheck,
-    emmeans = emm_out,
-    plots   = list(trajectory = p_traj,
-                   smooths    = p_smooth,
-                   diff       = p_diff)
+    model       = mod,
+    rho         = rho_est,
+    stats       = stats,
+    kcheck      = kcheck,
+    emmeans     = emm_out,
+    joint_tests = jt_out,
+    plots       = list(trajectory = p_traj,
+                       smooths    = p_smooth,
+                       diff       = p_diff)
   )
 }
 ```
@@ -897,6 +964,16 @@ results_ofav_control$plots$smooths
 
 ```{r ofav-control-diff, fig.width=10, fig.height=5}
 results_ofav_control$plots$diff
+```
+
+## Joint tests
+
+```{r ofav-control-joint}
+knitr::kable(
+  results_ofav_control$joint_tests,
+  digits  = 4,
+  caption = "Omnibus F-tests — O. faveolata control"
+)
 ```
 
 ## Parametric coefficients
@@ -981,6 +1058,16 @@ results_ofav_heat$plots$smooths
 results_ofav_heat$plots$diff
 ```
 
+## Joint tests
+
+```{r ofav-heat-joint}
+knitr::kable(
+  results_ofav_heat$joint_tests,
+  digits  = 4,
+  caption = "Omnibus F-tests — O. faveolata heat"
+)
+```
+
 ## Parametric coefficients
 
 ```{r ofav-heat-params}
@@ -1060,6 +1147,16 @@ results_ssid_control$plots$smooths
 
 ```{r ssid-control-diff, fig.width=10, fig.height=5}
 results_ssid_control$plots$diff
+```
+
+## Joint tests
+
+```{r ssid-control-joint}
+knitr::kable(
+  results_ssid_control$joint_tests,
+  digits  = 4,
+  caption = "Omnibus F-tests — S. siderea control"
+)
 ```
 
 ## Parametric coefficients
@@ -1143,6 +1240,16 @@ results_ssid_heat$plots$smooths
 results_ssid_heat$plots$diff
 ```
 
+## Joint tests
+
+```{r ssid-heat-joint}
+knitr::kable(
+  results_ssid_heat$joint_tests,
+  digits  = 4,
+  caption = "Omnibus F-tests — S. siderea heat"
+)
+```
+
 ## Parametric coefficients
 
 ```{r ssid-heat-params}
@@ -1212,11 +1319,13 @@ all_results <- list(
 )
 
 # Stack each table type across all four datasets
-all_parametric <- bind_rows(lapply(all_results, function(r) r$stats$parametric))
-all_smooths    <- bind_rows(lapply(all_results, function(r) r$stats$smooths))
-all_kcheck     <- bind_rows(lapply(all_results, function(r) r$kcheck))
-all_means      <- bind_rows(lapply(all_results, function(r) r$emmeans$means))
-all_contrasts  <- bind_rows(lapply(all_results, function(r) r$emmeans$contrasts))
+all_fit         <- bind_rows(lapply(all_results, function(r) r$stats$fit))
+all_parametric  <- bind_rows(lapply(all_results, function(r) r$stats$parametric))
+all_smooths     <- bind_rows(lapply(all_results, function(r) r$stats$smooths))
+all_kcheck      <- bind_rows(lapply(all_results, function(r) r$kcheck))
+all_means       <- bind_rows(lapply(all_results, function(r) r$emmeans$means))
+all_contrasts   <- bind_rows(lapply(all_results, function(r) r$emmeans$contrasts))
+all_joint_tests <- bind_rows(lapply(all_results, function(r) r$joint_tests))
 
 # Rho summary — report in methods to justify AR(1) decisions per dataset
 rho_summary <- tibble(
@@ -1231,7 +1340,9 @@ rho_summary <- tibble(
 # Export to a single Excel workbook
 write_xlsx(
   list(
+    "Model fit"                = all_fit,
     "Rho estimates"            = rho_summary,
+    "Joint tests"              = all_joint_tests,
     "Parametric coefficients"  = all_parametric,
     "Smooth significance"      = all_smooths,
     "k.check"                  = all_kcheck,

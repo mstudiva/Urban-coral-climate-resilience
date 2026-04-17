@@ -1,4 +1,34 @@
+=== LRT: Treatment x Site Interaction (Fixed) ===
+Data: incubations_ofav_day
+Models:
+update(lm_ofav_day_noint, REML = FALSE): calcificationadj ~ treatment + site + (1 | site:genotype)
+update(lm_ofav_day, REML = FALSE): calcificationadj ~ treatment * site + (1 | site:genotype)
+                                        npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)
+update(lm_ofav_day_noint, REML = FALSE)    7 -193.57 -181.41 103.78   -207.57                     
+update(lm_ofav_day, REML = FALSE)         10 -188.85 -171.48 104.43   -208.85 1.2845  3     0.7328
+
+=== LRT: Genotype Effect (site:genotype) ===
+Data: incubations_ofav_day
+Models:
+update(lm_ofav_day_noG): calcificationadj ~ treatment + site
+update(lm_ofav_day_noint, REML = FALSE): calcificationadj ~ treatment + site + (1 | site:genotype)
+                                        npar     AIC     BIC logLik -2*log(L)  Chisq Df Pr(>Chisq)
+update(lm_ofav_day_noG)                    6 -193.66 -183.23 102.83   -205.66                     
+update(lm_ofav_day_noint, REML = FALSE)    7 -193.57 -181.41 103.78   -207.57 1.9121  1     0.1667
+
+=== ANOVA (Fixed Effects) ===
 Type III Analysis of Variance Table with Satterthwaite's method
               Sum Sq    Mean Sq NumDF  DenDF F value Pr(>F)
 treatment 0.00052435 0.00052435     1 20.769  1.6228 0.2168
 site      0.00039053 0.00013018     3 16.994  0.4029 0.7528
+
+=== Variance Components (Random Effects) ===
+      component         vcov pct_var
+1 site:genotype 0.0001892407   36.94
+2      Residual 0.0003231063   63.06
+
+=== R² (Fixed Effects) ===
+Marginal R² (fixed effects only): 6.42 %
+Conditional R² (fixed + random): 40.98 %
+Delta R² treatment: 2.64 %
+Delta R² site: 4.47 %
