@@ -711,8 +711,8 @@ make_panel <- function(df, title, global_lim) {
   span       <- diff(global_lim)
   jitter_amt <- span * 0.006
   set.seed(42)
-  dat$x_jit <- jitter(dat$lpv_ofav, amount = jitter_amt)
-  dat$y_jit <- jitter(dat$lpv_ssid, amount = jitter_amt)
+  dat$x_jit <- pmin(pmax(jitter(dat$lpv_ofav, amount = jitter_amt), global_lim[1]), global_lim[2])
+  dat$y_jit <- pmin(pmax(jitter(dat$lpv_ssid, amount = jitter_amt), global_lim[1]), global_lim[2])
   
   st <- safe_stats(dat$lpv_ofav, dat$lpv_ssid)
   lab_text <- if (is.na(st$r)) {

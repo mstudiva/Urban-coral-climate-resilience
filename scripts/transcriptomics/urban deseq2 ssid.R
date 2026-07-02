@@ -41,13 +41,13 @@ keep <- rowSums(counts) >= 10
 countData <- counts[keep,]
 nrow(countData)
 ncol(countData)
-write.csv(countData, file="../../outputs/transcriptomics/ssid/countData.csv")
+write.csv(countData, file="../../outputs/transcriptomics/ssid/deseq2/countData.csv")
 
 # for WCGNA: removing all genes with counts of <10 in more than 90 % of samples
 counts4wgcna = counts[apply(counts,1,function(x) sum(x<10))<ncol(counts)*0.9,]
 nrow(counts4wgcna)
 ncol(counts4wgcna)
-write.csv(counts4wgcna, file="../../outputs/transcriptomics/ssid/counts4wgcna.csv")
+write.csv(counts4wgcna, file="../../outputs/transcriptomics/ssid/deseq2/counts4wgcna.csv")
 
 # importing a design .csv file
 design = read.csv("../../data/transcriptomics/ssid/design_ssid.csv", head=TRUE)
@@ -100,7 +100,7 @@ dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
 dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
 
 # save all these dataframes as an Rdata package so you don't need to rerun each time
-save(dds,design,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/ssid/initial.RData")
+save(dds,design,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/ssid/deseq2/initial.RData")
 
 # generating normalized variance-stabilized data for PCoA, heatmaps, etc
 vsd=assay(Vsd)
@@ -109,7 +109,7 @@ snames=paste(colnames(countData),design[,2],design[,11],sep=".")
 # renames the column names
 colnames(vsd)=snames
 
-save(vsd,design,file="../../outputs/transcriptomics/ssid/vsd.RData")
+save(vsd,design,file="../../outputs/transcriptomics/ssid/deseq2/vsd.RData")
 
 # more reduced stabilized dataset for WGCNA
 wg = DESeqDataSetFromMatrix(countData=counts4wgcna, colData=design, design=~ site+treat)
@@ -117,16 +117,16 @@ vsd.wg=assay(varianceStabilizingTransformation(wg), blind=TRUE)
 # vsd.wg=assay(rlog(wg), blind=TRUE)
 head(vsd.wg)
 colnames(vsd.wg)=snames
-save(vsd.wg,design,file="../../outputs/transcriptomics/ssid/data4wgcna.RData")
+save(vsd.wg,design,file="../../outputs/transcriptomics/ssid/deseq2/data4wgcna.RData")
 
 
 #### PCOA and PERMANOVA ####
 
 # heatmap and hierarchical clustering:
-load("../../outputs/transcriptomics/ssid/vsd.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/vsd.RData")
 library(pheatmap)
 # similarity among samples
-pdf(file="../../outputs/transcriptomics/ssid/heatmap_ssid_host.pdf", width=15, height=15)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_ssid_host.pdf", width=15, height=15)
 pheatmap(cor(vsd))
 dev.off()
 
@@ -142,18 +142,18 @@ conditions$treat <- factor(conditions$treat, levels = c("CC", "LC", "CH", "LH"))
 dds.pcoa=pcoa(dist(t(vsd),method="manhattan")/1000)
 scores=dds.pcoa$vectors
 # export this table for % variation explained by each axis (Relative_eig column)
-write.csv(dds.pcoa$values, file = "../../outputs/transcriptomics/ssid/PCoA_variance.csv")
+write.csv(dds.pcoa$values, file = "../../outputs/transcriptomics/ssid/deseq2/PCoA_variance.csv")
 
 # how many good PC's do we have? Compared to random ("broken stick") model
 # plotting PCoA eigenvalues 
-pdf(file="../../outputs/transcriptomics/ssid/PCoA_Manhattan.pdf", width=6, height=6)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_Manhattan.pdf", width=6, height=6)
 plot(dds.pcoa$values$Relative_eig)
 points(dds.pcoa$values$Broken_stick,col="red",pch=3)
 dev.off()
 # the number of black points above the line of red crosses (random model) corresponds to the number of good PC's
 
 # plotting PCoA by site and treatment
-pdf(file="../../outputs/transcriptomics/ssid/PCoA_ssid_host.pdf", width=12, height=6)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_ssid_host.pdf", width=12, height=6)
 par(mfrow=c(1,2))
 plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,2,25,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1 (16.6%)", ylab="Coordinate 2 (4.6%)", main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
@@ -166,7 +166,7 @@ legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,
 dev.off()
 
 # neighbor-joining tree of samples (based on significant PCo's):
-pdf(file="../../outputs/transcriptomics/ssid/PCoA_tree.pdf", width=10, height=10)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_tree.pdf", width=10, height=10)
 tre=nj(dist(scores[,1:4]))
 plot(tre,cex=0.8)
 dev.off()
@@ -175,11 +175,11 @@ dev.off()
 set.seed(23485)
 ad=adonis2(t(vsd)~site*treat, data=conditions, method="manhattan", by = "terms", permutations=1e6)
 ad
-write.csv(ad, file = "../../outputs/transcriptomics/ssid/PERMANOVA_output.csv")
+write.csv(ad, file = "../../outputs/transcriptomics/ssid/deseq2/PERMANOVA_output.csv")
 
 # creating pie chart to represent ANOVA results
 cols=c("blue","orange","grey80")
-pdf(file="../../outputs/transcriptomics/ssid/PERMANOVA_pie.pdf", width=6, height=6)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/PERMANOVA_pie.pdf", width=6, height=6)
 pie(ad$R2[1:3],labels=row.names(ad)[1:4],col=cols,main="site vs treatment")
 dev.off()
 
@@ -187,7 +187,7 @@ dev.off()
 #### DESEQ ####
 
 # with multi-factor, multi-level design - using LRT
-load("../../outputs/transcriptomics/ssid/initial.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/initial.RData")
 library(DESeq2)
 library(BiocParallel)
 
@@ -199,12 +199,12 @@ dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
 dds_treat=DESeq(dds,test="LRT",reduced=~site, parallel=TRUE)
 
 # saving all models
-save(dds,dds_treat,file="../../outputs/transcriptomics/ssid/realModels.RData")
+save(dds,dds_treat,file="../../outputs/transcriptomics/ssid/deseq2/realModels.RData")
 
 
 #### DEGs and CONTRASTS ####
 
-load("../../outputs/transcriptomics/ssid/realModels.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/realModels.RData")
 library(DESeq2)
 
 # site contrasts
@@ -260,12 +260,12 @@ degs_LH_LC=row.names(LH_LC)[LH_LC$padj<0.1 & !(is.na(LH_LC$padj))]
 save(Rainbow_Emerald, Star_Emerald, MacN_Emerald, Star_Rainbow, MacN_Rainbow, MacN_Star, 
      LC_CC, CH_CC, LH_CC, CH_LC, LH_CH, LH_LC, 
      degs_Rainbow_Emerald, degs_Star_Emerald, degs_MacN_Emerald, degs_Star_Rainbow, degs_MacN_Rainbow, degs_MacN_Star, 
-     degs_LC_CC, degs_CH_CC, degs_LH_CC, degs_CH_LC, degs_LH_CH, degs_LH_LC, file="../../outputs/transcriptomics/ssid/pvals.RData")
+     degs_LC_CC, degs_CH_CC, degs_LH_CC, degs_CH_LC, degs_LH_CH, degs_LH_LC, file="../../outputs/transcriptomics/ssid/deseq2/pvals.RData")
 
 
 #### VENN DIAGRAMS ####
 
-load("../../outputs/transcriptomics/ssid/pvals.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/pvals.RData")
 library(DESeq2)
 
 # install.packages("VennDiagram")
@@ -289,7 +289,7 @@ venn_site=venn.diagram(
   cat.fontfamily = "sans",
   cat.just = list(c(0,0.5),c(0.75,0.5),c(0.5,0.5),c(0.5,0.5))
 )
-pdf(file="../../outputs/transcriptomics/ssid/Venn_site.pdf", height=10, width=12)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/Venn_site.pdf", height=10, width=12)
 grid.draw(venn_site)
 dev.off()
 
@@ -311,15 +311,15 @@ venn_treat=venn.diagram(
   cat.fontfamily = "sans",
   cat.just = list(c(0.25,0),c(0.75,0),c(0.5,1))
 )
-pdf(file="../../outputs/transcriptomics/ssid/Venn_treatment.pdf", height=12, width=12)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/Venn_treatment.pdf", height=12, width=12)
 grid.draw(venn_treat)
 dev.off()
 
 
 #### GO/KOG EXPORT ####
 
-load("../../outputs/transcriptomics/ssid/realModels.RData")
-load("../../outputs/transcriptomics/ssid/pvals.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/realModels.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/pvals.RData")
 
 # site contrasts
 
@@ -329,48 +329,48 @@ Rainbow_Emerald.p=data.frame("gene"=row.names(source))
 Rainbow_Emerald.p$lpv=-log(source[,"padj"],10)
 Rainbow_Emerald.p$lpv[source$stat<0]=Rainbow_Emerald.p$lpv[source$stat<0]*-1
 head(Rainbow_Emerald.p)
-write.csv(Rainbow_Emerald.p,file="../../outputs/transcriptomics/ssid/Rainbow_Emerald_lpv.csv",row.names=F,quote=F)
-save(Rainbow_Emerald.p,file="../../outputs/transcriptomics/ssid/Rainbow_Emerald_lpv.RData")
+write.csv(Rainbow_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/Rainbow_Emerald_lpv.csv",row.names=F,quote=F)
+save(Rainbow_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/Rainbow_Emerald_lpv.RData")
 
 source=Star_Emerald[!is.na(Star_Emerald$pvalue),]
 Star_Emerald.p=data.frame("gene"=row.names(source))
 Star_Emerald.p$lpv=-log(source[,"padj"],10)
 Star_Emerald.p$lpv[source$stat<0]=Star_Emerald.p$lpv[source$stat<0]*-1
 head(Star_Emerald.p)
-write.csv(Star_Emerald.p,file="../../outputs/transcriptomics/ssid/Star_Emerald_lpv.csv",row.names=F,quote=F)
-save(Star_Emerald.p,file="../../outputs/transcriptomics/ssid/Star_Emerald_lpv.RData")
+write.csv(Star_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/Star_Emerald_lpv.csv",row.names=F,quote=F)
+save(Star_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/Star_Emerald_lpv.RData")
 
 source=MacN_Emerald[!is.na(MacN_Emerald$pvalue),]
 MacN_Emerald.p=data.frame("gene"=row.names(source))
 MacN_Emerald.p$lpv=-log(source[,"padj"],10)
 MacN_Emerald.p$lpv[source$stat<0]=MacN_Emerald.p$lpv[source$stat<0]*-1
 head(MacN_Emerald.p)
-write.csv(MacN_Emerald.p,file="../../outputs/transcriptomics/ssid/MacN_Emerald_lpv.csv",row.names=F,quote=F)
-save(MacN_Emerald.p,file="../../outputs/transcriptomics/ssid/MacN_Emerald_lpv.RData")
+write.csv(MacN_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Emerald_lpv.csv",row.names=F,quote=F)
+save(MacN_Emerald.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Emerald_lpv.RData")
 
 source=Star_Rainbow[!is.na(Star_Rainbow$pvalue),]
 Star_Rainbow.p=data.frame("gene"=row.names(source))
 Star_Rainbow.p$lpv=-log(source[,"padj"],10)
 Star_Rainbow.p$lpv[source$stat<0]=Star_Rainbow.p$lpv[source$stat<0]*-1
 head(Star_Rainbow.p)
-write.csv(Star_Rainbow.p,file="../../outputs/transcriptomics/ssid/Star_Rainbow_lpv.csv",row.names=F,quote=F)
-save(Star_Rainbow.p,file="../../outputs/transcriptomics/ssid/Star_Rainbow_lpv.RData")
+write.csv(Star_Rainbow.p,file="../../outputs/transcriptomics/ssid/deseq2/Star_Rainbow_lpv.csv",row.names=F,quote=F)
+save(Star_Rainbow.p,file="../../outputs/transcriptomics/ssid/deseq2/Star_Rainbow_lpv.RData")
 
 source=MacN_Rainbow[!is.na(MacN_Rainbow$pvalue),]
 MacN_Rainbow.p=data.frame("gene"=row.names(source))
 MacN_Rainbow.p$lpv=-log(source[,"padj"],10)
 MacN_Rainbow.p$lpv[source$stat<0]=MacN_Rainbow.p$lpv[source$stat<0]*-1
 head(MacN_Rainbow.p)
-write.csv(MacN_Rainbow.p,file="../../outputs/transcriptomics/ssid/MacN_Rainbow_lpv.csv",row.names=F,quote=F)
-save(MacN_Rainbow.p,file="../../outputs/transcriptomics/ssid/MacN_Rainbow_lpv.RData")
+write.csv(MacN_Rainbow.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Rainbow_lpv.csv",row.names=F,quote=F)
+save(MacN_Rainbow.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Rainbow_lpv.RData")
 
 source=MacN_Star[!is.na(MacN_Star$pvalue),]
 MacN_Star.p=data.frame("gene"=row.names(source))
 MacN_Star.p$lpv=-log(source[,"padj"],10)
 MacN_Star.p$lpv[source$stat<0]=MacN_Star.p$lpv[source$stat<0]*-1
 head(MacN_Star.p)
-write.csv(MacN_Star.p,file="../../outputs/transcriptomics/ssid/MacN_Star_lpv.csv",row.names=F,quote=F)
-save(MacN_Star.p,file="../../outputs/transcriptomics/ssid/MacN_Star_lpv.RData")
+write.csv(MacN_Star.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Star_lpv.csv",row.names=F,quote=F)
+save(MacN_Star.p,file="../../outputs/transcriptomics/ssid/deseq2/MacN_Star_lpv.RData")
 
 # treatment contrasts
 
@@ -380,62 +380,63 @@ LC_CC.p=data.frame("gene"=row.names(source))
 LC_CC.p$lpv=-log(source[,"padj"],10)
 LC_CC.p$lpv[source$stat<0]=LC_CC.p$lpv[source$stat<0]*-1
 head(LC_CC.p)
-write.csv(LC_CC.p,file="../../outputs/transcriptomics/ssid/LC_CC_lpv.csv",row.names=F,quote=F)
-save(LC_CC.p,file="../../outputs/transcriptomics/ssid/LC_CC_lpv.RData")
+write.csv(LC_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.csv",row.names=F,quote=F)
+save(LC_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.RData")
 
 source=CH_CC[!is.na(CH_CC$pvalue),]
 CH_CC.p=data.frame("gene"=row.names(source))
 CH_CC.p$lpv=-log(source[,"padj"],10)
 CH_CC.p$lpv[source$stat<0]=CH_CC.p$lpv[source$stat<0]*-1
 head(CH_CC.p)
-write.csv(CH_CC.p,file="../../outputs/transcriptomics/ssid/CH_CC_lpv.csv",row.names=F,quote=F)
-save(CH_CC.p,file="../../outputs/transcriptomics/ssid/CH_CC_lpv.RData")
+write.csv(CH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.csv",row.names=F,quote=F)
+save(CH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.RData")
 
 source=LH_CC[!is.na(LH_CC$pvalue),]
 LH_CC.p=data.frame("gene"=row.names(source))
 LH_CC.p$lpv=-log(source[,"padj"],10)
 LH_CC.p$lpv[source$stat<0]=LH_CC.p$lpv[source$stat<0]*-1
 head(LH_CC.p)
-write.csv(LH_CC.p,file="../../outputs/transcriptomics/ssid/LH_CC_lpv.csv",row.names=F,quote=F)
-save(LH_CC.p,file="../../outputs/transcriptomics/ssid/LH_CC_lpv.RData")
+write.csv(LH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.csv",row.names=F,quote=F)
+save(LH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.RData")
 
 source=CH_LC[!is.na(CH_LC$pvalue),]
 CH_LC.p=data.frame("gene"=row.names(source))
 CH_LC.p$lpv=-log(source[,"padj"],10)
 CH_LC.p$lpv[source$stat<0]=CH_LC.p$lpv[source$stat<0]*-1
 head(CH_LC.p)
-write.csv(CH_LC.p,file="../../outputs/transcriptomics/ssid/CH_LC_lpv.csv",row.names=F,quote=F)
-save(CH_LC.p,file="../../outputs/transcriptomics/ssid/CH_LC_lpv.RData")
+write.csv(CH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.csv",row.names=F,quote=F)
+save(CH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.RData")
 
 source=LH_LC[!is.na(LH_LC$pvalue),]
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
 head(LH_LC.p)
-write.csv(LH_LC.p,file="../../outputs/transcriptomics/ssid/LH_LC_lpv.csv",row.names=F,quote=F)
-save(LH_LC.p,file="../../outputs/transcriptomics/ssid/LH_LC_lpv.RData")
+write.csv(LH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.csv",row.names=F,quote=F)
+save(LH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.RData")
 
 source=LH_CH[!is.na(LH_CH$pvalue),]
 LH_CH.p=data.frame("gene"=row.names(source))
 LH_CH.p$lpv=-log(source[,"padj"],10)
 LH_CH.p$lpv[source$stat<0]=LH_CH.p$lpv[source$stat<0]*-1
 head(LH_CH.p)
-write.csv(LH_CH.p,file="../../outputs/transcriptomics/ssid/LH_CH_lpv.csv",row.names=F,quote=F)
-save(LH_CH.p,file="../../outputs/transcriptomics/ssid/LH_CH_lpv.RData")
+write.csv(LH_CH.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.csv",row.names=F,quote=F)
+save(LH_CH.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.RData")
 
 save(Rainbow_Emerald.p, Star_Emerald.p, MacN_Emerald.p, Star_Rainbow.p, MacN_Rainbow.p, MacN_Star.p, 
-     LC_CC.p, CH_CC.p, LH_CC.p, CH_LC.p, LH_CH.p, LH_LC.p, file="../../outputs/transcriptomics/ssid/exports.RData")
+     LC_CC.p, CH_CC.p, LH_CC.p, CH_LC.p, LH_CH.p, LH_LC.p, file="../../outputs/transcriptomics/ssid/deseq2/exports.RData")
 
 
 #### DEG MATCHING ####
 
 library(DESeq2)
 library(dplyr)
+library(stringr)
 library(reshape2)
 library(RColorBrewer)
 library(ggplot2)
 library(patchwork)
-load("../../outputs/transcriptomics/ssid/exports.RData")
+load("../../outputs/transcriptomics/ssid/deseq2/exports.RData")
 
 # This section of code does several things: 1) join -log10(pval) across treatment comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
 
@@ -464,7 +465,7 @@ LC_CC.p %>%
   mutate(comparison="stress_control", .before="gene") -> commongenes_treatment
 
 # exporting all DEGs matching across stress vs control treatments
-write.csv(commongenes_treatment, file="../../outputs/transcriptomics/ssid/commongenes_treatment.csv")
+write.csv(commongenes_treatment, file="../../outputs/transcriptomics/ssid/deseq2/commongenes_treatment.csv")
 
 # pairwise treatment comparisons
 LC_CC.p %>%
@@ -517,7 +518,7 @@ CH_CC.p %>%
 
 # joining all matching DEGs into a single dataframe
 commongenes_pairwise_treatment <- bind_rows(bleaching_oa,oableaching_oa,bleaching_oableaching)
-write.csv(commongenes_pairwise_treatment, file="../../outputs/transcriptomics/ssid/commongenes_pairwise_treatment.csv")
+write.csv(commongenes_pairwise_treatment, file="../../outputs/transcriptomics/ssid/deseq2/commongenes_pairwise_treatment.csv")
 
 # Site
 # This section of code does several things: 1) join -log10(pval) across site comparisons, 2) filter by 0.1 pval cutoff (log10(0.1)=1), 3) adds gene annotations, and 4) then pulls on corresponding KOG classes
@@ -548,7 +549,7 @@ Star_Emerald.p %>%
   mutate(comparison="urban_reef", .before="gene") -> commongenes_site
 
 # exporting all DEGs matching across stress vs control treatments
-write.csv(commongenes_site, file="../../outputs/transcriptomics/ssid/commongenes_site.csv")
+write.csv(commongenes_site, file="../../outputs/transcriptomics/ssid/deseq2/commongenes_site.csv")
 
 # pairwise site comparisons
 Star_Emerald.p %>%
@@ -586,44 +587,51 @@ Star_Rainbow.p %>%
 
 # joining all matching DEGs into a single dataframe
 commongenes_pairwise_site <- bind_rows(urban_Emerald,urban_Rainbow)
-write.csv(commongenes_pairwise_site, file="../../outputs/transcriptomics/ssid/commongenes_pairwise_site.csv")
+write.csv(commongenes_pairwise_site, file="../../outputs/transcriptomics/ssid/deseq2/commongenes_pairwise_site.csv")
 
-#### CORRELATION PLOTS TREATMENT ####
+#### CORRELATION PLOT HELPERS ####
+
 # --- Unicode-safe symbols (avoid warnings on some devices) ---
 use_unicode <- l10n_info()[["UTF-8"]] && capabilities("cairo")
-LTE   <- if (use_unicode) "\u2264" else "<="
-MINUS <- if (use_unicode) "\u2212" else "-"
+LTE   <- if (use_unicode) "≤" else "<="
+MINUS <- if (use_unicode) "−" else "-"
 
-# --- Parameters (tweak as needed) ---
-sig_cut1_global <- 1.3  # ~ p = 0.05
-sig_cut2_global <- 2.0  # ~ p = 0.01
-sig_cut3_global <- 6.0  # ~ p = 1e-6  (raise to 4.0 for ~1e-4)
-inf_cap          <- 20   # cap |−log10 p| when p == 0 (Inf)
+# --- Parameters ---
+inf_cap  <- 20
 REL_NAME <- "Relationship"
 SIG_NAME <- "p Value"
 
+# Discordant filter knobs (used by both dataframe sections)
+delta_cut_dd <- 2.0
+ratio_cut_dd <- 100
+high_cut_dd  <- 2.0   # ~ p <= 0.01
+low_cut_dd   <- 1.3   # ~ p <= 0.05
+min_sig      <- 1
+
 # --- Relationship colors (colorblind-friendly) ---
 REL_LEVELS <- c("Direct", "Inverse")
-rel_cols   <- setNames(c("#009E73", "#D55E00"), REL_LEVELS)  # green, orange
+rel_cols   <- setNames(c("#009E73", "#D55E00"), REL_LEVELS)
 
-# --- Helpers (generic; no species assumptions) ---
+# --- Significance tiers (shared by all plots) ---
+SIG_LEVELS <- c("p > 0.1", "p ≤ 0.05", "p ≤ 1e−6")
+sig_alpha  <- setNames(c(0.15, 0.90, 0.90), SIG_LEVELS)
+sig_size   <- setNames(c(1.0,  1.2,  1.2),  SIG_LEVELS)
+sig_stroke <- setNames(c(0.00, 0.20, 0.00), SIG_LEVELS)
+
+# --- Shared helper functions ---
+# Normalize any two named lpv columns into lpv_x / lpv_y, cap infinities, drop non-finite rows
 clean_lpv_df <- function(df, col_x, col_y, cap = inf_cap) {
   if (is.null(df) || !nrow(df)) stop("Input data frame is empty.", call. = FALSE)
-  if (!all(c(col_x, col_y) %in% names(df))) {
+  if (!all(c(col_x, col_y) %in% names(df)))
     stop(sprintf("Columns not found: %s",
                  paste(setdiff(c(col_x, col_y), names(df)), collapse = ", ")), call. = FALSE)
-  }
   d <- df
   d$lpv_x <- as.numeric(d[[col_x]])
   d$lpv_y <- as.numeric(d[[col_y]])
-  
-  # Cap infinities from p=0
   d$lpv_x[ is.infinite(d$lpv_x) & d$lpv_x > 0 ] <- cap
   d$lpv_x[ is.infinite(d$lpv_x) & d$lpv_x < 0 ] <- -cap
   d$lpv_y[ is.infinite(d$lpv_y) & d$lpv_y > 0 ] <- cap
   d$lpv_y[ is.infinite(d$lpv_y) & d$lpv_y < 0 ] <- -cap
-  
-  # Drop non-finite rows
   d <- d[is.finite(d$lpv_x) & is.finite(d$lpv_y), , drop = FALSE]
   d
 }
@@ -639,113 +647,87 @@ safe_stats <- function(x, y) {
   } else list(r = NA_real_, p = NA_real_, n = n)
 }
 
-# --- p-value label helpers (legend shows ACTUAL p ranges) ---
-fmt_p <- function(p) {
-  if (is.na(p)) return("NA")
-  if (p < 1e-4) sprintf("%.0e", p) else sprintf("%.3f", p)
+fmt_num <- function(x) {
+  if (is.na(x)) "NA" else if (abs(x) < 1e-3) format(x, digits = 2, scientific = TRUE) else sprintf("%.3f", x)
 }
 
-pvalue_labels <- function(c1, c2, c3) {
-  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
-  p1 <- 10^(-c1); p2 <- 10^(-c2); p3 <- 10^(-c3)
-  c(
-    sprintf("p > %s",           fmt_p(p1)),
-    sprintf("%s < p %s %s",     fmt_p(p2), LTE, fmt_p(p1)),
-    sprintf("%s < p %s %s",     fmt_p(p3), LTE, fmt_p(p2)),
-    sprintf("p %s %s",          LTE, fmt_p(p3))
-  )
-}
-
-# Significance tiers (alpha, light -> dark)
-SIG_LEVELS <- pvalue_labels(sig_cut1_global, sig_cut2_global, sig_cut3_global)
-sig_alpha  <- setNames(c(0.15, 0.35, 0.65, 1.00), SIG_LEVELS)
-
-sig_category4 <- function(lpv_x, lpv_y, c1, c2, c3, levels_vec = SIG_LEVELS) {
-  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
-  lv <- pmin(abs(lpv_x), abs(lpv_y))  # min significance across the pair in |−log10 p|
-  out <- cut(
-    lv,
-    breaks = c(-Inf, c1, c2, c3, Inf),
-    labels = pvalue_labels(c1, c2, c3),
-    include.lowest = TRUE, right = TRUE
+sig_category3 <- function(lpv_x, lpv_y, levels_vec = SIG_LEVELS) {
+  lv <- pmin(abs(lpv_x), abs(lpv_y))
+  p  <- 10^(-lv)
+  out <- dplyr::case_when(
+    p <= 1e-6 ~ levels_vec[3],
+    p <= 0.05 ~ levels_vec[2],
+    TRUE      ~ levels_vec[1]
   )
   factor(out, levels = levels_vec)
 }
 
-# --- One-panel constructor (explicit columns & labels; dashed/dotted refs) ---
-make_panel <- function(df, title, col_x, col_y, x_lab, y_lab,
-                       c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
+compute_global_limits <- function(comparisons, min_span = 0.6, pad_frac = 0.05) {
+  vals <- unlist(lapply(comparisons, function(entry) {
+    d <- clean_lpv_df(entry$df, entry$col_x, entry$col_y)
+    d <- d[pmax(abs(d$lpv_x), abs(d$lpv_y)) >= 1.0, ]
+    c(d$lpv_x, d$lpv_y)
+  }))
+  max_abs <- max(abs(vals), na.rm = TRUE)
+  if (!is.finite(max_abs)) max_abs <- min_span / 2
+  lim <- max(max_abs * (1 + pad_frac), min_span / 2)
+  c(-lim, lim)
+}
+
+make_panel <- function(df, title, col_x, col_y, x_lab, y_lab, global_lim) {
   dat <- clean_lpv_df(df, col_x, col_y)
-  
-  # Relationship (direct/inverse) based on signs
+  dat <- subset(dat, pmax(abs(dat$lpv_x), abs(dat$lpv_y)) >= 1.0)
+
   same <- (dat$lpv_x >= 0 & dat$lpv_y >= 0) | (dat$lpv_x <= 0 & dat$lpv_y <= 0)
   dat$rel_class <- factor(ifelse(same, "Direct", "Inverse"), levels = REL_LEVELS)
-  
-  # Significance tiers
-  dat$sig_cat <- sig_category4(dat$lpv_x, dat$lpv_y, c1, c2, c3, levels_vec = SIG_LEVELS)
-  
-  # --- Data-driven square limits (not forced around 0), with min span ---
-  x_min <- min(dat$lpv_x, na.rm = TRUE); x_max <- max(dat$lpv_x, na.rm = TRUE)
-  y_min <- min(dat$lpv_y, na.rm = TRUE); y_max <- max(dat$lpv_y, na.rm = TRUE)
-  x_center <- (x_min + x_max) / 2
-  y_center <- (y_min + y_max) / 2
-  
-  # base spans (handle single-point cases)
-  x_span0 <- max(x_max - x_min, 1e-8)
-  y_span0 <- max(y_max - y_min, 1e-8)
-  
-  # jitter + padding
-  jitter_w <- x_span0 * 0.003
-  jitter_h <- y_span0 * 0.003
-  pad_x <- max(0.04 * x_span0, 6 * jitter_w)
-  pad_y <- max(0.04 * y_span0, 6 * jitter_h)
-  
-  # padded spans
-  x_span <- x_span0 + 2 * pad_x
-  y_span <- y_span0 + 2 * pad_y
-  
-  # enforce a minimum square span so tiny panels don’t collapse
-  min_span <- 0.6
-  final_span <- max(x_span, y_span, min_span)
-  
-  x_limits <- c(x_center - final_span / 2, x_center + final_span / 2)
-  y_limits <- c(y_center - final_span / 2, y_center + final_span / 2)
-  
-  # Stats label
+  dat$sig_cat   <- sig_category3(dat$lpv_x, dat$lpv_y, levels_vec = SIG_LEVELS)
+
+  x_limits <- global_lim
+  y_limits <- global_lim
+
+  span       <- diff(global_lim)
+  jitter_amt <- span * 0.006
+  set.seed(42)
+  dat$x_jit <- pmin(pmax(jitter(dat$lpv_x, amount = jitter_amt), global_lim[1]), global_lim[2])
+  dat$y_jit <- pmin(pmax(jitter(dat$lpv_y, amount = jitter_amt), global_lim[1]), global_lim[2])
+
   st <- safe_stats(dat$lpv_x, dat$lpv_y)
-  fmt_num <- function(x) if (is.na(x)) "NA" else if (abs(x) < 1e-3) format(x, digits = 2, scientific = TRUE) else sprintf("%.3f", x)
-  lab_text <- if (is.na(st$r)) sprintf("n = %d", st$n) else sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
-  
-  # Legend labels for line types
+  lab_text <- if (is.na(st$r)) {
+    sprintf("n = %d", st$n)
+  } else {
+    sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
+  }
+
   ref_levels <- c("Direct 1:1", "Inverse 1:1")
-  
+
   ggplot(dat, aes(x = lpv_x, y = lpv_y)) +
-    # Draw origin axes only if 0 is inside the panel
-    (if (y_limits[1] < 0 && y_limits[2] > 0) geom_hline(yintercept = 0, color = "grey85") else NULL) +
-    (if (x_limits[1] < 0 && x_limits[2] > 0) geom_vline(xintercept = 0, color = "grey85") else NULL) +
-    
-    # Points (linetype=NA so legend circles stay clean)
+    geom_hline(yintercept = 0, color = "grey85") +
+    geom_vline(xintercept = 0, color = "grey85") +
+
     geom_point(
-      aes(color = rel_class, fill = rel_class, alpha = sig_cat),
-      shape = 21, size = 1.6, stroke = 0.45, linetype = NA,
-      position = position_jitter(width = final_span * 0.003, height = final_span * 0.003)
+      aes(x = x_jit, y = y_jit, color = rel_class, fill = rel_class,
+          alpha = sig_cat, stroke = sig_cat, size = sig_cat),
+      shape = 21
     ) +
-    
-    # Alpha legend trainer (invisible)
+
+    geom_point(
+      data = subset(dat, sig_cat == SIG_LEVELS[3]),
+      aes(x = x_jit, y = y_jit, fill = rel_class, alpha = sig_cat, size = sig_cat),
+      color = "grey15", shape = 21, stroke = 0.40
+    ) +
+
     geom_point(
       data = data.frame(sig_cat = factor(SIG_LEVELS, levels = SIG_LEVELS)),
       mapping = aes(x = 0, y = 0, alpha = sig_cat),
       inherit.aes = FALSE, shape = 21, size = 0, stroke = 0, fill = NA, color = NA,
-      show.legend = TRUE
+      show.legend = TRUE, na.rm = TRUE
     ) +
-    
-    # Reference lines (drawn; legend fed by trainer below)
+
     geom_abline(intercept = 0, slope =  1, color = "firebrick", linewidth = 1,
                 linetype = "dashed", alpha = 0.5, show.legend = FALSE) +
     geom_abline(intercept = 0, slope = -1, color = "firebrick", linewidth = 1,
                 linetype = "dotted", alpha = 0.5, show.legend = FALSE) +
-    
-    # Line-type legend trainer (zero-length segments create legend keys)
+
     geom_segment(
       data = data.frame(x = 0, y = 0, xend = 0, yend = 0,
                         ref = factor(ref_levels, levels = ref_levels)),
@@ -753,450 +735,42 @@ make_panel <- function(df, title, col_x, col_y, x_lab, y_lab,
       inherit.aes = FALSE, color = "firebrick", linewidth = 1, alpha = 0.5,
       show.legend = TRUE
     ) +
-    
-    # Stats label (top-left inside the frame)
+
     annotate("text", x = x_limits[1], y = y_limits[2], label = lab_text,
              hjust = 0, vjust = 1.1, size = 4.2) +
-    
-    # Clip inside panel with square limits
+
     coord_fixed(xlim = x_limits, ylim = y_limits, expand = FALSE, clip = "on") +
-    
-    # Legends & scales
-    scale_color_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, guide = "none") +
-    scale_fill_manual(values = rel_cols,  breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, name = REL_NAME) +
-    scale_alpha_manual(values = sig_alpha, breaks = SIG_LEVELS, limits = SIG_LEVELS, drop = FALSE, name = SIG_NAME) +
+
+    scale_color_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS,
+                       drop = FALSE, guide = "none") +
+    scale_discrete_manual("size", values = sig_size, breaks = SIG_LEVELS, limits = SIG_LEVELS,
+                          guide = "none") +
+    scale_fill_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS,
+                      drop = FALSE, name = REL_NAME) +
+    scale_alpha_manual(values = sig_alpha, breaks = SIG_LEVELS, limits = SIG_LEVELS,
+                       drop = FALSE, name = SIG_NAME) +
+    scale_discrete_manual("stroke", values = sig_stroke,
+                          breaks = SIG_LEVELS, limits = SIG_LEVELS, guide = "none") +
     scale_linetype_manual(
       name   = "Reference",
       values = c("Direct 1:1" = "dashed", "Inverse 1:1" = "dotted")
     ) +
     guides(
-      fill  = guide_legend(order = 1, override.aes = list(shape = 21, size = 1.6, stroke = 0.45, linetype = 0)),
-      alpha = guide_legend(order = 2, override.aes = list(shape = 21, fill = "grey50", color = "grey30", size = 1.6, stroke = 0.45, linetype = 0)),
-      linetype = guide_legend(order = 3, override.aes = list(color = "firebrick", linewidth = 1, alpha = 0.5))
-    ) +
-    labs(
-      x = paste0(x_lab, " (signed ", MINUS, "log10 p)"),
-      y = paste0(y_lab, " (signed ", MINUS, "log10 p)"),
-      title = NULL
-    ) +
-    theme_classic(base_size = 13) +
-    theme(
-      plot.title = element_text(face = "bold", hjust = 0.5),
-      axis.title = element_text(face = "bold"),
-      axis.text  = element_text(color = "black"),
-      legend.position = "right",
-      axis.line = element_blank(),
-      plot.margin = margin(8, 20, 8, 8)
-    )
-}
-
-# --- Build 3 panels (explicit columns & labels) ---
-# Data frames and exact columns:
-# bleaching_oa        : x = lpv.LC_CC, y = lpv.CH_CC
-# oableaching_oa      : x = lpv.LC_CC, y = lpv.LH_CC
-# bleaching_oableaching: x = lpv.CH_CC, y = lpv.LH_CC
-
-comparisons <- list(
-  list(title = "Bleaching vs OA",
-       df    = bleaching_oa,
-       col_x = "lpv.LC_CC", col_y = "lpv.CH_CC",
-       x_lab = "OA",            y_lab = "Bleaching"),
-  list(title = "OA+Bleaching vs OA",
-       df    = oableaching_oa,
-       col_x = "lpv.LC_CC", col_y = "lpv.LH_CC",
-       x_lab = "OA",            y_lab = "OA + Bleaching"),
-  list(title = "Bleaching vs OA+Bleaching",
-       df    = bleaching_oableaching,
-       col_x = "lpv.CH_CC", col_y = "lpv.LH_CC",
-       x_lab = "Bleaching",     y_lab = "OA + Bleaching")
-)
-
-panels <- lapply(
-  comparisons,
-  function(cmp) make_panel(
-    df     = cmp$df,
-    title  = cmp$title,
-    col_x  = cmp$col_x,
-    col_y  = cmp$col_y,
-    x_lab  = cmp$x_lab,
-    y_lab  = cmp$y_lab,
-    c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global
-  )
-)
-
-# --- Hide redundant axis TITLES only (keep ticks & numbers) for a 1x3 layout ---
-ncol_grid <- 3
-nrow_grid <- ceiling(length(panels) / ncol_grid)
-
-for (i in seq_along(panels)) {
-  row <- ceiling(i / ncol_grid)
-  # Keep ALL y-axis titles: do NOT blank axis.title.y
-  if (row != nrow_grid) {
-    panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
-  }
-}
-
-# --- Single legend workflow ---
-one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
-legend_plot <- cowplot::ggdraw(one_legend)
-
-panels_noleg <- lapply(panels, function(p) p + theme(legend.position = "none"))
-
-grid  <- wrap_plots(panels_noleg, ncol = ncol_grid)
-panel <- grid | legend_plot
-panel <- panel + plot_layout(widths = c(1, 0.30))
-
-# --- Show & Save ---
-print(panel)
-ggsave("../../outputs/transcriptomics/ssid/commongenes correlation treatment.pdf", panel, width = 14, height = 5.5)
-# ggsave("../../outputs/transcriptomics/ssid/commongenes correlation treatment.png", panel, width = 14, height = 5.5, dpi = 600)
-
-
-#### CORRELATION DATAFRAME TREATMENT ####
-# --- knobs ---
-delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
-ratio_cut_dd <- 100   # p-ratio >= 100
-high_cut_dd  <- sig_cut2_global   # strong (e.g., 2.0)
-low_cut_dd   <- sig_cut1_global   # weak   (e.g., 1.3)
-min_sig      <- 0.0
-
-# --- comparison definitions (columns & pretty axis names) ---
-comparisons_df <- list(
-  list(name = "Bleaching vs OA",
-       df   = bleaching_oa,
-       col_x = "lpv.LC_CC", col_y = "lpv.CH_CC",
-       x_nm = "OA",         y_nm = "Bleaching"),
-  list(name = "OA+Bleaching vs OA",
-       df   = oableaching_oa,
-       col_x = "lpv.LC_CC", col_y = "lpv.LH_CC",
-       x_nm = "OA",         y_nm = "OA + Bleaching"),
-  list(name = "Bleaching vs OA+Bleaching",
-       df   = bleaching_oableaching,
-       col_x = "lpv.CH_CC", col_y = "lpv.LH_CC",
-       x_nm = "Bleaching",  y_nm = "OA + Bleaching")
-)
-
-# --- align & rbind helper (handles empties) ---
-rbind_align <- function(...) {
-  dfs  <- list(...)
-  cols <- unique(unlist(lapply(dfs, names)))
-  dfs2 <- lapply(dfs, function(x) {
-    if (is.null(x) || !nrow(x)) {
-      as.data.frame(setNames(replicate(length(cols), logical(0), simplify = FALSE), cols))
-    } else {
-      miss <- setdiff(cols, names(x))
-      for (m in miss) x[[m]] <- NA
-      x[, cols, drop = FALSE]
-    }
-  })
-  do.call(rbind, dfs2)
-}
-
-# --- derived fields for filtering (uses your clean_lpv_df(df, col_x, col_y)) ---
-classify_for_filters_xy <- function(df, col_x, col_y, comp_name, x_nm, y_nm) {
-  d <- clean_lpv_df(df, col_x, col_y)  # creates lpv_x, lpv_y
-  
-  same <- (d$lpv_x >= 0 & d$lpv_y >= 0) | (d$lpv_x <= 0 & d$lpv_y <= 0)
-  d$rel_class    <- ifelse(same, "Direct", "Inverse")
-  
-  d$abs_x        <- abs(d$lpv_x)
-  d$abs_y        <- abs(d$lpv_y)
-  d$delta_log10p <- abs(d$abs_x - d$abs_y)
-  d$p_x          <- 10^(-d$abs_x)
-  d$p_y          <- 10^(-d$abs_y)
-  d$p_ratio      <- pmax(d$p_x, d$p_y) / pmin(d$p_x, d$p_y)
-  
-  d$comparison   <- comp_name
-  d$x_axis_name  <- x_nm
-  d$y_axis_name  <- y_nm
-  d$x_col        <- col_x
-  d$y_col        <- col_y
-  d
-}
-
-# --- filter one comparison into inverse + strict direct-discordant ---
-filter_one_xy <- function(df, comp_name, col_x, col_y, x_nm, y_nm) {
-  d <- classify_for_filters_xy(df, col_x, col_y, comp_name, x_nm, y_nm)
-  meets_min <- (pmax(d$abs_x, d$abs_y) >= min_sig)
-  
-  # 1) ALL inverse
-  inverse <- d[d$rel_class == "Inverse" & meets_min, , drop = FALSE]
-  if (nrow(inverse)) {
-    inverse$filter_type           <- "inverse"
-    inverse$relationship_category <- "Inverse"
-    inverse$discord_direction     <- NA_character_
-    inverse$delta_cut_used        <- NA_real_
-    inverse$high_cut_used         <- NA_real_
-    inverse$low_cut_used          <- NA_real_
-    inverse$ratio_cut_used        <- NA_real_
-  }
-  
-  # 2) STRICT direct-discordant
-  strong_x_weak_y_full <- d$abs_x >= high_cut_dd & d$abs_y <= low_cut_dd
-  strong_y_weak_x_full <- d$abs_y >= high_cut_dd & d$abs_x <= low_cut_dd
-  cross_tier_full      <- strong_x_weak_y_full | strong_y_weak_x_full
-  
-  dd_idx <- d$rel_class == "Direct" &
-    d$delta_log10p >= delta_cut_dd &
-    d$p_ratio      >= ratio_cut_dd &
-    cross_tier_full &
-    meets_min
-  
-  discordant <- d[dd_idx, , drop = FALSE]
-  if (nrow(discordant)) {
-    # compute direction INSIDE the subset to match lengths
-    strong_x_weak_y_sub <- discordant$abs_x >= high_cut_dd & discordant$abs_y <= low_cut_dd
-    discordant$filter_type           <- "discordant"
-    discordant$relationship_category <- "Direct (discordant significance)"
-    discordant$discord_direction     <- ifelse(strong_x_weak_y_sub,
-                                               paste0(x_nm, " >> ", y_nm),
-                                               paste0(y_nm, " >> ", x_nm))
-    discordant$delta_cut_used        <- delta_cut_dd
-    discordant$high_cut_used         <- high_cut_dd
-    discordant$low_cut_used          <- low_cut_dd
-    discordant$ratio_cut_used        <- ratio_cut_dd
-  }
-  
-  list(inverse = inverse, discordant = discordant)
-}
-
-# --- run filters across all comparisons ---
-res_list <- lapply(
-  comparisons_df,
-  function(cmp) filter_one_xy(
-    df       = cmp$df,
-    comp_name= cmp$name,
-    col_x    = cmp$col_x, col_y = cmp$col_y,
-    x_nm     = cmp$x_nm,  y_nm  = cmp$y_nm
-  )
-)
-
-# --- build ONE MASTER DATAFRAME with filter_type column ---
-inverse_list    <- lapply(res_list, `[[`, "inverse")
-discordant_list <- lapply(res_list, `[[`, "discordant")
-
-inverse_discordant_master <- do.call(
-  rbind_align,
-  c(inverse_list, discordant_list)
-)
-
-# --- Build row labels and write ONE CSV (ID first, comparison second) ---
-if (exists("inverse_discordant_master") && nrow(inverse_discordant_master)) {
-  df <- inverse_discordant_master
-  
-  # sequential index within each comparison
-  idx_within_comp <- ave(seq_len(nrow(df)), df$comparison, FUN = seq_along)
-  
-  # row label: "<comparison>_<n>"
-  df$row_label <- paste(df$comparison, idx_within_comp, sep = "_")
-  
-  # put row_label first, comparison second; keep the rest as-is
-  lead2 <- c("row_label", "comparison")
-  rest  <- setdiff(names(df), lead2)
-  df_out <- df[, c(lead2, rest), drop = FALSE]
-  
-  # sanity prints (optional)
-  cat("Total rows in master:", nrow(df_out), "\n")
-  print(table(df_out$filter_type, useNA = "ifany"))
-  print(table(df_out$comparison,  useNA = "ifany"))
-  
-  # write ONE CSV (this is the only write)
-  write.csv(df_out, file = "../../outputs/transcriptomics/ssid/commongenes correlation discordant treatment.csv", row.names = FALSE)
-} else {
-  warning("inverse_discordant_master is missing or empty; no CSV written.")
-}
-
-
-#### CORRELATION PLOTS SITE ####
-# --- Unicode-safe symbols (avoid warnings on some devices) ---
-use_unicode <- l10n_info()[["UTF-8"]] && capabilities("cairo")
-LTE   <- if (use_unicode) "\u2264" else "<="
-MINUS <- if (use_unicode) "\u2212" else "-"
-
-# --- Parameters (tweak as needed) ---
-sig_cut1_global <- 1.3  # ~ p = 0.05
-sig_cut2_global <- 2.0  # ~ p = 0.01
-sig_cut3_global <- 6.0  # ~ p = 1e-6  (raise to 4.0 for ~1e-4)
-inf_cap          <- 20   # cap |−log10 p| when p == 0 (Inf)
-REL_NAME <- "Relationship"
-SIG_NAME <- "p Value"
-
-# --- Relationship colors (colorblind-friendly) ---
-REL_LEVELS <- c("Direct", "Inverse")
-rel_cols   <- setNames(c("#009E73", "#D55E00"), REL_LEVELS)  # green, orange
-
-# --- Helpers (generic; no species assumptions) ---
-clean_lpv_df <- function(df, col_x, col_y, cap = inf_cap) {
-  if (is.null(df) || !nrow(df)) stop("Input data frame is empty.", call. = FALSE)
-  if (!all(c(col_x, col_y) %in% names(df))) {
-    stop(sprintf("Columns not found: %s",
-                 paste(setdiff(c(col_x, col_y), names(df)), collapse = ", ")), call. = FALSE)
-  }
-  d <- df
-  d$lpv_x <- as.numeric(d[[col_x]])
-  d$lpv_y <- as.numeric(d[[col_y]])
-  
-  # Cap infinities from p=0
-  d$lpv_x[ is.infinite(d$lpv_x) & d$lpv_x > 0 ] <- cap
-  d$lpv_x[ is.infinite(d$lpv_x) & d$lpv_x < 0 ] <- -cap
-  d$lpv_y[ is.infinite(d$lpv_y) & d$lpv_y > 0 ] <- cap
-  d$lpv_y[ is.infinite(d$lpv_y) & d$lpv_y < 0 ] <- -cap
-  
-  # Drop non-finite rows
-  d <- d[is.finite(d$lpv_x) & is.finite(d$lpv_y), , drop = FALSE]
-  d
-}
-
-safe_stats <- function(x, y) {
-  ok <- is.finite(x) & is.finite(y)
-  x <- x[ok]; y <- y[ok]
-  n <- sum(complete.cases(x, y))
-  if (n >= 3 && sd(x) > 0 && sd(y) > 0) {
-    ct <- suppressWarnings(cor.test(x, y, method = "pearson"))
-    r  <- unname(ct$estimate); p <- ct$p.value
-    list(r = r, p = p, n = n)
-  } else list(r = NA_real_, p = NA_real_, n = n)
-}
-
-# --- p-value label helpers (legend shows ACTUAL p ranges) ---
-fmt_p <- function(p) {
-  if (is.na(p)) return("NA")
-  if (p < 1e-4) sprintf("%.0e", p) else sprintf("%.3f", p)
-}
-
-pvalue_labels <- function(c1, c2, c3) {
-  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
-  p1 <- 10^(-c1); p2 <- 10^(-c2); p3 <- 10^(-c3)
-  c(
-    sprintf("p > %s",           fmt_p(p1)),
-    sprintf("%s < p %s %s",     fmt_p(p2), LTE, fmt_p(p1)),
-    sprintf("%s < p %s %s",     fmt_p(p3), LTE, fmt_p(p2)),
-    sprintf("p %s %s",          LTE, fmt_p(p3))
-  )
-}
-
-# Significance tiers (alpha, light -> dark)
-SIG_LEVELS <- pvalue_labels(sig_cut1_global, sig_cut2_global, sig_cut3_global)
-sig_alpha  <- setNames(c(0.15, 0.35, 0.65, 1.00), SIG_LEVELS)
-
-sig_category4 <- function(lpv_x, lpv_y, c1, c2, c3, levels_vec = SIG_LEVELS) {
-  v <- sort(c(c1, c2, c3)); c1 <- v[1]; c2 <- v[2]; c3 <- v[3]
-  lv <- pmin(abs(lpv_x), abs(lpv_y))  # min significance across the pair in |−log10 p|
-  out <- cut(
-    lv,
-    breaks = c(-Inf, c1, c2, c3, Inf),
-    labels = pvalue_labels(c1, c2, c3),
-    include.lowest = TRUE, right = TRUE
-  )
-  factor(out, levels = levels_vec)
-}
-
-# --- One-panel constructor (explicit columns & labels; dashed/dotted refs) ---
-make_panel <- function(df, title, col_x, col_y, x_lab, y_lab,
-                       c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global) {
-  dat <- clean_lpv_df(df, col_x, col_y)
-  
-  # Relationship (direct/inverse) based on signs
-  same <- (dat$lpv_x >= 0 & dat$lpv_y >= 0) | (dat$lpv_x <= 0 & dat$lpv_y <= 0)
-  dat$rel_class <- factor(ifelse(same, "Direct", "Inverse"), levels = REL_LEVELS)
-  
-  # Significance tiers
-  dat$sig_cat <- sig_category4(dat$lpv_x, dat$lpv_y, c1, c2, c3, levels_vec = SIG_LEVELS)
-  
-  # --- Data-driven square limits (not forced around 0), with min span ---
-  x_min <- min(dat$lpv_x, na.rm = TRUE); x_max <- max(dat$lpv_x, na.rm = TRUE)
-  y_min <- min(dat$lpv_y, na.rm = TRUE); y_max <- max(dat$lpv_y, na.rm = TRUE)
-  x_center <- (x_min + x_max) / 2
-  y_center <- (y_min + y_max) / 2
-  
-  # base spans (handle single-point cases)
-  x_span0 <- max(x_max - x_min, 1e-8)
-  y_span0 <- max(y_max - y_min, 1e-8)
-  
-  # jitter + padding
-  jitter_w <- x_span0 * 0.003
-  jitter_h <- y_span0 * 0.003
-  pad_x <- max(0.04 * x_span0, 6 * jitter_w)
-  pad_y <- max(0.04 * y_span0, 6 * jitter_h)
-  
-  # padded spans
-  x_span <- x_span0 + 2 * pad_x
-  y_span <- y_span0 + 2 * pad_y
-  
-  # enforce a minimum square span so tiny panels don’t collapse
-  min_span <- 0.6
-  final_span <- max(x_span, y_span, min_span)
-  
-  x_limits <- c(x_center - final_span / 2, x_center + final_span / 2)
-  y_limits <- c(y_center - final_span / 2, y_center + final_span / 2)
-  
-  # Stats label
-  st <- safe_stats(dat$lpv_x, dat$lpv_y)
-  fmt_num <- function(x) if (is.na(x)) "NA" else if (abs(x) < 1e-3) format(x, digits = 2, scientific = TRUE) else sprintf("%.3f", x)
-  lab_text <- if (is.na(st$r)) sprintf("n = %d", st$n) else sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
-  
-  # Legend labels for line types
-  ref_levels <- c("Direct 1:1", "Inverse 1:1")
-  
-  ggplot(dat, aes(x = lpv_x, y = lpv_y)) +
-    # Draw origin axes only if 0 is inside the panel
-    (if (y_limits[1] < 0 && y_limits[2] > 0) geom_hline(yintercept = 0, color = "grey85") else NULL) +
-    (if (x_limits[1] < 0 && x_limits[2] > 0) geom_vline(xintercept = 0, color = "grey85") else NULL) +
-    
-    # Points (linetype=NA so legend circles stay clean)
-    geom_point(
-      aes(color = rel_class, fill = rel_class, alpha = sig_cat),
-      shape = 21, size = 1.6, stroke = 0.45, linetype = NA,
-      position = position_jitter(width = final_span * 0.003, height = final_span * 0.003)
-    ) +
-    
-    # Alpha legend trainer (invisible)
-    geom_point(
-      data = data.frame(sig_cat = factor(SIG_LEVELS, levels = SIG_LEVELS)),
-      mapping = aes(x = 0, y = 0, alpha = sig_cat),
-      inherit.aes = FALSE, shape = 21, size = 0, stroke = 0, fill = NA, color = NA,
-      show.legend = TRUE
-    ) +
-    
-    # Reference lines (drawn; legend fed by trainer below)
-    geom_abline(intercept = 0, slope =  1, color = "firebrick", linewidth = 1,
-                linetype = "dashed", alpha = 0.5, show.legend = FALSE) +
-    geom_abline(intercept = 0, slope = -1, color = "firebrick", linewidth = 1,
-                linetype = "dotted", alpha = 0.5, show.legend = FALSE) +
-    
-    # Line-type legend trainer (zero-length segments create legend keys)
-    geom_segment(
-      data = data.frame(x = 0, y = 0, xend = 0, yend = 0,
-                        ref = factor(ref_levels, levels = ref_levels)),
-      mapping = aes(x = x, y = y, xend = xend, yend = yend, linetype = ref),
-      inherit.aes = FALSE, color = "firebrick", linewidth = 1, alpha = 0.5,
-      show.legend = TRUE
-    ) +
-    
-    # Stats label (top-left inside the frame)
-    annotate("text", x = x_limits[1], y = y_limits[2], label = lab_text,
-             hjust = 0, vjust = 1.1, size = 4.2) +
-    
-    # Clip inside panel with square limits
-    coord_fixed(xlim = x_limits, ylim = y_limits, expand = FALSE, clip = "on") +
-    
-    # Legends & scales
-    scale_color_manual(values = rel_cols, breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, guide = "none") +
-    scale_fill_manual(values = rel_cols,  breaks = REL_LEVELS, limits = REL_LEVELS, drop = FALSE, name = REL_NAME) +
-    scale_alpha_manual(values = sig_alpha, breaks = SIG_LEVELS, limits = SIG_LEVELS, drop = FALSE, name = SIG_NAME) +
-    scale_linetype_manual(
-      name   = "Reference",
-      values = c("Direct 1:1" = "dashed", "Inverse 1:1" = "dotted")
-    ) +
-    guides(
-      fill  = guide_legend(order = 1, override.aes = list(shape = 21, size = 1.6, stroke = 0.45, linetype = 0)),
-      alpha = guide_legend(order = 2, override.aes = list(shape = 21, fill = "grey50", color = "grey30", size = 1.6, stroke = 0.45, linetype = 0)),
-      linetype = guide_legend(order = 3, override.aes = list(color = "firebrick", linewidth = 1, alpha = 0.5))
+      fill  = guide_legend(order = 1,
+                           override.aes = list(shape = 21, size = 1.6, linetype = 0,
+                                               stroke = c(0.45, 0.45))),
+      alpha = guide_legend(order = 2,
+                           override.aes = list(shape = 21, fill = "grey50",
+                                               color = c("grey30", "grey30", "grey15"),
+                                               size = 1.6, linetype = 0,
+                                               stroke = c(0.00, 0.20, 0.40))),
+      linetype = guide_legend(order = 3,
+                              override.aes = list(color = "firebrick", linewidth = 1, alpha = 0.5))
     ) +
     labs(
       x = str_wrap(paste0(x_lab, " (signed ", MINUS, "log10 p)"), width = 28),
       y = str_wrap(paste0(y_lab, " (signed ", MINUS, "log10 p)"), width = 28),
-      title = NULL
+      title = str_wrap(title, width = 32)
     ) +
     theme_classic(base_size = 13) +
     theme(
@@ -1209,216 +783,178 @@ make_panel <- function(df, title, col_x, col_y, x_lab, y_lab,
     )
 }
 
-# --- Build 2 panels (explicit columns & labels) ---
-# Star_reef:   x = lpv.Star_Emerald,  y = lpv.Star_Rainbow
-# MacN_reef:   x = lpv.MacN_Emerald,  y = lpv.MacN_Rainbow
-
-comparisons <- list(
-  list(title = "Star and MacN vs Emerald",
-       df    = urban_Emerald,
-       col_x = "lpv.Star_Emerald", col_y = "lpv.MacN_Emerald",
-       x_lab = "Star Island vs Emerald Reef",
-       y_lab = "MacArthur North vs Emerald Reef"),
-  list(title = "Star and MacN vs Rainbow",
-       df    = urban_Rainbow,
-       col_x = "lpv.Star_Rainbow", col_y = "lpv.MacN_Rainbow",
-       x_lab = "Star Island vs Rainbow Reef",
-       y_lab = "MacArthur North vs Rainbow Reef")
-)
-
-panels <- lapply(
-  comparisons,
-  function(cmp) make_panel(
-    df     = cmp$df,
-    title  = cmp$title,
-    col_x  = cmp$col_x,
-    col_y  = cmp$col_y,
-    x_lab  = cmp$x_lab,
-    y_lab  = cmp$y_lab,
-    c1 = sig_cut1_global, c2 = sig_cut2_global, c3 = sig_cut3_global
-  )
-)
-
-# --- Keep ALL y-axis titles; hide x titles only on non-bottom rows (1 row => keep all) ---
-ncol_grid <- 2
-nrow_grid <- ceiling(length(panels) / ncol_grid)
-for (i in seq_along(panels)) {
-  row <- ceiling(i / ncol_grid)
-  if (row != nrow_grid) {
-    panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
-  }
-}
-
-# --- Single legend workflow ---
-one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
-legend_plot <- cowplot::ggdraw(one_legend)
-
-panels_noleg <- lapply(panels, function(p) p + theme(legend.position = "none"))
-
-grid  <- wrap_plots(panels_noleg, ncol = ncol_grid)
-panel <- grid | legend_plot
-panel <- panel + plot_layout(widths = c(1, 0.30))
-
-# --- Show & Save ---
-print(panel)
-ggsave("../../outputs/transcriptomics/ssid/commongenes correlation site.pdf", panel, width = 12, height = 5.5)
-# ggsave("../../outputs/transcriptomics/ssid/commongenes correlation site.png", panel, width = 12, height = 5.5, dpi = 600)
-
-
-#### CORRELATION DATAFRAME SITE ####
-# --- knobs ---
-delta_cut_dd <- 2.0   # |Δ −log10 p| >= 2  => ≥100x p-value difference
-ratio_cut_dd <- 100   # p-ratio >= 100
-high_cut_dd  <- sig_cut2_global   # strong (e.g., 2.0)
-low_cut_dd   <- sig_cut1_global   # weak   (e.g., 1.3)
-min_sig      <- 0.0
-
-# --- site comparison definitions (columns & pretty axis names) ---
-comparisons_df <- list(
-  list(name = "Urban Sites vs Emerald Reef",
-       df   = urban_Emerald,
-       col_x = "lpv.Star_Emerald",  col_y = "lpv.MacN_Emerald",
-       x_nm = "Star Island vs Emerald Reef",
-       y_nm = "MacArthur North vs Emerald Reef"),
-  list(name = "Urban Sites vs Rainbow Reef",
-       df   = urban_Rainbow,
-       col_x = "lpv.Star_Rainbow",  col_y = "lpv.MacN_Rainbow",
-       x_nm = "Star Island vs Rainbow Reef",
-       y_nm = "MacArthur North vs Rainbow Reef")
-)
-
-# --- align & rbind helper (handles empties) ---
-rbind_align <- function(...) {
-  dfs  <- list(...)
-  cols <- unique(unlist(lapply(dfs, names)))
-  dfs2 <- lapply(dfs, function(x) {
-    if (is.null(x) || !nrow(x)) {
-      as.data.frame(setNames(replicate(length(cols), logical(0), simplify = FALSE), cols))
-    } else {
-      miss <- setdiff(cols, names(x))
-      for (m in miss) x[[m]] <- NA
-      x[, cols, drop = FALSE]
-    }
-  })
-  do.call(rbind, dfs2)
-}
-
-# --- derived fields for filtering (uses clean_lpv_df(df, col_x, col_y)) ---
-classify_for_filters_xy <- function(df, col_x, col_y, comp_name, x_nm, y_nm) {
-  d <- clean_lpv_df(df, col_x, col_y)  # creates lpv_x, lpv_y
-  
-  # relationship (by sign)
+classify_for_filters <- function(df, col_x, col_y) {
+  d <- clean_lpv_df(df, col_x, col_y)
   same <- (d$lpv_x >= 0 & d$lpv_y >= 0) | (d$lpv_x <= 0 & d$lpv_y <= 0)
   d$rel_class    <- ifelse(same, "Direct", "Inverse")
-  
-  # magnitudes and p-values
   d$abs_x        <- abs(d$lpv_x)
   d$abs_y        <- abs(d$lpv_y)
   d$delta_log10p <- abs(d$abs_x - d$abs_y)
   d$p_x          <- 10^(-d$abs_x)
   d$p_y          <- 10^(-d$abs_y)
   d$p_ratio      <- pmax(d$p_x, d$p_y) / pmin(d$p_x, d$p_y)
-  
-  # meta
-  d$comparison   <- comp_name
-  d$x_axis_name  <- x_nm
-  d$y_axis_name  <- y_nm
-  d$x_col        <- col_x
-  d$y_col        <- col_y
   d
 }
 
-# --- filter one comparison into inverse + strict direct-discordant ---
-filter_one_xy <- function(df, comp_name, col_x, col_y, x_nm, y_nm) {
-  d <- classify_for_filters_xy(df, col_x, col_y, comp_name, x_nm, y_nm)
-  meets_min <- (pmax(d$abs_x, d$abs_y) >= min_sig)
-  
-  # 1) ALL inverse
-  inverse <- d[d$rel_class == "Inverse" & meets_min, , drop = FALSE]
-  if (nrow(inverse)) {
-    inverse$filter_type           <- "inverse"
-    inverse$relationship_category <- "Inverse"
-    inverse$discord_direction     <- NA_character_
-    inverse$delta_cut_used        <- NA_real_
-    inverse$high_cut_used         <- NA_real_
-    inverse$low_cut_used          <- NA_real_
-    inverse$ratio_cut_used        <- NA_real_
-  }
-  
-  # 2) STRICT direct-discordant
-  strong_x_weak_y_full <- d$abs_x >= high_cut_dd & d$abs_y <= low_cut_dd
-  strong_y_weak_x_full <- d$abs_y >= high_cut_dd & d$abs_x <= low_cut_dd
-  cross_tier_full      <- strong_x_weak_y_full | strong_y_weak_x_full
-  
-  dd_idx <- d$rel_class == "Direct" &
-    d$delta_log10p >= delta_cut_dd &
-    d$p_ratio      >= ratio_cut_dd &
-    cross_tier_full &
-    meets_min
-  
-  discordant <- d[dd_idx, , drop = FALSE]
-  if (nrow(discordant)) {
-    # compute direction INSIDE the subset to match lengths
-    strong_x_weak_y_sub <- discordant$abs_x >= high_cut_dd & discordant$abs_y <= low_cut_dd
-    discordant$filter_type           <- "discordant"
-    discordant$relationship_category <- "Direct (discordant significance)"
-    discordant$discord_direction     <- ifelse(strong_x_weak_y_sub,
-                                               paste0(x_nm, " >> ", y_nm),
-                                               paste0(y_nm, " >> ", x_nm))
-    discordant$delta_cut_used        <- delta_cut_dd
-    discordant$high_cut_used         <- high_cut_dd
-    discordant$low_cut_used          <- low_cut_dd
-    discordant$ratio_cut_used        <- ratio_cut_dd
-  }
-  
-  list(inverse = inverse, discordant = discordant)
+rbind_align <- function(...) {
+  dfs  <- list(...)
+  cols <- unique(unlist(lapply(dfs, names)))
+  dfs2 <- lapply(dfs, function(x) {
+    if (is.null(x) || !nrow(x)) {
+      return(as.data.frame(setNames(replicate(length(cols), logical(0), simplify = FALSE), cols)))
+    }
+    miss <- setdiff(cols, names(x))
+    for (m in miss) x[[m]] <- NA
+    x[, cols, drop = FALSE]
+  })
+  do.call(rbind, dfs2)
 }
 
-# --- run filters across both site comparisons ---
-res_list <- lapply(
-  comparisons_df,
-  function(cmp) filter_one_xy(
-    df       = cmp$df,
-    comp_name= cmp$name,
-    col_x    = cmp$col_x, col_y = cmp$col_y,
-    x_nm     = cmp$x_nm,  y_nm  = cmp$y_nm
+build_panels <- function(comparisons, ncol = 3) {
+  global_lim <- compute_global_limits(comparisons)
+  panels <- mapply(
+    FUN      = function(title, entry) make_panel(entry$df, title, entry$col_x, entry$col_y,
+                                                 entry$x_lab, entry$y_lab, global_lim),
+    title    = names(comparisons),
+    entry    = comparisons,
+    SIMPLIFY = FALSE
   )
-)
-
-# --- build ONE MASTER DATAFRAME with filter_type column ---
-inverse_list    <- lapply(res_list, `[[`, "inverse")
-discordant_list <- lapply(res_list, `[[`, "discordant")
-
-inverse_discordant_master <- do.call(
-  rbind_align,
-  c(inverse_list, discordant_list)
-)
-
-# --- Build row labels and write ONE CSV (ID first, comparison second) ---
-if (exists("inverse_discordant_master") && nrow(inverse_discordant_master)) {
-  df <- inverse_discordant_master
-  
-  # sequential index within each comparison
-  idx_within_comp <- ave(seq_len(nrow(df)), df$comparison, FUN = seq_along)
-  
-  # row label: "<comparison>_<n>"
-  df$row_label <- paste(df$comparison, idx_within_comp, sep = "_")
-  
-  # put row_label first, comparison second; keep the rest as-is
-  lead2 <- c("row_label", "comparison")
-  rest  <- setdiff(names(df), lead2)
-  df_out <- df[, c(lead2, rest), drop = FALSE]
-  
-  # sanity prints (optional)
-  cat("Total rows in master:", nrow(df_out), "\n")
-  print(table(df_out$filter_type, useNA = "ifany"))
-  print(table(df_out$comparison,  useNA = "ifany"))
-  
-  # write ONE CSV
-  write.csv(df_out, file = "../../outputs/transcriptomics/ssid/commongenes correlation discordant site.csv", row.names = FALSE)
-} else {
-  warning("inverse_discordant_master is missing or empty; no CSV written.")
+  nrow_grid <- ceiling(length(panels) / ncol)
+  for (i in seq_along(panels)) {
+    row <- ceiling(i / ncol)
+    col <- i - (row - 1) * ncol
+    if (col != 1) panels[[i]] <- panels[[i]] + theme(axis.title.y = element_blank())
+    if (row != nrow_grid) panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
+  }
+  one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
+  legend_plot <- cowplot::ggdraw(one_legend)
+  panels_noleg <- lapply(panels, function(p) p + theme(legend.position = "none"))
+  grid  <- wrap_plots(panels_noleg, ncol = ncol)
+  panel <- grid | legend_plot
+  panel + plot_layout(widths = c(1, 0.30))
 }
+
+filter_discordant <- function(comparisons, group_col) {
+  filter_one <- function(entry, group_name) {
+    d         <- classify_for_filters(entry$df, entry$col_x, entry$col_y)
+    meets_min <- pmax(d$abs_x, d$abs_y) >= min_sig
+
+    inverse <- d[d$rel_class == "Inverse" & meets_min, , drop = FALSE]
+    if (nrow(inverse)) {
+      inverse$filter_type           <- "Inverse"
+      inverse$relationship_category <- "Inverse"
+      inverse$discord_direction     <- NA_character_
+      inverse$delta_cut_used        <- NA_real_
+      inverse$high_cut_used         <- NA_real_
+      inverse$low_cut_used          <- NA_real_
+      inverse$ratio_cut_used        <- NA_real_
+      inverse[[group_col]]          <- group_name
+    }
+
+    strong_x_weak_y <- d$abs_x >= high_cut_dd & d$abs_y <= low_cut_dd
+    strong_y_weak_x <- d$abs_y >= high_cut_dd & d$abs_x <= low_cut_dd
+    cross_tier <- strong_x_weak_y | strong_y_weak_x
+    dd_idx <- d$rel_class == "Direct" &
+      d$delta_log10p >= delta_cut_dd &
+      d$p_ratio      >= ratio_cut_dd &
+      cross_tier & meets_min
+
+    direct_discordant <- d[dd_idx, , drop = FALSE]
+    if (nrow(direct_discordant)) {
+      so <- direct_discordant$abs_x >= high_cut_dd & direct_discordant$abs_y <= low_cut_dd
+      direct_discordant$filter_type           <- "DirectDiscordant"
+      direct_discordant$relationship_category <- "Direct (discordant significance)"
+      direct_discordant$discord_direction     <- ifelse(so,
+                                                        paste0(entry$x_lab, " >> ", entry$y_lab),
+                                                        paste0(entry$y_lab, " >> ", entry$x_lab))
+      direct_discordant$delta_cut_used        <- delta_cut_dd
+      direct_discordant$high_cut_used         <- high_cut_dd
+      direct_discordant$low_cut_used          <- low_cut_dd
+      direct_discordant$ratio_cut_used        <- ratio_cut_dd
+      direct_discordant[[group_col]]          <- group_name
+    }
+
+    rbind_align(inverse, direct_discordant)
+  }
+
+  do.call(rbind_align, lapply(names(comparisons), function(nm) filter_one(comparisons[[nm]], nm)))
+}
+
+
+#### CORRELATION PLOTS TREATMENT ####
+
+treatment_comparisons <- list(
+  "Bleaching vs OA" = list(
+    df    = bleaching_oa,
+    col_x = "lpv.LC_CC", col_y = "lpv.CH_CC",
+    x_lab = "OA",         y_lab = "Bleaching"),
+  "OA + Bleaching vs OA" = list(
+    df    = oableaching_oa,
+    col_x = "lpv.LC_CC", col_y = "lpv.LH_CC",
+    x_lab = "OA",         y_lab = "OA + Bleaching"),
+  "OA + Bleaching vs Bleaching" = list(
+    df    = bleaching_oableaching,
+    col_x = "lpv.CH_CC", col_y = "lpv.LH_CC",
+    x_lab = "Bleaching",  y_lab = "OA + Bleaching")
+)
+
+panel_treatment <- build_panels(treatment_comparisons, ncol = 3)
+print(panel_treatment)
+ggsave("../../outputs/transcriptomics/ssid/deseq2/commongenes correlation treatment.pdf",
+       panel_treatment, width = 14, height = 5.5)
+
+
+#### CORRELATION DATAFRAME TREATMENT ####
+
+treatment_filtered_genes <- filter_discordant(treatment_comparisons, group_col = "treatment")
+
+if (nrow(treatment_filtered_genes) > 0) {
+  cat("Rows total:", nrow(treatment_filtered_genes), "\n")
+  print(table(treatment_filtered_genes$relationship_category, useNA = "ifany"))
+  print(table(treatment_filtered_genes$treatment, useNA = "ifany"))
+} else {
+  warning("treatment_filtered_genes is empty with current strict thresholds.")
+}
+dplyr::count(treatment_filtered_genes, treatment, relationship_category)
+write.csv(treatment_filtered_genes,
+          file = "../../outputs/transcriptomics/ssid/deseq2/commongenes correlation discordant treatment.csv")
+
+
+#### CORRELATION PLOTS SITE ####
+
+site_comparisons <- list(
+  "Urban Sites vs Emerald Reef" = list(
+    df    = urban_Emerald,
+    col_x = "lpv.Star_Emerald",  col_y = "lpv.MacN_Emerald",
+    x_lab = "Star Island vs Emerald Reef",
+    y_lab = "MacArthur North vs Emerald Reef"),
+  "Urban Sites vs Rainbow Reef" = list(
+    df    = urban_Rainbow,
+    col_x = "lpv.Star_Rainbow",  col_y = "lpv.MacN_Rainbow",
+    x_lab = "Star Island vs Rainbow Reef",
+    y_lab = "MacArthur North vs Rainbow Reef")
+)
+
+panel_site <- build_panels(site_comparisons, ncol = 2)
+print(panel_site)
+ggsave("../../outputs/transcriptomics/ssid/deseq2/commongenes correlation site.pdf",
+       panel_site, width = 9, height = 5.5)
+
+
+#### CORRELATION DATAFRAME SITE ####
+
+site_filtered_genes <- filter_discordant(site_comparisons, group_col = "site")
+
+if (nrow(site_filtered_genes) > 0) {
+  cat("Rows total:", nrow(site_filtered_genes), "\n")
+  print(table(site_filtered_genes$relationship_category, useNA = "ifany"))
+  print(table(site_filtered_genes$site, useNA = "ifany"))
+} else {
+  warning("site_filtered_genes is empty with current strict thresholds.")
+}
+dplyr::count(site_filtered_genes, site, relationship_category)
+write.csv(site_filtered_genes,
+          file = "../../outputs/transcriptomics/ssid/deseq2/commongenes correlation discordant site.csv")
 
 
 #### HEATMAPS ####
@@ -1444,7 +980,7 @@ gene_names <- as.data.frame(cbind(commongenes_treatment_heatmap$gene, commongene
 # heatmaps
 # cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
 # p < 0.1
-pdf(file="../../outputs/transcriptomics/ssid/heatmap_treatment_p0.1.pdf", height=25, width=50)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_treatment_p0.1.pdf", height=25, width=50)
 uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
            metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
            # metric2=-(abs(MacN_Emerald$lpv_ofav)),
@@ -1461,7 +997,7 @@ dev.off()
 gene_names2 <- as.data.frame(cbind(commongenes_site_heatmap$gene, commongenes_site_heatmap$annot))
 
 # p < 0.1
-pdf(file="../../outputs/transcriptomics/ssid/heatmap_site_p0.1.pdf", height=24, width=48)
+pdf(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_site_p0.1.pdf", height=24, width=48)
 uniHeatmap(vsd=vsd_site,gene.names=gene_names2,
            metric=-(abs(commongenes_site_heatmap$lpv.MacN_Emerald)), # metric of gene significance
            # metric2=-(abs(MacN_Emerald$lpv_ofav)),
@@ -1541,7 +1077,7 @@ KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
        y = "Number of DEGs") +
   theme_classic()
 KOG_sum
-ggsave("../../outputs/transcriptomics/ssid/KOG_treatment.pdf", plot= KOG_sum, width=10, height=6, units="in", dpi=300)
+ggsave("../../outputs/transcriptomics/ssid/deseq2/KOG_treatment.pdf", plot= KOG_sum, width=10, height=6, units="in", dpi=300)
 
 # Site
 # Star vs Emerald 
@@ -1623,5 +1159,5 @@ KOG_sum <- ggplot(KOG_melt, aes(fill = KOG, y = sum, x = comparison)) +
        y = "Number of DEGs") +
   theme_classic()
 KOG_sum
-ggsave("../../outputs/transcriptomics/ssid/KOG_site.pdf", plot= KOG_sum, width=14, height=6, units="in", dpi=300)
+ggsave("../../outputs/transcriptomics/ssid/deseq2/KOG_site.pdf", plot= KOG_sum, width=14, height=6, units="in", dpi=300)
 

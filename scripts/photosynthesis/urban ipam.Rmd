@@ -70,9 +70,17 @@ ipam <- ipam %>%
 ```{r data-prep}
 # -----------------------------------------------------------------------------
 # Remove baseline timepoints.
-# FvFm values of 1 are the initial measurements that all subsequent values
-# are expressed relative to — excluded from analysis since the model is fit
-# on post-baseline observations only.
+# The model response is raw FvFm, not the ratio column — ratio is used here
+# only as a marker to identify baseline rows, since ratio == 1 exclusively at
+# the initial measurement (the timepoint all subsequent ratios are expressed
+# relative to).
+#
+# "Initial" is excluded rather than treated as an early point in the time
+# series: it was measured over a month before the first post-treatment
+# timepoint (time == 0), even though fragments were already assigned to
+# treatment tanks by then. That gap is too large to represent as a
+# continuous point on the same time axis without fabricating an elapsed-time
+# value, so the model is fit on post-baseline (time >= 0) observations only.
 # -----------------------------------------------------------------------------
 ipam <- subset(ipam, ratio != "1")
 
@@ -747,6 +755,124 @@ extract_joint_tests <- function(mod, dat, mod_name) {
 }
 
 
+# --- get_smooth_stat() --------------------------------------------------------
+# Looks up edf, Ref.df, F, and p-value for one smooth term from a
+# results$stats$smooths table (output of extract_stats()).
+#
+# Arguments:
+#   smooths_tbl: data frame from results$stats$smooths
+#   term:        exact term label as it appears in the smooth table,
+#                e.g. "s(time)" for the global temporal smooth
+# Returns:
+#   named list: df1 (edf), df2 (Ref.df), F_value, p_value
+
+get_smooth_stat <- function(smooths_tbl, term) {
+  row <- smooths_tbl %>% filter(term == !!term)
+  if (nrow(row) != 1) stop("Expected exactly one smooth row for '", term, "', found ", nrow(row))
+  list(df1 = row$edf, df2 = row$ref_df, F_value = row$F_value, p_value = row$p_value)
+}
+
+
+# --- get_joint_stat() ----------------------------------------------------------
+# Looks up df1, df2, F-value, and p-value for one fixed-effect term from a
+# results$joint_tests table (output of extract_joint_tests()).
+#
+# emmeans::joint_tests() sometimes reports a higher-order term as
+# "(confounded)" instead of the requested term name — this happens when its
+# contrast subspace overlaps with a lower-order term already tested. In this
+# GAMM design the treatment:site interaction is frequently confounded because
+# the treatment- and site-specific time smooths already absorb part of the
+# interaction contrast space. When that happens the requested term row does
+# not exist, and NULL is returned so the caller can fall back to a
+# "not testable" label instead of erroring.
+#
+# Arguments:
+#   joint_tbl: data frame from results$joint_tests
+#   term:      value to match in the `model term` column, e.g. "treatment",
+#              "site", or "treatment:site"
+# Returns:
+#   named list (df1, df2, F_value, p_value), or NULL if the term is absent
+
+get_joint_stat <- function(joint_tbl, term) {
+  row <- joint_tbl %>% filter(`model term` == term)
+  if (nrow(row) == 0) return(NULL)
+  list(df1 = row$df1, df2 = row$df2, F_value = row$F_value, p_value = row$p_value)
+}
+
+
+# --- format_stat_label() --------------------------------------------------------
+# Formats a stat block into the "term: F(df1,df2)=value, p=value*" label text
+# used to annotate the summary line plots. Asterisk flags p < 0.05.
+# stat = NULL (term not testable, e.g. "(confounded)" from get_joint_stat())
+# produces a "not testable" label instead of erroring.
+#
+# Arguments:
+#   prefix: label prefix, e.g. "time", "treat", "site", "interaction"
+#   stat:   named list from get_smooth_stat()/get_joint_stat(), or NULL
+# Returns:
+#   character string
+
+format_stat_label <- function(prefix, stat) {
+  if (is.null(stat)) {
+    return(paste0(prefix, ": not testable (confounded)"))
+  }
+  p_str <- if (stat$p_value < 0.001) {
+    "p<0.001"
+  } else {
+    paste0("p=", formatC(stat$p_value, digits = 3, format = "f"))
+  }
+  star <- if (stat$p_value < 0.05) "*" else ""
+  sprintf("%s: F(%.1f,%.1f)=%.1f, %s%s",
+          prefix, stat$df1, stat$df2, stat$F_value, p_str, star)
+}
+
+
+# --- build_stat_labels() --------------------------------------------------------
+# Builds the three stat annotation rows (time, treat, site) placed on one
+# facet panel of a summary line plot. Values are pulled live from a
+# run_full_analysis() result rather than hardcoded, so the labels always
+# reflect the current GAMM fit.
+#
+# "time" comes from the global s(time) smooth (results$stats$smooths) —
+# joint_tests() only covers the parametric factors, not the temporal trend.
+# "treat" and "site" come from the omnibus joint_tests table. The
+# treatment:site interaction is omitted — emmeans::joint_tests() reports it
+# as "(confounded)" for this GAMM design (see get_joint_stat()), so it isn't
+# a usable annotation.
+#
+# label_ys is supplied by the caller (see the shared FvFm_label_ys computed
+# in plot-ylim) rather than hardcoded, because raw FvFm tops out well below
+# 1 — fixed positions like 1.000/0.925/... were tuned for the old 0-1 ratio
+# scale and would sit off the top of an FvFm-scaled plot.
+#
+# Arguments:
+#   result:   named list from run_full_analysis() (e.g. results_ofav_control)
+#   pH_val:   pH facet value to place the labels in, e.g. "low pH"
+#   temp_val: temp facet value to place the labels in, e.g. "control temp"
+#   label_ys: numeric vector of length 3 — y-position for time/treat/site
+#             labels, in that order
+#   time_val: x-position for all three labels. Defaults to Inf so labels
+#             anchor to the panel's right edge regardless of the time axis
+#             range — paired with hjust in geom_text() for right-justified
+#             text that reads inward from the edge.
+# Returns:
+#   data frame with one row per label (time, FvFm, lab, pH, temp)
+
+build_stat_labels <- function(result, pH_val, temp_val, label_ys, time_val = Inf) {
+  data.frame(
+    time = time_val,
+    FvFm = label_ys,
+    lab  = c(
+      format_stat_label("time",  get_smooth_stat(result$stats$smooths, "s(time)")),
+      format_stat_label("treat", get_joint_stat(result$joint_tests, "treatment")),
+      format_stat_label("site",  get_joint_stat(result$joint_tests, "site"))
+    ),
+    pH   = pH_val,
+    temp = temp_val
+  )
+}
+
+
 # --- make_trajectory_plot() --------------------------------------------------
 # Plots model-fitted FvFm trajectories over time with 95% CI ribbons,
 # one panel per site, coloured by pH x temp treatment combination.
@@ -1364,8 +1490,9 @@ knitr::kable(rho_summary,
 # Summary line plots
 
 Mean FvFm ± SE over time for each site, faceted by pH and temperature
-treatment. Stats labels are drawn from GAMM smooth significance output —
-update the Ofav label data frames once models have been run.
+treatment. Stats labels are pulled live from the GAMM output (`build_stat_labels()`)
+computed in the four analysis sections above, so they always reflect the
+current model fit rather than hardcoded values.
 
 ```{r plot-colors}
 # -----------------------------------------------------------------------------
@@ -1375,62 +1502,73 @@ update the Ofav label data frames once models have been run.
 fill.color <- c("#018571", "#80cdc1", "#dfc27d", "#a6611a")
 ```
 
+```{r plot-ylim}
+# -----------------------------------------------------------------------------
+# Shared y-axis range for the Ofav and Ssid summary line plots.
+#
+# Computed from the mean ± SE actually drawn by stat_summary() (grouped by
+# site, pH, temp, time — matching the plot's aes/facet grouping), not the raw
+# FvFm scatter, so the range matches what's visually on the plot. The same
+# range is applied to both species plots so panels are directly comparable.
+#
+# A small pad is added below the min and above the max — without it, a point
+# or errorbar cap sitting exactly at the min/max gets its marker clipped by
+# the panel edge (coord_cartesian() clips hard at the exact ylim value, and a
+# marker's drawn radius extends past its data coordinate). The bottom pad is
+# larger than the top pad since there's no headroom band competing for space
+# below the data.
+#
+# The three stacked stat labels (time, treat, site) are NOT given a
+# dedicated headroom band above the data — that was inflating ymax every
+# time label spacing increased. Instead they anchor just under the plot's
+# top edge and stack downward into the existing range, right-justified
+# (see geom_text(hjust = ...) in the plot chunks) so they sit in the
+# upper-right corner, away from the peak values which occur early in the
+# time series.
+# -----------------------------------------------------------------------------
+
+summarise_mean_se_range <- function(dat) {
+  dat %>%
+    group_by(site, pH, temp, time) %>%
+    summarise(mean_FvFm = mean(FvFm, na.rm = TRUE),
+              se_FvFm   = sd(FvFm,   na.rm = TRUE) / sqrt(n()),
+              .groups   = "drop") %>%
+    summarise(min_val = min(mean_FvFm - se_FvFm, na.rm = TRUE),
+              max_val = max(mean_FvFm + se_FvFm, na.rm = TRUE))
+}
+
+FvFm_range <- bind_rows(summarise_mean_se_range(ipam_ofav),
+                         summarise_mean_se_range(ipam_ssid)) %>%
+  summarise(min_val = min(min_val), max_val = max(max_val))
+
+FvFm_span        <- FvFm_range$max_val - FvFm_range$min_val
+FvFm_pad_bottom  <- 0.08 * FvFm_span
+FvFm_pad_top     <- 0.03 * FvFm_span
+FvFm_data_max    <- FvFm_range$max_val + FvFm_pad_top
+FvFm_ylim        <- c(FvFm_range$min_val - FvFm_pad_bottom, FvFm_data_max)
+
+FvFm_label_margin <- 0.03 * FvFm_span   # gap below ymax so the top label's text isn't clipped
+FvFm_label_step   <- 0.09 * FvFm_span   # vertical gap between stacked labels (~50% more than before)
+FvFm_label_top    <- FvFm_data_max - FvFm_label_margin
+FvFm_label_ys     <- FvFm_label_top - FvFm_label_step * c(0, 1, 2)
+```
+
 ```{r ofav-line-plot, fig.width=12, fig.height=6}
 # -----------------------------------------------------------------------------
 # Stats label data frames for O. faveolata
 #
-# Each data frame places one annotation in a specific facet panel, matched
-# by the pH and temp column values. x and y control label position.
+# build_stat_labels() (see Helper functions) pulls the time/treat/site/
+# interaction F-stats and p-values directly from the GAMM output of the
+# corresponding analysis above, one call per facet panel. Label y-positions
+# and the plot's y-axis range come from plot-ylim, shared with the Ssid plot.
 #
-# UPDATE THESE VALUES from the GAMM smooth significance table once models
-# have been run. Report the F-statistic and p-value for s(time), s(time):pH,
-# s(time):site, and s(time):pH:site (or equivalent interaction terms).
-# Format: "term: F[edf,n]=value, p=value*"
+# x = Inf (set by build_stat_labels()'s time_val default) anchors labels to
+# the panel's right edge; hjust = 1.1 right-justifies the text and nudges it
+# slightly inward so it doesn't touch the plot border.
 # -----------------------------------------------------------------------------
 
-# Control temperature panel (low pH / control temp facet)
-ofav_control_time  <- data.frame(
-  time = 12.5, FvFm = 1.000,
-  lab  = "time: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "control temp"
-)
-ofav_control_treat <- data.frame(
-  time = 12.5, FvFm = 0.925,
-  lab  = "treat: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "control temp"
-)
-ofav_control_site  <- data.frame(
-  time = 12.5, FvFm = 0.850,
-  lab  = "site: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "control temp"
-)
-ofav_control_int   <- data.frame(
-  time = 12.5, FvFm = 0.775,
-  lab  = "interaction: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "control temp"
-)
-
-# Heat temperature panel (low pH / high temp facet)
-ofav_heat_time  <- data.frame(
-  time = 12.5, FvFm = 1.000,
-  lab  = "time: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "high temp"
-)
-ofav_heat_treat <- data.frame(
-  time = 12.5, FvFm = 0.925,
-  lab  = "treat: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "high temp"
-)
-ofav_heat_site  <- data.frame(
-  time = 12.5, FvFm = 0.850,
-  lab  = "site: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "high temp"
-)
-ofav_heat_int   <- data.frame(
-  time = 12.5, FvFm = 0.775,
-  lab  = "interaction: UPDATE FROM GAMM OUTPUT",
-  pH = "low pH", temp = "high temp"
-)
+ofav_control_labs <- build_stat_labels(results_ofav_control, "low pH", "control temp", FvFm_label_ys)
+ofav_heat_labs    <- build_stat_labels(results_ofav_heat,    "low pH", "high temp",    FvFm_label_ys)
 
 ofav <- ggplot(ipam_ofav,
                aes(x = time, y = FvFm, color = site, group = site)) +
@@ -1445,34 +1583,19 @@ ofav <- ggplot(ipam_ofav,
                width    = 0.2) +
   facet_grid(temp ~ pH) +
   scale_color_manual(values = fill.color) +
+  coord_cartesian(ylim = FvFm_ylim) +
   labs(title = "Ofav",
        x     = "Day",
-       y     = "Proportional Fv/Fm",
+       y     = "Fv/Fm",
        color = "Site") +
   theme_pubr(legend = "bottom") +
-  geom_text(data = ofav_control_time,
-            aes(x = 12.5, y = 1.000, label = lab),
+  geom_text(data  = ofav_control_labs,
+            aes(x = time, y = FvFm, label = lab),
+            hjust = 1.1,
             inherit.aes = FALSE) +
-  geom_text(data = ofav_control_treat,
-            aes(x = 12.5, y = 0.925, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_control_site,
-            aes(x = 12.5, y = 0.850, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_control_int,
-            aes(x = 12.5, y = 0.775, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_heat_time,
-            aes(x = 12.5, y = 1.000, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_heat_treat,
-            aes(x = 12.5, y = 0.925, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_heat_site,
-            aes(x = 12.5, y = 0.850, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ofav_heat_int,
-            aes(x = 12.5, y = 0.775, label = lab),
+  geom_text(data  = ofav_heat_labs,
+            aes(x = time, y = FvFm, label = lab),
+            hjust = 1.1,
             inherit.aes = FALSE)
 
 ofav
@@ -1487,38 +1610,19 @@ ggsave("../../outputs/photosynthesis/urban ipam ofav.pdf",
 ```{r ssid-line-plot, fig.width=12, fig.height=6}
 # -----------------------------------------------------------------------------
 # Stats label data frames for S. siderea
+#
+# build_stat_labels() (see Helper functions) pulls the time/treat/site/
+# interaction F-stats and p-values directly from the GAMM output of the
+# corresponding analysis above, one call per facet panel. Label y-positions
+# and the plot's y-axis range come from plot-ylim, shared with the Ofav plot.
+#
+# x = Inf (set by build_stat_labels()'s time_val default) anchors labels to
+# the panel's right edge; hjust = 1.1 right-justifies the text and nudges it
+# slightly inward so it doesn't touch the plot border.
 # -----------------------------------------------------------------------------
 
-ssid_control_time  <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "time: F1,644=35.0, p<0.001*",
-  pH = "low pH", temp = "control temp"
-)
-ssid_control_treat <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "treat: F3,644=115.1, p<0.001*",
-  pH = "low pH", temp = "control temp"
-)
-ssid_control_site  <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "site: F3,644=1.4, p=0.24",
-  pH = "low pH", temp = "control temp"
-)
-ssid_heat_time  <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "time: F1,697=6.7, p=0.01*",
-  pH = "low pH", temp = "high temp"
-)
-ssid_heat_treat <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "treat: F1,697=76.1, p<0.001*",
-  pH = "low pH", temp = "high temp"
-)
-ssid_heat_site  <- data.frame(
-  time = 10, FvFm = 1.0,
-  lab  = "site: F3,697=5.2, p=0.001*",
-  pH = "low pH", temp = "high temp"
-)
+ssid_control_labs <- build_stat_labels(results_ssid_control, "low pH", "control temp", FvFm_label_ys)
+ssid_heat_labs    <- build_stat_labels(results_ssid_heat,    "low pH", "high temp",    FvFm_label_ys)
 
 ssid <- ggplot(ipam_ssid,
                aes(x = time, y = FvFm, color = site, group = site)) +
@@ -1533,28 +1637,19 @@ ssid <- ggplot(ipam_ssid,
                width    = 0.2) +
   facet_grid(temp ~ pH) +
   scale_color_manual(values = fill.color) +
+  coord_cartesian(ylim = FvFm_ylim) +
   labs(title = "Ssid",
        x     = "Day",
-       y     = "Proportional Fv/Fm",
+       y     = "Fv/Fm",
        color = "Site") +
   theme_pubr(legend = "bottom") +
-  geom_text(data = ssid_control_time,
-            aes(x = 12.5, y = 1.0, label = lab),
+  geom_text(data  = ssid_control_labs,
+            aes(x = time, y = FvFm, label = lab),
+            hjust = 1.1,
             inherit.aes = FALSE) +
-  geom_text(data = ssid_control_treat,
-            aes(x = 12.5, y = 0.9, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ssid_control_site,
-            aes(x = 12.5, y = 0.8, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ssid_heat_time,
-            aes(x = 12.5, y = 1.0, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ssid_heat_treat,
-            aes(x = 12.5, y = 0.9, label = lab),
-            inherit.aes = FALSE) +
-  geom_text(data = ssid_heat_site,
-            aes(x = 12.5, y = 0.8, label = lab),
+  geom_text(data  = ssid_heat_labs,
+            aes(x = time, y = FvFm, label = lab),
+            hjust = 1.1,
             inherit.aes = FALSE)
 
 ssid
