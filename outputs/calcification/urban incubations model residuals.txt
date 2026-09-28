@@ -1,0 +1,49 @@
+=== Shapiro-Wilk test on model residuals ===
+
+ofav_day:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.95245, p-value = 0.0791
+
+
+ofav_night:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.97343, p-value = 0.4275
+
+
+ssid_day:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.97225, p-value = 0.4227
+
+
+ssid_night:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.9695, p-value = 0.347
+
+
+ofav_mean:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.97231, p-value = 0.3937
+
+
+ssid_mean:
+
+	Shapiro-Wilk normality test
+
+data:  resid(calc_models_final[[nm]])
+W = 0.95669, p-value = 0.1289
+

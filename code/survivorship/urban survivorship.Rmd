@@ -1,0 +1,457 @@
+---
+title: "Coral Survivorship Analysis"
+author: "Michael Studivan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+# -----------------------------------------------------------------------------
+# Global chunk options
+# echo = TRUE:     show code in rendered output
+# warning = FALSE: suppress warnings in rendered document
+#                  (warnings still print to console during knitting)
+# message = FALSE: suppress package loading messages
+# -----------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 10,
+  fig.height = 6,
+  dpi        = 300
+)
+```
+
+
+# packages
+
+```{r packages}
+library(ggplot2)
+library(ggpubr)
+library(survival)
+library(survminer) # requires ggplot2 < 4.0: under ggplot2 4.x, ggsurvplot() panels draw blank (survminer issue #694)
+library(dplyr)
+library(lme4)
+```
+
+
+# data import
+
+```{r data-import}
+urban <- read.csv("../../data/survivorship/urban survivorship.csv", head=T)
+
+# unique genotype ID (genotype numbers are nested within site and species)
+urban$geno_id <- paste(urban$species, urban$site, urban$geno, sep = "_")
+
+# second heat-stress cohort (control temperature fragments moved to heat): the data file dates this ramp from
+# the experiment schedule (ramp 4/23, 33 C set point 5/7). The tank loggers show the ambient tanks at 22.5 C
+# through Apr 24 and at 24.0 C on Apr 28 23:15, reaching 33 C on May 10 (0.75 C/day), i.e. ramp from Apr 26
+# and set point May 10, seven days after the first cohort reached its set point (Apr 19). Dates follow the loggers
+# (data file unchanged): ramp 4/26, start 5/10; the control temperature period ends the day before (5/9).
+# Days are recalculated from start and end.
+urban %>%
+  mutate(ramp  = if_else(ramp == "4/23/21", "4/26/21", ramp),
+         start = if_else(start == "5/7/21", "5/10/21", start),
+         end   = if_else(treat %in% c("CC", "LC") & end == "5/6/21", "5/9/21", end),
+         days  = as.numeric(as.Date(end, "%m/%d/%y") - as.Date(start, "%m/%d/%y"))) -> urban
+stopifnot(all(urban$days >= 0), !any(urban$ramp == "4/23/21"))
+str(urban)
+head(urban)
+
+# No fragments died in the control temperature treatments (CC, LC) during the 20-day control period,
+# so survival analyses use the heat treatments (CH, LH) only
+urban %>%
+  filter(treat %in% c("CC", "LC")) %>%
+  group_by(species, treat) %>%
+  summarise(n = n(), deaths = sum(status), days = max(days), .groups = "drop")
+
+# Heat treatments combine two cohorts held in separate tanks: fragments heated from the start (4/5 ramp),
+# and the control temperature fragments, which were moved to heat after the 20-day control period
+# (4/26 ramp; CC -> CH, LC -> LH). Late-cohort LH fragments therefore had 3 additional weeks of
+# low pH exposure before heat stress. Cohort effects are tested in the cohort and tank sensitivity section.
+```
+
+
+# survivorship by treatment
+
+```{r survivorship-by-treatment}
+# heat treatments only, by species
+urban_ofav_treat <- subset(urban, species == "Ofav" & treat %in% c("CH", "LH"))
+urban_ofav_treat$treat <- factor(urban_ofav_treat$treat, levels = c("CH", "LH"))
+urban_ofav_treat$site <- factor(urban_ofav_treat$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+
+urban_ssid_treat <- subset(urban, species == "Ssid" & treat %in% c("CH", "LH"))
+urban_ssid_treat$treat <- factor(urban_ssid_treat$treat, levels = c("CH", "LH"))
+urban_ssid_treat$site <- factor(urban_ssid_treat$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+
+# Kaplan-Meier survival curves for each species
+fit_ofav_treat <- survfit(Surv(days, status) ~ treat, data = urban_ofav_treat)
+summary(fit_ofav_treat)
+
+fit_ssid_treat <- survfit(Surv(days, status) ~ treat, data = urban_ssid_treat)
+summary(fit_ssid_treat)
+
+# display a ggsurvplot object (survival curves + risk table) as a single figure; printing ggsurvplot
+# objects directly can output "NULL" when knitting with newer survminer versions
+show_km <- function(p) ggarrange(p$plot, p$table, heights = c(2, 1), ncol = 1, nrow = 2)
+
+# p-values for Kaplan-Meier plots: robust score (log-rank) test from the genotype-clustered Cox model
+robust_score_p <- function(model) {
+  paste0("p = ", format.pval(summary(model)$robscore["pvalue"], digits = 2, eps = 0.001))
+}
+
+# Cox models use robust standard errors clustered by genotype (cluster = geno_id), because fragments from
+# the same colony are not independent. p-values on the Kaplan-Meier plots are the genotype-adjusted
+# robust score (log-rank) tests from these models.
+# hazard ratio by treatment
+hazard_ofav_treat <- coxph(Surv(days, status) ~ treat, data = urban_ofav_treat, cluster = geno_id)
+summary(hazard_ofav_treat)
+
+hazard_ssid_treat <- coxph(Surv(days, status) ~ treat, data = urban_ssid_treat, cluster = geno_id)
+summary(hazard_ssid_treat)
+
+# NOTE: hazard_ofav_treat violates the proportional hazards assumption (CH and LH survival curves cross
+# near day 20), so its single hazard ratio in the plot below is not interpretable; the robust score test
+# remains valid. See the O. faveolata time-split section for period-specific hazard ratios.
+
+# Kaplan-Meier plots for each species
+fill.color2<-c("#f4a582","#ca0020")
+
+survival_ofav_treat<-ggsurvplot(fit_ofav_treat, data = urban_ofav_treat, pval = robust_score_p(hazard_ofav_treat), xlab="Days", ylab="Survival Probability",
+                                conf.int = T, risk.table=T, palette=fill.color2,
+                                break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Orbicella faveolata") 
+show_km(survival_ofav_treat)
+
+survival_ssid_treat<-ggsurvplot(fit_ssid_treat, data = urban_ssid_treat, pval = robust_score_p(hazard_ssid_treat), xlab="Days", ylab="Survival Probability",
+                                conf.int = T, risk.table=T, palette=fill.color2,
+                                break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Siderastrea siderea") 
+show_km(survival_ssid_treat)
+
+# ggforest() cannot handle the genotype cluster or treatment strata terms, so they are hidden from the plotting copy of the model.
+# Hazard ratios, CIs, and p-values in the plots remain genotype-adjusted (robust standard errors).
+# The ggforest() footer (events, unadjusted likelihood ratio p-value, AIC, concordance) overlaps the x-axis labels,
+# so it is removed; the genotype-adjusted p-value is shown on the Kaplan-Meier plot above each hazard ratio plot.
+drop_footer <- function(g) {
+  if (inherits(g, "gtable")) {
+    g$grobs <- lapply(g$grobs, drop_footer)
+    return(g)
+  }
+  if (inherits(g, "gTree") && length(g$children) > 0) {
+    kids <- g$children
+    keep <- !vapply(kids, function(k) inherits(k, "text") && any(grepl("# Events", k$label, fixed = TRUE)), logical(1))
+    g <- grid::setChildren(g, do.call(grid::gList, lapply(kids[keep], drop_footer)))
+  }
+  g
+}
+
+forest_clustered <- function(model, data, ...) {
+  dc <- attr(model$terms, "dataClasses")
+  attr(model$terms, "dataClasses") <- dc[names(dc) != "(cluster)" & !grepl("^strata\\(", names(dc))]
+  p <- ggforest(model, data = data, ...)
+  grob <- p$layers[[1]]$geom_params$grob
+  if (is.null(grob)) return(p) # fall back to the unmodified plot if the plot structure differs
+  ggpubr::as_ggplot(drop_footer(grob))
+}
+
+# hazard ratio plots
+hazplot_ofav_treat <- forest_clustered(hazard_ofav_treat, data = urban_ofav_treat)
+hazplot_ofav_treat
+
+hazplot_ssid_treat <- forest_clustered(hazard_ssid_treat, data = urban_ssid_treat)
+hazplot_ssid_treat
+
+# survivorship by treatment figure
+urban_treatment_multiplot<-ggarrange(survival_ofav_treat$plot,
+                                     survival_ssid_treat$plot, 
+                                     survival_ofav_treat$table, 
+                                     survival_ssid_treat$table,
+                                     hazplot_ofav_treat,
+                                     hazplot_ssid_treat,
+                                     heights = c(2, 0.5, 0.8),
+                                     ncol = 2, nrow = 3)
+urban_treatment_multiplot
+
+ggsave("../../outputs/survivorship/urban survivorship treatment.pdf", urban_treatment_multiplot, width=10, height=11,dpi = 300)
+```
+
+
+# O. faveolata CH vs LH over time
+
+```{r ofav-time-split}
+# -----------------------------------------------------------------------------
+# The O. faveolata CH vs LH Cox model violates the proportional hazards
+# assumption because the survival curves cross: LH delayed mortality until
+# about day 20, then declined faster than CH. Splitting follow-up at day 20
+# estimates a separate LH vs CH hazard ratio for each period.
+# Hazards remain non-proportional after day 20 (cox.zph p < 0.01) because LH
+# mortality is concentrated in days 20-27, so the after-day-20 hazard ratio is
+# an average over that period; the direction (LH faster after day 20) is the
+# robust conclusion.
+# -----------------------------------------------------------------------------
+ofav_split <- survSplit(Surv(days, status) ~ treat + geno_id, data = urban_ofav_treat,
+                        cut = 20, episode = "period") %>%
+  mutate(LH_days_0_20 = as.numeric(treat == "LH" & period == 1),
+         LH_after_day_20 = as.numeric(treat == "LH" & period == 2))
+
+hazard_ofav_treat_split <- coxph(Surv(tstart, days, status) ~ LH_days_0_20 + LH_after_day_20,
+                                 data = ofav_split, cluster = geno_id)
+summary(hazard_ofav_treat_split)
+cox.zph(hazard_ofav_treat_split) # proportional hazards within each period
+
+s_split <- summary(hazard_ofav_treat_split)
+ofav_time_split <- data.frame(period = c("days 0-20", "after day 20"),
+                              LH_vs_CH_HR = round(s_split$conf.int[, 1], 2),
+                              lower_95 = round(s_split$conf.int[, 3], 2),
+                              upper_95 = round(s_split$conf.int[, 4], 2),
+                              robust_p = signif(s_split$coefficients[, "Pr(>|z|)"], 3))
+ofav_time_split
+
+write.csv(ofav_time_split, file = "../../outputs/survivorship/urban survivorship ofav treatment time split.csv", row.names = FALSE)
+```
+
+
+# survivorship by site
+
+```{r survivorship-by-site}
+# -----------------------------------------------------------------------------
+# CH vs LH survival did not differ in either species, so the heat treatments
+# are combined for site comparisons, using the same datasets as the treatment
+# section. Cox models are stratified by treatment, giving CH and LH separate
+# baseline hazards (O. faveolata CH and LH survival curves cross), and use
+# robust standard errors clustered by genotype.
+# -----------------------------------------------------------------------------
+
+# Kaplan-Meier survival curves for each species
+fit_ofav_site <- survfit(Surv(days, status) ~ site, data = urban_ofav_treat)
+summary(fit_ofav_site)
+
+fit_ssid_site <- survfit(Surv(days, status) ~ site, data = urban_ssid_treat)
+summary(fit_ssid_site)
+
+# hazard ratio by site
+hazard_ofav_site <- coxph(Surv(days, status) ~ site + strata(treat), data = urban_ofav_treat, cluster = geno_id)
+summary(hazard_ofav_site)
+
+hazard_ssid_site <- coxph(Surv(days, status) ~ site + strata(treat), data = urban_ssid_treat, cluster = geno_id)
+summary(hazard_ssid_site)
+
+# Kaplan-Meier plots for each species
+fill.color3<-c("#018571","#80cdc1","#dfc27d","#a6611a")
+
+survival_ofav_site<-ggsurvplot(fit_ofav_site, data = urban_ofav_treat, pval = robust_score_p(hazard_ofav_site), xlab="Days", ylab="Survival Probability",
+                               conf.int = T, risk.table=T, palette=fill.color3,
+                               break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Orbicella faveolata") 
+show_km(survival_ofav_site)
+
+survival_ssid_site<-ggsurvplot(fit_ssid_site, data = urban_ssid_treat, pval = robust_score_p(hazard_ssid_site), xlab="Days", ylab="Survival Probability",
+                               conf.int = T, risk.table=T, palette=fill.color3,
+                               break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Siderastrea siderea") 
+show_km(survival_ssid_site)
+
+# hazard ratio plots
+hazplot_ofav_site <- forest_clustered(hazard_ofav_site, data = urban_ofav_treat)
+hazplot_ofav_site
+
+hazplot_ssid_site <- forest_clustered(hazard_ssid_site, data = urban_ssid_treat)
+hazplot_ssid_site
+
+# survivorship by site figure
+urban_site_multiplot<-ggarrange(survival_ofav_site$plot,
+                                survival_ssid_site$plot, 
+                                survival_ofav_site$table, 
+                                survival_ssid_site$table,
+                                hazplot_ofav_site,
+                                hazplot_ssid_site,
+                                heights = c(2, 0.6, 1.1),
+                                ncol = 2, nrow = 3)
+urban_site_multiplot
+
+ggsave("../../outputs/survivorship/urban survivorship site.pdf", urban_site_multiplot, width=10, height=12,dpi = 300)
+```
+
+
+# days to mortality
+
+```{r days-to-mortality}
+# -----------------------------------------------------------------------------
+# All fragments in the heat treatments died (no censoring), so mean days to
+# mortality is exact. Control temperature treatments had no mortality and are
+# excluded. Days are counted from the end of the temperature ramp (start date).
+# -----------------------------------------------------------------------------
+sem <- function(x) sd(x) / sqrt(length(x))
+
+urban_heat <- urban %>%
+  filter(treat %in% c("CH", "LH")) %>%
+  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star", "MacN")))
+
+days_summary <- function(dat, grouping, ...) {
+  dat %>%
+    group_by(species, ...) %>%
+    summarise(n = n(), deaths = sum(status), mean_days = round(mean(days), 2),
+              sem_days = round(sem(days), 2), .groups = "drop") %>%
+    mutate(grouping = grouping, .after = species)
+}
+
+days_to_mortality <- bind_rows(
+  days_summary(urban_heat, "treatment", treat),
+  days_summary(urban_heat, "site", site),
+  days_summary(urban_heat, "treatment x site", treat, site)
+) %>%
+  dplyr::select(species, grouping, treat, site, everything()) %>%
+  mutate(grouping = factor(grouping, levels = c("treatment", "site", "treatment x site"))) %>%
+  arrange(species, grouping, treat, site)
+days_to_mortality
+
+write.csv(days_to_mortality, file = "../../outputs/survivorship/urban survivorship days to mortality.csv", row.names = FALSE)
+```
+
+
+# model outputs and proportional hazards testing
+
+```{r model-outputs}
+# -----------------------------------------------------------------------------
+# Exports hazard ratios, model tests, and proportional hazards tests for all
+# Cox models. Models use robust standard errors clustered by genotype, so the
+# robust Wald and robust score tests are the genotype-adjusted tests to report;
+# the likelihood ratio and log-rank tests assume independent fragments.
+# Proportional hazards: cox.zph() p-values below 0.05 indicate the hazard ratio
+# changes over time, so a single hazard ratio is not a valid summary; in that
+# case, report the robust score (log-rank) test instead.
+# O. faveolata CH vs LH (hazard_ofav_treat) violates this assumption.
+# -----------------------------------------------------------------------------
+cox_models <- list(ofav_treat = hazard_ofav_treat, ssid_treat = hazard_ssid_treat,
+                   ofav_treat_time_split = hazard_ofav_treat_split,
+                   ofav_site = hazard_ofav_site, ssid_site = hazard_ssid_site)
+
+# proportional hazards tests
+lapply(cox_models, cox.zph)
+
+capture.output({
+  for (nm in names(cox_models)) {
+    s <- summary(cox_models[[nm]])
+    cat("=== ", nm, " ===\n", sep = "")
+    cat("n =", s$n, " events =", s$nevent, "\n")
+    print(round(s$conf.int, 3))
+    print(signif(s$coefficients, 3))
+    cat("Genotype-adjusted tests: robust Wald p =", signif(s$waldtest["pvalue"], 3),
+        " robust score p =", signif(s$robscore["pvalue"], 3), "\n")
+    cat("Unadjusted tests: likelihood ratio p =", signif(s$logtest["pvalue"], 3),
+        " log-rank p =", signif(s$sctest["pvalue"], 3), "\n")
+    cat("Proportional hazards test (cox.zph):\n")
+    print(cox.zph(cox_models[[nm]])$table)
+    cat("\n")
+  }
+}, file = "../../outputs/survivorship/urban survivorship stats.txt")
+```
+
+
+# genotype effects
+
+```{r genotype-effects}
+# -----------------------------------------------------------------------------
+# Genotype is the main source of variation in time to mortality under heat
+# stress. Because genotypes are nested within sites, the replicates for site
+# comparisons are genotypes, not fragments.
+#   1. variance partitioning: days ~ treatment + site + cohort + (1 | genotype)
+#      (all heat fragments died, so days to mortality is uncensored)
+#   2. consistency of genotype responses across CH and LH (correlation of genotype means)
+#   3. site comparison using genotype means as replicates
+# -----------------------------------------------------------------------------
+geno_heat <- urban_heat %>%
+  mutate(cohort = if_else(ramp == "4/5/21", "early ramp", "late ramp"),
+         treat = factor(treat, levels = c("CH", "LH")))
+
+geno_results <- lapply(c("Ofav", "Ssid"), function(sp) {
+  d <- filter(geno_heat, species == sp)
+
+  # 1. variance partitioning, with LRT for the genotype random effect
+  m <- lmer(days ~ treat + site + cohort + (1 | geno_id), data = d, REML = TRUE)
+  m0 <- lm(days ~ treat + site + cohort, data = d)
+  vc <- as.data.frame(VarCorr(m))
+  lrt <- 2 * (as.numeric(logLik(update(m, REML = FALSE))) - as.numeric(logLik(m0)))
+
+  # 2. genotype means in CH vs LH, for genotypes present in both
+  g_trt <- d %>%
+    group_by(geno_id, treat) %>%
+    summarise(mean_days = mean(days), .groups = "drop") %>%
+    tidyr::pivot_wider(names_from = treat, values_from = mean_days) %>%
+    filter(!is.na(CH), !is.na(LH))
+  ct <- cor.test(g_trt$CH, g_trt$LH)
+
+  # 3. site comparison on genotype means
+  g_site <- d %>%
+    group_by(geno_id, site) %>%
+    summarise(mean_days = mean(days), .groups = "drop")
+  site_means <- tapply(g_site$mean_days, g_site$site, mean)
+
+  data.frame(species = sp,
+             genotype_pct_nonfixed_var = round(100 * vc$vcov[vc$grp == "geno_id"] / sum(vc$vcov), 1),
+             genotype_LRT_p = signif(pchisq(lrt, 1, lower.tail = FALSE) / 2, 3), # halved: variance tested at boundary of zero
+             n_geno_both_treatments = nrow(g_trt),
+             CH_LH_genotype_r = round(unname(ct$estimate), 2),
+             CH_LH_genotype_r_p = signif(ct$p.value, 3),
+             n_geno = nrow(g_site),
+             t(setNames(round(site_means, 2), paste0("mean_days_geno_", names(site_means)))),
+             site_anova_p = signif(summary(aov(mean_days ~ site, data = g_site))[[1]][["Pr(>F)"]][1], 3),
+             site_kruskal_p = signif(kruskal.test(mean_days ~ site, data = g_site)$p.value, 3))
+})
+genotype_effects <- bind_rows(geno_results)
+genotype_effects
+
+write.csv(genotype_effects, file = "../../outputs/survivorship/urban survivorship genotype effects.csv", row.names = FALSE)
+```
+
+
+# cohort and tank sensitivity
+
+```{r cohort-sensitivity}
+# -----------------------------------------------------------------------------
+# Each heat treatment combines two cohorts held in separate tanks: fragments
+# heated from the start (4/5 ramp) and the control temperature fragments (CC, LC),
+# moved to heat after the 20-day control period (4/26 ramp). Tests whether cohort (equivalent to tank within
+# treatment) affects survival, and whether adjusting for it changes the
+# treatment or site results. All models clustered by genotype; p-values are
+# robust score tests, except the treatment x cohort interaction (robust Wald).
+# Stratifying by tank also stratifies by treatment, since tanks are nested in
+# treatment.
+# -----------------------------------------------------------------------------
+cohort_results <- lapply(c("Ofav", "Ssid"), function(sp) {
+  d <- filter(geno_heat, species == sp)
+  rscore <- function(m) signif(summary(m)$robscore["pvalue"], 3)
+  hr <- function(m) round(summary(m)$conf.int[1, 1], 2)
+
+  m_cohort   <- coxph(Surv(days, status) ~ cohort, data = d, cluster = geno_id)
+  m_int      <- coxph(Surv(days, status) ~ treat * cohort, data = d, cluster = geno_id)
+  m_trt      <- coxph(Surv(days, status) ~ treat, data = d, cluster = geno_id)
+  m_trt_str  <- coxph(Surv(days, status) ~ treat + strata(cohort), data = d, cluster = geno_id)
+  m_site     <- coxph(Surv(days, status) ~ site + strata(treat), data = d, cluster = geno_id)
+  m_site_str <- coxph(Surv(days, status) ~ site + strata(tank), data = d, cluster = geno_id)
+  int_row    <- grep(":", rownames(summary(m_int)$coefficients))
+
+  data.frame(species = sp,
+             cohort_p = rscore(m_cohort),
+             treat_x_cohort_p = signif(summary(m_int)$coefficients[int_row, "Pr(>|z|)"], 3),
+             LH_vs_CH_HR = hr(m_trt), LH_vs_CH_p = rscore(m_trt),
+             LH_vs_CH_HR_cohort_strata = hr(m_trt_str), LH_vs_CH_p_cohort_strata = rscore(m_trt_str),
+             site_p = rscore(m_site), site_p_tank_strata = rscore(m_site_str))
+})
+cohort_sensitivity <- bind_rows(cohort_results)
+cohort_sensitivity
+
+write.csv(cohort_sensitivity, file = "../../outputs/survivorship/urban survivorship cohort sensitivity.csv", row.names = FALSE)
+```
+
+
+# session info
+
+```{r session-info}
+# record R and package versions for reproducibility
+sessionInfo()
+```

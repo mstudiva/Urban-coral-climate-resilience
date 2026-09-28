@@ -1,17 +1,11 @@
-site = Emerald:
- contrast            estimate      SE df t.ratio p.value
- control pH - low pH   0.0142 0.00267 18   5.324 <0.0001
+ contrast                       estimate      SE df t.ratio p.value
+ Emerald - Rainbow              0.000497 0.00526 16   0.095  0.9997
+ Emerald - Star Island         -0.005148 0.00526 16  -0.979  0.7630
+ Emerald - MacArthur North     -0.014177 0.00526 16  -2.697  0.0683
+ Rainbow - Star Island         -0.005645 0.00526 16  -1.074  0.7098
+ Rainbow - MacArthur North     -0.014674 0.00526 16  -2.791  0.0571
+ Star Island - MacArthur North -0.009029 0.00526 16  -1.718  0.3472
 
-site = Rainbow:
- contrast            estimate      SE df t.ratio p.value
- control pH - low pH   0.0142 0.00267 18   5.324 <0.0001
-
-site = Star Island:
- contrast            estimate      SE df t.ratio p.value
- control pH - low pH   0.0142 0.00267 18   5.324 <0.0001
-
-site = MacArthur North:
- contrast            estimate      SE df t.ratio p.value
- control pH - low pH   0.0142 0.00267 18   5.324 <0.0001
-
+Results are averaged over the levels of: treatment 
 Degrees-of-freedom method: kenward-roger 
+P value adjustment: tukey method for comparing a family of 4 estimates 

@@ -1,0 +1,29 @@
+"species","grouping","treat","site","n","deaths","mean_days","sem_days"
+"Ofav","treatment","CH",NA,35,35,20.77,1.39
+"Ofav","treatment","LH",NA,18,18,20.72,1.41
+"Ofav","site",NA,"Emerald",14,14,16,2.28
+"Ofav","site",NA,"Rainbow",10,10,17.8,2.12
+"Ofav","site",NA,"Star",13,13,22.62,1.3
+"Ofav","site",NA,"MacN",16,16,25.25,1.46
+"Ofav","treatment x site","CH","Emerald",9,9,17.89,3.16
+"Ofav","treatment x site","CH","Rainbow",8,8,16.38,2.39
+"Ofav","treatment x site","CH","Star",8,8,22.12,2.12
+"Ofav","treatment x site","CH","MacN",10,10,25.8,2.36
+"Ofav","treatment x site","LH","Emerald",5,5,12.6,2.62
+"Ofav","treatment x site","LH","Rainbow",2,2,23.5,1.5
+"Ofav","treatment x site","LH","Star",5,5,23.4,0.6
+"Ofav","treatment x site","LH","MacN",6,6,24.33,0.21
+"Ssid","treatment","CH",NA,39,39,17.13,1.05
+"Ssid","treatment","LH",NA,40,40,16.62,1.12
+"Ssid","site",NA,"Emerald",20,20,14.75,1.27
+"Ssid","site",NA,"Rainbow",20,20,14.05,1.62
+"Ssid","site",NA,"Star",20,20,19.25,1.47
+"Ssid","site",NA,"MacN",19,19,19.58,1.41
+"Ssid","treatment x site","CH","Emerald",10,10,15.4,1.89
+"Ssid","treatment x site","CH","Rainbow",10,10,14.7,2.22
+"Ssid","treatment x site","CH","Star",10,10,18.7,2.11
+"Ssid","treatment x site","CH","MacN",9,9,20,2.01
+"Ssid","treatment x site","LH","Emerald",10,10,14.1,1.77
+"Ssid","treatment x site","LH","Rainbow",10,10,13.4,2.47
+"Ssid","treatment x site","LH","Star",10,10,19.8,2.14
+"Ssid","treatment x site","LH","MacN",10,10,19.2,2.06

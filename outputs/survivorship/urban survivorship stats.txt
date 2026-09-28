@@ -1,0 +1,76 @@
+=== ofav_treat ===
+n = 53  events = 53 
+        exp(coef) exp(-coef) lower .95 upper .95
+treatLH     1.635      0.611     0.948      2.82
+         coef exp(coef) se(coef) robust se    z Pr(>|z|)
+treatLH 0.492      1.64    0.322     0.278 1.77   0.0768
+Genotype-adjusted tests: robust Wald p = 0.0768  robust score p = 0.116 
+Unadjusted tests: likelihood ratio p = 0.131  log-rank p = 0.123 
+Proportional hazards test (cox.zph):
+          chisq df           p
+treat  9.979418  1 0.001582997
+GLOBAL 9.979418  1 0.001582997
+
+=== ssid_treat ===
+n = 79  events = 79 
+        exp(coef) exp(-coef) lower .95 upper .95
+treatLH     0.916      1.091     0.728     1.154
+           coef exp(coef) se(coef) robust se      z Pr(>|z|)
+treatLH -0.0875     0.916    0.226     0.118 -0.744    0.457
+Genotype-adjusted tests: robust Wald p = 0.457  robust score p = 0.461 
+Unadjusted tests: likelihood ratio p = 0.699  log-rank p = 0.699 
+Proportional hazards test (cox.zph):
+         chisq df         p
+treat  0.10235  1 0.7490276
+GLOBAL 0.10235  1 0.7490276
+
+=== ofav_treat_time_split ===
+n = 86  events = 53 
+                exp(coef) exp(-coef) lower .95 upper .95
+LH_days_0_20        0.440      2.270     0.142     1.365
+LH_after_day_20     5.327      0.188     2.546    11.145
+                 coef exp(coef) se(coef) robust se     z Pr(>|z|)
+LH_days_0_20    -0.82      0.44    0.560     0.577 -1.42 1.55e-01
+LH_after_day_20  1.67      5.33    0.475     0.377  4.44 8.95e-06
+Genotype-adjusted tests: robust Wald p = 1.64e-05  robust score p = 0.00872 
+Unadjusted tests: likelihood ratio p = 0.000395  log-rank p = 0.000203 
+Proportional hazards test (cox.zph):
+                   chisq df         p
+LH_days_0_20    1.828664  1 0.1762854
+LH_after_day_20 1.253936  1 0.2628020
+GLOBAL          3.082600  2 0.2141026
+
+=== ofav_site ===
+n = 53  events = 53 
+            exp(coef) exp(-coef) lower .95 upper .95
+siteRainbow     0.704      1.420     0.199     2.492
+siteStar        0.506      1.976     0.196     1.308
+siteMacN        0.310      3.229     0.126     0.759
+              coef exp(coef) se(coef) robust se      z Pr(>|z|)
+siteRainbow -0.351     0.704    0.439     0.645 -0.544   0.5860
+siteStar    -0.681     0.506    0.408     0.485 -1.410   0.1600
+siteMacN    -1.170     0.310    0.399     0.457 -2.560   0.0104
+Genotype-adjusted tests: robust Wald p = 0.0367  robust score p = 0.0798 
+Unadjusted tests: likelihood ratio p = 0.0233  log-rank p = 0.0185 
+Proportional hazards test (cox.zph):
+          chisq df         p
+site   5.715137  3 0.1263226
+GLOBAL 5.715137  3 0.1263226
+
+=== ssid_site ===
+n = 79  events = 79 
+            exp(coef) exp(-coef) lower .95 upper .95
+siteRainbow     0.980      1.020     0.432     2.225
+siteStar        0.453      2.207     0.189     1.085
+siteMacN        0.407      2.456     0.179     0.927
+               coef exp(coef) se(coef) robust se       z Pr(>|z|)
+siteRainbow -0.0199     0.980    0.317     0.418 -0.0476   0.9620
+siteStar    -0.7910     0.453    0.335     0.445 -1.7800   0.0756
+siteMacN    -0.8980     0.407    0.341     0.420 -2.1400   0.0324
+Genotype-adjusted tests: robust Wald p = 0.0667  robust score p = 0.0784 
+Unadjusted tests: likelihood ratio p = 0.00901  log-rank p = 0.00754 
+Proportional hazards test (cox.zph):
+           chisq df         p
+site   0.4903769  3 0.9210004
+GLOBAL 0.4903769  3 0.9210004
+

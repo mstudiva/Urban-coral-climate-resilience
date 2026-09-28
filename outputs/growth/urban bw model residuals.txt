@@ -1,0 +1,16 @@
+=== Shapiro-Wilk test on model residuals ===
+
+O. faveolata (lm_ofav_noint):
+
+	Shapiro-Wilk normality test
+
+data:  resid_ofav
+W = 0.98381, p-value = 0.3827
+
+S. siderea (lm_ssid_noint):
+
+	Shapiro-Wilk normality test
+
+data:  resid_ssid
+W = 0.98171, p-value = 0.3091
+

@@ -1,0 +1,1227 @@
+---
+title: "Carbonate Chemistry and Calcification — Linear Mixed-Effects Analysis"
+author: "Michael Studivan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+# -----------------------------------------------------------------------------
+# Global chunk options
+# echo = TRUE:     show code in rendered output
+# warning = FALSE: suppress warnings in rendered document
+#                  (warnings still print to console during knitting)
+# message = FALSE: suppress package loading messages
+# -----------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 10,
+  fig.height = 6,
+  dpi        = 300
+)
+```
+
+
+# packages
+
+```{r packages}
+library(tidyverse)
+library(seacarb) #install.packages("seacarb")
+library(ggplot2)
+library(ggpubr)
+library(stringr)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(multcomp)
+library(MuMIn)
+library(dplyr)
+```
+
+
+# data import
+
+```{r data-import}
+# total alkalinity: bottle values selected from the individual duplicate titrations ('urban TA titrations.csv',
+# 2023-corrected values from 'NMFS Final TA 2021_ver8-18-2023.xlsx'; run 19 is the Jun 2021 retest of 6438 from
+# 'urban TA retests.xlsx'). Each bottle was titrated in duplicate; the pair is accepted when its range is within the
+# upper control limit of a range (R) control chart for duplicates, UCL = 3.267 * mean range (Dickson et al. 2007,
+# SOP 22). The bottle value is the mean of its accepted original run(s); reanalyses are used only when no original
+# pair was accepted. TA is not stored in the carbonate data files; these bottle values are joined in below.
+titrations <- read.csv("../../data/calcification/urban TA titrations.csv", head=T) %>%
+  filter(type == "sample")
+
+closest_pair <- function(x) { # range and mean of the closest two titrations (if a bottle was titrated >2 times in a run)
+  x <- sort(x)
+  i <- which.min(diff(x))
+  c(diff(x)[i], mean(x[i:(i+1)]))
+}
+
+titrations %>%
+  group_by(bottle, run, rerun) %>%
+  filter(n() >= 2) %>% # single titrations (four run-17 retests) have no range
+  summarise(range = closest_pair(final_TA)[1],
+            TA = closest_pair(final_TA)[2], .groups = "drop") -> ta_pairs
+
+ta_ucl <- 3.267 * mean(ta_pairs$range)
+ta_pairs$pass <- ta_pairs$range <= ta_ucl
+cat("mean duplicate range:", round(mean(ta_pairs$range), 2), "umol/kg; UCL:", round(ta_ucl, 2), "umol/kg;",
+    sum(!ta_pairs$pass), "of", nrow(ta_pairs), "pairs exceed the UCL\n")
+
+ta_pairs %>%
+  group_by(bottle) %>%
+  summarise(TA_selected = if (any(pass & !rerun)) mean(TA[pass & !rerun])
+                          else if (any(pass)) mean(TA[pass])
+                          else TA[which.min(range)],
+            ta_flag = !any(pass), .groups = "drop") -> ta_bottles
+ta_bottles %>% filter(ta_flag) # bottles with no accepted pair (closest pair used)
+
+ta_initial <- read.csv("../../data/calcification/urban TA initial bottles.csv", head=T) # tank water bottle for each incubation
+
+tank <- read.csv("../../data/calcification/urban carbonate treatments.csv", head=T) # weekly tank samples for treatment means
+stopifnot(all(tank$bottle %in% ta_bottles$bottle))
+tank %>%
+  left_join(dplyr::select(ta_bottles, bottle, TA_selected), by = "bottle") %>%
+  mutate(TA = TA_selected) %>%
+  dplyr::select(-TA_selected) %>%
+  filter(!bottle %in% ta_bottles$bottle[ta_bottles$ta_flag]) -> tank # weekly bottles with no accepted duplicate pair are excluded
+
+# species/treatment labels in the data file come from a fixed tank lookup, so they don't follow corals that
+# were moved after tank failures. Corrected here (data file unchanged); second heat-stress groups keep their
+# original treatment label (CC/LC), as for T4, T11 and T12
+bottle_relabel <- tribble(
+  ~bottle,   ~species_new, ~treatment_new, ~reason,
+  21042609, "Ofav", "CC", "Ofav CC corals moved T1 -> T9 after T1 failed (Apr 24)",
+  21050309, "Ofav", "CC", "Ofav CC corals in T9",
+  21051009, "Ofav", "CC", "Ofav CC corals in T9 (second heat-stress group)",
+  21051709, "Ofav", "CC", "Ofav CC corals in T9 (second heat-stress group)",
+  21042610, "Ofav", "LH", "Ofav LH corals moved T8 -> T10 after T8 failed (Apr 24)",
+  21050310, "Ofav", "LH", "Ofav LH corals in T10",
+  21051010, "Ofav", "LH", "Ofav LH corals in T10",
+  21060105, "Ofav", "CC", "Ofav CC corals moved T9 -> T5 after T9 failed (May 24)",
+  21060102, "Ssid", "LC", "Ssid LC corals moved T11 -> T2 after T11 failed (May 24)")
+
+# samples from tanks that held no experimental corals at the time; kept in the data file, excluded from means
+bottle_exclude <- tribble(
+  ~bottle,   ~reason,
+  21041903, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24); tank at low pH",
+  21042603, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24); tank at low pH",
+  21050303, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24)",
+  21041909, "T9 before Ofav CC corals were moved in (Apr 25)",
+  21041910, "T10 before Ofav LH corals were moved in (Apr 25)")
+stopifnot(all(c(bottle_relabel$bottle, bottle_exclude$bottle) %in% tank$bottle))
+
+tank %>%
+  left_join(dplyr::select(bottle_relabel, -reason), by = "bottle") %>%
+  mutate(species = coalesce(species_new, species),
+         treatment = coalesce(treatment_new, treatment)) %>%
+  dplyr::select(-species_new, -treatment_new) %>%
+  filter(!bottle %in% bottle_exclude$bottle) -> tank
+
+tank$species <- as.factor(tank$species)
+tank$treatment <- as.factor(tank$treatment)
+tank$TA_mol <- tank$TA/1000000 # converting TA umol/kg to mol/kg
+str(tank)
+
+incubations <- read.csv("../../data/calcification/urban carbonate incubations.csv", head=T) # incubation samples for alkalinity anomaly/calcification
+stopifnot(all(incubations$bottle %in% ta_bottles$bottle),
+          !any(c(incubations$bottle, ta_initial$bottle) %in% ta_bottles$bottle[ta_bottles$ta_flag])) # all incubation bottles have an accepted pair
+incubations %>% # final TA from the incubation bottle; initial TA from the tank water bottle for that tank, date and incubation
+  left_join(dplyr::select(ta_bottles, bottle, finalTA_new = TA_selected), by = "bottle") %>%
+  left_join(rename(ta_initial, initial_bottle = bottle), by = c("date", "incubation", "tank")) %>%
+  left_join(dplyr::select(ta_bottles, initial_bottle = bottle, initialTA_new = TA_selected), by = "initial_bottle") %>%
+  mutate(finalTA = finalTA_new, initialTA = initialTA_new) %>%
+  dplyr::select(-finalTA_new, -initialTA_new, -initial_bottle) -> incubations
+stopifnot(!anyNA(incubations$initialTA), !anyNA(incubations$finalTA))
+incubations$incubation <- as.factor(incubations$incubation)
+incubations$site <- factor(incubations$site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North"))
+incubations$genotype <- as.factor(incubations$genotype)
+incubations$species <- as.factor(incubations$species)
+incubations$treatment <- as.factor(incubations$treatment)
+incubations$initialTA_mol <- incubations$initialTA/1000000 # converting TA umol/kg to mol/kg
+incubations$finalTA_mol <- incubations$finalTA/1000000 # converting TA umol/kg to mol/kg
+str(incubations)
+```
+
+
+# calcification calculation
+
+```{r calcification-calculation}
+# Calcification from the alkalinity anomaly method (previously calculated in 'urban TA.xlsx', incubations calcs sheet).
+# Net changes, nutrient terms, calcification and blank-corrected calcification are calculated here (not stored in the data file).
+#
+# G (mg CaCO3 cm-2 h-1) = -0.5 * (dTA + dNO2NO3 - dNH4 + dPO4) * seawater mass * 100.09 / 1000 / time / area
+#   dTA:      final - initial total alkalinity (umol/kg)
+#   nutrients: net change in the incubation chamber (umol/kg); uptake of NO2/NO3 and PO4 raises TA and uptake of NH4
+#             lowers it, so these terms remove nutrient effects from the alkalinity anomaly. They are in TA units,
+#             so they are halved along with dTA.
+#   seawater mass (kg) = (chamber volume - coral volume) * density
+#   100.09: molar mass of CaCO3 (umol -> ug), / 1000: ug -> mg; time in h; area in cm2
+chamber_volume_L <- 0.702 # mean chamber volume (742 mL) minus table, stir bar and puck ('urban TA.xlsx', incubations volume sheet)
+
+# nutrient changes were measured on one fragment per site in each tank (day and night incubations); the tank means
+# for each incubation type are applied to every fragment incubated from that tank
+tank_nutrient_groups <- data.frame(tank = c("T2", "T5", "T6", "T8"),
+                                   Species = c("Ssid", "Ssid", "Ofav", "Ofav"),
+                                   Treatment = c("LH", "CH", "CH", "LH"))
+
+read.csv("../../data/calcification/urban nutrients.csv", head = T) %>%
+  mutate(incubation = tolower(Time), NO2NO3 = NO2 + NO3) %>%
+  group_by(incubation, Species, Treatment) %>%
+  summarise(across(c(NO2NO3, NH4, PO4), mean), .groups = "drop") %>% # umol/L
+  left_join(tank_nutrient_groups, by = c("Species", "Treatment")) %>%
+  dplyr::select(incubation, tank, NO2NO3, NH4, PO4) -> tank_nutrients
+tank_nutrients
+
+incubations %>%
+  dplyr::select(-any_of(c("NO2NO3", "NH4", "PO4", "calcification", "calcificationadj"))) %>%
+  mutate(incubation = as.character(incubation)) %>%
+  left_join(tank_nutrients, by = c("incubation", "tank")) %>%
+  mutate(incubation = factor(incubation),
+         across(c(NO2NO3, NH4, PO4), ~ .x / density), # umol/L -> umol/kg
+         netTA = finalTA - initialTA,
+         netpH = finalpH - initialpH,
+         seawater_kg = (chamber_volume_L - volume / 1000) * density,
+         calcification = -0.5 * (netTA + NO2NO3 - NH4 + PO4) * seawater_kg * 100.09 / 1000 / time / area) -> incubations
+
+# skeleton blanks: mean calcification of the dead skeleton controls in each incubation type (light or dark), pooled
+# across pH treatments, subtracted from every fragment in that incubation type. Blanks did not differ between pH
+# treatments (light 0.0127 vs 0.0129, dark -0.0026 vs -0.0031 mg CaCO3 cm-2 h-1 with the pH-specific calculation),
+# so pooling gives a more precise correction (light n = 4, dark n = 3) and subtracts the same value from both pH groups.
+# A138 (night, 31 Mar; T6 water) is excluded from the blanks: its alkalinity fell by 12.0 umol/kg, whereas the other
+# night blanks rose by 1.4-1.7 umol/kg (duplicate titrations agree, and its O2 use was typical of a bare skeleton).
+# The row stays in the data file
+blank_exclude <- data.frame(sampleID = "A138", incubation = "night")
+
+incubations %>%
+  filter(species == "control") %>%
+  anti_join(blank_exclude, by = c("sampleID", "incubation")) %>%
+  group_by(incubation) %>%
+  summarise(blank = mean(calcification), sd_blank = sd(calcification), n_blank = n(), .groups = "drop") -> calcification_blanks
+calcification_blanks
+write.csv(calcification_blanks, file = "../../outputs/calcification/urban carbonate incubation blanks.csv", row.names = FALSE)
+
+incubations %>%
+  left_join(dplyr::select(calcification_blanks, incubation, blank), by = "incubation") %>%
+  mutate(calcificationadj = calcification - blank) -> incubations
+stopifnot(!any(is.na(incubations$calcificationadj)))
+```
+
+
+# treatment means
+
+```{r treatment-means}
+tank %>% # running the seacarb function to calculate other parameters from pH and TA
+  mutate(carb(flag=8, pH, TA_mol, S=salinity, T=temp)) %>%
+  mutate(DIC = DIC * 1000000) -> tank_carb # converting DIC mol/kg to umol/kg
+
+# processed weekly bottle data for archiving: relabelled species/treatment, control-chart TA and seacarb chemistry;
+# excluded bottles (unused tanks, no accepted duplicate pair) are not included
+write.csv(tank_carb, file = "../../outputs/calcification/urban carbonate treatments processed.csv", row.names = FALSE)
+
+tank_carb %>% # generating summary statistics for TA
+  filter(OA =="OA") %>%
+  group_by(species,treatment)  %>% 
+  summarise(meanTA = mean(TA), sdTA = sd(TA), nTA = n(), seTA = sdTA/sqrt(nTA)) -> tank_TA
+
+tank_carb %>% # generating summary statistics for pH
+  filter(OA =="OA") %>%
+  group_by(species,treatment)  %>% 
+  summarise(meanpH = mean(pH), sdpH = sd(pH), npH = n(), sepH = sdpH/sqrt(npH)) -> tank_pH
+
+tank_carb %>% # generating summary statistics for DIC
+  filter(OA =="OA") %>%
+  group_by(species,treatment)  %>% 
+  summarise(meanDIC = mean(DIC), sdDIC = sd(DIC), nDIC = n(), seDIC = sdDIC/sqrt(nDIC)) -> tank_DIC
+
+tank_carb %>% # generating summary statistics for pCO2
+  filter(OA =="OA") %>%
+  group_by(species,treatment)  %>% 
+  summarise(meanpCO2 = mean(pCO2), sdpCO2 = sd(pCO2), npCO2 = n(), sepCO2 = sdpCO2/sqrt(npCO2)) -> tank_pCO2
+
+tank_carb %>% # generating summary statistics for aragonite saturation state (Omega Aragonite)
+  filter(OA =="OA") %>%
+  group_by(species,treatment)  %>% 
+  summarise(meanAr = mean(OmegaAragonite), sdAr = sd(OmegaAragonite), nAr = n(), seAr = sdAr/sqrt(nAr)) -> tank_Ar
+
+tank_TA %>% # joining all the summary stats into one table
+  left_join(tank_pH, by=c('species'='species', 'treatment'='treatment')) %>%
+  left_join(tank_DIC, by=c('species'='species', 'treatment'='treatment')) %>%
+  left_join(tank_pCO2, by=c('species'='species', 'treatment'='treatment')) %>%
+  left_join(tank_Ar, by=c('species'='species', 'treatment'='treatment')) -> tank_means
+
+write.csv(tank_means, file = "../../outputs/calcification/urban carbonate treatment means.csv")
+```
+
+
+# incubation means
+
+```{r incubation-means}
+incubations %>% # running the seacarb function to calculate other parameters from initial pH and TA
+  mutate(carb(flag=8, initialpH, initialTA_mol, S=salinity, T=temp)) %>%
+  mutate(DIC = DIC * 1000000) -> incubations_initial_carb # converting DIC mol/kg to umol/kg
+
+incubations %>% # running the seacarb function to calculate other parameters from final pH and TA
+  mutate(carb(flag=8, finalpH, finalTA_mol, S=salinity, T=temp)) %>%
+  mutate(DIC = DIC * 1000000) -> incubations_final_carb # converting DIC mol/kg to umol/kg
+
+incubations_initial_carb %>% # pulls the initial and final DIC, pCO2, and aragonite saturation columns from the respective dataframes
+  dplyr::select(all_of(names(incubations)), pCO2, DIC, OmegaAragonite) %>% # selecting by name so column order changes can't pull the wrong columns
+  rename('initialpCO2'='pCO2','initialDIC'='DIC','initialAr'='OmegaAragonite') %>%
+  left_join(dplyr::select(incubations_final_carb, bottle, pCO2, DIC, OmegaAragonite), by='bottle') %>%
+  rename('finalpCO2'='pCO2','finalDIC'='DIC','finalAr'='OmegaAragonite') -> incubations_carb
+
+incubations_carb %>% # calculating net pH, DIC, pCO2, and aragonite saturation
+  mutate(netDIC = finalDIC - initialDIC) %>%
+  mutate(netpCO2 = finalpCO2 - initialpCO2) %>%
+  mutate(netAr = finalAr - initialAr) -> incubations_net_carb
+
+# initial bottles with implausible pH; kept in the data file, pH-derived values (initial pH, DIC, pCO2, aragonite
+# saturation and their net changes) set to NA for the incubations that used them. Alkalinity and calcification are unaffected.
+initial_pH_exclude <- tribble(
+  ~initial_bottle, ~date,     ~incubation, ~tank, ~reason,
+  6421,            "3/29/21", "night",     "T2",  "bottle pH 7.679 vs T2 logger 7.779 and weekly bottle 7.772 (08:32); net pH rose during night incubation",
+  6423,            "3/29/21", "night",     "T6",  "bottle pH 7.757 vs T6 logger 8.019 and weekly bottle 8.043 (08:34); net pH rose 0.25 during night incubation")
+stopifnot(all(initial_pH_exclude$initial_bottle %in% ta_initial$bottle))
+
+ph_derived <- c("initialpH", "netpH", "initialDIC", "initialpCO2", "initialAr", "netDIC", "netpCO2", "netAr")
+incubations_net_carb %>%
+  left_join(dplyr::select(initial_pH_exclude, date, incubation, tank) %>% mutate(pH_excluded = TRUE),
+            by = c("date", "incubation", "tank")) %>%
+  mutate(pH_excluded = coalesce(pH_excluded, FALSE),
+         across(all_of(ph_derived), ~ ifelse(pH_excluded, NA, .x))) -> incubations_net_carb
+sum(incubations_net_carb$pH_excluded) # 8 fragment incubations (genotype 1 at each site in T2 and T6)
+
+# processed incubation data for archiving: the values actually analysed (control-chart TA, recalculated nutrient
+# terms, calcification and blank-corrected calcification, seacarb chemistry, pH exclusion flag)
+write.csv(incubations_net_carb, file = "../../outputs/calcification/urban carbonate incubations processed.csv", row.names = FALSE)
+  
+```
+
+
+# incubation normality and assumption testing
+
+```{r incubation-normality-and-assumption-testing}
+incubations_subset <- subset(incubations_net_carb, site!="control") # filtering out skeletal controls
+
+incubations_ofav_day <- incubations_subset[incubations_subset$species == "Ofav" & incubations_subset$incubation == "day",] # filtering dataframe by species and incubation type
+incubations_ofav_night <- incubations_subset[incubations_subset$species == "Ofav" & incubations_subset$incubation == "night",] 
+incubations_ssid_day <- incubations_subset[incubations_subset$species == "Ssid" & incubations_subset$incubation == "day",]
+incubations_ssid_night <- incubations_subset[incubations_subset$species == "Ssid" & incubations_subset$incubation == "night",]
+
+# identifying outliers
+outliers_ofav_day <- boxplot(incubations_ofav_day$calcificationadj, plot=T)$out # no outliers
+outliers_ofav_night <- boxplot(incubations_ofav_night$calcificationadj, plot=T)$out # outliers (none with the control-chart TA values)
+incubations_ofav_night <- incubations_ofav_night[!incubations_ofav_night$calcificationadj %in% outliers_ofav_night,] # outlier removal (safe when there are none)
+
+outliers_ssid_day <- boxplot(incubations_ssid_day$calcificationadj, plot=T)$out # no outliers
+outliers_ssid_night <- boxplot(incubations_ssid_night$calcificationadj, plot=T)$out # outliers (none with the control-chart TA values)
+incubations_ssid_night <- incubations_ssid_night[!incubations_ssid_night$calcificationadj %in% outliers_ssid_night,]
+
+# Shapiro test, p-values below 0.05 indicate violations of normality assumptions
+shapiro.test(incubations_ofav_day$calcificationadj) # normal
+shapiro.test(incubations_ofav_night$calcificationadj) # normal
+
+shapiro.test(incubations_ssid_day$calcificationadj) # normal
+shapiro.test(incubations_ssid_night$calcificationadj) # p = 0.03 on raw rates (no outliers removed); model residuals are normal (see residual checks)
+
+pdf("../../outputs/calcification/urban incubations ofav normality.pdf") # histograms and Q-Q plots
+par(mfrow=c(2,2))
+hist(incubations_ofav_day$calcificationadj)
+hist(incubations_ofav_night$calcificationadj)
+qqnorm(incubations_ofav_day$calcificationadj)
+qqline(incubations_ofav_day$calcificationadj)
+qqnorm(incubations_ofav_night$calcificationadj)
+qqline(incubations_ofav_night$calcificationadj)
+dev.off()
+
+pdf("../../outputs/calcification/urban incubations ssid normality.pdf") # histograms and Q-Q plots
+par(mfrow=c(2,2))
+hist(incubations_ssid_day$calcificationadj)
+hist(incubations_ssid_night$calcificationadj)
+qqnorm(incubations_ssid_day$calcificationadj)
+qqline(incubations_ssid_day$calcificationadj)
+qqnorm(incubations_ssid_night$calcificationadj)
+qqline(incubations_ssid_night$calcificationadj)
+dev.off()
+```
+
+
+
+
+# incubation net means
+
+```{r incubation-net-means}
+# night incubations flagged as calcification outliers (identified above) are excluded from the net means,
+# so the summary table matches the data used in the models. Their day incubations are kept.
+night_outlier_samples <- c(
+  incubations_subset$sampleID[incubations_subset$species == "Ofav" & incubations_subset$incubation == "night" & incubations_subset$calcificationadj %in% outliers_ofav_night],
+  incubations_subset$sampleID[incubations_subset$species == "Ssid" & incubations_subset$incubation == "night" & incubations_subset$calcificationadj %in% outliers_ssid_night])
+night_outlier_samples
+
+incubations_net_carb_filtered <- incubations_net_carb %>%
+  filter(!(incubation == "night" & sampleID %in% night_outlier_samples)) %>%
+  anti_join(blank_exclude, by = c("sampleID", "incubation")) # A138 night: excluded from the blanks, so also from the skeleton control summary
+
+incubations_net_carb_filtered %>% # generating summary statistics for net TA
+  group_by(incubation, site, species, treatment)  %>% 
+  summarise(meanTA = mean(netTA), sdTA = sd(netTA), nTA = n(), seTA = sdTA/sqrt(nTA)) -> incubations_netTA
+
+incubations_net_carb_filtered %>% # generating summary statistics for net pH
+  group_by(incubation, site, species,treatment)  %>% 
+  summarise(meanpH = mean(netpH, na.rm = TRUE), sdpH = sd(netpH, na.rm = TRUE), npH = sum(!is.na(netpH)), sepH = sdpH/sqrt(npH)) -> incubations_netpH
+
+incubations_net_carb_filtered %>% # generating summary statistics for net DIC
+  group_by(incubation, site, species,treatment)  %>% 
+  summarise(meanDIC = mean(netDIC, na.rm = TRUE), sdDIC = sd(netDIC, na.rm = TRUE), nDIC = sum(!is.na(netDIC)), seDIC = sdDIC/sqrt(nDIC)) -> incubations_netDIC
+
+incubations_net_carb_filtered %>% # generating summary statistics for net pCO2
+  group_by(incubation, site, species,treatment)  %>% 
+  summarise(meanpCO2 = mean(netpCO2, na.rm = TRUE), sdpCO2 = sd(netpCO2, na.rm = TRUE), npCO2 = sum(!is.na(netpCO2)), sepCO2 = sdpCO2/sqrt(npCO2)) -> incubations_netpCO2
+
+incubations_net_carb_filtered %>% # generating summary statistics for net aragonite saturation state (Omega Aragonite)
+  group_by(incubation, site, species,treatment)  %>% 
+  summarise(meanAr = mean(netAr, na.rm = TRUE), sdAr = sd(netAr, na.rm = TRUE), nAr = sum(!is.na(netAr)), seAr = sdAr/sqrt(nAr)) -> incubations_netAr
+
+incubations_net_carb_filtered %>% # generating summary statistics for net adjusted calcification
+  group_by(incubation, site, species,treatment)  %>% 
+  summarise(meanCalc = mean(calcificationadj), sdCalc = sd(calcificationadj), nCalc = n(), seCalc = sdCalc/sqrt(nCalc)) -> incubations_netCalc
+
+
+incubations_netTA %>% # joining all the summary stats into one table
+  left_join(incubations_netpH, by=c('incubation'='incubation','site'='site','species'='species', 'treatment'='treatment')) %>%
+  left_join(incubations_netDIC, by=c('incubation'='incubation','site'='site','species'='species', 'treatment'='treatment')) %>%
+  left_join(incubations_netpCO2, by=c('incubation'='incubation','site'='site','species'='species', 'treatment'='treatment')) %>%
+  left_join(incubations_netAr, by=c('incubation'='incubation','site'='site','species'='species', 'treatment'='treatment')) %>%
+  left_join(incubations_netCalc, by=c('incubation'='incubation','site'='site','species'='species', 'treatment'='treatment')) -> incubations_netmeans
+
+write.csv(incubations_netmeans, file = "../../outputs/calcification/urban carbonate incubations net means.csv")
+```
+
+# incubation linear mixed-effect models
+
+
+## *O. faveolata day*
+
+```{r o-faveolata-day}
+# full model, genotype nested within site
+lm_ofav_day <- lmer(calcificationadj ~ treatment * site +
+                      (1 | site:genotype),
+                    data = incubations_ofav_day, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ofav_day_noint <- lmer(calcificationadj ~ treatment + site +
+                            (1 | site:genotype),
+                          data = incubations_ofav_day, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ofav_day_noG <- lm(calcificationadj ~ treatment + site,
+                      data = incubations_ofav_day)
+
+# LRT: interaction effect
+lrt_int_ofav_day <- anova(update(lm_ofav_day, REML = FALSE), update(lm_ofav_day_noint, REML = FALSE))
+lrt_int_ofav_day # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav_day <- anova(update(lm_ofav_day_noint, REML = FALSE), update(lm_ofav_day_noG))
+lrt_geno_ofav_day # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ofav_day <- as.data.frame(VarCorr(lm_ofav_day_noint))
+total_var_ofav_day <- sum(vc_ofav_day$vcov)
+vc_ofav_day$pct_nonfixed_var <- round(100 * vc_ofav_day$vcov / total_var_ofav_day, 2)
+colnames(vc_ofav_day)[colnames(vc_ofav_day) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav_day <- r.squaredGLMM(lm_ofav_day_noint)
+
+# Individual fixed effect contributions
+lm_ofav_day_ml      <- update(lm_ofav_day_noint, REML = FALSE)
+lm_ofav_day_no_trt  <- update(lm_ofav_day_ml, . ~ . - treatment)
+lm_ofav_day_no_site <- update(lm_ofav_day_ml, . ~ . - site)
+
+r2_ofav_day_full    <- r.squaredGLMM(lm_ofav_day_ml)[, "R2m"]
+delta_trt_ofav_day  <- round(100 * (r2_ofav_day_full - r.squaredGLMM(lm_ofav_day_no_trt)[, "R2m"]), 2)
+delta_site_ofav_day <- round(100 * (r2_ofav_day_full - r.squaredGLMM(lm_ofav_day_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ofav_day_noint)
+anova(lm_ofav_day_noint) # no significant factors
+VarCorr(lm_ofav_day_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav_day)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav_day)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_day_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ofav_day[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav_day[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav_day[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav_day, "%\n")
+  cat("Delta R² site:", delta_site_ofav_day, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav day lme.txt")
+
+# pairwise site tests (not run: site not significant)
+# emm_ofav_day <- emmeans(lm_ofav_day_noint, ~ site)
+# pairs(emm_ofav_day, adjust = "tukey")
+
+# capture.output(pairs(emm_ofav_day, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav day pairwise.txt")
+
+# Create letters indicating significant differences for plot
+# cld_ofav_day <- cld(emm_ofav_day, adjust = "tukey", Letters = letters, alpha = 0.05)
+# cld_ofav_day
+```
+
+
+## *O. faveolata night*
+
+```{r o-faveolata-night}
+# full model, genotype nested within site
+lm_ofav_night <- lmer(calcificationadj ~ treatment * site +
+                        (1 | site:genotype),
+                      data = incubations_ofav_night, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ofav_night_noint <- lmer(calcificationadj ~ treatment + site +
+                              (1 | site:genotype),
+                            data = incubations_ofav_night, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ofav_night_noG <- lm(calcificationadj ~ treatment + site,
+                        data = incubations_ofav_night)
+
+# LRT: interaction effect
+lrt_int_ofav_night <- anova(update(lm_ofav_night, REML = FALSE), update(lm_ofav_night_noint, REML = FALSE))
+lrt_int_ofav_night # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav_night <- anova(update(lm_ofav_night_noint, REML = FALSE), update(lm_ofav_night_noG))
+lrt_geno_ofav_night # nonsignificant p value; genotype variance estimated at zero (singular fit), so the term has no effect but is retained for consistency with the other models
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ofav_night <- as.data.frame(VarCorr(lm_ofav_night_noint))
+total_var_ofav_night <- sum(vc_ofav_night$vcov)
+vc_ofav_night$pct_nonfixed_var <- round(100 * vc_ofav_night$vcov / total_var_ofav_night, 2)
+colnames(vc_ofav_night)[colnames(vc_ofav_night) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav_night <- r.squaredGLMM(lm_ofav_night_noint)
+
+# Individual fixed effect contributions
+lm_ofav_night_ml      <- update(lm_ofav_night_noint, REML = FALSE)
+lm_ofav_night_no_trt  <- update(lm_ofav_night_ml, . ~ . - treatment)
+lm_ofav_night_no_site <- update(lm_ofav_night_ml, . ~ . - site)
+
+r2_ofav_night_full    <- r.squaredGLMM(lm_ofav_night_ml)[, "R2m"]
+delta_trt_ofav_night  <- round(100 * (r2_ofav_night_full - r.squaredGLMM(lm_ofav_night_no_trt)[, "R2m"]), 2)
+delta_site_ofav_night <- round(100 * (r2_ofav_night_full - r.squaredGLMM(lm_ofav_night_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ofav_night_noint)
+anova(lm_ofav_night_noint) # no significant factors
+VarCorr(lm_ofav_night_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav_night)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav_night)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_night_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ofav_night[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav_night[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav_night[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav_night, "%\n")
+  cat("Delta R² site:", delta_site_ofav_night, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav night lme.txt")
+
+# pairwise site tests (not run: site not significant; pH effect is shown by the F-statistic on the plot)
+# emm_ofav_night <- emmeans(lm_ofav_night_noint, ~ site)
+# pairs(emm_ofav_night, adjust = "tukey")
+
+# capture.output(pairs(emm_ofav_night, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav night pairwise.txt")
+
+# Create letters indicating significant differences for plot
+# cld_ofav_night <- cld(emm_ofav_night, adjust = "tukey", Letters = letters, alpha = 0.05)
+# cld_ofav_night
+```
+
+
+## *S. siderea day*
+
+```{r s-siderea-day}
+# full model, genotype nested within site
+lm_ssid_day <- lmer(calcificationadj ~ treatment * site +
+                      (1 | site:genotype),
+                    data = incubations_ssid_day, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_day_noint <- lmer(calcificationadj ~ treatment + site +
+                            (1 | site:genotype),
+                          data = incubations_ssid_day, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ssid_day_noG <- lm(calcificationadj ~ treatment + site,
+                      data = incubations_ssid_day)
+
+# LRT: interaction effect
+lrt_int_ssid_day <- anova(update(lm_ssid_day, REML = FALSE), update(lm_ssid_day_noint, REML = FALSE))
+lrt_int_ssid_day # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid_day <- anova(update(lm_ssid_day_noint, REML = FALSE), update(lm_ssid_day_noG))
+lrt_geno_ssid_day # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ssid_day <- as.data.frame(VarCorr(lm_ssid_day_noint))
+total_var_ssid_day <- sum(vc_ssid_day$vcov)
+vc_ssid_day$pct_nonfixed_var <- round(100 * vc_ssid_day$vcov / total_var_ssid_day, 2)
+colnames(vc_ssid_day)[colnames(vc_ssid_day) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid_day <- r.squaredGLMM(lm_ssid_day_noint)
+
+# Individual fixed effect contributions
+lm_ssid_day_ml      <- update(lm_ssid_day_noint, REML = FALSE)
+lm_ssid_day_no_trt  <- update(lm_ssid_day_ml, . ~ . - treatment)
+lm_ssid_day_no_site <- update(lm_ssid_day_ml, . ~ . - site)
+
+r2_ssid_day_full    <- r.squaredGLMM(lm_ssid_day_ml)[, "R2m"]
+delta_trt_ssid_day  <- round(100 * (r2_ssid_day_full - r.squaredGLMM(lm_ssid_day_no_trt)[, "R2m"]), 2)
+delta_site_ssid_day <- round(100 * (r2_ssid_day_full - r.squaredGLMM(lm_ssid_day_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ssid_day_noint)
+anova(lm_ssid_day_noint) # site significant; treatment not significant
+VarCorr(lm_ssid_day_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid_day)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid_day)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_day_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ssid_day[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid_day[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid_day[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid_day, "%\n")
+  cat("Delta R² site:", delta_site_ssid_day, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid day lme.txt")
+
+# pairwise site tests (site significant); no pH x site interaction in model, so site letters are identical in both pH panels
+# pH effect is shown by the F-statistic on the plot
+emm_ssid_day <- emmeans(lm_ssid_day_noint, ~ site)
+pairs(emm_ssid_day, adjust = "tukey")
+
+capture.output(pairs(emm_ssid_day, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid day pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid_day <- cld(emm_ssid_day, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ssid_day
+```
+
+
+## *S. siderea night*
+
+```{r s-siderea-night}
+# full model, genotype nested within site
+lm_ssid_night <- lmer(calcificationadj ~ treatment * site +
+                        (1 | site:genotype),
+                      data = incubations_ssid_night, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_night_noint <- lmer(calcificationadj ~ treatment + site +
+                              (1 | site:genotype),
+                            data = incubations_ssid_night, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ssid_night_noG <- lm(calcificationadj ~ treatment + site,
+                        data = incubations_ssid_night)
+
+# LRT: interaction effect
+lrt_int_ssid_night <- anova(update(lm_ssid_night, REML = FALSE), update(lm_ssid_night_noint, REML = FALSE))
+lrt_int_ssid_night # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid_night <- anova(update(lm_ssid_night_noint, REML = FALSE), update(lm_ssid_night_noG))
+lrt_geno_ssid_night # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ssid_night <- as.data.frame(VarCorr(lm_ssid_night_noint))
+total_var_ssid_night <- sum(vc_ssid_night$vcov)
+vc_ssid_night$pct_nonfixed_var <- round(100 * vc_ssid_night$vcov / total_var_ssid_night, 2)
+colnames(vc_ssid_night)[colnames(vc_ssid_night) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid_night <- r.squaredGLMM(lm_ssid_night_noint)
+
+# Individual fixed effect contributions
+lm_ssid_night_ml      <- update(lm_ssid_night_noint, REML = FALSE)
+lm_ssid_night_no_trt  <- update(lm_ssid_night_ml, . ~ . - treatment)
+lm_ssid_night_no_site <- update(lm_ssid_night_ml, . ~ . - site)
+
+r2_ssid_night_full    <- r.squaredGLMM(lm_ssid_night_ml)[, "R2m"]
+delta_trt_ssid_night  <- round(100 * (r2_ssid_night_full - r.squaredGLMM(lm_ssid_night_no_trt)[, "R2m"]), 2)
+delta_site_ssid_night <- round(100 * (r2_ssid_night_full - r.squaredGLMM(lm_ssid_night_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ssid_night_noint)
+anova(lm_ssid_night_noint) # treatment and site effects
+VarCorr(lm_ssid_night_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid_night)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid_night)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_night_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ssid_night[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid_night[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid_night[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid_night, "%\n")
+  cat("Delta R² site:", delta_site_ssid_night, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid night lme.txt")
+
+# pairwise site tests (site significant); no pH x site interaction in model, so site letters are identical in both pH panels
+# pH effect is shown by the F-statistic on the plot
+emm_ssid_night <- emmeans(lm_ssid_night_noint, ~ site)
+pairs(emm_ssid_night, adjust = "tukey")
+
+capture.output(pairs(emm_ssid_night, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid night pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid_night <- cld(emm_ssid_night, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ssid_night
+```
+
+
+# incubation plots
+
+```{r incubation-plots}
+# stats labels built from the final models so they stay in sync with the model outputs
+# format: F(numerator df, total df = n - 1), p rounded to 1 significant figure, * if p < 0.05
+stat_label <- function(model, term, label) {
+  a <- anova(model)
+  p <- a[term, "Pr(>F)"]
+  p_digits <- if (signif(p, 1) == 0.05) 2 else 1 # avoid "p = 0.05*" when p is just under 0.05
+  p_txt <- if (p < 0.001) "p < 0.001" else paste0("p = ", signif(p, p_digits))
+  paste0(label, ": F", a[term, "NumDF"], ",", nobs(model) - 1, " = ", sprintf("%.1f", a[term, "F value"]), ", ", p_txt, ifelse(p < 0.05, "*", ""))
+}
+
+fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
+
+stats_ofav_day_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_day_noint, "treatment", "pH"))
+stats_ofav_day_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_day_noint, "site", "site"))
+
+stats_ofav_night_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_night_noint, "treatment", "pH"))
+stats_ofav_night_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_night_noint, "site", "site"))
+
+stats_ssid_day_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_day_noint, "treatment", "pH"))
+stats_ssid_day_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_day_noint, "site", "site"))
+
+stats_ssid_night_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_night_noint, "treatment", "pH"))
+stats_ssid_night_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_night_noint, "site", "site"))
+
+ofav_day <- ggboxplot(incubations_ofav_day,
+                  x = "site",
+                  y = "calcificationadj",
+                  fill = "site",
+                  width = 0.7,
+                  size = 0.75,
+                  title = "Orbicella faveolata Day",
+                  legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab("Calcification (mg cm-2 hr-1)") +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
+  geom_text(data = stats_ofav_day_ph,label = stats_ofav_day_ph$lab, aes(x=2, y=0.10)) +
+  geom_text(data = stats_ofav_day_site,label = stats_ofav_day_site$lab, aes(x=2, y=0.095)) +
+  # geom_text(data=cld_ofav_day, aes(x = site, y=-0.025, label=.group)) +
+  ylim(-0.025, 0.10) # upper limit covers the highest rate (CR049 day, 0.092); ylim() drops points outside it before the boxplot stats
+ofav_day
+
+ofav_night <- ggboxplot(incubations_ofav_night,
+                      x = "site",
+                      y = "calcificationadj",
+                      fill = "site",
+                      width = 0.7,
+                      size = 0.75,
+                      title = "Orbicella faveolata Night",
+                      legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab(NULL) +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank(),axis.text.y = element_blank()) +
+  geom_text(data = stats_ofav_night_ph,label = stats_ofav_night_ph$lab, aes(x=2, y=0.10)) +
+  geom_text(data = stats_ofav_night_site,label = stats_ofav_night_site$lab, aes(x=2, y=0.095)) +
+  # geom_text(data=cld_ofav_night, aes(x = site, y=-0.025, label=.group)) +
+  ylim(-0.025, 0.10) # upper limit covers the highest rate (CR049 day, 0.092); ylim() drops points outside it before the boxplot stats
+ofav_night
+
+ssid_day <- ggboxplot(incubations_ssid_day,
+                      x = "site",
+                      y = "calcificationadj",
+                      fill = "site",
+                      width = 0.7,
+                      size = 0.75,
+                      title = "Siderastrea siderea Day",
+                      legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab("Calcification (mg cm-2 hr-1)") +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_text(data = stats_ssid_day_ph,label = stats_ssid_day_ph$lab, aes(x=2, y=0.10)) +
+  geom_text(data = stats_ssid_day_site,label = stats_ssid_day_site$lab, aes(x=2, y=0.095)) +
+  geom_text(data=cld_ssid_day, aes(x = site, y=-0.025, label=.group)) +
+  ylim(-0.025, 0.10) # upper limit covers the highest rate (CR049 day, 0.092); ylim() drops points outside it before the boxplot stats
+ssid_day
+
+ssid_night <- ggboxplot(incubations_ssid_night,
+                        x = "site",
+                        y = "calcificationadj",
+                        fill = "site",
+                        width = 0.7,
+                        size = 0.75,
+                        title = "Siderastrea siderea Night",
+                        legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab(NULL) +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5),axis.text.y = element_blank()) +
+  geom_text(data = stats_ssid_night_ph,label = stats_ssid_night_ph$lab, aes(x=2, y=0.10)) +
+  geom_text(data = stats_ssid_night_site,label = stats_ssid_night_site$lab, aes(x=2, y=0.095)) +
+  geom_text(data=cld_ssid_night, aes(x = site, y=-0.025, label=.group)) +
+  ylim(-0.025, 0.10) # upper limit covers the highest rate (CR049 day, 0.092); ylim() drops points outside it before the boxplot stats
+ssid_night
+
+incubations_species <-ggarrange(ofav_day, # both panels
+                                ofav_night,
+                                ssid_day,
+                                ssid_night,
+                      heights = c(4,4),
+                      widths = c(4,3.5),
+                      ncol = 2,
+                      nrow = 2)
+incubations_species
+
+ggsave("../../outputs/calcification/urban carbonate incubations.pdf", incubations_species, width=16, height=8,dpi = 300)
+```
+
+
+# incubation day/night means
+
+```{r incubation-day-night-means}
+# fragments whose night incubation was removed as an outlier (night_outlier_samples, defined in the
+# incubation-net-means chunk) are excluded from day/night means, so means are only calculated for
+# fragments with valid day and night measurements
+
+incubations_net_carb %>% # generating mean adjusted calcification per sample (average day/night)
+  filter(!sampleID %in% night_outlier_samples,
+         !sampleID %in% blank_exclude$sampleID[blank_exclude$incubation == "night"]) %>% # A138: no valid night value
+  group_by(sampleID, site, species,treatment,genotype)  %>% 
+  summarise(calcificationavg = mean(calcificationadj)) -> incubations_meanCalc
+
+write.csv(incubations_meanCalc, file = "../../outputs/calcification/urban carbonate incubations daynight calcification.csv")
+
+incubations_meanCalc %>% # generating summary statistics for average adjusted calcification
+  group_by(site, species,treatment)  %>% 
+  summarise(meanCalc = mean(calcificationavg), sdCalc = sd(calcificationavg), nCalc = n(), seCalc = sdCalc/sqrt(nCalc)) -> incubations_mean_netCalc
+
+write.csv(incubations_mean_netCalc, file = "../../outputs/calcification/urban carbonate incubations daynight calcification means.csv")
+
+incubations_mean_subset <- subset(incubations_meanCalc, site!="control") # filtering out skeletal controls
+
+incubations_mean_ofav <- incubations_mean_subset[incubations_mean_subset$species == "Ofav",] # filtering dataframe by species 
+incubations_mean_ssid <- incubations_mean_subset[incubations_mean_subset$species == "Ssid",] # filtering dataframe by species 
+
+# identifying outliers
+outliers_ofav <- boxplot(incubations_mean_ofav$calcificationavg, plot=T)$out # no outliers
+outliers_ssid <- boxplot(incubations_mean_ssid$calcificationavg, plot=T)$out # no outliers
+
+# Shapiro test, p-values below 0.05 indicate violations of normality assumptions
+shapiro.test(incubations_mean_ofav$calcificationavg) # normal
+shapiro.test(incubations_mean_ssid$calcificationavg) # normal
+
+pdf("../../outputs/calcification/urban incubations daynight normality.pdf") # histograms and Q-Q plots
+par(mfrow=c(2,2))
+hist(incubations_mean_ofav$calcificationavg)
+hist(incubations_mean_ssid$calcificationavg)
+qqnorm(incubations_mean_ofav$calcificationavg)
+qqline(incubations_mean_ofav$calcificationavg)
+qqnorm(incubations_mean_ssid$calcificationavg)
+qqline(incubations_mean_ssid$calcificationavg)
+dev.off()
+```
+
+
+# incubation day/night linear mixed-effect models
+
+
+## *O. faveolata day/night mean*
+
+```{r o-faveolata-day-night-mean}
+# full model, genotype nested within site
+lm_ofav <- lmer(calcificationavg ~ treatment * site +
+                  (1 | site:genotype),
+                data = incubations_mean_ofav, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ofav_noint <- lmer(calcificationavg ~ treatment + site +
+                        (1 | site:genotype),
+                      data = incubations_mean_ofav, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ofav_noG <- lm(calcificationavg ~ treatment + site,
+                  data = incubations_mean_ofav)
+
+# LRT: interaction effect
+lrt_int_ofav <- anova(update(lm_ofav, REML = FALSE), update(lm_ofav_noint, REML = FALSE))
+lrt_int_ofav # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG))
+lrt_geno_ofav # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ofav <- as.data.frame(VarCorr(lm_ofav_noint))
+total_var_ofav <- sum(vc_ofav$vcov)
+vc_ofav$pct_nonfixed_var <- round(100 * vc_ofav$vcov / total_var_ofav, 2)
+colnames(vc_ofav)[colnames(vc_ofav) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ofav <- r.squaredGLMM(lm_ofav_noint)
+
+# Individual fixed effect contributions
+lm_ofav_ml      <- update(lm_ofav_noint, REML = FALSE)
+lm_ofav_no_trt  <- update(lm_ofav_ml, . ~ . - treatment)
+lm_ofav_no_site <- update(lm_ofav_ml, . ~ . - site)
+
+r2_ofav_full    <- r.squaredGLMM(lm_ofav_ml)[, "R2m"]
+delta_trt_ofav  <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_trt)[, "R2m"]), 2)
+delta_site_ofav <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ofav_noint)
+anova(lm_ofav_noint) # no significant factors
+VarCorr(lm_ofav_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ofav)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ofav)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ofav_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ofav[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ofav[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ofav[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ofav, "%\n")
+  cat("Delta R² site:", delta_site_ofav, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ofav mean lme.txt")
+
+# pairwise site tests (not run: site not significant)
+# emm_ofav <- emmeans(lm_ofav_noint, ~ site)
+# pairs(emm_ofav, adjust = "tukey")
+# capture.output(pairs(emm_ofav, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ofav mean pairwise.txt")
+
+# Create letters indicating significant differences for plot
+# cld_ofav <- cld(emm_ofav, adjust = "tukey", Letters = letters, alpha = 0.05)
+# cld_ofav
+```
+
+
+## *S. siderea day/night mean*
+
+```{r s-siderea-day-night-mean}
+# full model, genotype nested within site
+lm_ssid <- lmer(calcificationavg ~ treatment * site +
+                  (1 | site:genotype),
+                data = incubations_mean_ssid, REML = TRUE)
+
+# reduced model, no interaction of pH and site
+lm_ssid_noint <- lmer(calcificationavg ~ treatment + site +
+                        (1 | site:genotype),
+                      data = incubations_mean_ssid, REML = TRUE)
+
+# reduced model, dropped genotype as factor
+lm_ssid_noG <- lm(calcificationavg ~ treatment + site,
+                  data = incubations_mean_ssid)
+
+# LRT: interaction effect
+lrt_int_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE))
+lrt_int_ssid # nonsignificant p value, but AIC lower for noint model, so proceed without interaction terms
+
+# LRT: genotype effect
+lrt_geno_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG))
+lrt_geno_ssid # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+
+# Random effects variance components
+# NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
+vc_ssid <- as.data.frame(VarCorr(lm_ssid_noint))
+total_var_ssid <- sum(vc_ssid$vcov)
+vc_ssid$pct_nonfixed_var <- round(100 * vc_ssid$vcov / total_var_ssid, 2)
+colnames(vc_ssid)[colnames(vc_ssid) == "grp"] <- "component"
+
+# Fixed effects R²
+r2_ssid <- r.squaredGLMM(lm_ssid_noint)
+
+# Individual fixed effect contributions
+lm_ssid_ml      <- update(lm_ssid_noint, REML = FALSE)
+lm_ssid_no_trt  <- update(lm_ssid_ml, . ~ . - treatment)
+lm_ssid_no_site <- update(lm_ssid_ml, . ~ . - site)
+
+r2_ssid_full    <- r.squaredGLMM(lm_ssid_ml)[, "R2m"]
+delta_trt_ssid  <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_trt)[, "R2m"]), 2)
+delta_site_ssid <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_site)[, "R2m"]), 2)
+
+# model outputs
+summary(lm_ssid_noint)
+anova(lm_ssid_noint) # significant treatment and site effects
+VarCorr(lm_ssid_noint)
+
+# --- txt output ---
+capture.output({
+  cat("=== LRT: Treatment x Site Interaction (Fixed) ===\n")
+  print(lrt_int_ssid)
+  
+  cat("\n=== LRT: Genotype Effect (site:genotype) ===\n")
+  print(lrt_geno_ssid)
+  
+  cat("\n=== ANOVA (Fixed Effects) ===\n")
+  print(anova(lm_ssid_noint))
+  
+  cat("\n=== Variance Components (Random Effects) ===\n")
+  cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
+  print(vc_ssid[, c("component", "vcov", "pct_nonfixed_var")])
+  
+  cat("\n=== R² (Fixed Effects) ===\n")
+  cat("Marginal R² (fixed effects only):", round(100 * r2_ssid[, "R2m"], 2), "%\n")
+  cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
+  cat("Delta R² treatment:", delta_trt_ssid, "%\n")
+  cat("Delta R² site:", delta_site_ssid, "%\n")
+  
+}, file = "../../outputs/calcification/urban incubations ssid mean lme.txt")
+
+# pairwise site tests (site significant); no pH x site interaction in model, so site letters are identical in both pH panels
+# pH effect is shown by the F-statistic on the plot
+emm_ssid <- emmeans(lm_ssid_noint, ~ site)
+pairs(emm_ssid, adjust = "tukey")
+capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/calcification/urban incubations ssid mean pairwise.txt")
+
+# Create letters indicating significant differences for plot
+cld_ssid <- cld(emm_ssid, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ssid
+```
+
+
+# model residual diagnostics
+
+```{r model-residual-diagnostics}
+# normality of the final models' residuals and genotype random effects (the assumptions lmer
+# actually makes), rather than of the raw response
+calc_models_final <- list(ofav_day = lm_ofav_day_noint, ofav_night = lm_ofav_night_noint,
+                          ssid_day = lm_ssid_day_noint, ssid_night = lm_ssid_night_noint,
+                          ofav_mean = lm_ofav_noint, ssid_mean = lm_ssid_noint)
+
+# Shapiro test on model residuals, p-values below 0.05 indicate violations of normality assumptions
+lapply(calc_models_final, function(m) shapiro.test(resid(m)))
+
+pdf("../../outputs/calcification/urban incubations model residuals.pdf", width = 10, height = 18)
+par(mfrow = c(6, 3))
+for (nm in names(calc_models_final)) {
+  m <- calc_models_final[[nm]]
+  r <- resid(m)
+  re <- ranef(m)$`site:genotype`[, 1] # all zero for ofav_night (singular fit)
+  qqnorm(r, main = paste(nm, "residuals Q-Q")); qqline(r) # residual normality
+  plot(fitted(m), r, xlab = "Fitted values", ylab = "Residuals", main = paste(nm, "residuals vs fitted")) # homogeneity of variance
+  abline(h = 0, lty = 2)
+  qqnorm(re, main = paste(nm, "genotype effects Q-Q")); qqline(re) # random effect normality
+}
+dev.off()
+
+capture.output({
+  cat("=== Shapiro-Wilk test on model residuals ===\n")
+  for (nm in names(calc_models_final)) {
+    cat("\n", nm, ":\n", sep = "")
+    print(shapiro.test(resid(calc_models_final[[nm]])))
+  }
+}, file = "../../outputs/calcification/urban incubations model residuals.txt")
+```
+
+
+# percent change in calcification
+
+```{r percent-change-in-calcification}
+# % change in mean calcification under low pH relative to control pH: (low - control) / control * 100
+# raw means from the same datasets used in the models (night data outlier-filtered)
+calc_models <- bind_rows(
+  transmute(ungroup(incubations_ofav_day), species, site, treatment, incubation = "day", calcification = calcificationadj),
+  transmute(ungroup(incubations_ofav_night), species, site, treatment, incubation = "night", calcification = calcificationadj),
+  transmute(ungroup(incubations_mean_ofav), species, site, treatment, incubation = "day/night mean", calcification = calcificationavg),
+  transmute(ungroup(incubations_ssid_day), species, site, treatment, incubation = "day", calcification = calcificationadj),
+  transmute(ungroup(incubations_ssid_night), species, site, treatment, incubation = "night", calcification = calcificationadj),
+  transmute(ungroup(incubations_mean_ssid), species, site, treatment, incubation = "day/night mean", calcification = calcificationavg)
+)
+
+# by species, incubation, and site
+calc_pct_change_site <- calc_models %>%
+  group_by(species, incubation, site, treatment) %>%
+  summarise(mean = mean(calcification, na.rm = TRUE),
+            sd = sd(calcification, na.rm = TRUE),
+            n = sum(!is.na(calcification)),
+            .groups = "drop") %>%
+  pivot_wider(names_from = treatment, values_from = c(mean, sd, n)) %>%
+  mutate(pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
+
+# by species and incubation, pooled across sites
+calc_pct_change_species <- calc_models %>%
+  group_by(species, incubation, treatment) %>%
+  summarise(mean = mean(calcification, na.rm = TRUE),
+            sd = sd(calcification, na.rm = TRUE),
+            n = sum(!is.na(calcification)),
+            .groups = "drop") %>%
+  pivot_wider(names_from = treatment, values_from = c(mean, sd, n)) %>%
+  mutate(site = "all sites",
+         pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
+
+calc_pct_change <- bind_rows(mutate(calc_pct_change_site, site = as.character(site)), calc_pct_change_species) %>%
+  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North", "all sites")),
+         incubation = factor(incubation, levels = c("day", "night", "day/night mean"))) %>%
+  arrange(species, incubation, site)
+calc_pct_change
+
+write.csv(calc_pct_change, file = "../../outputs/calcification/urban incubations pct change.csv", row.names = FALSE)
+```
+
+
+# incubation day/night plots
+
+```{r incubation-day-night-plots}
+fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
+
+stats_mean_ofav_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_noint, "treatment", "pH"))
+stats_mean_ofav_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ofav_noint, "site", "site"))
+
+stats_mean_ssid_ph <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_noint, "treatment", "pH"))
+stats_mean_ssid_site <- data.frame(treatment = "control pH", lab = stat_label(lm_ssid_noint, "site", "site"))
+
+ofav_daynight <- ggboxplot(incubations_mean_ofav,
+                      x = "site",
+                      y = "calcificationavg",
+                      fill = "site",
+                      width = 0.7,
+                      size = 0.75,
+                      title = "Orbicella faveolata Mean",
+                      legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab("Calcification (mg cm-2 hr-1)") +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
+  geom_text(data = stats_mean_ofav_ph,label = stats_mean_ofav_ph$lab, aes(x=2, y=0.08)) +
+  geom_text(data = stats_mean_ofav_site,label = stats_mean_ofav_site$lab, aes(x=2, y=0.075)) +
+  # geom_text(data=cld_ofav, aes(x = site, y=-0.025, label=.group)) +
+  ylim(-0.01, 0.08)
+ofav_daynight
+
+ssid_daynight <- ggboxplot(incubations_mean_ssid,
+                           x = "site",
+                           y = "calcificationavg",
+                           fill = "site",
+                           width = 0.7,
+                           size = 0.75,
+                           title = "Siderastrea siderea Mean",
+                           legend = "none") +
+  facet_grid(~treatment) +
+  xlab(NULL) +
+  ylab("Calcification (mg cm-2 hr-1)") +
+  scale_fill_manual(values = fill.color) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_text(data = stats_mean_ssid_ph,label = stats_mean_ssid_ph$lab, aes(x=2, y=0.08)) +
+  geom_text(data = stats_mean_ssid_site,label = stats_mean_ssid_site$lab, aes(x=2, y=0.075)) +
+  geom_text(data=cld_ssid, aes(x = site, y=0.005, label=.group)) +
+  ylim(-0.01, 0.08)
+ssid_daynight
+
+incubations_daynight <-ggarrange(ofav_daynight, # both panels
+                                 ssid_daynight,
+                                heights = c(3.9,4),
+                                widths = c(4),
+                                ncol = 1,
+                                nrow = 2)
+incubations_daynight
+
+ggsave("../../outputs/calcification/urban carbonate mean incubations.pdf", incubations_daynight, width=8, height=8,dpi = 300)
+```

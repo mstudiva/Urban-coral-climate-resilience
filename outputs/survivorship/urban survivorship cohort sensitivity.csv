@@ -1,0 +1,3 @@
+"species","cohort_p","treat_x_cohort_p","LH_vs_CH_HR","LH_vs_CH_p","LH_vs_CH_HR_cohort_strata","LH_vs_CH_p_cohort_strata","site_p","site_p_tank_strata"
+"Ofav",0.581,0.416,1.64,0.116,1.59,0.112,0.0798,0.0603
+"Ssid",0.257,0.34,0.92,0.461,0.95,0.688,0.0784,0.0754

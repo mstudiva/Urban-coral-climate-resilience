@@ -1,0 +1,87 @@
+---
+title: "Incubation Nutrient Fluxes"
+author: "Michael Studivan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+# -----------------------------------------------------------------------------
+# Global chunk options
+# echo = TRUE:     show code in rendered output
+# warning = FALSE: suppress warnings in rendered document
+#                  (warnings still print to console during knitting)
+# message = FALSE: suppress package loading messages
+# -----------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 10,
+  fig.height = 6,
+  dpi        = 300
+)
+```
+
+
+# packages
+
+```{r packages}
+library(tidyverse)
+```
+
+
+# data import
+
+```{r data-import}
+nutrients <- read.csv(file="../../data/calcification/urban nutrients.csv", head=T) 
+nutrients$Tank<- as.factor(nutrients$Tank) 
+nutrients$Time <- as.factor(nutrients$Time)
+nutrients$Species <- as.factor(nutrients$Species)
+nutrients$Site <- as.factor(nutrients$Site)
+nutrients$Treatment <- as.factor(nutrients$Treatment)
+str(nutrients)
+
+# Values are net changes in nutrient concentrations during day and night coral incubations
+# (final - initial), not tank concentrations; negative values indicate net uptake by the coral.
+```
+
+
+# nutrient change summary (Table S7: mean (SD) of net concentration change, umol/L)
+
+```{r nutrient-flux-summary}
+nutrients %>%
+  filter(!Name %in% c("CR046", "CR049")) %>% # extra MacArthur North O. faveolata cores with day samples only; dropped to keep day and night groups balanced
+  group_by(Species, Time, Treatment) %>%
+  summarize(n = n(),
+            meanSi=mean(Si), 
+            sdSi = sd(Si),
+            lowSi = min(Si), 
+            highSi= max(Si),
+            meanNO2=mean(NO2), 
+            sdNO2 = sd(NO2),
+            lowNO2 = min(NO2), 
+            highNO2= max(NO2),
+            meanNO3=mean(NO3), 
+            sdNO3 = sd(NO3),
+            lowNO3 = min(NO3), 
+            highNO3= max(NO3),
+            meanNH4=mean(NH4), 
+            sdNH4 = sd(NH4),
+            lowNH4 = min(NH4), 
+            highNH4= max(NH4),
+            meanPO4=mean(PO4), 
+            sdPO4 = sd(PO4),
+            lowPO4 = min(PO4), 
+            highPO4= max(PO4),
+            .groups = "drop") -> nutrient_fluxes
+nutrient_fluxes
+
+write.csv(nutrient_fluxes, file = "../../outputs/calcification/urban nutrient fluxes.csv", row.names = FALSE)
+```

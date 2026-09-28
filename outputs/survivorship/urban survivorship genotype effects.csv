@@ -1,0 +1,3 @@
+"species","genotype_pct_nonfixed_var","genotype_LRT_p","n_geno_both_treatments","CH_LH_genotype_r","CH_LH_genotype_r_p","n_geno","mean_days_geno_Emerald","mean_days_geno_Rainbow","mean_days_geno_Star","mean_days_geno_MacN","site_anova_p","site_kruskal_p"
+"Ofav",65.9,4.45e-05,12,0.64,0.0259,21,16.05,15.45,21.28,24.64,0.088,0.0936
+"Ssid",57,3.98e-07,20,0.86,1.03e-06,20,14.75,14.05,19.25,19.45,0.272,0.292

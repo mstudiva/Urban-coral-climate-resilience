@@ -1,0 +1,237 @@
+---
+title: "Tank Temperature and pH Treatments"
+author: "Michael Studivan"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+# -----------------------------------------------------------------------------
+# Global chunk options
+# echo = TRUE:     show code in rendered output
+# warning = FALSE: suppress warnings in rendered document
+#                  (warnings still print to console during knitting)
+# message = FALSE: suppress package loading messages
+# -----------------------------------------------------------------------------
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 10,
+  fig.height = 6,
+  dpi        = 300
+)
+```
+
+
+# packages
+
+```{r packages}
+library(tidyverse)
+library(ggpubr)
+```
+
+
+# temp data import
+
+```{r temp-data-import}
+templog <- read.csv(file="../../data/treatments/urban temp.csv", head=T) 
+templog$Time<- lubridate::mdy_hms(templog$Time) # reformats time as month day year hours minutes seconds
+templog$OA <- as.factor(templog$OA)
+templog$Thermal <- as.factor(templog$Thermal)
+str(templog)
+
+temp_melt <- pivot_longer(templog, Ssid.C.C:Ofav2.L.H, names_to = "spp.ph.temp", values_to = "measurement") # reshapes dataframe to long format
+temp_melt %>%
+  separate(spp.ph.temp, into=c("species","ph","temp"), sep="[.]") -> temp_melt # separates species and ph/temp factors to columns
+
+temp_melt$species <-  as.factor(temp_melt$species) 
+temp_melt$ph <-  as.factor(temp_melt$ph) 
+temp_melt$temp <-  as.factor(temp_melt$temp) 
+
+temp_melt$hour <-lubridate::hour(temp_melt$Time) # creates column of simplified hour by time
+
+# system failure, Apr 28-30 2021: loggers were offline from Apr 24 12:27 to Apr 28 23:15. When logging
+# resumed, the heat-stress tanks were cooling (to ~22.7 C by Apr 29 03:00) and CO2 dosing had stopped in
+# two low-pH tanks. All heat-stress tanks were back at 33 C by Apr 30 09:31. Readings in this window stay
+# in the data files but are excluded from all temperature and pH summaries (tables and plots)
+event_start <- lubridate::ymd_hm("2021-04-28 23:00")
+event_end   <- lubridate::ymd_hm("2021-04-30 10:00")
+in_event <- function(time) time >= event_start & time < event_end
+
+# thermal periods by treatment group: the two heat-stress groups were ramped ~3 weeks apart, so the
+# row-level Thermal label in the data file doesn't apply to every column. Periods are set per group:
+#   control: before the first ramp (Apr 5), all tanks
+#   thermal: original heat-stress tanks (temp H) from Apr 19 12:00, when 33 C was reached;
+#            ambient tanks (temp C) from Apr 19 12:00 until their own ramp began (~Apr 25);
+#            second heat-stress group (Ssid2/Ofav2 columns, recorded only once at 33 C) throughout
+#   ramp:    everything else (ramps, and the ambient tanks' ramp Apr 28-May 10)
+thermal_start <- lubridate::ymd_hm("2021-04-19 12:00")
+temp_melt %>%
+  mutate(period = case_when(
+    Thermal == "control" ~ "control",
+    str_detect(species, "2") ~ "thermal",
+    temp == "H" & Time >= thermal_start ~ "thermal",
+    temp == "C" & Time >= thermal_start & Time < lubridate::ymd("2021-04-25") ~ "thermal",
+    TRUE ~ "ramp")) %>%
+  filter(!in_event(Time)) -> temp_melt
+
+# daily means +/- SE: loggers record every minute, so readings are averaged to daily means
+# first and the SE is calculated across days (minute-level readings are not independent).
+# Days with readings in fewer than 12 of 24 hours (partial days at logger gaps, tank moves and period
+# boundaries) are dropped, so every daily mean represents at least half a diel cycle
+min_hours <- 12
+daily_summary <- function(dat, ...) {
+  dat %>%
+    filter(!is.na(measurement)) %>%
+    mutate(date = as.Date(Time)) %>%
+    group_by(..., date) %>%
+    filter(n_distinct(lubridate::hour(Time)) >= min_hours) %>%
+    summarise(daily_mean = mean(measurement), .groups = "drop_last") %>%
+    summarise(mean = mean(daily_mean), sd = sd(daily_mean), n_days = n(),
+              se = sd / sqrt(n_days), .groups = "drop")
+}
+
+# hourly (diel) means +/- SD: same logic as daily_summary, but within each hour of the day.
+# Readings are averaged per hour per day first, then mean and SD are calculated across days,
+# so the ribbons show day-to-day variability (consistent with the treatment/tank tables)
+hourly_summary <- function(dat, ...) {
+  dat %>%
+    filter(!is.na(measurement)) %>%
+    mutate(date = as.Date(Time)) %>%
+    group_by(hour, ..., date) %>%
+    summarise(hourly_mean = mean(measurement), .groups = "drop_last") %>%
+    summarise(avg = mean(hourly_mean), sd = sd(hourly_mean), n_days = n(),
+              se = sd / sqrt(n_days), .groups = "drop")
+}
+```
+
+
+# temp plot
+
+```{r temp-plot}
+fill.color<-c("#4393c3","#b2182b") # custom palette
+
+temp_melt %>% # plot of temp means by hour (daily means per hour +/- SD across days)
+  filter(period =="thermal") %>%
+  hourly_summary(temp) %>%
+  rename(avg_temp = avg) %>%
+  ggplot(., aes(x=hour + 0.5, y=avg_temp, color = temp)) + 
+  theme_classic() +
+  geom_ribbon(aes(fill=temp, group = temp, ymin = avg_temp - sd, ymax = avg_temp + sd), alpha = 0.2, colour = NA) +
+  geom_line(aes(group = temp)) +
+  scale_color_manual(values = fill.color) +
+  scale_fill_manual(values = fill.color) +
+  scale_x_continuous(breaks = seq(0, 24, by = 6), limits = c(0, 24)) + # hourly means plotted at the middle of each hour
+  labs(x="Hour", y="Temperature (C)") -> temp_plot
+plot(temp_plot)
+
+temp_melt %>% # table of treatment means (daily means +/- SE)
+  filter(period =="thermal") %>%
+  daily_summary(temp) -> temp_mean
+write.csv(temp_mean, file = "../../outputs/treatments/urban temp mean.csv")
+```
+
+
+# ph data import
+
+```{r ph-data-import}
+phlog <- read.csv(file="../../data/treatments/urban ph.csv", head=T) 
+phlog$Time<- lubridate::mdy_hms(phlog$Time)
+phlog$Thermal <- as.factor(phlog$Thermal)
+str(phlog)
+
+ph_melt <- pivot_longer(phlog, Ssid.C.C:Ofav.L.H, names_to = "spp.ph.temp", values_to = "measurement")
+ph_melt %>%
+  separate(spp.ph.temp, into=c("species","ph","temp"), sep="[.]") -> ph_melt
+
+ph_melt$species <-  as.factor(ph_melt$species) 
+ph_melt$ph <-  as.factor(ph_melt$ph) 
+ph_melt$temp <-  as.factor(ph_melt$temp) 
+
+ph_melt$hour <-lubridate::hour(ph_melt$Time)
+
+ph_melt %>% # excludes the Apr 28-30 system failure (see temp data import)
+  filter(!in_event(Time)) -> ph_melt
+```
+
+
+# ph plot
+
+```{r ph-plot}
+fill.color2<-c("#80cdc1","#01665e")
+
+ph_melt %>% # table of treatment means by hour (daily means per hour +/- SD across days)
+  filter(OA =="OA") %>%
+  hourly_summary(ph) %>%
+  rename(avg_ph = avg) -> ph_mean_hour
+write.csv(ph_mean_hour, file = "../../outputs/treatments/urban ph mean hour.csv")
+
+ph_mean_hour %>% 
+  ggplot(., aes(x=hour + 0.5, y=avg_ph, color = ph)) + 
+  theme_classic() +
+  geom_ribbon(aes(fill=ph, group = ph, ymin = avg_ph - sd, ymax = avg_ph + sd), alpha = 0.2, colour = NA) +
+  geom_line(aes(group = ph)) +
+  scale_color_manual(values = fill.color2) +
+  scale_fill_manual(values = fill.color2) +
+  scale_x_continuous(breaks = seq(0, 24, by = 6), limits = c(0, 24)) + # hourly means plotted at the middle of each hour
+  scale_y_continuous(breaks = seq(7.7, 8.1, by = 0.1)) +
+  expand_limits(y = 8.1) + # keep 8.1 on the axis
+  labs(x="Hour", y="pH") -> ph_plot
+plot(ph_plot)
+
+ph_melt %>% # table of treatment means (daily means +/- SE)
+  filter(OA =="OA") %>%
+  daily_summary(ph) -> ph_mean
+write.csv(ph_mean, file = "../../outputs/treatments/urban ph mean.csv")
+```
+
+
+# multi plot
+
+```{r multi-plot}
+temp_table <- ggtexttable(mutate(temp_mean, across(where(is.numeric), ~ signif(.x, 3))), rows = NULL)
+
+ph_table <- ggtexttable(mutate(ph_mean, across(where(is.numeric), ~ signif(.x, 3))), rows = NULL)
+
+
+multiplot <- ggarrange(temp_plot, ph_plot, temp_table, ph_table, heights = c(3,1))
+multiplot
+ggsave("../../outputs/treatments/urban tank treatments.pdf", plot = multiplot, dpi = 300, width = 8.5, height = 4)
+```
+
+
+# temp and pH tank means
+
+```{r temp-and-ph-tank-means}
+ph_melt %>% # pH tank means during OA
+  filter(OA =="OA") %>%
+  daily_summary(species, ph, temp) %>%
+  rename_with(~ paste0(.x, "_ph_OA"), c(mean, sd, n_days, se)) -> ph_mean_tank_OA
+
+temp_melt %>% # temp tank means pre-thermal stress
+  filter(period =="control") %>%
+  mutate(species = str_replace(species, "Ofav2", "Ofav")) %>%
+  mutate(species = str_replace(species, "Ssid2", "Ssid")) %>%
+  daily_summary(species, ph, temp) %>%
+  rename_with(~ paste0(.x, "_temp_control"), c(mean, sd, n_days, se)) -> temp_mean_tank_control
+
+temp_melt %>% # temp tank means during thermal stress
+  filter(period =="thermal") %>%
+  mutate(species = str_replace(species, "Ofav2", "Ofav")) %>%
+  mutate(species = str_replace(species, "Ssid2", "Ssid")) %>%
+  daily_summary(species, ph, temp) %>%
+  rename_with(~ paste0(.x, "_temp_thermal"), c(mean, sd, n_days, se)) -> temp_mean_tank_thermal
+
+ph_mean_tank_OA %>% # joining all the summary stats into one table
+  left_join(temp_mean_tank_control, by=c('species'='species','ph'='ph','temp'='temp')) %>%
+  left_join(temp_mean_tank_thermal, by=c('species'='species','ph'='ph','temp'='temp')) -> ph_mean_tank
+
+write.csv(ph_mean_tank, file = "../../outputs/treatments/urban tank treatment means.csv")
+```
