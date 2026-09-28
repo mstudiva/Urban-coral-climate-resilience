@@ -141,6 +141,15 @@ incubations %>% # final TA from the incubation bottle; initial TA from the tank 
   mutate(finalTA = finalTA_new, initialTA = initialTA_new) %>%
   dplyr::select(-finalTA_new, -initialTA_new, -initial_bottle) -> incubations
 stopifnot(!anyNA(incubations$initialTA), !anyNA(incubations$finalTA))
+# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
+# data file's `exclude` column). Here: 13 O. faveolata from T8 (low pH) with partial mortality unrelated to heat
+# stress (mostly a ciliate infection; recorded 6-12 April, after these incubations, but their daytime calcification
+# was already lower). Rows are kept through the chemistry and the processed export (flag `surv_excluded`) and
+# dropped from the summaries and models below.
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>%
+  filter(exclude != "")
+incubations$surv_excluded <- incubations$sampleID %in% surv_exclude$sample
+incubations %>% filter(surv_excluded) %>% count(species, treatment, incubation) # fragment incubations excluded
 incubations$incubation <- as.factor(incubations$incubation)
 incubations$site <- factor(incubations$site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North"))
 incubations$genotype <- as.factor(incubations$genotype)
@@ -310,7 +319,7 @@ write.csv(incubations_net_carb, file = "../../outputs/calcification/urban carbon
 # incubation normality and assumption testing
 
 ```{r incubation-normality-and-assumption-testing}
-incubations_subset <- subset(incubations_net_carb, site!="control") # filtering out skeletal controls
+incubations_subset <- subset(incubations_net_carb, site!="control" & !surv_excluded) # filtering out skeletal controls and survivorship-excluded fragments
 
 incubations_ofav_day <- incubations_subset[incubations_subset$species == "Ofav" & incubations_subset$incubation == "day",] # filtering dataframe by species and incubation type
 incubations_ofav_night <- incubations_subset[incubations_subset$species == "Ofav" & incubations_subset$incubation == "night",] 
@@ -368,6 +377,7 @@ night_outlier_samples <- c(
 night_outlier_samples
 
 incubations_net_carb_filtered <- incubations_net_carb %>%
+  filter(!surv_excluded) %>% # survivorship-excluded fragments
   filter(!(incubation == "night" & sampleID %in% night_outlier_samples)) %>%
   anti_join(blank_exclude, by = c("sampleID", "incubation")) # A138 night: excluded from the blanks, so also from the skeleton control summary
 
@@ -432,7 +442,7 @@ lrt_int_ofav_day # nonsignificant p value, but AIC lower for noint model, so pro
 
 # LRT: genotype effect
 lrt_geno_ofav_day <- anova(update(lm_ofav_day_noint, REML = FALSE), update(lm_ofav_day_noG))
-lrt_geno_ofav_day # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+lrt_geno_ofav_day # nonsignificant p value; genotype variance estimated at zero (singular fit), so the term has no effect but is retained for consistency
 
 # Random effects variance components
 # NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
@@ -455,7 +465,7 @@ delta_site_ofav_day <- round(100 * (r2_ofav_day_full - r.squaredGLMM(lm_ofav_day
 
 # model outputs
 summary(lm_ofav_day_noint)
-anova(lm_ofav_day_noint) # no significant factors
+anova(lm_ofav_day_noint) # significant treatment effect (higher calcification under low pH); site not significant
 VarCorr(lm_ofav_day_noint)
 
 # --- txt output ---
@@ -876,7 +886,8 @@ ggsave("../../outputs/calcification/urban carbonate incubations.pdf", incubation
 # fragments with valid day and night measurements
 
 incubations_net_carb %>% # generating mean adjusted calcification per sample (average day/night)
-  filter(!sampleID %in% night_outlier_samples,
+  filter(!surv_excluded, # survivorship-excluded fragments
+         !sampleID %in% night_outlier_samples,
          !sampleID %in% blank_exclude$sampleID[blank_exclude$incubation == "night"]) %>% # A138: no valid night value
   group_by(sampleID, site, species,treatment,genotype)  %>% 
   summarise(calcificationavg = mean(calcificationadj)) -> incubations_meanCalc
@@ -940,7 +951,7 @@ lrt_int_ofav # nonsignificant p value, but AIC lower for noint model, so proceed
 
 # LRT: genotype effect
 lrt_geno_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noG))
-lrt_geno_ofav # nonsignificant p value, and AIC about the same for noint model, so proceed with genotype term
+lrt_geno_ofav # nonsignificant p value; genotype variance estimated at zero (singular fit), so the term has no effect but is retained for consistency
 
 # Random effects variance components
 # NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
@@ -963,7 +974,7 @@ delta_site_ofav <- round(100 * (r2_ofav_full - r.squaredGLMM(lm_ofav_no_site)[, 
 
 # model outputs
 summary(lm_ofav_noint)
-anova(lm_ofav_noint) # no significant factors
+anova(lm_ofav_noint) # significant treatment effect (higher calcification under low pH); site not significant
 VarCorr(lm_ofav_noint)
 
 # --- txt output ---
@@ -1084,6 +1095,28 @@ cld_ssid
 ```
 
 
+# urban vs reef contrasts
+
+```{r urban-reef-contrasts}
+# planned contrast from each final model: mean of the urban sites (Star Island, MacArthur North) minus mean of the
+# reef sites (Emerald, Rainbow), averaged over pH treatment. Tests the urban vs reef question with site kept in the model.
+urban_reef_contrast <- list(`urban - reef` = c(-0.5, -0.5, 0.5, 0.5)) # site order: Emerald, Rainbow, Star Island, MacArthur North
+urban_reef_models <- list(`O. faveolata day` = lm_ofav_day_noint, `O. faveolata night` = lm_ofav_night_noint,
+                          `O. faveolata day/night mean` = lm_ofav_noint, `S. siderea day` = lm_ssid_day_noint,
+                          `S. siderea night` = lm_ssid_night_noint, `S. siderea day/night mean` = lm_ssid_noint)
+urban_reef_calc <- lapply(urban_reef_models, function(m) contrast(emmeans(m, ~ site), method = urban_reef_contrast))
+urban_reef_calc
+
+capture.output({
+  for (nm in names(urban_reef_calc)) {
+    cat("===", nm, ": urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===\n")
+    print(urban_reef_calc[[nm]])
+    cat("\n")
+  }
+}, file = "../../outputs/calcification/urban incubations urban reef contrasts.txt")
+```
+
+
 # model residual diagnostics
 
 ```{r model-residual-diagnostics}
@@ -1154,8 +1187,20 @@ calc_pct_change_species <- calc_models %>%
   mutate(site = "all sites",
          pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
 
-calc_pct_change <- bind_rows(mutate(calc_pct_change_site, site = as.character(site)), calc_pct_change_species) %>%
-  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North", "all sites")),
+# by species, incubation, and habitat (reef: Emerald, Rainbow; urban: Star Island, MacArthur North);
+# used where per-site n is small (O. faveolata low pH after the survivorship exclusions)
+calc_pct_change_habitat <- calc_models %>%
+  mutate(site = if_else(site %in% c("Star Island", "MacArthur North"), "urban sites", "reef sites")) %>%
+  group_by(species, incubation, site, treatment) %>%
+  summarise(mean = mean(calcification, na.rm = TRUE),
+            sd = sd(calcification, na.rm = TRUE),
+            n = sum(!is.na(calcification)),
+            .groups = "drop") %>%
+  pivot_wider(names_from = treatment, values_from = c(mean, sd, n)) %>%
+  mutate(pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
+
+calc_pct_change <- bind_rows(mutate(calc_pct_change_site, site = as.character(site)), calc_pct_change_habitat, calc_pct_change_species) %>%
+  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star Island", "MacArthur North", "reef sites", "urban sites", "all sites")),
          incubation = factor(incubation, levels = c("day", "night", "day/night mean"))) %>%
   arrange(species, incubation, site)
 calc_pct_change

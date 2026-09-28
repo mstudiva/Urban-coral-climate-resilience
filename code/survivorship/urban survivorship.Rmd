@@ -47,6 +47,15 @@ library(lme4)
 ```{r data-import}
 urban <- read.csv("../../data/survivorship/urban survivorship.csv", head=T)
 
+# fragments removed from the survivorship analysis (kept in the data file with the reason in 'exclude'):
+# 31 O. faveolata that died from partial mortality unrelated to heat stress (mostly a ciliate infection;
+# tissue loss without prior paling or bleaching), and one S. siderea with no health observations recorded.
+# 'end' for these is the date the fragment was recorded dead
+urban %>%
+  filter(exclude != "") %>%
+  count(species, treat, exclude)
+urban <- urban %>% filter(exclude == "") %>% dplyr::select(-exclude)
+
 # unique genotype ID (genotype numbers are nested within site and species)
 urban$geno_id <- paste(urban$species, urban$site, urban$geno, sep = "_")
 
@@ -65,8 +74,8 @@ stopifnot(all(urban$days >= 0), !any(urban$ramp == "4/23/21"))
 str(urban)
 head(urban)
 
-# No fragments died in the control temperature treatments (CC, LC) during the 20-day control period,
-# so survival analyses use the heat treatments (CH, LH) only
+# Among the retained fragments, none died in the control temperature treatments (CC, LC) during the 20-day
+# control period, so survival analyses use the heat treatments (CH, LH) only
 urban %>%
   filter(treat %in% c("CC", "LC")) %>%
   group_by(species, treat) %>%
@@ -103,8 +112,11 @@ summary(fit_ssid_treat)
 show_km <- function(p) ggarrange(p$plot, p$table, heights = c(2, 1), ncol = 1, nrow = 2)
 
 # p-values for Kaplan-Meier plots: robust score (log-rank) test from the genotype-clustered Cox model
+# always 2 significant figures, keeping trailing zeros (e.g. 0.080, not 0.08), so all panels show the same precision
 robust_score_p <- function(model) {
-  paste0("p = ", format.pval(summary(model)$robscore["pvalue"], digits = 2, eps = 0.001))
+  p <- unname(summary(model)$robscore["pvalue"])
+  if (p < 0.001) return("p < 0.001")
+  paste0("p = ", formatC(signif(p, 2), digits = 2, format = "fg", flag = "#"))
 }
 
 # Cox models use robust standard errors clustered by genotype (cluster = geno_id), because fragments from
@@ -274,6 +286,38 @@ urban_site_multiplot<-ggarrange(survival_ofav_site$plot,
 urban_site_multiplot
 
 ggsave("../../outputs/survivorship/urban survivorship site.pdf", urban_site_multiplot, width=10, height=12,dpi = 300)
+```
+
+
+# urban vs reef contrast
+
+```{r urban-reef-contrast}
+# -----------------------------------------------------------------------------
+# Planned contrast from the site Cox models (stratified by treatment, robust SEs
+# clustered by genotype): mean log hazard of the urban sites (Star Island,
+# MacArthur North) minus the mean of the reef sites (Emerald, Rainbow).
+# Emerald is the reference level (coefficient 0), so the weights on the site
+# coefficients are Rainbow -0.5, Star +0.5, MacN +0.5. HR < 1 = lower hazard
+# for urban-origin corals.
+# -----------------------------------------------------------------------------
+urban_reef_cox <- function(model) {
+  b <- coef(model)
+  w <- c(siteRainbow = -0.5, siteStar = 0.5, siteMacN = 0.5)[names(b)]
+  stopifnot(!anyNA(w))
+  est <- sum(w * b)
+  se  <- sqrt(drop(t(w) %*% vcov(model) %*% w)) # vcov() is the robust (clustered) covariance
+  z   <- est / se
+  data.frame(contrast = "urban - reef", log_HR = est, robust_se = se,
+             HR = exp(est), HR_lower95 = exp(est - 1.96 * se), HR_upper95 = exp(est + 1.96 * se),
+             z = z, p = 2 * pnorm(-abs(z)))
+}
+
+urban_reef_surv <- bind_rows(
+  cbind(species = "Ofav", urban_reef_cox(hazard_ofav_site)),
+  cbind(species = "Ssid", urban_reef_cox(hazard_ssid_site)))
+urban_reef_surv
+
+write.csv(urban_reef_surv, file = "../../outputs/survivorship/urban survivorship urban reef contrasts.csv", row.names = FALSE)
 ```
 
 

@@ -5,12 +5,12 @@ O. faveolata (lm_ofav_noint):
 	Shapiro-Wilk normality test
 
 data:  resid_ofav
-W = 0.98381, p-value = 0.3827
+W = 0.97145, p-value = 0.2433
 
-S. siderea (lm_ssid_noint):
+S. siderea (lm_ssid, with pH x site interaction):
 
 	Shapiro-Wilk normality test
 
 data:  resid_ssid
-W = 0.98171, p-value = 0.3091
+W = 0.98863, p-value = 0.7144
 

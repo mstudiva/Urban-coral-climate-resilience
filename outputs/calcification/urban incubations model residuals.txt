@@ -5,7 +5,7 @@ ofav_day:
 	Shapiro-Wilk normality test
 
 data:  resid(calc_models_final[[nm]])
-W = 0.95245, p-value = 0.0791
+W = 0.96066, p-value = 0.3412
 
 
 ofav_night:
@@ -13,7 +13,7 @@ ofav_night:
 	Shapiro-Wilk normality test
 
 data:  resid(calc_models_final[[nm]])
-W = 0.97343, p-value = 0.4275
+W = 0.9722, p-value = 0.6208
 
 
 ssid_day:
@@ -37,7 +37,7 @@ ofav_mean:
 	Shapiro-Wilk normality test
 
 data:  resid(calc_models_final[[nm]])
-W = 0.97231, p-value = 0.3937
+W = 0.97629, p-value = 0.7375
 
 
 ssid_mean:

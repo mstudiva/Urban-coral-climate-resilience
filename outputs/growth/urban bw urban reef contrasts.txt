@@ -1,0 +1,24 @@
+=== O. faveolata: urban (Star, MacN) - reef (Emerald, Rainbow) ===
+ contrast     estimate     SE   df t.ratio p.value
+ urban - reef   -0.176 0.0526 16.5  -3.344  0.0040
+
+Results are averaged over the levels of: pH 
+Degrees-of-freedom method: kenward-roger 
+
+=== S. siderea: urban (Star, MacN) - reef (Emerald, Rainbow) ===
+ contrast     estimate     SE df t.ratio p.value
+ urban - reef    0.068 0.0306 16   2.221  0.0411
+
+Results are averaged over the levels of: pH 
+Degrees-of-freedom method: kenward-roger 
+
+=== S. siderea: urban - reef within each pH treatment (pH x site interaction in the final model) ===
+pH = control pH:
+ contrast     estimate     SE   df t.ratio p.value
+ urban - reef   0.1145 0.0353 27.2   3.243  0.0031
+
+pH = low pH:
+ contrast     estimate     SE   df t.ratio p.value
+ urban - reef   0.0216 0.0350 26.6   0.617  0.5423
+
+Degrees-of-freedom method: kenward-roger 

@@ -1,0 +1,20 @@
+pH = control pH:
+ contrast           estimate     SE   df t.ratio p.value
+ Emerald - Rainbow -2.13e-02 0.0495 26.6  -0.431  0.9726
+ Emerald - Star    -4.21e-02 0.0495 26.6  -0.851  0.8297
+ Emerald - MacN    -2.08e-01 0.0503 27.9  -4.136  0.0016
+ Rainbow - Star    -2.08e-02 0.0495 26.6  -0.420  0.9746
+ Rainbow - MacN    -1.87e-01 0.0503 27.9  -3.712  0.0047
+ Star - MacN       -1.66e-01 0.0503 27.9  -3.299  0.0133
+
+pH = low pH:
+ contrast           estimate     SE   df t.ratio p.value
+ Emerald - Rainbow  2.55e-06 0.0495 26.6   0.000  1.0000
+ Emerald - Star    -5.27e-04 0.0495 26.6  -0.011  1.0000
+ Emerald - MacN    -4.27e-02 0.0495 26.6  -0.862  0.8240
+ Rainbow - Star    -5.30e-04 0.0495 26.6  -0.011  1.0000
+ Rainbow - MacN    -4.27e-02 0.0495 26.6  -0.862  0.8240
+ Star - MacN       -4.22e-02 0.0495 26.6  -0.852  0.8293
+
+Degrees-of-freedom method: kenward-roger 
+P value adjustment: tukey method for comparing a family of 4 estimates 

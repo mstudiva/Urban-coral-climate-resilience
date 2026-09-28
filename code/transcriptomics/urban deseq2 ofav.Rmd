@@ -139,6 +139,19 @@ Vsd=Vsd[,-outs]
 counts4wgcna=counts4wgcna[,-outs]
 design=design[-outs,]
 
+# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
+# data file's `exclude` column): here 7 samples from 6 O. faveolata with partial mortality unrelated to heat stress
+# (mostly a ciliate infection): Eo1-3, Eo3-3, Ro2-3, Ro4-3, So1-3, Mo5-3 (LC), and Mo5-3's heat-stress resample (LH).
+# Removed by sample ID after the positional outlier removal above, so the outlier indices stay valid.
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>% filter(exclude != "")
+stopifnot(identical(colnames(countData), design$id)) # count columns and design rows in the same order
+surv_excl <- design$sampleid %in% surv_exclude$sample
+design[surv_excl, c("id", "sampleid", "treat")] # samples excluded
+countData=countData[,!surv_excl]
+Vsd=Vsd[,!surv_excl]
+counts4wgcna=counts4wgcna[,!surv_excl]
+design=design[!surv_excl,]
+
 # remaking model with outliers removed from dataset
 dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ genotype+treat)
 dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))

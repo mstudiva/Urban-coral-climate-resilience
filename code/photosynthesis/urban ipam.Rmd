@@ -66,6 +66,32 @@ genotypes <- read.csv(
 # Join genotype lookup — makes genotype labels distinct across sites and species
 ipam <- ipam %>%
   inner_join(genotypes, by = "sampleID")
+
+# -----------------------------------------------------------------------------
+# Exclude the fragments removed from the survivorship analysis, so both
+# analyses use the same corals. The survivorship data file lists them with
+# the reason in its `exclude` column: 31 O. faveolata with partial mortality
+# unrelated to heat stress (mostly a ciliate infection; all died 12 April -
+# 17 May, before or early in heat stress) and one S. siderea (Ms3-1) with no
+# health observations (it has no iPAM readings either). Rows stay in the
+# iPAM data file; they are filtered here.
+# -----------------------------------------------------------------------------
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>%
+  filter(exclude != "") %>%
+  dplyr::select(sampleID = sample, home_treatment = treat, exclude)
+
+# Counts by species and home treatment (the treatment column in the iPAM file
+# switches to CH/LH for the second heat cohort's measurements)
+ipam %>%
+  inner_join(surv_exclude, by = "sampleID") %>%
+  group_by(species, home_treatment) %>%
+  summarise(fragments = n_distinct(sampleID),
+            FvFm_readings = sum(!is.na(FvFm) & time != "Initial"),
+            .groups = "drop") %>%
+  knitr::kable(caption = "Fragments excluded (removed from survivorship analysis)")
+
+ipam <- ipam %>%
+  filter(!sampleID %in% surv_exclude$sampleID)
 ```
 
 ```{r data-prep}
@@ -518,22 +544,35 @@ estimate_rho <- function(dat) {
 #
 # Fixed effects:
 #   treatment * site — all main effects and interaction. treatment is the
-#   combined pH x temp factor (CC, LC, CH, LH). Tests whether treatment
-#   effects on mean FvFm differ across sites at the reference timepoint
-#   (parametric interpretation). For control subsets all four treatment
+#   combined pH x temp factor (CC, LC, CH, LH). Time-averaged treatment and
+#   site effects are tested with emmeans joint tests (extract_joint_tests()).
+#   Note: the sum-to-zero (sz) factor smooths below include a level-specific
+#   offset, so mgcv drops the parametric treatment and site main-effect
+#   coefficients as unidentifiable (extract_stats() leaves them out of the
+#   parametric table); only the treatment:site coefficients remain. Fitted
+#   values, emmeans and joint tests are unaffected. For control subsets all four treatment
 #   levels are present; for heat subsets only CH and LH are present.
 #   Using the combined factor rather than pH * temp * site avoids model
 #   failure in heat subsets where temp has only one level.
 #
 # Smooth terms:
-#   s(time):                    global nonlinear time trajectory shared
-#                               across all groups
-#   s(time, by = treatment):    treatment-specific deviation from the global
-#                               trajectory — captures whether the shape of
-#                               the decline differs between treatment
-#                               combinations over time
-#   s(time, by = site):         site-specific trajectory deviation — key
-#                               term for testing whether resilient sites
+#   The treatment and site time smooths use mgcv's sum-to-zero factor smooth
+#   basis (bs = "sz"): one curve per level, constrained so the level curves
+#   average zero at every time. s(time) is therefore the overall trajectory
+#   (averaged across treatments and sites), and each sz term tests whether
+#   the levels of that factor differ in trajectory shape. With ordinary
+#   by = factor smooths plus a global s(time), the same curve can be split
+#   between terms in many ways; the model is then not identifiable, mgcv
+#   silently drops basis functions (gam.side) and the smooth-term tests are
+#   arbitrary and version-dependent. The sz basis removes that redundancy.
+#
+#   s(time):                    overall time trajectory, averaged across
+#                               treatments and sites
+#   s(treatment, time, bs="sz"): treatment deviations from the overall
+#                               trajectory — tests whether the shape of the
+#                               decline differs among treatment combinations
+#   s(site, time, bs="sz"):     site deviations from the overall trajectory —
+#                               key term for testing whether resilient sites
 #                               decline differently over time
 #
 # Random smooth:
@@ -566,13 +605,17 @@ fit_bam <- function(dat, rho_est) {
   k_val <- length(unique(dat$time))
   cat("  Using k =", k_val, "\n")
 
+  # Drop treatment levels absent from this subset (heat subsets contain
+  # only CH and LH) so the sz smooth has no empty levels.
+  dat <- dat %>% mutate(treatment = droplevels(treatment))
+
   formula <- FvFm ~ treatment * site +
-    s(time, k = k_val) +                          # global smooth decline
-    s(time, by = treatment, k = k_val) +          # treatment-specific trajectory
-                                                   # deviation (combined pH x temp —
+    s(time, k = k_val) +                          # overall trajectory
+    s(treatment, time, bs = "sz", k = k_val) +    # treatment deviations (sum to zero;
+                                                   # combined pH x temp —
                                                    # avoids single-level temp failure
                                                    # in heat subsets)
-    s(time, by = site,      k = k_val) +          # site-specific trajectory deviation
+    s(site, time, bs = "sz", k = k_val) +         # site deviations (sum to zero)
     s(time, exp_unit, bs = "fs", k = k_val)       # fragment-level smooth deviations
                                                    # (repeated measures random effect)
 
@@ -598,17 +641,19 @@ fit_bam <- function(dat, rho_est) {
 # Extracts parametric coefficients and smooth term significance tables
 # into tidy data frames.
 #
-# Parametric table: coefficients relative to reference levels (CC treatment,
-#   Emerald site). Reflect mean differences at the reference timepoint only —
-#   not overall treatment effects across time. The treatment smooth terms
-#   below are where the temporal treatment effects live.
+# Parametric table: coefficients relative to reference levels (CC or CH
+#   treatment, Emerald site). The treatment and site main effects are absorbed
+#   by the sz smooths (see fit_bam()), so only the intercept and the
+#   treatment:site coefficients are estimated; use the joint tests and emmeans
+#   for time-averaged effects.
 #
 # Smooth table: edf (effective df) and p-value per smooth term.
 #   edf = 1: approximately linear. Higher edf = more curvature.
-#   Significant p-values for s(time):treatment terms indicate that those
-#   treatment combinations follow a trajectory shape that differs from the
-#   global trend. Significant s(time):site terms indicate site-specific
-#   trajectory differences — the key signal for your resilience hypothesis.
+#   s(time) tests the overall change over time (averaged across treatments
+#   and sites). A significant s(treatment,time) term indicates that
+#   treatments differ in trajectory shape; a significant s(site,time) term
+#   indicates that sites differ in trajectory shape — the key signal for the
+#   resilience hypothesis.
 #
 # Arguments:
 #   mod:      fitted bam model object
@@ -619,13 +664,18 @@ fit_bam <- function(dat, rho_est) {
 extract_stats <- function(mod, mod_name) {
   s <- summary(mod)
 
+  # Coefficients that mgcv drops as unidentifiable (the treatment and site
+  # main effects, absorbed by the sz smooths; see fit_bam()) are returned as
+  # 0 with no standard error; they are removed here so the table lists only
+  # estimated coefficients.
   parametric <- as.data.frame(s$p.table) %>%
     rownames_to_column("term") %>%
     mutate(model = mod_name) %>%
     rename(estimate  = Estimate,
            std_error = `Std. Error`,
            t_value   = `t value`,
-           p_value   = `Pr(>|t|)`)
+           p_value   = `Pr(>|t|)`) %>%
+    filter(!is.na(t_value))
 
   smooths <- as.data.frame(s$s.table) %>%
     rownames_to_column("term") %>%
@@ -782,7 +832,7 @@ extract_joint_tests <- function(mod, dat, mod_name) {
 # Arguments:
 #   smooths_tbl: data frame from results$stats$smooths
 #   term:        exact term label as it appears in the smooth table,
-#                e.g. "s(time)" for the global temporal smooth
+#                e.g. "s(time)" for the overall time smooth
 # Returns:
 #   named list: df1 (edf), df2 (Ref.df), F_value, p_value
 
@@ -800,8 +850,8 @@ get_smooth_stat <- function(smooths_tbl, term) {
 # emmeans::joint_tests() sometimes reports a higher-order term as
 # "(confounded)" instead of the requested term name — this happens when its
 # contrast subspace overlaps with a lower-order term already tested. In this
-# GAMM design the treatment:site interaction is frequently confounded because
-# the treatment- and site-specific time smooths already absorb part of the
+# GAMM design the treatment:site interaction can be reported as confounded
+# because the treatment and site time smooths share part of the
 # interaction contrast space. When that happens the requested term row does
 # not exist, and NULL is returned so the caller can fall back to a
 # "not testable" label instead of erroring.
@@ -853,7 +903,7 @@ format_stat_label <- function(prefix, stat) {
 # run_full_analysis() result rather than hardcoded, so the labels always
 # reflect the current GAMM fit.
 #
-# "time" comes from the global s(time) smooth (results$stats$smooths) —
+# "time" comes from the overall s(time) smooth (results$stats$smooths) —
 # joint_tests() only covers the parametric factors, not the temporal trend.
 # "treat" and "site" come from the omnibus joint_tests table. The
 # treatment:site interaction is omitted — emmeans::joint_tests() reports it
@@ -953,8 +1003,8 @@ make_smooth_plot <- function(mod, mod_name) {
 
 
 # --- make_diff_smooth_plot() -------------------------------------------------
-# Plots the treatment-specific smooth terms to show how each treatment
-# trajectory deviates from the global time trend.
+# Plots the treatment sz smooth to show how each treatment trajectory
+# deviates from the overall time trend.
 #
 # difference_smooths() is not used here because it produces non-conformable
 # array errors when the treatment factor has different numbers of levels
@@ -963,7 +1013,7 @@ make_smooth_plot <- function(mod, mod_name) {
 #
 # Instead, the treatment-specific smooth terms are plotted directly using
 # gratia::draw(). Smooths that deviate substantially from zero indicate
-# treatment trajectories that differ meaningfully from the global trend.
+# treatment trajectories that differ meaningfully from the overall trend.
 # The emmeans pairwise contrasts provide the formal statistical comparison.
 #
 # Arguments:
@@ -974,8 +1024,8 @@ make_smooth_plot <- function(mod, mod_name) {
 
 make_diff_smooth_plot <- function(mod, mod_name) {
 
-  # Identify which smooths correspond to the treatment by= terms.
-  # smooth labels follow the pattern "s(time):treatmentXX" —
+  # Identify the treatment sz smooth.
+  # its label is "s(treatment,time)" —
   # select these by index to pass to draw()
   smooth_labels <- sapply(mod$smooth, function(s) s$label)
   treatment_idx <- grep("treatment", smooth_labels)
@@ -985,7 +1035,7 @@ make_diff_smooth_plot <- function(mod, mod_name) {
        select    = treatment_idx) +
     plot_annotation(
       title    = paste("Treatment-specific smooth deviations —", mod_name),
-      subtitle = "Deviation from global time trend; values near zero follow the global trajectory"
+      subtitle = "Deviation from the overall time trend; values near zero follow the overall trajectory"
     )
 }
 
@@ -1020,7 +1070,7 @@ save_plot <- function(plot, filename, w = 10, h = 6) {
 #   4. Print model summary and k.check to console
 #   5. Extract tidy stats tables (parametric, smooths, kcheck, emmeans,
 #      joint tests)
-#   6. Build trajectory, smooth term, and difference smooth plots
+#   6. Build trajectory, smooth term, and treatment deviation smooth plots
 #   7. Save all three plots as PDFs
 #
 # Arguments:
@@ -1087,7 +1137,7 @@ run_full_analysis <- function(dat, mod_name) {
 All treatments, timepoints < 21 days (control period and the first heat ramp). Tests whether pH affects
 photosynthetic efficiency prior to heat stress, and whether this differs across sites.
 
-```{r ofav-control, cache=TRUE, cache.extra=ipam_ofav_control}
+```{r ofav-control, cache=TRUE, cache.extra=list(ipam_ofav_control, knitr::knit_code$get('helper-functions'))}
 results_ofav_control <- run_full_analysis(
   dat      = ipam_ofav_control,
   mod_name = "ofav_control"
@@ -1179,7 +1229,7 @@ knitr::kable(
 High temperature treatment only, all timepoints. Tests whether pH effects on
 photosynthetic efficiency are amplified or modulated under thermal stress.
 
-```{r ofav-heat, cache=TRUE, cache.extra=ipam_ofav_heat}
+```{r ofav-heat, cache=TRUE, cache.extra=list(ipam_ofav_heat, knitr::knit_code$get('helper-functions'))}
 results_ofav_heat <- run_full_analysis(
   dat      = ipam_ofav_heat,
   mod_name = "ofav_heat"
@@ -1270,7 +1320,7 @@ knitr::kable(
 
 All treatments, timepoints < 21 days (control period and the first heat ramp).
 
-```{r ssid-control, cache=TRUE, cache.extra=ipam_ssid_control}
+```{r ssid-control, cache=TRUE, cache.extra=list(ipam_ssid_control, knitr::knit_code$get('helper-functions'))}
 results_ssid_control <- run_full_analysis(
   dat      = ipam_ssid_control,
   mod_name = "ssid_control"
@@ -1361,7 +1411,7 @@ knitr::kable(
 
 High temperature treatment only, all timepoints.
 
-```{r ssid-heat, cache=TRUE, cache.extra=ipam_ssid_heat}
+```{r ssid-heat, cache=TRUE, cache.extra=list(ipam_ssid_heat, knitr::knit_code$get('helper-functions'))}
 results_ssid_heat <- run_full_analysis(
   dat      = ipam_ssid_heat,
   mod_name = "ssid_heat"
@@ -1473,6 +1523,23 @@ all_means       <- bind_rows(lapply(all_results, function(r) r$emmeans$means))
 all_contrasts   <- bind_rows(lapply(all_results, function(r) r$emmeans$contrasts))
 all_joint_tests <- bind_rows(lapply(all_results, function(r) r$joint_tests))
 
+# Urban vs reef: planned contrast of time-averaged FvFm, mean of the urban sites
+# (Star Island, MacArthur North) minus mean of the reef sites (Emerald, Rainbow),
+# averaged over treatments and observed timepoints. Computed here from the fitted
+# models (outside the cached model chunks).
+urban_reef_ipam <- function(result, dat, mod_name) {
+  emm <- emmeans(result$model, ~ site, at = list(time = unique(dat$time)))
+  as.data.frame(contrast(emm, method = list(`urban - reef` = c(-0.5, -0.5, 0.5, 0.5)))) %>% # site order: Emerald, Rainbow, Star, MacN
+    mutate(model = mod_name)
+}
+all_urban_reef <- bind_rows(
+  urban_reef_ipam(results_ofav_control, ipam_ofav_control, "ofav_control"),
+  urban_reef_ipam(results_ofav_heat,    ipam_ofav_heat,    "ofav_heat"),
+  urban_reef_ipam(results_ssid_control, ipam_ssid_control, "ssid_control"),
+  urban_reef_ipam(results_ssid_heat,    ipam_ssid_heat,    "ssid_heat")
+)
+knitr::kable(all_urban_reef, digits = 4, caption = "Urban vs reef contrasts (time-averaged FvFm) — all models")
+
 # Rho summary — report in methods to justify AR(1) decisions per dataset
 rho_summary <- tibble(
   model       = c("ofav_control", "ofav_heat", "ssid_control", "ssid_heat"),
@@ -1493,7 +1560,8 @@ write_xlsx(
     "Smooth significance"      = all_smooths,
     "k.check"                  = all_kcheck,
     "Estimated marginal means" = all_means,
-    "Pairwise contrasts"       = all_contrasts
+    "Pairwise contrasts"       = all_contrasts,
+    "Urban vs reef contrasts"  = all_urban_reef
   ),
   path = "../../outputs/photosynthesis/coral_FvFm_GAMM_stats.xlsx"
 )
@@ -1577,8 +1645,8 @@ FvFm_label_ys     <- FvFm_label_top - FvFm_label_step * c(0, 1, 2)
 # -----------------------------------------------------------------------------
 # Stats label data frames for O. faveolata
 #
-# build_stat_labels() (see Helper functions) pulls the time/treat/site/
-# interaction F-stats and p-values directly from the GAMM output of the
+# build_stat_labels() (see Helper functions) pulls the time/treat/site
+# F-stats and p-values directly from the GAMM output of the
 # corresponding analysis above, one call per facet panel. Label y-positions
 # and the plot's y-axis range come from plot-ylim, shared with the Ssid plot.
 #
@@ -1631,8 +1699,8 @@ ggsave("../../outputs/photosynthesis/urban ipam ofav.pdf",
 # -----------------------------------------------------------------------------
 # Stats label data frames for S. siderea
 #
-# build_stat_labels() (see Helper functions) pulls the time/treat/site/
-# interaction F-stats and p-values directly from the GAMM output of the
+# build_stat_labels() (see Helper functions) pulls the time/treat/site
+# F-stats and p-values directly from the GAMM output of the
 # corresponding analysis above, one call per facet panel. Label y-positions
 # and the plot's y-axis range come from plot-ylim, shared with the Ofav plot.
 #

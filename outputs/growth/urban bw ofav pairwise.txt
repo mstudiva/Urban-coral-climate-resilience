@@ -1,10 +1,10 @@
  contrast          estimate     SE   df t.ratio p.value
- Emerald - Rainbow   0.0706 0.0678 16.9   1.042  0.7281
- Emerald - Star      0.1192 0.0678 16.9   1.757  0.3270
- Emerald - MacN      0.2262 0.0651 17.1   3.475  0.0139
- Rainbow - Star      0.0485 0.0678 16.9   0.715  0.8897
- Rainbow - MacN      0.1555 0.0651 17.1   2.390  0.1170
- Star - MacN         0.1070 0.0651 17.1   1.644  0.3817
+ Emerald - Rainbow   0.0794 0.0762 16.9   1.041  0.7282
+ Emerald - Star      0.1595 0.0744 15.4   2.144  0.1833
+ Emerald - MacN      0.2714 0.0713 15.4   3.808  0.0080
+ Rainbow - Star      0.0801 0.0771 17.4   1.040  0.7291
+ Rainbow - MacN      0.1920 0.0741 17.6   2.591  0.0799
+ Star - MacN         0.1118 0.0720 15.8   1.553  0.4317
 
 Results are averaged over the levels of: pH 
 Degrees-of-freedom method: kenward-roger 

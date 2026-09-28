@@ -51,6 +51,15 @@ library(MuMIn)
 ```{r data-import}
 bw <- read.csv(file="../../data/growth/urban buoyant weight.csv", head=T)
 
+# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
+# data file's `exclude` column): 31 O. faveolata with partial mortality unrelated to heat stress (mostly a ciliate
+# infection; they grew less than the other fragments in their tanks even before tissue loss was recorded) and one
+# S. siderea (Ms3-1) with no health observations. Rows stay in the data file.
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>%
+  filter(exclude != "")
+bw %>% filter(sampleID %in% surv_exclude$sample) %>% count(species, treatment) # fragments excluded
+bw <- bw %>% filter(!sampleID %in% surv_exclude$sample)
+
 # growth rates are calculated here from dry skeletal mass (mass1, mass2; g) and surface area (cm2), annualized from
 # the actual interval: buoyant weights were measured on 26 Feb (initial) and 3 Apr 2021 (post-OA), 36 days apart.
 # (The master spreadsheet annualized by x12, assuming a one-month interval; those columns were removed from the data file.)
@@ -169,7 +178,7 @@ lrt_geno_ofav # p value significant, and AIC much lower for noint model, so proc
 
 # LRT: tank effect
 lrt_tank_ofav <- anova(update(lm_ofav_noint, REML = FALSE), update(lm_ofav_noT, REML = FALSE))
-lrt_tank_ofav # p value significant, and AIC much lower for noint model, so proceed with tank
+lrt_tank_ofav # nonsignificant after the survivorship exclusions (the tank variance came from the excluded T1/T4/T8 fragments); tank kept as the unit of pH replication
 ```
 
 
@@ -285,7 +294,7 @@ lm_ssid_noint <- lmer(growthadj ~ pH + site +
 
 # LRT: interaction effect
 lrt_int_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noint, REML = FALSE))
-lrt_int_ssid # nonsignificant p value, and marginal reduction in AIC with interaction, so proceed without interaction terms for consistency with ofav
+lrt_int_ssid # significant after the survivorship exclusions (Ms3-1; p = 0.005) and AIC lower with the interaction, so the final ssid model keeps the pH x site interaction (lm_ssid)
 ```
 
 
@@ -293,22 +302,22 @@ lrt_int_ssid # nonsignificant p value, and marginal reduction in AIC with intera
 
 ```{r random-effects-ssid}
 # reduced model, dropped genotype as factor
-lm_ssid_noG <- lmer(growthadj ~ pH + site + 
+lm_ssid_noG <- lmer(growthadj ~ pH * site + 
                       (1 | pH:tank),
                     data = bw_ssid, REML = TRUE)
 
 # reduced model, dropped tank as factor
-lm_ssid_noT <- lmer(growthadj ~ pH + site + 
+lm_ssid_noT <- lmer(growthadj ~ pH * site + 
                       (1 | site:genotype),
                     data = bw_ssid, REML = TRUE)
 
 # LRT: genotype effect
-lrt_geno_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noG, REML = FALSE))
-lrt_geno_ssid # marginally significant p value, and AIC lower for noint model, so proceed with genotype term
+lrt_geno_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noG, REML = FALSE))
+lrt_geno_ssid # significant p value in the final (interaction) model, so proceed with genotype term
 
 # LRT: tank effect
-lrt_tank_ssid <- anova(update(lm_ssid_noint, REML = FALSE), update(lm_ssid_noT, REML = FALSE))
-lrt_tank_ssid # p value significant, and AIC much lower for noint model, so proceed with tank
+lrt_tank_ssid <- anova(update(lm_ssid, REML = FALSE), update(lm_ssid_noT, REML = FALSE))
+lrt_tank_ssid # significant p value in the final (interaction) model, so proceed with tank
 ```
 
 
@@ -326,22 +335,27 @@ summary(lm(growthadj ~ pH, data = tank_means_ssid)) # nonsignificant; matches mi
 ```{r variance-ssid}
 # Random effects variance components
 # NOTE: pct_nonfixed_var = % of random + residual variance only (fixed-effect variance excluded)
-vc_ssid <- as.data.frame(VarCorr(lm_ssid_noint))
+vc_ssid <- as.data.frame(VarCorr(lm_ssid))
 total_var_ssid <- sum(vc_ssid$vcov)
 vc_ssid$pct_nonfixed_var <- round(100 * vc_ssid$vcov / total_var_ssid, 2)
 colnames(vc_ssid)[colnames(vc_ssid) == "grp"] <- "component"
 
 # Fixed effects R²
-r2_ssid <- r.squaredGLMM(lm_ssid_noint)
+r2_ssid <- r.squaredGLMM(lm_ssid)
 
 # Individual fixed effect contributions
-lm_ssid_ml      <- update(lm_ssid_noint, REML = FALSE)
-lm_ssid_no_pH   <- update(lm_ssid_ml, . ~ . - pH)
-lm_ssid_no_site <- update(lm_ssid_ml, . ~ . - site)
+# interaction: R² of the final model minus R² without the interaction; main effects: dropped from the
+# no-interaction model (marginality: a main effect can't be removed while its interaction stays in)
+lm_ssid_ml       <- update(lm_ssid, REML = FALSE)
+lm_ssid_noint_ml <- update(lm_ssid_noint, REML = FALSE)
+lm_ssid_no_pH    <- update(lm_ssid_noint_ml, . ~ . - pH)
+lm_ssid_no_site  <- update(lm_ssid_noint_ml, . ~ . - site)
 
 r2_ssid_full    <- r.squaredGLMM(lm_ssid_ml)[, "R2m"]
-delta_pH_ssid   <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_pH)[, "R2m"]), 2)
-delta_site_ssid <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_site)[, "R2m"]), 2)
+r2_ssid_noint   <- r.squaredGLMM(lm_ssid_noint_ml)[, "R2m"]
+delta_int_ssid  <- round(100 * (r2_ssid_full - r2_ssid_noint), 2)
+delta_pH_ssid   <- round(100 * (r2_ssid_noint - r.squaredGLMM(lm_ssid_no_pH)[, "R2m"]), 2)
+delta_site_ssid <- round(100 * (r2_ssid_noint - r.squaredGLMM(lm_ssid_no_site)[, "R2m"]), 2)
 ```
 
 
@@ -349,13 +363,14 @@ delta_site_ssid <- round(100 * (r2_ssid_full - r.squaredGLMM(lm_ssid_no_site)[, 
 
 ```{r summary-ssid}
 # --- Console output ---
-summary(lm_ssid_noint)
-anova(lm_ssid_noint)
+summary(lm_ssid)
+anova(lm_ssid)
 print(vc_ssid[, c("component", "vcov", "pct_nonfixed_var")])
 cat("Marginal R² (fixed effects):", round(100 * r2_ssid[, "R2m"], 2), "%\n")
 cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
 cat("Delta R² pH:", delta_pH_ssid, "%\n")
 cat("Delta R² site:", delta_site_ssid, "%\n")
+cat("Delta R² pH x site:", delta_int_ssid, "%\n")
 ```
 
 
@@ -374,7 +389,7 @@ capture.output({
   print(lrt_geno_ssid)
   
   cat("\n=== ANOVA (Fixed Effects) ===\n")
-  print(anova(lm_ssid_noint))
+  print(anova(lm_ssid))
   
   cat("\n=== Variance Components (Random Effects) ===\n")
   cat("pct_nonfixed_var = % of random + residual variance (excludes fixed-effect variance)\n")
@@ -385,6 +400,7 @@ capture.output({
   cat("Conditional R² (fixed + random):", round(100 * r2_ssid[, "R2c"], 2), "%\n")
   cat("Delta R² pH:", delta_pH_ssid, "%\n")
   cat("Delta R² site:", delta_site_ssid, "%\n")
+  cat("Delta R² pH x site:", delta_int_ssid, "%\n")
   
 }, file = "../../outputs/growth/urban bw ssid lme.txt")
 ```
@@ -393,14 +409,43 @@ capture.output({
 ### Pairwise site comparisons
 
 ```{r pairwise-ssid}
-# pairwise site tests
-# emm_ssid <- emmeans(lm_ssid_noint, ~ site)
-# pairs(emm_ssid, adjust = "tukey")
-# capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/growth/urban bw ssid pairwise.txt")
+# pairwise site tests within each pH treatment (final model includes the pH x site interaction)
+emm_ssid <- emmeans(lm_ssid, ~ site | pH)
+pairs(emm_ssid, adjust = "tukey")
+capture.output(pairs(emm_ssid, adjust = "tukey"), file = "../../outputs/growth/urban bw ssid pairwise.txt")
 
-# Create letters indicating significant differences for plot
-# cld_ssid <- cld(emm_ssid, adjust = "tukey", Letters = letters, alpha = 0.05)
-# cld_ssid
+# Create letters indicating significant differences for plot (separately for each pH panel)
+cld_ssid <- cld(emm_ssid, adjust = "tukey", Letters = letters, alpha = 0.05)
+cld_ssid
+
+# pH effect within each site
+emm_ssid_ph <- emmeans(lm_ssid, ~ pH | site)
+pairs(emm_ssid_ph)
+capture.output(pairs(emm_ssid_ph), file = "../../outputs/growth/urban bw ssid pH by site.txt")
+```
+
+
+# Urban vs reef contrasts
+
+```{r urban-reef-contrasts}
+# planned contrast from each final model: mean of the urban sites (Star Island, MacArthur North) minus mean of the
+# reef sites (Emerald, Rainbow), averaged over pH. Tests the urban vs reef question with site kept in the model.
+urban_reef_contrast <- list(`urban - reef` = c(-0.5, -0.5, 0.5, 0.5)) # site order: Emerald, Rainbow, Star, MacN
+urban_reef_ofav <- contrast(emmeans(lm_ofav_noint, ~ site), method = urban_reef_contrast)
+urban_reef_ssid <- contrast(emmeans(lm_ssid, ~ site), method = urban_reef_contrast) # averaged over pH
+urban_reef_ssid_ph <- contrast(emmeans(lm_ssid, ~ site | pH), method = urban_reef_contrast) # within each pH (interaction model)
+urban_reef_ofav
+urban_reef_ssid
+urban_reef_ssid_ph
+
+capture.output({
+  cat("=== O. faveolata: urban (Star, MacN) - reef (Emerald, Rainbow) ===\n")
+  print(urban_reef_ofav)
+  cat("\n=== S. siderea: urban (Star, MacN) - reef (Emerald, Rainbow) ===\n")
+  print(urban_reef_ssid)
+  cat("\n=== S. siderea: urban - reef within each pH treatment (pH x site interaction in the final model) ===\n")
+  print(urban_reef_ssid_ph)
+}, file = "../../outputs/growth/urban bw urban reef contrasts.txt")
 ```
 
 
@@ -410,7 +455,7 @@ capture.output({
 # normality of the final models' residuals and random effects (the assumptions lmer actually makes),
 # rather than of the raw response
 resid_ofav <- resid(lm_ofav_noint)
-resid_ssid <- resid(lm_ssid_noint)
+resid_ssid <- resid(lm_ssid)
 
 # Shapiro test on model residuals, p-values below 0.05 indicate violations of normality assumptions
 shapiro.test(resid_ofav)
@@ -418,12 +463,13 @@ shapiro.test(resid_ssid)
 
 # random effect estimates (BLUPs), few levels so interpret visually
 re_ofav <- ranef(lm_ofav_noint)
-re_ssid <- ranef(lm_ssid_noint)
+re_ssid <- ranef(lm_ssid)
 
 pdf("../../outputs/growth/urban bw model residuals.pdf", width = 10, height = 8)
 par(mfrow = c(2, 4))
+final_models <- list(ofav = lm_ofav_noint, ssid = lm_ssid)
 for (sp in c("ofav", "ssid")) {
-  m <- get(paste0("lm_", sp, "_noint"))
+  m <- final_models[[sp]]
   r <- resid(m)
   re <- ranef(m)
   # residual normality
@@ -441,7 +487,7 @@ capture.output({
   cat("=== Shapiro-Wilk test on model residuals ===\n")
   cat("\nO. faveolata (lm_ofav_noint):\n")
   print(shapiro.test(resid_ofav))
-  cat("S. siderea (lm_ssid_noint):\n")
+  cat("S. siderea (lm_ssid, with pH x site interaction):\n")
   print(shapiro.test(resid_ssid))
 }, file = "../../outputs/growth/urban bw model residuals.txt")
 ```
@@ -477,12 +523,41 @@ pct_change_species <- bw_models %>%
   mutate(site = "all sites",
          pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
 
-pct_change <- bind_rows(pct_change_site, pct_change_species) %>%
-  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star", "MacN", "all sites"))) %>%
+# by species and habitat (reef: Emerald, Rainbow; urban: Star, MacN); used where per-site low-pH n is small
+pct_change_habitat <- bw_models %>%
+  mutate(site = if_else(site %in% c("Star", "MacN"), "urban sites", "reef sites")) %>%
+  group_by(species, site, pH) %>%
+  summarise(mean = mean(growthadj, na.rm = TRUE),
+            sd = sd(growthadj, na.rm = TRUE),
+            n = sum(!is.na(growthadj)),
+            .groups = "drop") %>%
+  pivot_wider(names_from = pH, values_from = c(mean, sd, n)) %>%
+  mutate(pct_change = round(100 * (`mean_low pH` - `mean_control pH`) / `mean_control pH`, 2))
+
+pct_change <- bind_rows(mutate(pct_change_site, site = as.character(site)), pct_change_habitat, pct_change_species) %>%
+  mutate(site = factor(site, levels = c("Emerald", "Rainbow", "Star", "MacN", "reef sites", "urban sites", "all sites"))) %>%
   arrange(species, site)
 pct_change
 
 write.csv(pct_change, file = "../../outputs/growth/urban bw pct change.csv", row.names = FALSE)
+
+# % difference in mean growth of urban (Star Island, MacArthur North) vs reef (Emerald, Rainbow) fragments:
+# (urban - reef) / reef * 100, fragment-weighted means from outlier-filtered data, by species and pH and pooled across pH
+urban_reef <- function(dat) {
+  dat %>%
+    mutate(origin = if_else(site %in% c("Star", "MacN"), "urban", "reef")) %>%
+    group_by(origin) %>%
+    summarise(mean = mean(growthadj), n = n(), .groups = "drop") %>%
+    pivot_wider(names_from = origin, values_from = c(mean, n)) %>%
+    mutate(pct_urban_vs_reef = round(100 * (mean_urban - mean_reef) / mean_reef, 2))
+}
+pct_urban_reef <- bind_rows(
+  bw_models %>% group_by(species, pH) %>% group_modify(~ urban_reef(.x)) %>% ungroup(),
+  bw_models %>% group_by(species) %>% group_modify(~ urban_reef(.x)) %>% ungroup() %>% mutate(pH = "both pH")) %>%
+  arrange(species, pH)
+pct_urban_reef
+
+write.csv(pct_urban_reef, file = "../../outputs/growth/urban bw pct urban reef.csv", row.names = FALSE)
 ```
 
 
@@ -491,12 +566,29 @@ write.csv(pct_change, file = "../../outputs/growth/urban bw pct change.csv", row
 ```{r plots}
 fill.color<-c("#018571","#80cdc1","#dfc27d","#a6611a","grey") # custom color palette
 
-# creating dummy variables for stats labels on plot
-stats_ofav_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,82 = 0.02, p = 0.9")
-stats_ofav_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = "site: F3,82 = 4.3, p = 0.02*")
+# stats labels built from the final models so they stay in sync with the model outputs
+# format: F(numerator df, total df = n - 1), p rounded to 1 significant figure (2 if it would round to 0.05), * if p < 0.05
+stat_label <- function(model, term, label) {
+  a <- anova(model)
+  p <- a[term, "Pr(>F)"]
+  p_digits <- if (signif(p, 1) == 0.05) 2 else 1
+  p_txt <- if (p < 0.001) "p < 0.001" else paste0("p = ", signif(p, p_digits))
+  paste0(label, ": F", a[term, "NumDF"], ",", nobs(model) - 1, " = ", sprintf("%.1f", a[term, "F value"]), ", ", p_txt, ifelse(p < 0.05, "*", ""))
+}
+# F values below 0.1 are shown with 2 decimals so they don't print as 0.0
+stat_label2 <- function(model, term, label) {
+  lab <- stat_label(model, term, label)
+  f <- anova(model)[term, "F value"]
+  if (f < 0.1) lab <- sub(sprintf("= %.1f,", f), sprintf("= %.2f,", f), lab, fixed = TRUE)
+  lab
+}
 
-stats_ssid_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = "pH: F1,79 = 0.7, p = 0.5")
-stats_ssid_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = "site: F3,79 = 2.8, p = 0.07")
+stats_ofav_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = stat_label2(lm_ofav_noint, "pH", "pH"))
+stats_ofav_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = stat_label2(lm_ofav_noint, "site", "site"))
+
+stats_ssid_ph <- data.frame(pH = "control pH", growthadj = 0.6, lab = stat_label2(lm_ssid, "pH", "pH"))
+stats_ssid_site <- data.frame(pH = "control pH", growthadj = 0.6, lab = stat_label2(lm_ssid, "site", "site"))
+stats_ssid_int <- data.frame(pH = "control pH", growthadj = 0.6, lab = stat_label2(lm_ssid, "pH:site", "pH x site"))
 
 ofav <- ggboxplot(bw_ofav,
                   x = "site",
@@ -514,8 +606,8 @@ ofav <- ggboxplot(bw_ofav,
   theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_blank()) +
   geom_text(data = stats_ofav_ph,label = stats_ofav_ph$lab, aes(x=2, y=0.7)) +
   geom_text(data = stats_ofav_site,label = stats_ofav_site$lab, aes(x=2, y=0.65)) +
-  geom_text(data=cld_ofav, aes(x = site, y=-0.13, label=.group)) +
-  ylim(-0.13, 0.7)
+  geom_text(data=cld_ofav, aes(x = site, y=-0.2, label=.group)) +
+  ylim(-0.2, 0.7) # lower limit covers Mo1-3 (-0.155); ylim() drops points outside it before the boxplot stats
 ofav
 
 ssid <- ggboxplot(bw_ssid,
@@ -534,8 +626,9 @@ ssid <- ggboxplot(bw_ssid,
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_text(data = stats_ssid_ph,label = stats_ssid_ph$lab, aes(x=2, y=0.7)) +
   geom_text(data = stats_ssid_site,label = stats_ssid_site$lab, aes(x=2, y=0.65)) +
-  # geom_text(data=cld_ssid, aes(x = site, y=-0.13, label=.group)) +
-  ylim(-0.13, 0.7)
+  geom_text(data = stats_ssid_int,label = stats_ssid_int$lab, aes(x=2, y=0.6)) +
+  geom_text(data=cld_ssid, aes(x = site, y=-0.2, label=.group)) +
+  ylim(-0.2, 0.7) # lower limit covers Mo1-3 (-0.155); ylim() drops points outside it before the boxplot stats
 ssid
 
 # both panels

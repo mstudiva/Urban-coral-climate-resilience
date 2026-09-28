@@ -1,0 +1,42 @@
+=== O. faveolata day : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate      SE   df t.ratio p.value
+ urban - reef -0.00432 0.00847 14.8  -0.510  0.6177
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
+=== O. faveolata night : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate      SE   df t.ratio p.value
+ urban - reef -0.00503 0.00399 14.8  -1.261  0.2268
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
+=== O. faveolata day/night mean : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate     SE   df t.ratio p.value
+ urban - reef -0.00467 0.0052 14.8  -0.899  0.3830
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
+=== S. siderea day : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate      SE df t.ratio p.value
+ urban - reef   0.0202 0.00545 16   3.698  0.0020
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
+=== S. siderea night : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate      SE df t.ratio p.value
+ urban - reef  0.00991 0.00372 16   2.666  0.0169
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
+=== S. siderea day/night mean : urban (Star Island, MacArthur North) - reef (Emerald, Rainbow) ===
+ contrast     estimate     SE df t.ratio p.value
+ urban - reef    0.015 0.0041 16   3.667  0.0021
+
+Results are averaged over the levels of: treatment 
+Degrees-of-freedom method: kenward-roger 
+
