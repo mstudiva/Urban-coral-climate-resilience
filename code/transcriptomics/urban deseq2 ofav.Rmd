@@ -27,6 +27,23 @@ knitr::opts_chunk$set(
   fig.height = 6,
   dpi        = 300
 )
+
+# save_plot(): writes a figure to PDF (outputs folder) and shows the same figure in the knitted HTML.
+# The plotting code is run once for the PDF and once for a PNG copy at the same size, which is embedded in
+# the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
+save_plot <- function(file, width, height, expr) {
+  expr <- substitute(expr); env <- parent.frame()
+  pdf(file = file, width = width, height = height)
+  tryCatch(eval(expr, env), finally = dev.off())
+  if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
+    ok <- try(eval(expr, env), silent = TRUE)
+    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    return(invisible(file)) }
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
+  png(png_file, width = width, height = height, units = "in", res = 150)
+  tryCatch(eval(expr, env), finally = dev.off())
+  knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
+}
 ```
 
 
@@ -40,6 +57,7 @@ knitr::opts_chunk$set(
 # BiocManager::install("DESeq2",dependencies=T)
 # BiocManager::install("arrayQualityMetrics",dependencies=T)  # requires Xquartz, xquartz.org
 # BiocManager::install("BiocParallel")
+# BiocManager::install("edgeR")  # also installs limma; used for the urban vs reef analysis
 
 # install.packages("pheatmap")
 # install.packages("VennDiagram")
@@ -73,22 +91,14 @@ ncol(counts)
 # how does the data look? 
 head(counts)
 
-keep <- rowSums(counts) >= 10
-countData <- counts[keep,]
-nrow(countData)
-ncol(countData)
-write.csv(countData, file="../../outputs/transcriptomics/ofav/deseq2/countData.csv")
-
-# for WCGNA: removing all genes with counts of <10 in more than 90 % of samples
-counts4wgcna = counts[apply(counts,1,function(x) sum(x<10))<ncol(counts)*0.9,]
-nrow(counts4wgcna)
-ncol(counts4wgcna)
-write.csv(counts4wgcna, file="../../outputs/transcriptomics/ofav/deseq2/counts4wgcna.csv")
-
 # importing a design .csv file
 design = read.csv("../../data/transcriptomics/ofav/design_ofav.csv", head=TRUE)
 design
+# count columns and design rows must be in the same sample order before any subsetting
+stopifnot(identical(colnames(counts), design$id))
 design$site <- as.factor(design$site)
+# replicate as a factor (as in the S. siderea script)
+design$replicate <- as.factor(design$replicate)
 design$tank <- as.factor(design$tank)
 design$ph <- as.factor(design$ph)
 design$temp <- as.factor(design$temp)
@@ -98,6 +108,48 @@ design$treat <- as.factor(design$treat)
 design$genotype <- as.factor(design$genotype)
 # habitat: urban (Star Island, MacArthur North) vs reef (Emerald, Rainbow)
 design$habitat <- factor(ifelse(design$site %in% c("Star", "MacN"), "urban", "reef"), levels = c("reef", "urban"))
+
+# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
+# data file's `exclude` column): here 7 samples from 6 O. faveolata fragments with partial mortality unrelated to
+# heat stress (mostly a ciliate infection): Eo1-3, Eo3-3, Ro2-3, Ro4-3, So1-3, Mo5-3 (LC), and Mo5-3's heat-stress
+# resample (LH). Removed by sample ID before outlier detection,
+# so the outlier tests and the transformation behind them use only fragments that are analysed.
+# only O. faveolata exclusions (fragment IDs are matched within species)
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>% filter(species == "Ofav", exclude != "")
+surv_excl <- design$sampleid %in% surv_exclude$sample
+stopifnot(sum(surv_excl) == 7) # 7 sequenced samples excluded (see above)
+design[surv_excl, c("id", "sampleid", "treat")] # samples excluded
+design=design[!surv_excl,]
+
+# PRIMARY ANALYSIS = FIRST COHORT ONLY (decided 2026-09-30).
+# The control-temperature tanks were heated later (second cohort), and 10 of their O. faveolata fragments were
+# resampled as LH on 14 May; every other sample was taken on 23 April. Within the same colonies these resamples
+# differ from first-cohort LH samples (~2,300 DEGs; SENSITIVITY: COHORT EFFECT WITHIN LH), so pooling them would
+# confound the LH treatment with sampling date, tank and repeat biopsy. They are removed from the primary analysis
+# here, before the QC gene filter and outlier detection, so the outlier tests use only primary-analysis samples;
+# the pooled model is refit in SENSITIVITY: POOLED MODEL. (In the earlier report that included them, none of the
+# resamples was flagged as an outlier.)
+# resampled = heat-treatment sample whose fragment ID also appears under a control-temperature treatment in the
+# full design sheet (so pairs whose LC sample was excluded are still caught)
+full_design <- read.csv("../../data/transcriptomics/ofav/design_ofav.csv", head=TRUE)
+resampled_ids <- full_design$id[full_design$treat %in% c("CH","LH") &
+                                full_design$sampleid %in% full_design$sampleid[full_design$treat %in% c("CC","LC")]]
+resampled <- design$id %in% resampled_ids
+design[resampled, c("id","sampleid","treat","tank")] # second-cohort resamples (LH, tank 4)
+stopifnot(sum(resampled) == 10, all(design$treat[resampled] == "LH"))
+design_pooled <- design          # kept for the pooled sensitivity model (outliers removed below)
+design <- design[!resampled, ]
+table(treat = design$treat)
+
+# gene filter on the retained samples (exclusions and second-cohort resamples removed), used only for outlier detection (arrayQualityMetrics) below;
+# countData and counts4wgcna are recomputed (and exported) on the analysed samples after outlier removal
+counts_qc <- counts[, design$id]
+stopifnot(identical(colnames(counts_qc), design$id)) # count columns and design rows in the same order
+keep <- rowSums(counts_qc) >= 10
+countData <- counts_qc[keep,]
+nrow(countData)
+ncol(countData)
+
 str(design)
 ```
 
@@ -122,48 +174,63 @@ library(Biobase)
 e=ExpressionSet(assay(Vsd), AnnotatedDataFrame(as.data.frame(colData(Vsd))))
 
 # running outlier detection
-arrayQualityMetrics(e,intgroup=c("site"),force=T)
+arrayQualityMetrics(e, outdir="../../outputs/transcriptomics/ofav/deseq2/arrayQualityMetrics", intgroup=c("site"), force=T)
 ```
 
-Open the directory "arrayQualityMetrics report for e" in your working directory and open index.html  
+Open the directory "outputs/transcriptomics/ofav/deseq2/arrayQualityMetrics" and open index.html  
 Array metadata and outlier detection overview gives a report of all samples, and which are likely outliers according to the 3 methods tested. I typically remove the samples that violate *1 (distance between arrays).  
 Figure 2 shows a bar plot of array-to-array distances and an outlier detection threshold based on your samples. Samples above the threshold are considered outliers  
 Under Figure 3: Principal Components Analyses, look for any points far away from the rest of the sample cluster  
-Use the array number for removal in the following section
+Use the sample ID (`id`) of each outlier array for removal in the following section
 
 ```{r model-design-and-outliers-cont}
 # if there were outliers:
-outs=c(30,46,52,59)
-countData=countData[,-outs]
-Vsd=Vsd[,-outs]
-counts4wgcna=counts4wgcna[,-outs]
+# outliers are removed by sample ID (not array position), so removal does not depend on sample order
+# IDs from the arrayQualityMetrics report built on the primary samples (survivorship exclusions and second-cohort
+# resamples removed; distance-between-arrays, *1): Ofav_125 (So4-3, LC) and Ofav_131 (Eo2-4, LH).
+# (Earlier reports that still included the excluded fragments and/or resamples also flagged Ofav_109, 127 and 135.)
+# Ofav_135 (So5-4, LH) is also removed (Michael, 2026-09-30): it was flagged as an array outlier in both earlier
+# reports, is the most distant sample after removing colony differences (~2x the typical distance), and alone
+# drives the LH vs CH contrast (2,089 DEGs with it, 19 without; see SENSITIVITY: LH vs CH ROBUSTNESS, run with it
+# included). Report this removal and its reason in the Methods.
+outlier_ids <- c("Ofav_125","Ofav_131","Ofav_135")
+outs <- which(design$id %in% outlier_ids)
+stopifnot(length(outs) == length(outlier_ids))
+design[outs, c("id","sampleid","treat")] # samples removed as outliers
 design=design[-outs,]
+design_pooled <- design_pooled[!(design_pooled$id %in% outlier_ids), ] # same outliers removed from the pooled sample set
 
-# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
-# data file's `exclude` column): here 7 samples from 6 O. faveolata with partial mortality unrelated to heat stress
-# (mostly a ciliate infection): Eo1-3, Eo3-3, Ro2-3, Ro4-3, So1-3, Mo5-3 (LC), and Mo5-3's heat-stress resample (LH).
-# Removed by sample ID after the positional outlier removal above, so the outlier indices stay valid.
-surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>% filter(exclude != "")
-stopifnot(identical(colnames(countData), design$id)) # count columns and design rows in the same order
-surv_excl <- design$sampleid %in% surv_exclude$sample
-design[surv_excl, c("id", "sampleid", "treat")] # samples excluded
-countData=countData[,!surv_excl]
-Vsd=Vsd[,!surv_excl]
-counts4wgcna=counts4wgcna[,!surv_excl]
-design=design[!surv_excl,]
+# gene filters recomputed on the analysed samples only (exclusions, outliers and second-cohort resamples removed), from the raw counts
+counts_kept <- counts[, design$id]
+stopifnot(identical(colnames(counts_kept), design$id)) # count columns and design rows in the same order
+keep <- rowSums(counts_kept) >= 10
+countData <- counts_kept[keep,]
+nrow(countData)
+ncol(countData)
+write.csv(countData, file="../../outputs/transcriptomics/ofav/deseq2/countData.csv")
+
+# for WGCNA: removing all genes with counts of <10 in more than 90 % of samples (analysed samples only)
+counts4wgcna = counts_kept[apply(counts_kept,1,function(x) sum(x<10))<ncol(counts_kept)*0.9,]
+nrow(counts4wgcna)
+ncol(counts4wgcna)
+write.csv(counts4wgcna, file="../../outputs/transcriptomics/ofav/deseq2/counts4wgcna.csv")
 
 # remaking model with outliers removed from dataset
 dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ genotype+treat)
 dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
 dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
 
+# variance-stabilized data recomputed on the analysed samples (the Vsd above, before outlier removal, was for outlier detection only)
+Vsd=varianceStabilizingTransformation(dds)
+
 # save all these dataframes as an Rdata package so you don't need to rerun each time
-save(dds,design,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/ofav/deseq2/initial.RData")
+save(dds,design,design_pooled,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/ofav/deseq2/initial.RData")
 
 # generating normalized variance-stabilized data for PCoA, heatmaps, etc
 vsd=assay(Vsd)
 # takes the sample IDs and factor levels from the design to create new column names for the dataframe
-snames=paste(colnames(countData),design[,2],design[,11],sep=".")
+# (site and treat by name rather than column position)
+snames=paste(colnames(countData),design$site,design$treat,sep=".")
 # renames the column names
 colnames(vsd)=snames
 
@@ -186,9 +253,9 @@ save(vsd.wg,design,file="../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RD
 load("../../outputs/transcriptomics/ofav/deseq2/vsd.RData")
 library(pheatmap)
 # similarity among samples
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/heatmap_ofav_host.pdf", width=15, height=15)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/heatmap_ofav_host.pdf", width=15, height=15, {
 pheatmap(cor(vsd))
-dev.off()
+})
 
 # Principal coordinates analysis
 library(vegan)
@@ -201,60 +268,68 @@ conditions$treat <- factor(conditions$treat, levels = c("CC", "LC", "CH", "LH"))
 # creating a PCoA eigenvalue matrix
 dds.pcoa=pcoa(dist(t(vsd),method="manhattan")/1000)
 scores=dds.pcoa$vectors
+# % variation explained by each axis, computed from the PCoA (used for axis labels)
+ve <- sprintf("%.1f", 100 * dds.pcoa$values$Relative_eig[1:4])
 # export this table for % variation explained by each axis (Relative_eig column)
 write.csv(dds.pcoa$values, file = "../../outputs/transcriptomics/ofav/deseq2/PCoA_variance.csv")
 
 # how many good PC's do we have? Compared to random ("broken stick") model
 # plotting PCoA eigenvalues 
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_Manhattan.pdf", width=6, height=6)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_Manhattan.pdf", width=6, height=6, {
 plot(dds.pcoa$values$Relative_eig)
 points(dds.pcoa$values$Broken_stick,col="red",pch=3)
-dev.off() # the number of black points above the line of red crosses (random model) corresponds to the number of good PC's
+}) # the number of black points above the line of red crosses (random model) corresponds to the number of good PC's
 
 # plotting PCoA by site and treatment
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host.pdf", width=12, height=6)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host.pdf", width=12, height=6, {
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1 (20.0%)", ylab="Coordinate 2 (9.4%)", main="Site")
+plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab=paste0("Coordinate 1 (", ve[1], "%)"), ylab=paste0("Coordinate 2 (", ve[2], "%)"), main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), fill = c("#018571","#80cdc1","#dfc27d","#a6611a"), bty="n")
+# legend symbols are drawn in black; the LC symbol (pch 25) is filled to match the filled (site-coloured) LC points,
+# which distinguishes it from the open CC symbol (pch 6)
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), pch=c(6,2,25,17), bty="n", pt.bg = c(NA,NA,"black",NA))
-plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 1 (20.0%)", ylab="Coordinate 2 (9.4%)", main="Treatment")
+plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab=paste0("Coordinate 1 (", ve[1], "%)"), ylab=paste0("Coordinate 2 (", ve[2], "%)"), main="Treatment")
 ordiellipse(scores, conditions$treat, label=F, col=c("#92c5de","#0571b0","#f4a582","#ca0020"))
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), fill = c("#92c5de","#f4a582","#0571b0","#ca0020"), bty="n")
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,16), bty="n")
-dev.off()
+})
 
 # PCo's 2 and 3
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host_PC3.pdf", width=12, height=6)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host_PC3.pdf", width=12, height=6, {
 par(mfrow=c(1,2))
-plot(scores[,2], scores[,3],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 2 (9.4%)", ylab="Coordinate 3 (6.3%)", main="Site")
+plot(scores[,2], scores[,3],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab=paste0("Coordinate 2 (", ve[2], "%)"), ylab=paste0("Coordinate 3 (", ve[3], "%)"), main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), fill = c("#018571","#80cdc1","#dfc27d","#a6611a"), bty="n")
+# legend symbols are drawn in black; the LC symbol (pch 25) is filled to match the filled (site-coloured) LC points,
+# which distinguishes it from the open CC symbol (pch 6)
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), pch=c(6,2,25,17), bty="n", pt.bg = c(NA,NA,"black",NA))
-plot(scores[,2], scores[,3],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 2 (9.4%)", ylab="Coordinate 3 (6.3%)", main="Treatment")
+plot(scores[,2], scores[,3],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab=paste0("Coordinate 2 (", ve[2], "%)"), ylab=paste0("Coordinate 3 (", ve[3], "%)"), main="Treatment")
 ordiellipse(scores, conditions$treat, label=F, col=c("#92c5de","#0571b0","#f4a582","#ca0020"))
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), fill = c("#92c5de","#f4a582","#0571b0","#ca0020"), bty="n")
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,16), bty="n")
-dev.off()
+})
 
 # PCo's 3 and 4
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host_PC4.pdf", width=12, height=6)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_ofav_host_PC4.pdf", width=12, height=6, {
 par(mfrow=c(1,2))
-plot(scores[,3], scores[,4],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 3 (6.3%)", ylab="Coordinate 4 (5.3%)", main="Site")
+plot(scores[,3], scores[,4],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab=paste0("Coordinate 3 (", ve[3], "%)"), ylab=paste0("Coordinate 4 (", ve[4], "%)"), main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), fill = c("#018571","#80cdc1","#dfc27d","#a6611a"), bty="n")
+# legend symbols are drawn in black; the LC symbol (pch 25) is filled to match the filled (site-coloured) LC points,
+# which distinguishes it from the open CC symbol (pch 6)
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), pch=c(6,2,25,17), bty="n", pt.bg = c(NA,NA,"black",NA))
-plot(scores[,3], scores[,4],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 3 (6.3%)", ylab="Coordinate 4 (5.3%)", main="Treatment")
+plot(scores[,3], scores[,4],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab=paste0("Coordinate 3 (", ve[3], "%)"), ylab=paste0("Coordinate 4 (", ve[4], "%)"), main="Treatment")
 ordiellipse(scores, conditions$treat, label=F, col=c("#92c5de","#0571b0","#f4a582","#ca0020"))
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), fill = c("#92c5de","#f4a582","#0571b0","#ca0020"), bty="n")
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,16), bty="n")
-dev.off()
+})
 
 # neighbor-joining tree of samples (based on significant PCo's):
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_tree.pdf", width=10, height=10)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PCoA_tree.pdf", width=10, height=10, {
 tre=nj(dist(scores[,1:4]))
 plot(tre,cex=0.8)
-dev.off()
+})
 
 # formal analysis of variance in distance matrices:
 # fragments cut from the same parent colony (genotype) are not independent, so
@@ -272,7 +347,13 @@ ad
 write.csv(ad, file = "../../outputs/transcriptomics/ofav/deseq2/PERMANOVA_output.csv")
 
 # urban vs reef: remove treatment effects, average fragments within each colony, then test colonies
-vsd_adj <- t(residuals(lm(t(vsd) ~ treat, data=conditions))) + rowMeans(vsd)
+# treatment effects are estimated WITHIN colonies (~ genotype + treat): colonies are not equally represented in
+# every treatment (outliers/exclusions), so a treat-only fit would absorb colony (and habitat) differences into
+# the treatment estimates. Only the fitted treatment contribution is subtracted, leaving colony differences intact.
+X_adj <- model.matrix(~ genotype + treat, data=conditions)
+fit_adj <- lm(t(vsd) ~ genotype + treat, data=conditions)
+treat_terms <- grep("^treat", colnames(X_adj), value=TRUE)
+vsd_adj <- vsd - t(X_adj[, treat_terms, drop=FALSE] %*% coef(fit_adj)[treat_terms, , drop=FALSE])
 colony <- droplevels(conditions$genotype)
 colony_means <- t(sapply(levels(colony), function(g) rowMeans(vsd_adj[, colony==g, drop=FALSE])))
 colony_habitat <- factor(as.character(conditions$habitat[match(rownames(colony_means), as.character(colony))]), levels=c("reef","urban"))
@@ -284,16 +365,16 @@ write.csv(ad_habitat, file = "../../outputs/transcriptomics/ofav/deseq2/PERMANOV
 
 # creating pie chart to represent PERMANOVA results
 cols=c("grey60","orange","white")
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/PERMANOVA_pie.pdf", width=6, height=6)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/PERMANOVA_pie.pdf", width=6, height=6, {
 pie(ad$R2[1:3],labels=c("colony (genotype)","treatment","residual"),col=cols,main="colony vs treatment")
-dev.off()
+})
 ```
 
 
 # DESEQ
 
 ```{r deseq}
-# with multi-factor, multi-level design - using LRT
+# with multi-factor, multi-level design - pairwise treatment contrasts use Wald tests (LRT only for the overall treatment effect)
 load("../../outputs/transcriptomics/ofav/deseq2/initial.RData")
 library(DESeq2)
 library(BiocParallel)
@@ -362,7 +443,11 @@ meta$treat    <- factor(meta$treat, levels = c("CC", "LC", "CH", "LH"))
 meta$genotype <- factor(meta$genotype)
 table(habitat = tapply(as.character(meta$habitat), meta$genotype, `[`, 1)) # colonies per habitat
 
-dge <- calcNormFactors(DGEList(counts(dds)))
+dge <- DGEList(counts(dds))
+# expression filter for the urban vs reef gene universe (edgeR filterByExpr, grouped by habitat)
+keep_ur <- filterByExpr(dge, group = meta$habitat)
+table(keep_ur)
+dge <- calcNormFactors(dge[keep_ur, , keep.lib.sizes=FALSE])
 des_ur <- model.matrix(~ habitat + treat, meta)
 v_ur  <- voom(dge, des_ur)
 dc_ur <- duplicateCorrelation(v_ur, des_ur, block = meta$genotype)
@@ -379,92 +464,220 @@ save(urban_reef, degs_urban_reef, fit_ur, dc_ur, file = "../../outputs/transcrip
 ```
 
 
-# SENSITIVITY: RESAMPLED FRAGMENTS
+# SENSITIVITY: POOLED MODEL (SECOND-COHORT RESAMPLES INCLUDED)
 
-```{r sensitivity-ramped}
-# Sensitivity check for resampled ("ramped") fragments.
-# Control-temperature tanks (CC, LC) were ramped to heat stress midway through the experiment and some
-# fragments were resampled, so a few CH/LH samples are the SAME fragment as a CC/LC sample, taken later.
-# Main analyses keep these pooled; here the treatment (DESeq2), urban vs reef (limma) and PERMANOVA models
-# are refit WITHOUT them and compared to the pooled results.
+```{r sensitivity-pooled, eval=FALSE}
+# The primary analysis uses first-cohort samples only (see MODEL DESIGN and OUTLIERS). Here the treatment (DESeq2),
+# urban vs reef (limma) and PERMANOVA models are refit with the 10 second-cohort LH resamples added back
+# (same outlier removals, same filters) and compared with the primary results.
 library(DESeq2)
+library(BiocParallel)
+library(limma)
+library(edgeR)
 library(vegan)
 library(permute)
-load("../../outputs/transcriptomics/ofav/deseq2/initial.RData") # dds, design (outliers removed)
-load("../../outputs/transcriptomics/ofav/deseq2/pvals.RData")   # pooled contrast results
+load("../../outputs/transcriptomics/ofav/deseq2/initial.RData")    # design (primary), design_pooled
+load("../../outputs/transcriptomics/ofav/deseq2/pvals.RData")      # primary treatment contrasts
+load("../../outputs/transcriptomics/ofav/deseq2/urban_reef.RData") # primary urban vs reef
+table(treat = design_pooled$treat, resample = !(design_pooled$id %in% design$id))
 
-# flag resampled fragments using the full design sheet (so pairs split by outlier removal are still caught):
-# a heat-treatment sample whose fragment ID (sampleid) also appears under a control-temperature treatment.
-# To flag them manually instead, add a TRUE/FALSE 'ramped' column to design_ofav.csv.
-full_design <- read.csv("../../data/transcriptomics/ofav/design_ofav.csv", head=TRUE)
-if ("ramped" %in% names(full_design)) {
-  ramped_ids <- full_design$id[as.logical(full_design$ramped)]
-} else {
-  ramped_ids <- full_design$id[full_design$treat %in% c("CH","LH") &
-                               full_design$sampleid %in% full_design$sampleid[full_design$treat %in% c("CC","LC")]]
+# pooled dataset: raw counts for the pooled samples, same gene filter as the primary analysis
+counts <- read.table("../../data/transcriptomics/ofav/allcounts_host.txt")
+counts_p <- counts[, design_pooled$id]
+stopifnot(identical(colnames(counts_p), design_pooled$id))
+countData_p <- counts_p[rowSums(counts_p) >= 10, ]
+dds_pooled <- DESeqDataSetFromMatrix(countData=countData_p, colData=design_pooled, design=~ genotype+treat)
+dds_pooled$site  <- factor(dds_pooled$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
+dds_pooled$treat <- factor(dds_pooled$treat, levels = c("CC", "LC", "CH", "LH"))
+vsd_p <- assay(varianceStabilizingTransformation(dds_pooled, blind=TRUE)) # for the pooled PERMANOVAs below
+dds_pooled <- DESeq(dds_pooled, parallel=TRUE)
+
+# 1) treatment contrasts (~ genotype + treat)
+contrasts_list <- list(LC_CC=c("treat","LC","CC"), CH_CC=c("treat","CH","CC"), LH_CC=c("treat","LH","CC"),
+                       CH_LC=c("treat","CH","LC"), LH_CH=c("treat","LH","CH"), LH_LC=c("treat","LH","LC"))
+res_pooled <- lapply(contrasts_list, function(k) results(dds_pooled, contrast=k))
+compare <- function(n, primary, pooled, p_col, lfc_col) {
+  s_1 <- row.names(primary)[!is.na(primary[[p_col]]) & primary[[p_col]] < 0.1]
+  s_p <- row.names(pooled)[!is.na(pooled[[p_col]]) & pooled[[p_col]] < 0.1]
+  data.frame(contrast = n, primary_DEGs = length(s_1), pooled_DEGs = length(s_p),
+             shared = length(intersect(s_1, s_p)),
+             primary_only = length(setdiff(s_1, s_p)), pooled_only = length(setdiff(s_p, s_1)),
+             LFC_r = round(cor(primary[[lfc_col]], pooled[[lfc_col]][match(row.names(primary), row.names(pooled))],
+                               use="complete.obs"), 3))
 }
-ramped <- design$id %in% ramped_ids
-table(treat = design$treat, ramped = ramped)
+sensitivity <- do.call(rbind, lapply(names(contrasts_list), function(n)
+  compare(n, as.data.frame(get(n)), as.data.frame(res_pooled[[n]]), "padj", "log2FoldChange")))
 
-if (!any(ramped)) {
-  message("No resampled fragments flagged for ofav; sensitivity check skipped.")
-} else {
-  # 1) treatment contrasts: refit ~ genotype + treat without the resampled fragments
-  dds_noramp <- dds[, !ramped]
-  dds_noramp$genotype <- droplevels(dds_noramp$genotype)
-  dds_noramp$treat    <- droplevels(dds_noramp$treat)
-  dds_noramp <- DESeq(dds_noramp, parallel=TRUE)
+# 2) urban vs reef: colony-blocked limma-voom, as in the primary analysis
+meta_p <- as.data.frame(colData(dds_pooled))
+meta_p$habitat  <- factor(meta_p$habitat, levels = c("reef", "urban"))
+meta_p$treat    <- factor(meta_p$treat, levels = c("CC", "LC", "CH", "LH"))
+meta_p$genotype <- factor(meta_p$genotype)
+dge_p <- DGEList(counts(dds_pooled))
+keep_p <- filterByExpr(dge_p, group = meta_p$habitat)
+dge_p <- calcNormFactors(dge_p[keep_p, , keep.lib.sizes=FALSE])
+des_p <- model.matrix(~ habitat + treat, meta_p)
+v_p  <- voom(dge_p, des_p)
+dc_p <- duplicateCorrelation(v_p, des_p, block = meta_p$genotype)
+v_p  <- voom(dge_p, des_p, block = meta_p$genotype, correlation = dc_p$consensus)
+dc_p <- duplicateCorrelation(v_p, des_p, block = meta_p$genotype)
+fit_p <- eBayes(lmFit(v_p, des_p, block = meta_p$genotype, correlation = dc_p$consensus))
+urban_reef_pooled <- topTable(fit_p, coef = "habitaturban", number = Inf, sort.by = "none")
+sensitivity <- rbind(sensitivity, compare("urban_reef", urban_reef, urban_reef_pooled, "adj.P.Val", "logFC"))
+sensitivity
+write.csv(sensitivity, file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_pooled_DEGs.csv", row.names=FALSE)
 
-  contrasts_list <- list(LC_CC=c("treat","LC","CC"), CH_CC=c("treat","CH","CC"), LH_CC=c("treat","LH","CC"),
-                         CH_LC=c("treat","CH","LC"), LH_CH=c("treat","LH","CH"), LH_LC=c("treat","LH","LC"))
-  sig <- function(r) row.names(r)[!is.na(r$padj) & r$padj < 0.1]
-  res_noramp <- lapply(contrasts_list, function(k) results(dds_noramp, contrast=k))
-  compare <- function(n, pooled, noramp, p_col, lfc_col) {
-    s_p <- row.names(pooled)[!is.na(pooled[[p_col]]) & pooled[[p_col]] < 0.1]
-    s_n <- row.names(noramp)[!is.na(noramp[[p_col]]) & noramp[[p_col]] < 0.1]
-    data.frame(contrast = n, pooled_DEGs = length(s_p), noramp_DEGs = length(s_n),
-               shared = length(intersect(s_p, s_n)),
-               pooled_only = length(setdiff(s_p, s_n)), noramp_only = length(setdiff(s_n, s_p)),
-               LFC_r = round(cor(pooled[[lfc_col]], noramp[[lfc_col]][match(row.names(pooled), row.names(noramp))],
-                                 use="complete.obs"), 3))
-  }
-  sensitivity <- do.call(rbind, lapply(names(contrasts_list), function(n)
-    compare(n, as.data.frame(get(n)), as.data.frame(res_noramp[[n]]), "padj", "log2FoldChange")))
+# 3) PERMANOVAs: treatment within colonies, and urban vs reef on colony means (as in the primary analysis)
+cond_p <- design_pooled
+cond_p$treat    <- factor(cond_p$treat, levels = c("CC", "LC", "CH", "LH"))
+cond_p$genotype <- droplevels(factor(cond_p$genotype))
+set.seed(12935)
+ad_pooled <- adonis2(t(vsd_p)~genotype+treat, data=cond_p, method="manhattan", by="terms",
+                     permutations=how(nperm=1e6, blocks=cond_p$genotype))
+ad_pooled$`Pr(>F)`[1] <- NA
+ad_pooled
+write.csv(ad_pooled, file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_pooled_PERMANOVA.csv")
 
-  # 2) urban vs reef: refit the colony-blocked limma model without the resampled fragments
-  library(limma); library(edgeR)
-  load("../../outputs/transcriptomics/ofav/deseq2/urban_reef.RData")
-  meta_nr <- as.data.frame(colData(dds))[!ramped, ]
-  meta_nr$habitat  <- factor(meta_nr$habitat, levels = c("reef", "urban"))
-  meta_nr$treat    <- droplevels(factor(meta_nr$treat, levels = c("CC", "LC", "CH", "LH")))
-  meta_nr$genotype <- droplevels(factor(meta_nr$genotype))
-  dge_nr <- calcNormFactors(DGEList(counts(dds)[, !ramped]))
-  des_nr <- model.matrix(~ habitat + treat, meta_nr)
-  v_nr  <- voom(dge_nr, des_nr)
-  dc_nr <- duplicateCorrelation(v_nr, des_nr, block = meta_nr$genotype)
-  v_nr  <- voom(dge_nr, des_nr, block = meta_nr$genotype, correlation = dc_nr$consensus)
-  dc_nr <- duplicateCorrelation(v_nr, des_nr, block = meta_nr$genotype)
-  fit_nr <- eBayes(lmFit(v_nr, des_nr, block = meta_nr$genotype, correlation = dc_nr$consensus))
-  urban_reef_noramp <- topTable(fit_nr, coef = "habitaturban", number = Inf, sort.by = "none")
-  sensitivity <- rbind(sensitivity, compare("urban_reef", urban_reef, urban_reef_noramp, "adj.P.Val", "logFC"))
-  print(sensitivity)
-  write.csv(sensitivity, file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_ramped_DEGs.csv", row.names=FALSE)
+X_p <- model.matrix(~ genotype + treat, data=cond_p)
+fit_adj_p <- lm(t(vsd_p) ~ genotype + treat, data=cond_p)
+tt_p <- grep("^treat", colnames(X_p), value=TRUE)
+vsd_adj_p <- vsd_p - t(X_p[, tt_p, drop=FALSE] %*% coef(fit_adj_p)[tt_p, , drop=FALSE])
+colony_p <- cond_p$genotype
+colony_means_p <- t(sapply(levels(colony_p), function(g) rowMeans(vsd_adj_p[, colony_p==g, drop=FALSE])))
+colony_habitat_p <- factor(as.character(cond_p$habitat[match(rownames(colony_means_p), as.character(colony_p))]), levels=c("reef","urban"))
+set.seed(12935)
+ad_habitat_pooled <- adonis2(colony_means_p~colony_habitat_p, method="manhattan", permutations=99999)
+ad_habitat_pooled
+write.csv(ad_habitat_pooled, file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_pooled_PERMANOVA_habitat.csv")
 
-  # 3) PERMANOVA (treatment within colonies) without the resampled fragments
-  load("../../outputs/transcriptomics/ofav/deseq2/vsd.RData")
-  conditions_nr <- design[!ramped, ]
-  conditions_nr$treat    <- factor(conditions_nr$treat, levels = c("CC", "LC", "CH", "LH"))
-  conditions_nr$genotype <- droplevels(factor(conditions_nr$genotype))
-  set.seed(12935)
-  ad_noramp <- adonis2(t(vsd[, !ramped])~genotype+treat, data=conditions_nr, method="manhattan", by="terms",
-                       permutations=how(nperm=1e6, blocks=conditions_nr$genotype))
-  ad_noramp$`Pr(>F)`[1] <- NA
-  print(ad_noramp)
-  write.csv(ad_noramp, file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_ramped_PERMANOVA.csv")
+save(design_pooled, dds_pooled, res_pooled, urban_reef_pooled, sensitivity, ad_pooled, ad_habitat_pooled,
+     file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_pooled.RData")
+```
 
-  save(ramped, dds_noramp, res_noramp, urban_reef_noramp, sensitivity, ad_noramp,
-       file="../../outputs/transcriptomics/ofav/deseq2/sensitivity_ramped.RData")
+
+# SENSITIVITY: COHORT EFFECT WITHIN LH
+
+```{r sensitivity-cohort, eval=FALSE}
+# Direct test of the cohort effect (sampling date 23 Apr vs 14 May, tank 8 vs tank 4, first vs repeat biopsy)
+# within the LH treatment. Only colonies with LH samples from BOTH cohorts are used, and colony is in the model,
+# so the cohort term compares the two cohorts within the same parent colonies.
+# Result (2026-09-30 run, before the switch): 10 samples from 5 colonies, ~2,300 cohort DEGs (padj < 0.1) with
+# 4 residual df; 12.5% of genes p < 0.05. LH vs CC DEGs found only in the first-cohort model carried strong cohort
+# effects (55% p < 0.05), i.e. pooling dilutes first-cohort LH responses -> primary analysis uses the first cohort.
+# Notes: pi0 is capped at 1 here because DESeq2 p-values are conservative (uninformative); the LFC-shift
+# correlation is largely mechanical (pooling only adds cohort-2 samples).
+library(DESeq2)
+load("../../outputs/transcriptomics/ofav/deseq2/pvals.RData")              # primary (first-cohort) contrasts
+load("../../outputs/transcriptomics/ofav/deseq2/sensitivity_pooled.RData") # dds_pooled, res_pooled
+
+# LH samples (both cohorts) from the pooled dataset, restricted to colonies sampled in both cohorts
+lh_cd <- as.data.frame(colData(dds_pooled))[dds_pooled$treat == "LH", ]
+lh_cd$sizeFactor <- NULL
+lh_cd$cohort <- factor(ifelse(lh_cd$tank == "8", "first", "second"), levels = c("first", "second"))
+shared_col <- intersect(lh_cd$genotype[lh_cd$cohort == "first"], lh_cd$genotype[lh_cd$cohort == "second"])
+lh_cd <- lh_cd[lh_cd$genotype %in% shared_col, ]
+lh_cd$genotype <- droplevels(factor(lh_cd$genotype))
+table(colony = lh_cd$genotype, cohort = lh_cd$cohort) # every colony should have one sample per cohort
+lh_cd[, c("id", "sampleid", "site", "cohort")]
+stopifnot(all(table(lh_cd$genotype, lh_cd$cohort) >= 1))
+
+lh <- DESeqDataSetFromMatrix(countData = counts(dds_pooled)[, lh_cd$id], colData = lh_cd, design = ~ genotype + cohort)
+lh <- DESeq(lh, parallel=TRUE)
+res_cohort <- results(lh, contrast = c("cohort", "second", "first"))
+summary(res_cohort, alpha = 0.1)
+cohort_degs <- rownames(res_cohort)[!is.na(res_cohort$padj) & res_cohort$padj < 0.1]
+length(cohort_degs)
+
+# proportion of genes with no cohort effect (Storey-type estimate from the p-value distribution)
+p_c <- res_cohort$pvalue[!is.na(res_cohort$pvalue)]
+pi0 <- min(1, mean(p_c > 0.5) * 2)
+pi0
+hist(p_c, breaks = 40, main = "LH cohort 2 vs cohort 1 (within colony)", xlab = "p-value")
+
+# do the LH vs CC DEGs found only when the resamples are pooled carry cohort effects?
+sig <- function(r) rownames(r)[!is.na(r$padj) & r$padj < 0.1]
+lhcc_pooled <- as.data.frame(res_pooled$LH_CC)
+lhcc_first  <- as.data.frame(LH_CC)
+gene_sets <- list(all_genes          = rownames(res_cohort),
+                  LH_CC_both         = intersect(sig(lhcc_pooled), sig(lhcc_first)),
+                  LH_CC_pooled_only  = setdiff(sig(lhcc_pooled), sig(lhcc_first)),
+                  LH_CC_first_only   = setdiff(sig(lhcc_first), sig(lhcc_pooled)))
+cohort_summary <- do.call(rbind, lapply(names(gene_sets), function(n) {
+  r <- as.data.frame(res_cohort)[gene_sets[[n]], ]
+  data.frame(gene_set = n, genes = length(gene_sets[[n]]),
+             frac_cohort_p05 = round(mean(r$pvalue < 0.05, na.rm = TRUE), 3),
+             median_abs_cohort_LFC = round(median(abs(r$log2FoldChange), na.rm = TRUE), 3),
+             cohort_DEGs = sum(gene_sets[[n]] %in% cohort_degs))
+}))
+cohort_summary
+
+# does the cohort difference line up with how pooling shifts the LH vs CC fold changes?
+shift <- lhcc_pooled$log2FoldChange - lhcc_first$log2FoldChange[match(rownames(lhcc_pooled), rownames(lhcc_first))]
+cohort_lfc <- res_cohort$log2FoldChange[match(rownames(lhcc_pooled), rownames(res_cohort))]
+lfc_shift_r <- cor(cohort_lfc, shift, use = "complete.obs")
+lfc_shift_r
+
+cohort_test <- data.frame(samples = ncol(lh), colonies = nlevels(lh$genotype), cohort_DEGs = length(cohort_degs),
+                          pi0 = round(pi0, 3), LFC_shift_r = round(lfc_shift_r, 3))
+cohort_test
+write.csv(cohort_test, file = "../../outputs/transcriptomics/ofav/deseq2/sensitivity_cohort_LH.csv", row.names = FALSE)
+write.csv(cohort_summary, file = "../../outputs/transcriptomics/ofav/deseq2/sensitivity_cohort_LH_genesets.csv", row.names = FALSE)
+save(res_cohort, cohort_test, cohort_summary, file = "../../outputs/transcriptomics/ofav/deseq2/sensitivity_cohort_LH.RData")
+```
+
+
+# SENSITIVITY: LH vs CH ROBUSTNESS
+
+```{r sensitivity-lh-ch, eval=FALSE}
+# Run once with Ofav_135 (So5-4) in the primary model (results logged 2026-09-30: LH vs CH 2,089 DEGs, 19 without
+# So5-4; count replacement made no difference), which led to its removal as an outlier. With it removed, this chunk
+# now checks the remaining LH samples. Original rationale:
+# LH vs CH went from 21 DEGs (first-cohort model before Ofav_109/127/135 were returned) to ~2,100 DEGs in the
+# primary model. Two things changed at once: So5-4 (Ofav_135), an earlier outlier and now the only Star Island
+# LH sample, was added back, and LH reached 7 samples, the DESeq2 default minReplicatesForReplace, so extreme
+# counts are now replaced (and the gene kept) instead of the gene's p-value being set to NA by Cook's distance.
+# Checks, each refitting the primary ~ genotype + treat model:
+#   1) count replacement switched off (minReplicatesForReplace = Inf; Cook's filtering as with <7 replicates)
+#   2) leave-one-out: each LH sample dropped in turn (includes Ofav_135)
+# If LH vs CH stays in the hundreds to thousands of DEGs in every fit, the difference is robust; if it collapses
+# in one fit, it depends on that sample or on count replacement and should be reported cautiously.
+library(DESeq2)
+library(BiocParallel)
+load("../../outputs/transcriptomics/ofav/deseq2/initial.RData") # dds (primary, not yet fitted)
+load("../../outputs/transcriptomics/ofav/deseq2/pvals.RData")   # primary contrasts
+sig <- function(r) rownames(r)[!is.na(r$padj) & r$padj < 0.1]
+summarise_fit <- function(label, fit, n_lh) {
+  out <- lapply(c("LH_CH", "LH_CC", "LH_LC"), function(k) {
+    lv <- strsplit(k, "_")[[1]]
+    r <- results(fit, contrast = c("treat", lv[1], lv[2]))
+    primary <- as.data.frame(get(k))
+    data.frame(DEGs = length(sig(r)), shared_with_primary = length(intersect(sig(r), sig(primary))),
+               LFC_r = round(cor(primary$log2FoldChange, r$log2FoldChange[match(rownames(primary), rownames(r))],
+                                 use = "complete.obs"), 3))
+  })
+  names(out) <- c("LH_CH", "LH_CC", "LH_LC")
+  data.frame(fit = label, LH_n = n_lh, do.call(cbind, lapply(names(out), function(k) setNames(out[[k]], paste(k, names(out[[k]]), sep = "_")))))
 }
+lh_ids <- colData(dds)$id[dds$treat == "LH"]
+robust <- data.frame(fit = "primary", LH_n = length(lh_ids),
+                     LH_CH_DEGs = length(sig(LH_CH)), LH_CH_shared_with_primary = length(sig(LH_CH)), LH_CH_LFC_r = 1,
+                     LH_CC_DEGs = length(sig(LH_CC)), LH_CC_shared_with_primary = length(sig(LH_CC)), LH_CC_LFC_r = 1,
+                     LH_LC_DEGs = length(sig(LH_LC)), LH_LC_shared_with_primary = length(sig(LH_LC)), LH_LC_LFC_r = 1)
+
+# 1) no count replacement
+fit_norep <- DESeq(dds, minReplicatesForReplace = Inf, parallel = TRUE)
+robust <- rbind(robust, summarise_fit("no count replacement", fit_norep, length(lh_ids)))
+
+# 2) leave one LH sample out
+for (i in lh_ids) {
+  d_i <- dds[, colData(dds)$id != i]
+  d_i$genotype <- droplevels(d_i$genotype)
+  fit_i <- DESeq(d_i, parallel = TRUE)
+  robust <- rbind(robust, summarise_fit(paste0("without ", i, " (", colData(dds)$sampleid[colData(dds)$id == i], ")"),
+                                        fit_i, length(lh_ids) - 1))
+}
+robust
+write.csv(robust, file = "../../outputs/transcriptomics/ofav/deseq2/sensitivity_LH_CH_robustness.csv", row.names = FALSE)
 ```
 
 
@@ -495,10 +708,52 @@ venn_treat=venn.diagram(
   cat.fontfamily = "sans",
   cat.just = list(c(0.25,0),c(0.75,0),c(0.5,1))
 )
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/Venn_treatment.pdf", height=12, width=12)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/Venn_treatment.pdf", height=12, width=12, {
 grid.draw(venn_treat)
-dev.off()
+})
+
+# urban vs reef DEGs compared with the stress-response DEGs (does habitat differ in the same genes that respond to
+# OA and/or heat?). Overlap tested with Fisher's exact test within the genes tested in BOTH analyses
+# (DESeq2 contrast with a non-NA padj, and the limma urban vs reef gene universe); same_direction = share of
+# overlapping genes whose urban-minus-reef difference has the same sign as the stress response.
+load("../../outputs/transcriptomics/ofav/deseq2/urban_reef.RData")
+overlap_test <- function(k) {
+  r <- get(k)
+  tested <- intersect(rownames(r)[!is.na(r$padj)], rownames(urban_reef))
+  a <- intersect(degs_urban_reef, tested)
+  b <- intersect(get(paste0("degs_", k)), tested)
+  ov <- intersect(a, b)
+  tab <- matrix(c(length(ov), length(a) - length(ov), length(b) - length(ov),
+                  length(tested) - length(a) - length(b) + length(ov)), nrow = 2)
+  ft <- fisher.test(tab)
+  data.frame(contrast = k, genes_tested = length(tested), urban_reef_DEGs = length(a), contrast_DEGs = length(b),
+             overlap = length(ov), expected = round(length(a) * length(b) / length(tested), 1),
+             odds_ratio = round(unname(ft$estimate), 2), p = signif(ft$p.value, 3),
+             same_direction = if (length(ov)) round(mean(sign(urban_reef[ov, "logFC"]) == sign(r[ov, "log2FoldChange"])), 2) else NA)
+}
+habitat_overlap <- do.call(rbind, lapply(c("LC_CC", "CH_CC", "LH_CC"), overlap_test))
+habitat_overlap
+write.csv(habitat_overlap, file="../../outputs/transcriptomics/ofav/deseq2/urban_reef_vs_treatment_overlap.csv", row.names=FALSE)
+
+venn_habitat=venn.diagram(
+  x = list("Urban vs reef"=degs_urban_reef, "LC_CC"=degs_LC_CC, "CH_CC"=degs_CH_CC, "LH_CC"=degs_LH_CC),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#636363","#0571b0","#f4a582","#ca0020"),
+  alpha = 0.5,
+  label.col = "black",
+  cex = 2.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.col = c("#636363","#0571b0","#f4a582","#ca0020"),
+  cat.cex = 2.5,
+  cat.fontfamily = "sans"
+)
+save_plot(file="../../outputs/transcriptomics/ofav/deseq2/Venn_habitat_treatment.pdf", height=12, width=12, {
+grid.draw(venn_habitat)
+})
 ```
+
 
 
 # GO/KOG EXPORT
@@ -513,6 +768,7 @@ load("../../outputs/transcriptomics/ofav/deseq2/urban_reef.RData")
 urban_reef.p=data.frame("gene"=row.names(urban_reef))
 urban_reef.p$lpv=-log(urban_reef$adj.P.Val,10)
 urban_reef.p$lpv[urban_reef$t<0]=urban_reef.p$lpv[urban_reef$t<0]*-1
+urban_reef.p=urban_reef.p[!is.na(urban_reef.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(urban_reef.p)
 write.csv(urban_reef.p,file="../../outputs/transcriptomics/ofav/deseq2/urban_reef_lpv.csv",row.names=F,quote=F)
 save(urban_reef.p,file="../../outputs/transcriptomics/ofav/deseq2/urban_reef_lpv.RData")
@@ -524,6 +780,7 @@ source=LC_CC[!is.na(LC_CC$pvalue),]
 LC_CC.p=data.frame("gene"=row.names(source))
 LC_CC.p$lpv=-log(source[,"padj"],10)
 LC_CC.p$lpv[source$stat<0]=LC_CC.p$lpv[source$stat<0]*-1
+LC_CC.p=LC_CC.p[!is.na(LC_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LC_CC.p)
 write.csv(LC_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/LC_CC_lpv.csv",row.names=F,quote=F)
 save(LC_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/LC_CC_lpv.RData")
@@ -532,6 +789,7 @@ source=CH_CC[!is.na(CH_CC$pvalue),]
 CH_CC.p=data.frame("gene"=row.names(source))
 CH_CC.p$lpv=-log(source[,"padj"],10)
 CH_CC.p$lpv[source$stat<0]=CH_CC.p$lpv[source$stat<0]*-1
+CH_CC.p=CH_CC.p[!is.na(CH_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(CH_CC.p)
 write.csv(CH_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/CH_CC_lpv.csv",row.names=F,quote=F)
 save(CH_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/CH_CC_lpv.RData")
@@ -540,6 +798,7 @@ source=LH_CC[!is.na(LH_CC$pvalue),]
 LH_CC.p=data.frame("gene"=row.names(source))
 LH_CC.p$lpv=-log(source[,"padj"],10)
 LH_CC.p$lpv[source$stat<0]=LH_CC.p$lpv[source$stat<0]*-1
+LH_CC.p=LH_CC.p[!is.na(LH_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_CC.p)
 write.csv(LH_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_CC_lpv.csv",row.names=F,quote=F)
 save(LH_CC.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_CC_lpv.RData")
@@ -548,6 +807,7 @@ source=CH_LC[!is.na(CH_LC$pvalue),]
 CH_LC.p=data.frame("gene"=row.names(source))
 CH_LC.p$lpv=-log(source[,"padj"],10)
 CH_LC.p$lpv[source$stat<0]=CH_LC.p$lpv[source$stat<0]*-1
+CH_LC.p=CH_LC.p[!is.na(CH_LC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(CH_LC.p)
 write.csv(CH_LC.p,file="../../outputs/transcriptomics/ofav/deseq2/CH_LC_lpv.csv",row.names=F,quote=F)
 save(CH_LC.p,file="../../outputs/transcriptomics/ofav/deseq2/CH_LC_lpv.RData")
@@ -556,6 +816,7 @@ source=LH_LC[!is.na(LH_LC$pvalue),]
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
+LH_LC.p=LH_LC.p[!is.na(LH_LC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_LC.p)
 write.csv(LH_LC.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_LC_lpv.csv",row.names=F,quote=F)
 save(LH_LC.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_LC_lpv.RData")
@@ -564,6 +825,7 @@ source=LH_CH[!is.na(LH_CH$pvalue),]
 LH_CH.p=data.frame("gene"=row.names(source))
 LH_CH.p$lpv=-log(source[,"padj"],10)
 LH_CH.p$lpv[source$stat<0]=LH_CH.p$lpv[source$stat<0]*-1
+LH_CH.p=LH_CH.p[!is.na(LH_CH.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_CH.p)
 write.csv(LH_CH.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_CH_lpv.csv",row.names=F,quote=F)
 save(LH_CH.p,file="../../outputs/transcriptomics/ofav/deseq2/LH_CH_lpv.RData")
@@ -1039,6 +1301,8 @@ urban_reef_degs %>%
 
 load("../../outputs/transcriptomics/ofav/deseq2/vsd.RData")
 vsd_treatment <- subset(vsd, rownames(vsd) %in% commongenes_treatment_heatmap$gene)
+# keep the significance metric in the same gene order as the vsd rows
+commongenes_treatment_heatmap <- commongenes_treatment_heatmap[match(rownames(vsd_treatment), commongenes_treatment_heatmap$gene), ]
 vsd_site <- subset(vsd, rownames(vsd) %in% urban_reef_heatmap$gene)
 # keep the significance metric in the same gene order as the vsd rows
 urban_reef_heatmap <- urban_reef_heatmap[match(rownames(vsd_site), urban_reef_heatmap$gene), ]
@@ -1046,74 +1310,61 @@ urban_reef_heatmap <- urban_reef_heatmap[match(rownames(vsd_site), urban_reef_he
 # Make sure the 'uniHeatmap.R' script is in your working directory
 source("uniHeatmap.R")
 
+# heatmap drawing with square cells; the page is sized to fit the cells.
+# Up to 100 genes: 9-pt cells with gene names; more genes: smaller square cells (page ~12.5 in tall), names hidden.
+draw_heatmap <- function(file, vsd, gene_names, metric, cutoff, sort, gaps_col = NULL) {
+  n <- sum(metric <= cutoff, na.rm = TRUE)
+  message(basename(file), ": ", n, " annotated genes")
+  if (n < 2) return(invisible(NULL)) # skipped: too few genes pass this cutoff
+  show_names <- n <= 100
+  cell <- if (show_names) 9 else max(4, min(9, 900 / n))
+  pdf_w <- (ncol(vsd) * cell + (if (show_names) 330 else 60) + 110) / 72
+  pdf_h <- (n * cell + 140) / 72
+  save_plot(file = file, width = pdf_w, height = pdf_h, {
+    uniHeatmap(vsd = vsd, gene.names = gene_names, metric = metric, cutoff = cutoff, sort = sort, pdf = F,
+               cellwidth = cell, cellheight = cell, fontsize_row = 7, fontsize_col = min(6, cell * 0.8),
+               show_rownames = show_names, gaps_col = gaps_col)
+  })
+}
+# shows the heatmaps drawn in a loop in the knitted HTML
+show_heatmaps <- function(imgs) {
+  imgs <- unlist(Filter(Negate(is.null), imgs))
+  if (length(imgs) && isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(imgs, rel_path = FALSE, dpi = 150) else invisible(imgs)
+}
+
 # Treatment
 # creating a lookup table of gene ID to gene annotations
 gene_names <- as.data.frame(cbind(commongenes_treatment_heatmap$gene, commongenes_treatment_heatmap$annot))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/heatmap_treatment_p0.1.pdf", height=32, width=32)
-uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
-           metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 0.001
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/heatmap_treatment_p0.001.pdf", height=16, width=32)
-uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
-           metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-3, 
-           sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
-
-# p < 1e-6
-pdf(file="../../outputs/transcriptomics/ofav/deseq2/heatmap_treatment_p1e-6.pdf", height=6, width=20)
-uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
-           metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-6, 
-           sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
+# long annotations are shortened for the row labels (full annotations are in the DEG tables)
+gene_names$V2 <- ifelse(nchar(gene_names$V2) > 60, paste0(substr(gene_names$V2, 1, 57), "..."), gene_names$V2)
+# heatmaps of LH vs CC genes, columns in design order (grouped by treatment, gaps between treatments)
+treat_gaps <- cumsum(rle(as.character(design$treat))$lengths)
+treat_gaps <- treat_gaps[-length(treat_gaps)]
+treat_files <- c("-1" = "0.1", "-3" = "0.001", "-6" = "1e-6")
+hm_treatment <- lapply(c(-1, -3, -6), function(cut) # p < 0.1, 0.001, 1e-6; cutoffs with < 2 annotated genes are skipped
+  draw_heatmap(file = paste0("../../outputs/transcriptomics/ofav/deseq2/heatmap_treatment_p", treat_files[as.character(cut)], ".pdf"),
+               vsd = vsd_treatment, gene_names = gene_names,
+               metric = -(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
+               cutoff = cut, sort = c(1:ncol(vsd_treatment)), gaps_col = treat_gaps))
+show_heatmaps(hm_treatment)
 
 # Urban vs reef
 # creating a lookup table of gene ID to gene annotations
 gene_names_site <- as.data.frame(cbind(urban_reef_heatmap$gene, urban_reef_heatmap$annot))
+# long annotations are shortened for the row labels (full annotations are in urban_reef_DEGs.csv)
+gene_names_site$V2 <- ifelse(nchar(gene_names_site$V2) > 60, paste0(substr(gene_names_site$V2, 1, 57), "..."), gene_names_site$V2)
 # columns ordered by habitat, then site
 # (uniHeatmap orders columns by order(sort), so 'sort' is a sorting key)
 site_key <- 10 * as.numeric(factor(ifelse(design$site %in% c("Star","MacN"), "urban", "reef"), levels=c("reef","urban"))) +
             as.numeric(factor(as.character(design$site), levels=c("Emerald","Rainbow","Star","MacN")))
-# page height scales with the number of genes passing each cutoff
-hm_height <- function(cut) max(4, 2 + 0.15 * sum(-(abs(urban_reef_heatmap$lpv.urban_reef)) <= cut))
+n_reef <- sum(site_key < 20) # reef columns come first; a gap separates reef from urban
 
-# cutoff -2 (p < 0.01), -3 (p < 0.001), -6 (p < 1e-6)
-for (cut in c(-2, -3, -6)) {
-  if (sum(-(abs(urban_reef_heatmap$lpv.urban_reef)) <= cut) < 2) next
-  pdf(file=paste0("../../outputs/transcriptomics/ofav/deseq2/heatmap_urban_reef_p1e", cut, ".pdf"), height=hm_height(cut), width=24)
-  uniHeatmap(vsd=vsd_site,gene.names=gene_names_site,
-             metric=-(abs(urban_reef_heatmap$lpv.urban_reef)), # metric of gene significance
-             cutoff=cut,
-             sort=site_key, # columns ordered by habitat and site instead of clustering
-             cex=0.8,
-             pdf=F,
-  )
-  dev.off()
-}
+hm_site <- lapply(c(-1, -2, -3, -6), function(cut) # p < 0.1, 0.01, 0.001, 1e-6; cutoffs with < 2 annotated genes are skipped
+  draw_heatmap(file = paste0("../../outputs/transcriptomics/ofav/deseq2/heatmap_urban_reef_p1e", cut, ".pdf"),
+               vsd = vsd_site, gene_names = gene_names_site,
+               metric = -(abs(urban_reef_heatmap$lpv.urban_reef)), # metric of gene significance
+               cutoff = cut, sort = site_key, gaps_col = n_reef)) # columns ordered by habitat and site
+show_heatmaps(hm_site)
 ```
 
 

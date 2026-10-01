@@ -11,7 +11,7 @@
 
 <meta name="author" content="Michael Studivan" />
 
-<meta name="date" content="2026-09-28" />
+<meta name="date" content="2026-09-30" />
 
 <title>Tank Temperature and pH Treatments</title>
 
@@ -1587,7 +1587,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">Tank Temperature and pH Treatments</h1>
 <h4 class="author">Michael Studivan</h4>
-<h4 class="date">2026-09-28</h4>
+<h4 class="date">2026-09-30</h4>
 
 </div>
 
@@ -1602,11 +1602,9 @@ library(ggpubr)</code></pre>
 <pre class="r"><code>templog &lt;- read.csv(file=&quot;../../data/treatments/urban temp.csv&quot;, head=T) 
 templog$Time&lt;- lubridate::mdy_hms(templog$Time) # reformats time as month day year hours minutes seconds
 templog$OA &lt;- as.factor(templog$OA)
-templog$Thermal &lt;- as.factor(templog$Thermal)
 str(templog)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    94184 obs. of  15 variables:
+<pre><code>## &#39;data.frame&#39;:    94184 obs. of  14 variables:
 ##  $ OA       : Factor w/ 2 levels &quot;OA&quot;,&quot;ramp&quot;: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ Thermal  : Factor w/ 3 levels &quot;control&quot;,&quot;ramp&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Time     : POSIXct, format: &quot;2021-03-01 08:29:10&quot; &quot;2021-03-01 08:30:09&quot; ...
 ##  $ Ssid.C.C : num  22.6 22.6 22.6 22.6 22.6 ...
 ##  $ Ssid.L.C : num  22.5 22.5 22.5 22.5 22.5 ...
@@ -1638,17 +1636,19 @@ event_start &lt;- lubridate::ymd_hm(&quot;2021-04-28 23:00&quot;)
 event_end   &lt;- lubridate::ymd_hm(&quot;2021-04-30 10:00&quot;)
 in_event &lt;- function(time) time &gt;= event_start &amp; time &lt; event_end
 
-# thermal periods by treatment group: the two heat-stress groups were ramped ~3 weeks apart, so the
-# row-level Thermal label in the data file doesn&#39;t apply to every column. Periods are set per group:
+# thermal periods by treatment group: the two heat-stress groups were ramped ~3 weeks apart, so periods
+# are set per group from the dates (the data files carry no period label, only the OA ramp/OA label,
+# which applies to all tanks):
 #   control: before the first ramp (Apr 5), all tanks
 #   thermal: original heat-stress tanks (temp H) from Apr 19 12:00, when 33 C was reached;
 #            ambient tanks (temp C) from Apr 19 12:00 until their own ramp began (~Apr 25);
 #            second heat-stress group (Ssid2/Ofav2 columns, recorded only once at 33 C) throughout
 #   ramp:    everything else (ramps, and the ambient tanks&#39; ramp Apr 28-May 10)
+control_end   &lt;- lubridate::ymd(&quot;2021-04-05&quot;)        # first heat ramp began
 thermal_start &lt;- lubridate::ymd_hm(&quot;2021-04-19 12:00&quot;)
 temp_melt %&gt;%
   mutate(period = case_when(
-    Thermal == &quot;control&quot; ~ &quot;control&quot;,
+    Time &lt; control_end ~ &quot;control&quot;,
     str_detect(species, &quot;2&quot;) ~ &quot;thermal&quot;,
     temp == &quot;H&quot; &amp; Time &gt;= thermal_start ~ &quot;thermal&quot;,
     temp == &quot;C&quot; &amp; Time &gt;= thermal_start &amp; Time &lt; lubridate::ymd(&quot;2021-04-25&quot;) ~ &quot;thermal&quot;,
@@ -1711,11 +1711,9 @@ write.csv(temp_mean, file = &quot;../../outputs/treatments/urban temp mean.csv&q
 <h1>ph data import</h1>
 <pre class="r"><code>phlog &lt;- read.csv(file=&quot;../../data/treatments/urban ph.csv&quot;, head=T) 
 phlog$Time&lt;- lubridate::mdy_hms(phlog$Time)
-phlog$Thermal &lt;- as.factor(phlog$Thermal)
 str(phlog)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    91945 obs. of  11 variables:
+<pre><code>## &#39;data.frame&#39;:    91945 obs. of  10 variables:
 ##  $ OA      : chr  &quot;ramp&quot; &quot;ramp&quot; &quot;ramp&quot; &quot;ramp&quot; ...
-##  $ Thermal : Factor w/ 3 levels &quot;control&quot;,&quot;ramp&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Time    : POSIXct, format: &quot;2021-03-01 08:29:10&quot; &quot;2021-03-01 08:30:09&quot; ...
 ##  $ Ssid.C.C: num  8.03 8.03 8.03 8.03 8.03 ...
 ##  $ Ssid.L.C: num  8.03 8.03 8.03 8.03 8.03 ...

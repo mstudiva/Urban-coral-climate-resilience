@@ -27,6 +27,23 @@ knitr::opts_chunk$set(
   fig.height = 6,
   dpi        = 300
 )
+
+# save_plot(): writes a figure to PDF (outputs folder) and shows the same figure in the knitted HTML.
+# The plotting code is run once for the PDF and once for a PNG copy at the same size, which is embedded in
+# the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
+save_plot <- function(file, width, height, expr) {
+  expr <- substitute(expr); env <- parent.frame()
+  pdf(file = file, width = width, height = height)
+  tryCatch(eval(expr, env), finally = dev.off())
+  if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
+    ok <- try(eval(expr, env), silent = TRUE)
+    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    return(invisible(file)) }
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
+  png(png_file, width = width, height = height, units = "in", res = 150)
+  tryCatch(eval(expr, env), finally = dev.off())
+  knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
+}
 ```
 
 
@@ -66,17 +83,84 @@ head(design)
 str(design)
 
 # assembling table of traits
+# physiological traits are rebuilt here from the raw data files (rather than taken from design columns)
+# so each value is traceable to its source analysis; one row per sample, in design order
+library(dplyr)
+stopifnot(identical(sub("\\..*$", "", rownames(datt)), as.character(design$id))) # expression rows and design rows aligned
+
+# fragments removed from the survivorship analysis (non-empty `exclude`); their samples are removed upstream in
+# the DESeq2 script, and any that remain get NA for all measured traits
+surv_raw <- read.csv("../../data/survivorship/urban survivorship.csv", head=TRUE)
+surv_excluded <- unique(surv_raw$sample[!is.na(surv_raw$exclude) & surv_raw$exclude != ""])
+excl_samples <- design$id[design$sampleid %in% surv_excluded]
+cat("samples of survivorship-excluded fragments still in design:", length(excl_samples), "\n")
+print(excl_samples)
+
+# growth rate (g cm-2 yr-1): buoyant weights 26 Feb and 3 Apr 2021 (36 days), annualized, minus the mean growth of
+# the dead skeleton controls for each pH treatment (as in the growth analysis)
+bw <- read.csv("../../data/growth/urban buoyant weight.csv", head=TRUE) %>%
+  mutate(growth = (mass2 - mass1) / surfacearea / 36 * 365)
+bw_controls <- bw %>%
+  filter(species == "control") %>%
+  group_by(pH) %>%
+  summarise(control_growth = mean(growth), .groups = "drop")
+bw <- bw %>%
+  filter(species != "control") %>%
+  left_join(bw_controls, by = "pH") %>%
+  mutate(growthadj = growth - control_growth) %>%
+  group_by(species) %>%
+  # growth outliers (1.5 x IQR within species, as in the growth analysis) set to NA
+  mutate(growth_outlier = growthadj %in% boxplot.stats(growthadj)$out) %>%
+  ungroup() %>%
+  mutate(growthrate = ifelse(growth_outlier | sampleID %in% surv_excluded, NA, growthadj))
+bw %>% filter(growth_outlier) %>% dplyr::select(species, sampleID, growthadj) # growth outliers set to NA
+stopifnot(!anyDuplicated(bw$sampleID))
+
+# Fv/Fm and Fv/Fm ratio at each fragment's cohort day 17 (the data file's second-cohort timepoints are already
+# on the logger timeline, so day 17 is time 17 for every group)
+ipam <- read.csv("../../data/photosynthesis/urban ipam.csv", head=TRUE, colClasses = c(time = "character")) %>%
+  filter(time == "17") %>%
+  mutate(temp = recode(temp, "control temp" = "controltemp", "high temp" = "hightemp")) %>%
+  dplyr::select(sampleid = sampleID, temp, fvfm = FvFm, fvfm_ratio = ratio)
+stopifnot(!anyDuplicated(ipam[c("sampleid", "temp")]))
+
+# survival (days at 33 C set point until death or end of experiment) from each fragment's heat-treatment row;
+# (second heat cohort dates in the data file follow the tank loggers: start 5/10/21).
+# The value applies to every sample of the fragment: for control temperature samples it is the fragment's
+# later survival under heat stress (second cohort), not survival during the control temperature period
+surv <- surv_raw %>%
+  filter(is.na(exclude) | exclude == "", temp == "high") %>%
+  mutate(survival = as.numeric(as.Date(end, "%m/%d/%y") - as.Date(start, "%m/%d/%y"))) %>%
+  dplyr::select(sampleid = sample, survival)
+stopifnot(!anyDuplicated(surv$sampleid))
 
 # coding experimental factors as binary (0/1, yes/no)
 # habitat: urban (Star Island, MacArthur North) vs reef (Emerald, Rainbow)
-urban=as.numeric(design$site %in% c("Star","MacN")) 
-lowpH=as.numeric(design$ph=="lowpH") 
-hightemp=as.numeric(design$temp=="hightemp") 
+phys <- data.frame(id = as.character(design$id), sampleid = as.character(design$sampleid),
+                   temp = as.character(design$temp)) %>%
+  left_join(dplyr::select(bw, sampleid = sampleID, growthrate), by = "sampleid") %>%
+  left_join(ipam, by = c("sampleid", "temp")) %>%
+  left_join(surv, by = "sampleid")
+stopifnot(identical(phys$id, as.character(design$id))) # joins kept design order, one row per sample
 
-# combining with numerical traits (physiological data)
-# physiological traits (design columns 14:21); the genotype ID (column 13) is a colony label, not a measured trait
-traits <- cbind(urban, lowpH, hightemp, design[c(14:21)])
-traits
+traits <- data.frame(
+  urban       = as.numeric(design$site %in% c("Star","MacN")),
+  lowpH       = as.numeric(design$ph == "lowpH"),
+  hightemp    = as.numeric(design$temp == "hightemp"),
+  growthrate  = phys$growthrate,
+  fvfm        = phys$fvfm,
+  fvfm_ratio  = phys$fvfm_ratio,
+  survival    = phys$survival,
+  propB       = design$propB,
+  propD       = design$propD,
+  temp_actual = design$temp_actual,
+  ph_actual   = design$ph_actual,
+  row.names   = design$id
+)
+# measured traits NA for any remaining samples of survivorship-excluded fragments
+traits[rownames(traits) %in% excl_samples, c("growthrate","fvfm","fvfm_ratio","survival","propB","propD","temp_actual","ph_actual")] <- NA
+summary(traits)
+colSums(is.na(traits)) # missing values per trait
 ```
 
 
@@ -85,7 +169,16 @@ traits
 ```{r outlier-detection}
 # identifies outlier genes
 gsg = goodSamplesGenes(datt, verbose = 3);
-gsg$allOK #if TRUE, no outlier genes
+gsg$allOK #if TRUE, no outlier genes or samples
+# drop any flagged genes/samples, keeping expression, traits and design aligned
+if (!gsg$allOK) {
+  cat("removing", sum(!gsg$goodGenes), "genes and", sum(!gsg$goodSamples), "samples flagged by goodSamplesGenes\n")
+  datt = datt[gsg$goodSamples, gsg$goodGenes, drop = FALSE]
+  traits = traits[gsg$goodSamples, ]
+  design = design[gsg$goodSamples, ]
+}
+stopifnot(identical(sub("\\..*$", "", rownames(datt)), rownames(traits)),
+          identical(rownames(traits), as.character(design$id)))
 
 # calculates mean expression per array, then the number of missing values per array
 meanExpressionByArray=apply( datt,1,mean, na.rm=T)
@@ -94,16 +187,15 @@ NumberMissingByArray
 ```
 
 Keep samples with missing values under 500  
-In this case, all samples OK
 
 ```{r outlier-detection-cont}
 # plots mean expression across all samples
-pdf("../../outputs/transcriptomics/ofav/wgcna/sample mean expression.pdf",height=4, width=8)
+save_plot("../../outputs/transcriptomics/ofav/wgcna/sample mean expression.pdf",height=4, width=8, {
 barplot(meanExpressionByArray,
         xlab = "Sample", ylab = "Mean expression",
         main ="Mean expression across samples",
         names.arg = 1:nrow(datt), cex.names = 0.7)
-dev.off() # look for any obvious deviations in expression across samples
+}) # look for any obvious deviations in expression across samples
 
 # sample dendrogram and trait heat map showing outliers
 A=adjacency(t(datt),type="signed")                 #SELECT SIGNED OR UNSIGNED HERE
@@ -120,7 +212,10 @@ dimnames(traitColors)[[2]]=paste(names(traits))
 datColors=data.frame(outlierC=outlierColor,traitColors)
 # Plot the sample dendrogram and the colors underneath.
 # quartz()  # Mac-only; plots now render inline / in RStudio
+# page size scales with the number of samples (width) and trait rows (height)
+save_plot("../../outputs/transcriptomics/ofav/wgcna/outlier detection.pdf", width = max(10, 3 + 0.15 * nrow(datt)), height = 5 + 0.3 * ncol(datColors), {
 plotDendroAndColors(sampleTree,groupLabels=names(datColors), colors=datColors,main="Sample dendrogram and trait heatmap")
+})
 ```
 
 The resulting plot shows a sample dendrogram and the spread of your traits across the cluster  
@@ -133,8 +228,13 @@ datt=datt[!remove.samples,]
 traits=traits[!remove.samples,]
 # parent colony of each fragment (used for colony-level tests of habitat)
 colony=factor(design$genotype[!remove.samples])
-  
-write.csv(traits, file="../../outputs/transcriptomics/ofav/wgcna/traits.csv")
+names(colony)=as.character(design$id[!remove.samples])
+# expression, traits and colony still refer to the same samples in the same order
+stopifnot(identical(sub("\\..*$", "", rownames(datt)), rownames(traits)),
+          identical(rownames(traits), names(colony)))
+
+# trait table with the sample id as an explicit column
+write.csv(data.frame(id = rownames(traits), traits), file="../../outputs/transcriptomics/ofav/wgcna/traits.csv", row.names=FALSE)
 
 save(datt,traits,colony,file="../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData")
 ```
@@ -156,9 +256,7 @@ powers = c(seq(from = 2, to=26, by=1))
 sft = pickSoftThreshold(datt, powerVector = powers, verbose = 5,networkType="signed")
 
 # Plot the results:
-# Run from the line below to dev.off()
-sizeGrWindow(9, 5)
-pdf("../../outputs/transcriptomics/ofav/wgcna/soft threshold signed.pdf",height=4, width=8)
+save_plot("../../outputs/transcriptomics/ofav/wgcna/soft threshold signed.pdf",height=4, width=8, {
 
 par(mfrow = c(1,2));
 cex1 = 0.9;
@@ -178,7 +276,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
 main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
-dev.off()
+})
 ```
 
 
@@ -195,7 +293,9 @@ TOM = TOMsimilarity(adjacency,TOMType="signed");
 dissTOM = 1-TOM
 # Call the hierarchical clustering function
 geneTree = flashClust(as.dist(dissTOM), method = "average")
+save_plot("../../outputs/transcriptomics/ofav/wgcna/gene dendrogram.pdf", width = 12, height = 6, {
 plot(geneTree, xlab="", sub="", main="Gene Clustering on TOM-based dissimilarity", labels= FALSE,hang=0.04)
+})
 
 # We like large modules, so we set the minimum module size relatively high:
 minModuleSize = 30; 
@@ -216,7 +316,7 @@ MEs = MEList$eigengenes
 MEDiss = 1-cor(MEs);
 METree = flashClust(as.dist(MEDiss), method = "average");
 
-save(dynamicMods,dynamicColors,MEs,METree,geneTree,file="../../outputs/transcriptomics/ofav/wgcna/1stPassModules.RData")
+save(dynamicMods,dynamicColors,MEs,METree,geneTree,s.th,file="../../outputs/transcriptomics/ofav/wgcna/1stPassModules.RData")
 ```
 
 
@@ -231,12 +331,15 @@ lnames=load('../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData')
 
 # quartz()  # Mac-only; plots now render inline / in RStudio
 
-MEDissThres = 0.25 # in the first pass, set this to 0 - no merging (we want to see the module-traits heatmap first, then decide which modules are telling us the same story and better be merged)
-sizeGrWindow(7, 6)
+MEDissThres = 0.25 # fixed a priori (WGCNA tutorial default): merge modules whose eigengenes correlate at r > 0.75; see MERGE THRESHOLD SENSITIVITY for 0.15-0.35 (set to 0 only to view unmerged modules)
+# page width scales with the number of modules
+save_plot("../../outputs/transcriptomics/ofav/wgcna/dendrogram raw.pdf", # unmerged module eigengenes, with the merge cut line
+          width = max(6, 2 + 0.35 * length(METree$order)), height = 6, {
 plot(METree, main = "Clustering of module eigengenes",
 xlab = "", sub = "")
 # Plot the cut line into the dendrogram
 abline(h=MEDissThres, col = "red")  # on 2nd pass: does this cut height meet your merging goals? If not, reset MEDissThres and replot
+})
 
 # Call an automatic merging function
 merge = mergeCloseModules(datt, dynamicColors, cutHeight = MEDissThres, verbose = 3)
@@ -247,10 +350,13 @@ mergedMEs = merge$newMEs
 
 # plotting the fabulous ridiculogram
 # quartz()  # Mac-only; plots now render inline / in RStudio
+save_plot("../../outputs/transcriptomics/ofav/wgcna/ridiculogram.pdf", # unmerged (dynamic tree cut) and merged module colours
+          width = 12, height = 6, {
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors),
 c("Dynamic Tree Cut", "Merged dynamic"),
 dendroLabels = FALSE, hang = 0.03,
 addGuide = FALSE, guideHang = 0.05,lwd=0.3)
+})
 
 # Rename to moduleColors
 moduleColors = mergedColors
@@ -269,14 +375,16 @@ MEDiss = 1-cor(MEs);
 # Cluster module eigengenes
 METree = flashClust(as.dist(MEDiss), method = "average");
 # Plot the result
-sizeGrWindow(7, 6)
+save_plot("../../outputs/transcriptomics/ofav/wgcna/dendrogram merged.pdf",
+          width = max(6, 2 + 0.35 * length(METree$order)), height = 6, {
 plot(METree, main = "Clustering of module eigengenes",
 xlab = "", sub = "")
+})
 
 # how many genes in each module?
 table(moduleColors)
-# Save module colors and labels for use in subsequent parts
-save(MEs, geneTree, moduleLabels, moduleColors, file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
+# Save module colors and labels (and the soft-threshold power) for use in subsequent parts
+save(MEs, geneTree, moduleLabels, moduleColors, s.th, MEDissThres, file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
 ```
 
 
@@ -298,69 +406,82 @@ MEs = orderMEs(MEs0)
 moduleGeneCor=cor(MEs,datt)
 moduleGenePvalue = corPvalueStudent(moduleGeneCor, nSamples);
 
-moduleTraitCor = cor(MEs, traits, use = "p");
-moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
-
-# module-trait correlations
-# quartz()  # Mac-only; plots now render inline / in RStudio
-textMatrix = paste(signif(moduleTraitCor, 2), "\n(",
-signif(moduleTraitPvalue, 1), ")", sep = "");
-dim(textMatrix) = dim(moduleTraitCor)
-par(mar = c(6, 8.5, 3, 3));
-# Display the correlation values within a heatmap plot
-labeledHeatmap(
-  Matrix = moduleTraitCor,
-  xLabels = names(traits),
-  yLabels = names(MEs),
-  ySymbols = names(MEs),
-  colorLabels = FALSE,
-  colors = blueWhiteRed(50),
-  textMatrix = textMatrix,
-  setStdMargins = FALSE,
-  cex.text = 0.5,
-  zlim = c(-1, 1),
-  main = paste("Module-trait relationships")
-)
-
-table(moduleColors) # gives numbers of genes in each module
-
-# shows only significant correlations
-# quartz()  # Mac-only; plots now render inline / in RStudio
+# module-trait heatmaps (all correlations; significant only) and module size barplot for one module assignment.
+# Drawn for the unmerged modules ("raw", dynamic tree cut) and the merged modules used in all later analyses ("merged").
 library(RColorBrewer)
-modLabels=sub("ME","",names(MEs))
+module_trait_plots = function(MEs, moduleColors, label) {
+  # p-values from each module-trait pair's own number of non-missing samples (traits can have NAs)
+  P = corAndPvalue(MEs, traits, use = "p")
+  cor_m = P$cor; p_m = P$p
+  modLabels = sub("ME", "", names(MEs))
+  # page size scales with the number of traits (width) and modules (height): ~0.55 x 0.3 in per cell
+  hm_w = 2.5 + 0.55 * ncol(traits); hm_h = 1.5 + 0.3 * ncol(MEs)
+  text_all = paste(signif(cor_m, 2), "\n(", signif(p_m, 1), ")", sep = "")
+  dim(text_all) = dim(cor_m)
+  text_sig = signif(cor_m, 2)
+  text_sig[signif(p_m, 1) > 0.05] = "-"
+  dim(text_sig) = dim(cor_m)
+  mct = table(moduleColors)
+  labelShift = 0.08 * max(mct) # label offset scales with the largest module
+  write.csv(data.frame(module = modLabels, genes = as.vector(mct[modLabels]), cor_m, check.names = FALSE),
+            paste0("../../outputs/transcriptomics/ofav/wgcna/module trait correlations ", label, ".csv"), row.names = FALSE)
+  write.csv(data.frame(module = modLabels, p_m, check.names = FALSE),
+            paste0("../../outputs/transcriptomics/ofav/wgcna/module trait pvalues ", label, ".csv"), row.names = FALSE)
+  imgs = list(
+    save_plot(paste0("../../outputs/transcriptomics/ofav/wgcna/module trait correlations ", label, " all.pdf"), width = hm_w, height = hm_h, {
+      par(mar = c(6, 8.5, 3, 3))
+      labeledHeatmap(Matrix = cor_m, xLabels = names(traits), yLabels = names(MEs), ySymbols = names(MEs),
+                     colorLabels = FALSE, colors = blueWhiteRed(50), textMatrix = text_all,
+                     setStdMargins = FALSE, cex.text = 0.5, zlim = c(-1, 1),
+                     main = paste0("Module-trait relationships (", label, ")"))
+    }),
+    save_plot(paste0("../../outputs/transcriptomics/ofav/wgcna/module trait correlations ", label, " sig.pdf"), width = hm_w, height = hm_h, {
+      par(mar = c(6, 8.5, 3, 3))
+      labeledHeatmap(Matrix = cor_m, xLabels = names(traits), ySymbols = modLabels, yLabels = modLabels,
+                     colorLabels = FALSE, colors = colorRampPalette(c("blue","lightblue","white","coral","red"))(50),
+                     textMatrix = text_sig, setStdMargins = FALSE, cex.text = 0.7, zlim = c(-0.7,0.7),
+                     main = paste0("O. faveolata Module-Trait correlations (", label, ")"))
+    }),
+    save_plot(paste0("../../outputs/transcriptomics/ofav/wgcna/module size barplot ", label, ".pdf"), width = 7, height = 2 + 0.3 * length(modLabels), {
+      par(mar = c(6, 8.5, 3, 3))
+      x = barplot(mct[rev(modLabels)], horiz = T, las = 1, xlim = c(0, 1.2 * max(mct)), col = rev(modLabels))
+      text(mct[rev(modLabels)] + labelShift, y = x, mct[rev(modLabels)], cex = 0.9)
+    }))
+  list(cor = cor_m, p = p_m, imgs = unlist(imgs))
+}
 
-ps=signif(moduleTraitPvalue,1)
-cors=signif(moduleTraitCor,2)
-textMatrix = cors;
-# paste(cors, "\n(",ps, ")", sep = "");
-textMatrix[ps>0.05]="-"
-dim(textMatrix) = dim(moduleTraitCor)
+# unmerged modules (dynamic tree cut, before merging), for comparison
+raw_env = new.env()
+load(file = "../../outputs/transcriptomics/ofav/wgcna/1stPassModules.RData", envir = raw_env) # dynamicColors
+raw_colors = raw_env$dynamicColors
+raw_MEs = orderMEs(moduleEigengenes(datt, raw_colors)$eigengenes)
+raw = module_trait_plots(raw_MEs, raw_colors, "raw")
+table(raw_colors) # genes in each unmerged module
 
-par(mar = c(6, 8.5, 3, 3));
-# Display the correlation values within a heatmap plot
-labeledHeatmap(Matrix = moduleTraitCor,
-               xLabels = names(traits),
-               ySymbols = modLabels,
-               yLabels = modLabels,
-               colorLabels = FALSE,
-               colors = colorRampPalette(c("blue","lightblue","white","coral","red"))(50),
-               textMatrix = textMatrix,
-               setStdMargins = FALSE,
-               cex.text = 0.7,
-               zlim = c(-0.7,0.7),
-               main = paste("O. faveolata Module-Trait correlations"))
+# merged modules (used for everything below)
+merged = module_trait_plots(MEs, moduleColors, "merged")
+table(moduleColors) # genes in each merged module
+moduleTraitCor = merged$cor
+moduleTraitPvalue = merged$p
+modLabels = sub("ME", "", names(MEs))
+if (isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(c(raw$imgs, merged$imgs), rel_path = FALSE, dpi = 150)
 
-# module size barplot
-labelShift=500 # increase to move module size labels to the right
-# quartz()  # Mac-only; plots now render inline / in RStudio
-par(mar = c(6, 8.5, 3, 3));
-mct=table(moduleColors)
-mct[modLabels]
-x=barplot(mct[rev(modLabels)],horiz=T,las=1,xlim=c(0,6000),col=rev(modLabels))
-text(mct[rev(modLabels)]+labelShift,y=x,mct[rev(modLabels)],cex=0.9) 
+# modules significantly correlated (p < 0.05) with each trait, and with any trait; grey (unassigned genes) is not a module
+sig_by_trait = lapply(setNames(colnames(moduleTraitPvalue), colnames(moduleTraitPvalue)), function(tr)
+  setdiff(sub("^ME", "", rownames(moduleTraitPvalue)[which(moduleTraitPvalue[, tr] < 0.05)]), "grey"))
+sig_by_trait
+traits_of_interest = colnames(traits) # restrict here to limit which traits define sig_modules
+sig_modules = unique(unlist(sig_by_trait[traits_of_interest]))
+urban_modules = sig_by_trait[["urban"]] # modules correlated with habitat (fragment level; see colony-level test below)
+sig_modules
+urban_modules
+# modules used for scatterplots, sanity checks, GO/KOG export and heatmaps below
+modules_to_plot = sig_modules # or set manually, e.g. modules_to_plot = c("<module>", "<module>")
+save(moduleTraitCor, moduleTraitPvalue, sig_by_trait, sig_modules, urban_modules, modules_to_plot,
+     file = "../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData")
 
-# If it was first pass with no module merging, this is where you examine your heatmap and dendrogram of module eigengenes to see where you would like to set cut height (MEDissThres parameter) in the previous section to merge modules that are telling the same story for your trait data 
-# A good way to do it is to find a group of similar modules in the heat map and then see at which tree height they connect in the dendrogram
+# the merge threshold is fixed a priori (MEDissThres = 0.25), not chosen from these trait correlations;
+# MERGE THRESHOLD SENSITIVITY below checks that the trait associations hold across thresholds
 ```
 
 
@@ -373,18 +494,67 @@ load(file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
 load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData")
 MEs = orderMEs(moduleEigengenes(datt, moduleColors)$eigengenes)
 treat_group = factor(paste(traits$lowpH, traits$hightemp))
-MEs_adj = apply(MEs, 2, function(y) residuals(lm(y ~ treat_group)))        # remove treatment effects
+# treatment effects estimated within colonies (lm with colony), then only the treatment contribution is subtracted,
+# so colony (and therefore habitat) differences stay in the adjusted eigengenes
+MEs_adj = apply(MEs, 2, function(y) {
+  fit = lm(y ~ treat_group + colony)
+  b = coef(fit)[grepl("^treat_group", names(coef(fit)))]
+  b[is.na(b)] = 0
+  y - drop(model.matrix(fit)[, names(b), drop = FALSE] %*% b)
+})
 colony_MEs = apply(MEs_adj, 2, function(y) tapply(y, colony, mean))          # average fragments per colony
 colony_urban = tapply(traits$urban, colony, `[`, 1)
 table(colony_urban) # colonies per habitat (0 = reef, 1 = urban)
 urban_colony = t(apply(colony_MEs, 2, function(y) {
-  ct = cor.test(y, colony_urban); c(r = unname(round(ct$estimate, 2)), p = signif(ct$p.value, 2)) }))
+  ct = cor.test(y, colony_urban); c(r = unname(ct$estimate), p = ct$p.value) }))
+# Benjamini-Hochberg adjustment across modules (grey, unassigned genes, not included)
+is_module = rownames(urban_colony) != "MEgrey"
+p_BH = rep(NA, nrow(urban_colony))
+p_BH[is_module] = p.adjust(urban_colony[is_module, "p"], method = "BH")
+urban_colony = data.frame(r = round(urban_colony[, "r"], 2), p = signif(urban_colony[, "p"], 2), p_BH = signif(p_BH, 2),
+                          row.names = rownames(urban_colony))
 urban_colony
 write.csv(urban_colony, file = "../../outputs/transcriptomics/ofav/wgcna/urban modules colony level.csv")
 ```
 
 
-# GO BACK AND MERGE
+# MERGE THRESHOLD SENSITIVITY
+
+```{r merge-threshold-sensitivity}
+# The merge threshold is fixed a priori (MEDissThres = 0.25). Here the unmerged modules are re-merged at a range of
+# thresholds to check that the trait associations do not depend on that choice. For each threshold: the number of
+# modules (grey, unassigned genes, excluded) and, per trait, the number of modules significantly correlated with it
+# (p < 0.05, fragment level as in the module-trait heatmap); urban_colony_BH = modules differing between urban and
+# reef colonies (colony-level test as in URBAN MODULES AT COLONY LEVEL, BH-adjusted p < 0.05).
+library(WGCNA)
+load(file = "../../outputs/transcriptomics/ofav/wgcna/1stPassModules.RData") # dynamicColors (unmerged modules)
+load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData")      # datt, traits, colony
+urban_colony_p = function(MEs) {
+  treat_group = factor(paste(traits$lowpH, traits$hightemp))
+  adj = apply(MEs, 2, function(y) {
+    fit = lm(y ~ treat_group + colony)
+    b = coef(fit)[grepl("^treat_group", names(coef(fit)))]; b[is.na(b)] = 0
+    y - drop(model.matrix(fit)[, names(b), drop = FALSE] %*% b)
+  })
+  colony_means = apply(adj, 2, function(y) tapply(y, colony, mean))
+  colony_urban = tapply(traits$urban, colony, `[`, 1)
+  p = apply(colony_means, 2, function(y) cor.test(y, colony_urban)$p.value)
+  p.adjust(p, method = "BH")
+}
+thresholds = c(0, 0.15, 0.20, 0.25, 0.30, 0.35)
+merge_sens = do.call(rbind, lapply(thresholds, function(thr) {
+  MEs_t = if (thr == 0) moduleEigengenes(datt, dynamicColors)$eigengenes else
+    mergeCloseModules(datt, dynamicColors, cutHeight = thr, verbose = 0)$newMEs
+  MEs_t = orderMEs(MEs_t)
+  MEs_t = MEs_t[, colnames(MEs_t) != "MEgrey", drop = FALSE]
+  P = corAndPvalue(MEs_t, traits, use = "p")$p
+  sig = colSums(P < 0.05, na.rm = TRUE)
+  data.frame(threshold = thr, modules = ncol(MEs_t), t(sig), urban_colony_BH = sum(urban_colony_p(MEs_t) < 0.05),
+             check.names = FALSE)
+}))
+merge_sens
+write.csv(merge_sens, file = "../../outputs/transcriptomics/ofav/wgcna/merge threshold sensitivity.csv", row.names = FALSE)
+```
 
 
 # MODULE MEMBERSHIP SCATTERPLOTS
@@ -393,85 +563,49 @@ write.csv(urban_colony, file = "../../outputs/transcriptomics/ofav/wgcna/urban m
 # scatterplots of gene significance (correlation-based) vs kME
 load(file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
 load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData");
+load(file = "../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData") # sig_by_trait, modules_to_plot
 traits
 table(moduleColors)
 
-# run for each of these statements individually
-# whichTrait="lowpH"
-whichTrait="hightemp"
-# whichTrait="growthrate"
-# whichTrait="fvfm"
-# whichTrait="fvfm_ratio"
-# whichTrait="survival"
-# whichTrait="propB"
-# whichTrait="propD"
-# whichTrait="temp_actual"
-# whichTrait="ph_actual"
+# one figure per trait that has significantly correlated modules (p < 0.05; sig_by_trait from MODULE CORRELATIONS);
+# to plot a single trait instead, set e.g. scatter_traits = "hightemp"
+scatter_traits = names(sig_by_trait)[lengths(sig_by_trait) > 0]
+scatter_traits
 
 nGenes = ncol(datt);
 nSamples = nrow(datt);
-selTrait = as.data.frame(traits[,whichTrait]);
-names(selTrait) = whichTrait
 # names (colors) of the modules
 modNames = substring(names(MEs), 3)
 geneModuleMembership = as.data.frame(signedKME(datt, MEs));
 MMPvalue = as.data.frame(corPvalueStudent(as.matrix(geneModuleMembership), nSamples));
 names(geneModuleMembership) = paste("MM", modNames, sep="");
 names(MMPvalue) = paste("p.MM", modNames, sep="");
-geneTraitSignificance = as.data.frame(cor(datt, selTrait, use = "p"));
-GSPvalue = as.data.frame(corPvalueStudent(as.matrix(geneTraitSignificance), nSamples));
-names(geneTraitSignificance) = paste("GS.", names(selTrait), sep="");
-names(GSPvalue) = paste("p.GS.", names(selTrait), sep="");
 
-# selecting specific modules to plot (change depending on which trait you're looking at)
-# moduleCols=c("purple") # for lowpH
-moduleCols=c("purple","black","midnightblue","brown") # for hightemp
-# moduleCols=c("magenta","cyan","black") # for genotype
-# moduleCols=c("magenta","cyan","black") # for growthrate
-# moduleCols=c("magenta","cyan","black") # for fvfm
-# moduleCols=c("magenta","cyan","black") # for fvfm_ratio
-# moduleCols=c("magenta","cyan","black") # for survival
-# moduleCols=c("magenta","cyan") # for propB
-# moduleCols=c("magenta","cyan","black") # for propD
-# moduleCols=c("purple","black","midnightblue","brown") # for temp_actual
-# moduleCols=c("black","midnightblue") # for ph_actual
-
-# quartz()  # Mac-only; plots now render inline / in RStudio
-# set par to be big enough for all significant module correlations, then run the next whichTrait and moduleCols statements above and repeat from the 'for' loop
-# par(mfrow=c(1,1)) # for lowpH
-par(mfrow=c(1,4)) # for hightemp
-# par(mfrow=c(1,3)) # for genotype
-# par(mfrow=c(1,3)) # for growthrate
-# par(mfrow=c(1,3)) # for fvfm
-# par(mfrow=c(1,3)) # for fvfm_ratio
-# par(mfrow=c(1,3)) # for survival
-# par(mfrow=c(1,2)) # for propB
-# par(mfrow=c(1,3)) # for propD
-# par(mfrow=c(1,4)) # for temp_actual
-# par(mfrow=c(1,2)) # for ph_actual
-
-counter=0
-# shows correlations for all modules
-# for(module in modNames[1:length(modNames)]){
-# counter=counter+1
-# if (counter>9) {
-# 	quartz()
-# 	par(mfrow=c(3,3))
-# 	counter=1
-# }
-# shows correlations for significant modules only as specified above
-for (module in moduleCols) {
-  column = match(module, modNames);
-  moduleGenes = moduleColors==module;
-column = match(module, modNames);
-moduleGenes = moduleColors==module;
-#trr="heat resistance"
-verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
-abs(geneTraitSignificance[moduleGenes, 1]),
-xlab = paste(module,"module membership"),
-ylab = paste("GS for", whichTrait),
-col = "grey50",mgp=c(2.3,1,0))
+mm_plots = list()
+for (whichTrait in scatter_traits) {
+  selTrait = as.data.frame(traits[,whichTrait]);
+  names(selTrait) = whichTrait
+  # gene significance; p-values use the number of samples with a non-missing trait value
+  GS = corAndPvalue(datt, selTrait, use = "p")
+  geneTraitSignificance = as.data.frame(GS$cor);
+  names(geneTraitSignificance) = paste("GS.", names(selTrait), sep="");
+  # modules significantly correlated (p < 0.05) with this trait; one panel per module
+  moduleCols = sig_by_trait[[whichTrait]]
+  mm_plots[[whichTrait]] = save_plot(paste0("../../outputs/transcriptomics/ofav/wgcna/module membership ", whichTrait, ".pdf"),
+                                     width = 4 * length(moduleCols), height = 4.5, {
+    par(mfrow=c(1, length(moduleCols)))
+    for (module in moduleCols) {
+      column = match(module, modNames);
+      moduleGenes = moduleColors==module;
+      verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
+                         abs(geneTraitSignificance[moduleGenes, 1]),
+                         xlab = paste(module,"module membership"),
+                         ylab = paste("GS for", whichTrait),
+                         col = "grey50",mgp=c(2.3,1,0))
+    }
+  })
 }
+if (length(mm_plots) && isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(unlist(mm_plots), rel_path = FALSE, dpi = 150)
 ```
 
 
@@ -482,31 +616,30 @@ col = "grey50",mgp=c(2.3,1,0))
 # note: this part does not make much sense for unsigned modules
 load(file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
 load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData");
-
-# run for each of these statements individually
-# which.module="magenta"
-# which.module="purple"
-# which.module="cyan"
-# which.module="black"
-# which.module="midnightblue"
-which.module="brown"
+load(file = "../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData") # modules_to_plot
 
 datME=MEs
 datExpr=datt
-# quartz()  # Mac-only; plots now render inline / in RStudio
-ME=datME[, paste("ME",which.module, sep="")]
-par(mfrow=c(2,1), mar=c(0.3, 5.5, 3, 2))
-plotMat(t(scale(datExpr[,moduleColors==which.module ]) ),
-nrgcols=30,rlabels=F,rcols=which.module,
-main=which.module, cex.main=2)
-par(mar=c(5, 4.2, 0, 0.7))
-barplot(ME, col=which.module, main="", cex.main=2,
-ylab="eigengene expression",xlab="sample")
-
-length(datExpr[1,moduleColors==which.module ]) # number of genes in chosen module
+# one plot per module in modules_to_plot (modules significantly correlated with any trait, unless set manually)
+sanity_plots = list()
+for (which.module in modules_to_plot) {
+  ME=datME[, paste("ME",which.module, sep="")]
+  sanity_plots[[which.module]] = save_plot(paste0("../../outputs/transcriptomics/ofav/wgcna/module eigengene ", which.module, ".pdf"), width = 10, height = 7, {
+    par(mfrow=c(2,1), mar=c(0.3, 5.5, 3, 2))
+    plotMat(t(scale(datExpr[,moduleColors==which.module ]) ),
+            nrgcols=30,rlabels=F,rcols=which.module,
+            main=which.module, cex.main=2)
+    par(mar=c(5, 4.2, 0, 0.7))
+    barplot(ME, col=which.module, main="", cex.main=2,
+            ylab="eigengene expression",xlab="sample")
+  })
+  cat(which.module, ":", sum(moduleColors==which.module), "genes\n") # number of genes in module
+}
+if (length(sanity_plots) && isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(unlist(sanity_plots), rel_path = FALSE, dpi = 150)
 
 # If individual samples appear to be driving expression of significant modules, they are likely outliers
-# count the array numbers and go back to the outlier detection section to remove outliers and rerun all code
+# count the array numbers and go back to the outlier detection section to remove outliers and rerun all code,
+# or drop that module from modules_to_plot in the module correlations section
 ```
 
 
@@ -516,30 +649,22 @@ length(datExpr[1,moduleColors==which.module ]) # number of genes in chosen modul
 # saving selected modules for GO and KOG analysis (two-parts: Fisher test, MWU test within-module)
 library(WGCNA)
 load(file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData") # moduleColors, MEs
-load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData") # vsd table
+load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData") # datt, traits, colony
 load(file = "../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData") # vsd table
+load(file = "../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData") # modules_to_plot
 
 # calculating modul memberships for all genes for all modules
 allkME =as.data.frame(signedKME(datt, MEs)) 
 names(allkME)=gsub("kME","",names(allkME))
 
-# run for each of these statements individually
-# not exporting red since it was driven by one outlier sample
-
-# whichModule="magenta"
-# whichModule="purple"
-# whichModule="cyan"
-# whichModule="black"
-# whichModule="midnightblue"
-# whichModule="midnightblue"
-whichModule="brown"
-
-table(moduleColors==whichModule) # how many genes are in it?
-
-# Saving data for Fisher-MWU combo test (GO_MWU)
-inModuleBinary=as.numeric(moduleColors==whichModule)
-combo=data.frame("gene"=row.names(vsd.wg),"Fish_kME"=allkME[,whichModule]*inModuleBinary)
-write.csv(combo,file=paste0("../../outputs/transcriptomics/ofav/wgcna/",whichModule,".csv"),row.names=F,quote=F)
+# one file per module in modules_to_plot
+for (whichModule in modules_to_plot) {
+  print(table(moduleColors==whichModule)) # how many genes are in it?
+  # Saving data for Fisher-MWU combo test (GO_MWU)
+  inModuleBinary=as.numeric(moduleColors==whichModule)
+  combo=data.frame("gene"=colnames(datt),"Fish_kME"=allkME[,whichModule]*inModuleBinary) # genes in datt order (matches allkME)
+  write.csv(combo,file=paste0("../../outputs/transcriptomics/ofav/wgcna/",whichModule,".csv"),row.names=F,quote=F)
+}
 ```
 
 
@@ -551,63 +676,52 @@ library(WGCNA)
 load(file = "../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData")
 load(file = "../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData") 
 load(file = "../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData");
+load(file = "../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData") # modules_to_plot
 allkME =as.data.frame(signedKME(datt, MEs))
+vsd.wg = vsd.wg[colnames(datt), ] # same genes, in the same order, as allkME
 gg=read.delim(file="../../../Orbicella-faveolata-annotated-transcriptome/Ofaveolata_iso2geneName.tab",sep="\t",header=FALSE,quote="")
 library(pheatmap)
 
-# whichModule="magenta"
-# whichModule="purple"
-# whichModule="cyan"
-# whichModule="black"
-# whichModule="midnightblue"
-whichModule="brown"
-
 top=30 # number of named top-kME genes to plot
-
-datME=MEs
-datExpr=datt
-modcol=paste("kME",whichModule,sep="")
-sorted=vsd.wg[order(allkME[,modcol],decreasing=T),]
-head(sorted)
-# selection top N names genes, attaching gene names
-gnames=c();counts=0;hubs=c()
-for(i in 1:length(sorted[,1])) {
-	if (row.names(sorted)[i] %in% gg[,1]) { 
-		counts=counts+1
-		gn=gg[gg[,1]==row.names(sorted)[i],2]
-		gn=paste(gn,row.names(sorted)[i],sep=".")
-		if (gn %in% gnames) {
-			gn=paste(gn,counts,sep=".")
-		}
-		gnames=append(gnames,gn) 
-		hubs=data.frame(rbind(hubs,sorted[i,]))
-		if (counts==top) {break}
-	}
-} 
-row.names(hubs)=gnames
 
 contrasting = colorRampPalette(rev(c("chocolate1","#FEE090","grey10", "cyan3","cyan")))(100)
 contrasting2 = colorRampPalette(rev(c("chocolate1","chocolate1","#FEE090","grey10", "cyan3","cyan")))(100)
 contrasting3 = colorRampPalette(rev(c("chocolate1","#FEE090","grey10", "cyan3","cyan","cyan")))(100)
 
-# pdf(file="heatmap top30 magenta.pdf", height=6, width=18)
-# pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-# dev.off()
-# pdf(file="heatmap top30 purple.pdf", height=6, width=18)
-# pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-# dev.off()
-# pdf(file="heatmap top30 cyan.pdf", height=6, width=16)
-# pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-# dev.off()
-# pdf(file="heatmap top30 black.pdf", height=6, width=18)
-# pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-# dev.off()
-# pdf(file="heatmap top30 midnightblue.pdf", height=6, width=16)
-# pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-# dev.off()
-pdf(file="../../outputs/transcriptomics/ofav/wgcna/heatmap top30 brown.pdf", height=6, width=18)
-pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cex=0.9,cluster_rows=F,cluster_cols=F)
-dev.off()
+datME=MEs
+datExpr=datt
+# one heatmap per module in modules_to_plot
+hub_heatmaps <- list()
+for (whichModule in modules_to_plot) {
+  modcol=paste("kME",whichModule,sep="")
+  sorted=vsd.wg[order(allkME[,modcol],decreasing=T),]
+  # selection top N names genes, attaching gene names
+  gnames=c();counts=0;hubs=c()
+  for(i in 1:length(sorted[,1])) {
+  	if (row.names(sorted)[i] %in% gg[,1]) { 
+  		counts=counts+1
+  		gn=gg[gg[,1]==row.names(sorted)[i],2]
+  		if (nchar(gn) > 45) gn=paste0(substr(gn,1,42),"...") # shortened for the row labels
+  		gn=paste(gn,row.names(sorted)[i],sep=".")
+  		if (gn %in% gnames) {
+  			gn=paste(gn,counts,sep=".")
+  		}
+  		gnames=append(gnames,gn) 
+  		hubs=data.frame(rbind(hubs,sorted[i,]))
+  		if (counts==top) {break}
+  	}
+  } 
+  row.names(hubs)=gnames
+
+  # square 9-pt cells, page sized to fit (as in the DESeq2 heatmaps)
+  hub_heatmaps[[whichModule]] <- save_plot(file=paste0("../../outputs/transcriptomics/ofav/wgcna/heatmap top", top, " ", whichModule, ".pdf"),
+                                           width=(ncol(hubs)*9 + 400)/72, height=(nrow(hubs)*9 + 140)/72, {
+    pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cluster_rows=F,cluster_cols=F,
+             cellwidth=9,cellheight=9,fontsize_row=7,fontsize_col=6,main=whichModule)
+  })
+}
+# show the module heatmaps in the knitted HTML
+if (length(hub_heatmaps) && isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(unlist(hub_heatmaps), rel_path = FALSE, dpi = 150)
 ```
 
 
@@ -623,7 +737,7 @@ allkME =as.data.frame(signedKME(datt, MEs))
 
 # set the power based on the soft threshold used in making modules
 hubgenes <- chooseTopHubInEachModule(datt, moduleColors, omitColors = "grey", 
-                                     power = 8, 
+                                     power = s.th, # soft-threshold power saved with the network
                                      type = "signed")
 hubgenes <-data.frame(hubgenes)
 hubgenes <- tibble::rownames_to_column(hubgenes, "module")

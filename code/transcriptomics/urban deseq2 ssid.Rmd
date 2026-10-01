@@ -27,6 +27,23 @@ knitr::opts_chunk$set(
   fig.height = 6,
   dpi        = 300
 )
+
+# save_plot(): writes a figure to PDF (outputs folder) and shows the same figure in the knitted HTML.
+# The plotting code is run once for the PDF and once for a PNG copy at the same size, which is embedded in
+# the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
+save_plot <- function(file, width, height, expr) {
+  expr <- substitute(expr); env <- parent.frame()
+  pdf(file = file, width = width, height = height)
+  tryCatch(eval(expr, env), finally = dev.off())
+  if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
+    ok <- try(eval(expr, env), silent = TRUE)
+    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    return(invisible(file)) }
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
+  png(png_file, width = width, height = height, units = "in", res = 150)
+  tryCatch(eval(expr, env), finally = dev.off())
+  knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
+}
 ```
 
 
@@ -40,6 +57,7 @@ knitr::opts_chunk$set(
 # BiocManager::install("DESeq2",dependencies=T)
 # BiocManager::install("arrayQualityMetrics",dependencies=T)  # requires Xquartz, xquartz.org
 # BiocManager::install("BiocParallel")
+# BiocManager::install("edgeR")  # also installs limma; used for the urban vs reef analysis
 
 # install.packages("pheatmap")
 # install.packages("VennDiagram")
@@ -73,21 +91,11 @@ ncol(counts)
 # how does the data look? 
 head(counts)
 
-keep <- rowSums(counts) >= 10
-countData <- counts[keep,]
-nrow(countData)
-ncol(countData)
-write.csv(countData, file="../../outputs/transcriptomics/ssid/deseq2/countData.csv")
-
-# for WCGNA: removing all genes with counts of <10 in more than 90 % of samples
-counts4wgcna = counts[apply(counts,1,function(x) sum(x<10))<ncol(counts)*0.9,]
-nrow(counts4wgcna)
-ncol(counts4wgcna)
-write.csv(counts4wgcna, file="../../outputs/transcriptomics/ssid/deseq2/counts4wgcna.csv")
-
 # importing a design .csv file
 design = read.csv("../../data/transcriptomics/ssid/design_ssid.csv", head=TRUE)
 design
+# count columns and design rows must be in the same sample order before any subsetting
+stopifnot(identical(colnames(counts), design$id))
 design$site <- as.factor(design$site)
 design$site <- as.factor(design$site)
 design$replicate <- as.factor(design$replicate)
@@ -100,6 +108,27 @@ design$treat <- as.factor(design$treat)
 design$genotype <- as.factor(design$genotype)
 # habitat: urban (Star Island, MacArthur North) vs reef (Emerald, Rainbow)
 design$habitat <- factor(ifelse(design$site %in% c("Star", "MacN"), "urban", "reef"), levels = c("reef", "urban"))
+
+# fragments removed from the survivorship analysis are excluded from all analyses (reasons in the survivorship
+# data file's `exclude` column), as in the O. faveolata script. Removed by sample ID before outlier detection,
+# so the outlier tests and the transformation behind them use only fragments that are analysed.
+# only S. siderea exclusions (fragment IDs are matched within species)
+surv_exclude <- read.csv("../../data/survivorship/urban survivorship.csv") %>% filter(species == "Ssid", exclude != "")
+surv_excl <- design$sampleid %in% surv_exclude$sample
+# none expected: Ms3-1, the only S. siderea exclusion, was not sequenced
+stopifnot(sum(surv_excl) == 0)
+design[surv_excl, c("id", "sampleid", "treat")] # samples excluded
+design=design[!surv_excl,]
+
+# gene filter on the retained samples (exclusions removed), used only for outlier detection (arrayQualityMetrics) below;
+# countData and counts4wgcna are recomputed (and exported) on the analysed samples after outlier removal
+counts_qc <- counts[, design$id]
+stopifnot(identical(colnames(counts_qc), design$id)) # count columns and design rows in the same order
+keep <- rowSums(counts_qc) >= 10
+countData <- counts_qc[keep,]
+nrow(countData)
+ncol(countData)
+
 str(design)
 ```
 
@@ -124,27 +153,47 @@ library(Biobase)
 e=ExpressionSet(assay(Vsd), AnnotatedDataFrame(as.data.frame(colData(Vsd))))
 
 # running outlier detection
-arrayQualityMetrics(e,intgroup=c("site"),force=T)
+arrayQualityMetrics(e, outdir="../../outputs/transcriptomics/ssid/deseq2/arrayQualityMetrics", intgroup=c("site"), force=T)
 ```
 
-Open the directory "arrayQualityMetrics report for e" in your working directory and open index.html  
+Open the directory "outputs/transcriptomics/ssid/deseq2/arrayQualityMetrics" and open index.html  
 Array metadata and outlier detection overview gives a report of all samples, and which are likely outliers according to the 3 methods tested. I typically remove the samples that violate *1 (distance between arrays).  
 Figure 2 shows a bar plot of array-to-array distances and an outlier detection threshold based on your samples. Samples above the threshold are considered outliers  
 Under Figure 3: Principal Components Analyses, look for any points far away from the rest of the sample cluster  
-Use the array number for removal in the following section
+Use the sample ID (`id`) of each outlier array for removal in the following section
 
 ```{r model-design-and-outliers-cont}
 # if there were outliers:
-outs=c(34,76)
-countData=countData[,-outs]
-Vsd=Vsd[,-outs]
-counts4wgcna=counts4wgcna[,-outs]
+# outliers are removed by sample ID (not array position), so removal does not depend on sample order
+# (no S. siderea samples are excluded, so the outlier report is unchanged by the exclusion step)
+outlier_ids <- c("Ssid_034","Ssid_076")
+outs <- which(design$id %in% outlier_ids)
+stopifnot(length(outs) == length(outlier_ids))
+design[outs, c("id","sampleid","treat")] # samples removed as outliers
 design=design[-outs,]
+
+# gene filters recomputed on the analysed samples only (outliers and exclusions removed), from the raw counts
+counts_kept <- counts[, design$id]
+stopifnot(identical(colnames(counts_kept), design$id)) # count columns and design rows in the same order
+keep <- rowSums(counts_kept) >= 10
+countData <- counts_kept[keep,]
+nrow(countData)
+ncol(countData)
+write.csv(countData, file="../../outputs/transcriptomics/ssid/deseq2/countData.csv")
+
+# for WGCNA: removing all genes with counts of <10 in more than 90 % of samples (analysed samples only)
+counts4wgcna = counts_kept[apply(counts_kept,1,function(x) sum(x<10))<ncol(counts_kept)*0.9,]
+nrow(counts4wgcna)
+ncol(counts4wgcna)
+write.csv(counts4wgcna, file="../../outputs/transcriptomics/ssid/deseq2/counts4wgcna.csv")
 
 # remaking model with outliers removed from dataset
 dds = DESeqDataSetFromMatrix(countData=countData, colData=design, design=~ genotype+treat)
 dds$site <- factor(dds$site, levels = c("Emerald", "Rainbow", "Star", "MacN"))
 dds$treat <- factor(dds$treat, levels = c("CC", "LC", "CH", "LH"))
+
+# variance-stabilized data recomputed on the analysed samples (the Vsd above, before outlier removal, was for outlier detection only)
+Vsd=varianceStabilizingTransformation(dds)
 
 # save all these dataframes as an Rdata package so you don't need to rerun each time
 save(dds,design,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/ssid/deseq2/initial.RData")
@@ -152,7 +201,8 @@ save(dds,design,countData,Vsd,counts4wgcna,file="../../outputs/transcriptomics/s
 # generating normalized variance-stabilized data for PCoA, heatmaps, etc
 vsd=assay(Vsd)
 # takes the sample IDs and factor levels from the design to create new column names for the dataframe
-snames=paste(colnames(countData),design[,2],design[,11],sep=".")
+# (site and treat by name rather than column position)
+snames=paste(colnames(countData),design$site,design$treat,sep=".")
 # renames the column names
 colnames(vsd)=snames
 
@@ -175,9 +225,9 @@ save(vsd.wg,design,file="../../outputs/transcriptomics/ssid/deseq2/data4wgcna.RD
 load("../../outputs/transcriptomics/ssid/deseq2/vsd.RData")
 library(pheatmap)
 # similarity among samples
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_ssid_host.pdf", width=15, height=15)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_ssid_host.pdf", width=15, height=15, {
 pheatmap(cor(vsd))
-dev.off()
+})
 
 # Principal coordinates analysis
 library(vegan)
@@ -190,34 +240,38 @@ conditions$treat <- factor(conditions$treat, levels = c("CC", "LC", "CH", "LH"))
 # creating a PCoA eigenvalue matrix
 dds.pcoa=pcoa(dist(t(vsd),method="manhattan")/1000)
 scores=dds.pcoa$vectors
+# % variation explained by each axis, computed from the PCoA (used for axis labels)
+ve <- sprintf("%.1f", 100 * dds.pcoa$values$Relative_eig[1:4])
 # export this table for % variation explained by each axis (Relative_eig column)
 write.csv(dds.pcoa$values, file = "../../outputs/transcriptomics/ssid/deseq2/PCoA_variance.csv")
 
 # how many good PC's do we have? Compared to random ("broken stick") model
 # plotting PCoA eigenvalues 
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_Manhattan.pdf", width=6, height=6)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_Manhattan.pdf", width=6, height=6, {
 plot(dds.pcoa$values$Relative_eig)
 points(dds.pcoa$values$Broken_stick,col="red",pch=3)
-dev.off() # the number of black points above the line of red crosses (random model) corresponds to the number of good PC's
+}) # the number of black points above the line of red crosses (random model) corresponds to the number of good PC's
 
 # plotting PCoA by site and treatment
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_ssid_host.pdf", width=12, height=6)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_ssid_host.pdf", width=12, height=6, {
 par(mfrow=c(1,2))
-plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab="Coordinate 1 (16.6%)", ylab="Coordinate 2 (4.6%)", main="Site")
+plot(scores[,1], scores[,2],col=c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))],pch=c(6,25,2,17)[as.numeric(as.factor(conditions$treat))], bg= c("#018571","#80cdc1","#dfc27d","#a6611a")[as.numeric(as.factor(conditions$site))], xlab=paste0("Coordinate 1 (", ve[1], "%)"), ylab=paste0("Coordinate 2 (", ve[2], "%)"), main="Site")
 ordiellipse(scores, conditions$site, label=F, col=c("#018571","#80cdc1","#dfc27d","#a6611a"))
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), fill = c("#018571","#80cdc1","#dfc27d","#a6611a"), bty="n")
+# legend symbols are drawn in black; the LC symbol (pch 25) is filled to match the filled (site-coloured) LC points,
+# which distinguishes it from the open CC symbol (pch 6)
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), pch=c(6,2,25,17), bty="n", pt.bg = c(NA,NA,"black",NA))
-plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab="Coordinate 1 (16.6%)", ylab="Coordinate 2 (4.6%)", main="Treatment")
+plot(scores[,1], scores[,2],col=c("#92c5de","#0571b0","#f4a582","#ca0020")[as.numeric(as.factor(conditions$treat))],pch=c(15,0,1,16)[as.numeric((as.factor(conditions$site)))], xlab=paste0("Coordinate 1 (", ve[1], "%)"), ylab=paste0("Coordinate 2 (", ve[2], "%)"), main="Treatment")
 ordiellipse(scores, conditions$treat, label=F, col=c("#92c5de","#0571b0","#f4a582","#ca0020"))
 legend("topleft", legend=c("CC", "CH", "LC", "LH"), fill = c("#92c5de","#f4a582","#0571b0","#ca0020"), bty="n")
 legend("topright", legend=c("Emerald", "Rainbow", "Star", "MacN"), pch=c(15,0,1,16), bty="n")
-dev.off()
+})
 
 # neighbor-joining tree of samples (based on significant PCo's):
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_tree.pdf", width=10, height=10)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/PCoA_tree.pdf", width=10, height=10, {
 tre=nj(dist(scores[,1:4]))
 plot(tre,cex=0.8)
-dev.off()
+})
 
 # formal analysis of variance in distance matrices:
 # fragments cut from the same parent colony (genotype) are not independent, so
@@ -235,7 +289,13 @@ ad
 write.csv(ad, file = "../../outputs/transcriptomics/ssid/deseq2/PERMANOVA_output.csv")
 
 # urban vs reef: remove treatment effects, average fragments within each colony, then test colonies
-vsd_adj <- t(residuals(lm(t(vsd) ~ treat, data=conditions))) + rowMeans(vsd)
+# treatment effects are estimated WITHIN colonies (~ genotype + treat): colonies are not equally represented in
+# every treatment (outliers/exclusions), so a treat-only fit would absorb colony (and habitat) differences into
+# the treatment estimates. Only the fitted treatment contribution is subtracted, leaving colony differences intact.
+X_adj <- model.matrix(~ genotype + treat, data=conditions)
+fit_adj <- lm(t(vsd) ~ genotype + treat, data=conditions)
+treat_terms <- grep("^treat", colnames(X_adj), value=TRUE)
+vsd_adj <- vsd - t(X_adj[, treat_terms, drop=FALSE] %*% coef(fit_adj)[treat_terms, , drop=FALSE])
 colony <- droplevels(conditions$genotype)
 colony_means <- t(sapply(levels(colony), function(g) rowMeans(vsd_adj[, colony==g, drop=FALSE])))
 colony_habitat <- factor(as.character(conditions$habitat[match(rownames(colony_means), as.character(colony))]), levels=c("reef","urban"))
@@ -247,16 +307,16 @@ write.csv(ad_habitat, file = "../../outputs/transcriptomics/ssid/deseq2/PERMANOV
 
 # creating pie chart to represent PERMANOVA results
 cols=c("grey60","orange","white")
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/PERMANOVA_pie.pdf", width=6, height=6)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/PERMANOVA_pie.pdf", width=6, height=6, {
 pie(ad$R2[1:3],labels=c("colony (genotype)","treatment","residual"),col=cols,main="colony vs treatment")
-dev.off()
+})
 ```
 
 
 # DESEQ
 
 ```{r deseq}
-# with multi-factor, multi-level design - using LRT
+# with multi-factor, multi-level design - pairwise treatment contrasts use Wald tests (LRT only for the overall treatment effect)
 load("../../outputs/transcriptomics/ssid/deseq2/initial.RData")
 library(DESeq2)
 library(BiocParallel)
@@ -325,7 +385,11 @@ meta$treat    <- factor(meta$treat, levels = c("CC", "LC", "CH", "LH"))
 meta$genotype <- factor(meta$genotype)
 table(habitat = tapply(as.character(meta$habitat), meta$genotype, `[`, 1)) # colonies per habitat
 
-dge <- calcNormFactors(DGEList(counts(dds)))
+dge <- DGEList(counts(dds))
+# expression filter for the urban vs reef gene universe (edgeR filterByExpr, grouped by habitat)
+keep_ur <- filterByExpr(dge, group = meta$habitat)
+table(keep_ur)
+dge <- calcNormFactors(dge[keep_ur, , keep.lib.sizes=FALSE])
 des_ur <- model.matrix(~ habitat + treat, meta)
 v_ur  <- voom(dge, des_ur)
 dc_ur <- duplicateCorrelation(v_ur, des_ur, block = meta$genotype)
@@ -342,92 +406,17 @@ save(urban_reef, degs_urban_reef, fit_ur, dc_ur, file = "../../outputs/transcrip
 ```
 
 
-# SENSITIVITY: RESAMPLED FRAGMENTS
+# CHECK: NO RESAMPLED FRAGMENTS
 
-```{r sensitivity-ramped}
-# Sensitivity check for resampled ("ramped") fragments.
-# Control-temperature tanks (CC, LC) were ramped to heat stress midway through the experiment and some
-# fragments were resampled, so a few CH/LH samples are the SAME fragment as a CC/LC sample, taken later.
-# Main analyses keep these pooled; here the treatment (DESeq2), urban vs reef (limma) and PERMANOVA models
-# are refit WITHOUT them and compared to the pooled results.
-library(DESeq2)
-library(vegan)
-library(permute)
-load("../../outputs/transcriptomics/ssid/deseq2/initial.RData") # dds, design (outliers removed)
-load("../../outputs/transcriptomics/ssid/deseq2/pvals.RData")   # pooled contrast results
-
-# flag resampled fragments using the full design sheet (so pairs split by outlier removal are still caught):
-# a heat-treatment sample whose fragment ID (sampleid) also appears under a control-temperature treatment.
-# To flag them manually instead, add a TRUE/FALSE 'ramped' column to design_ssid.csv.
+```{r check-no-resampled}
+# In O. faveolata, second-cohort fragments resampled as LH (14 May) were removed from the primary analysis (cohort
+# effect; see the O. faveolata script). No S. siderea fragments were resampled, so all samples here were taken on
+# 23 April and no pooled/first-cohort sensitivity model is needed. This confirms it: no heat-treatment sample shares
+# a fragment ID with a control-temperature sample.
 full_design <- read.csv("../../data/transcriptomics/ssid/design_ssid.csv", head=TRUE)
-if ("ramped" %in% names(full_design)) {
-  ramped_ids <- full_design$id[as.logical(full_design$ramped)]
-} else {
-  ramped_ids <- full_design$id[full_design$treat %in% c("CH","LH") &
-                               full_design$sampleid %in% full_design$sampleid[full_design$treat %in% c("CC","LC")]]
-}
-ramped <- design$id %in% ramped_ids
-table(treat = design$treat, ramped = ramped)
-
-if (!any(ramped)) {
-  message("No resampled fragments flagged for ssid; sensitivity check skipped.")
-} else {
-  # 1) treatment contrasts: refit ~ genotype + treat without the resampled fragments
-  dds_noramp <- dds[, !ramped]
-  dds_noramp$genotype <- droplevels(dds_noramp$genotype)
-  dds_noramp$treat    <- droplevels(dds_noramp$treat)
-  dds_noramp <- DESeq(dds_noramp, parallel=TRUE)
-
-  contrasts_list <- list(LC_CC=c("treat","LC","CC"), CH_CC=c("treat","CH","CC"), LH_CC=c("treat","LH","CC"),
-                         CH_LC=c("treat","CH","LC"), LH_CH=c("treat","LH","CH"), LH_LC=c("treat","LH","LC"))
-  sig <- function(r) row.names(r)[!is.na(r$padj) & r$padj < 0.1]
-  res_noramp <- lapply(contrasts_list, function(k) results(dds_noramp, contrast=k))
-  compare <- function(n, pooled, noramp, p_col, lfc_col) {
-    s_p <- row.names(pooled)[!is.na(pooled[[p_col]]) & pooled[[p_col]] < 0.1]
-    s_n <- row.names(noramp)[!is.na(noramp[[p_col]]) & noramp[[p_col]] < 0.1]
-    data.frame(contrast = n, pooled_DEGs = length(s_p), noramp_DEGs = length(s_n),
-               shared = length(intersect(s_p, s_n)),
-               pooled_only = length(setdiff(s_p, s_n)), noramp_only = length(setdiff(s_n, s_p)),
-               LFC_r = round(cor(pooled[[lfc_col]], noramp[[lfc_col]][match(row.names(pooled), row.names(noramp))],
-                                 use="complete.obs"), 3))
-  }
-  sensitivity <- do.call(rbind, lapply(names(contrasts_list), function(n)
-    compare(n, as.data.frame(get(n)), as.data.frame(res_noramp[[n]]), "padj", "log2FoldChange")))
-
-  # 2) urban vs reef: refit the colony-blocked limma model without the resampled fragments
-  library(limma); library(edgeR)
-  load("../../outputs/transcriptomics/ssid/deseq2/urban_reef.RData")
-  meta_nr <- as.data.frame(colData(dds))[!ramped, ]
-  meta_nr$habitat  <- factor(meta_nr$habitat, levels = c("reef", "urban"))
-  meta_nr$treat    <- droplevels(factor(meta_nr$treat, levels = c("CC", "LC", "CH", "LH")))
-  meta_nr$genotype <- droplevels(factor(meta_nr$genotype))
-  dge_nr <- calcNormFactors(DGEList(counts(dds)[, !ramped]))
-  des_nr <- model.matrix(~ habitat + treat, meta_nr)
-  v_nr  <- voom(dge_nr, des_nr)
-  dc_nr <- duplicateCorrelation(v_nr, des_nr, block = meta_nr$genotype)
-  v_nr  <- voom(dge_nr, des_nr, block = meta_nr$genotype, correlation = dc_nr$consensus)
-  dc_nr <- duplicateCorrelation(v_nr, des_nr, block = meta_nr$genotype)
-  fit_nr <- eBayes(lmFit(v_nr, des_nr, block = meta_nr$genotype, correlation = dc_nr$consensus))
-  urban_reef_noramp <- topTable(fit_nr, coef = "habitaturban", number = Inf, sort.by = "none")
-  sensitivity <- rbind(sensitivity, compare("urban_reef", urban_reef, urban_reef_noramp, "adj.P.Val", "logFC"))
-  print(sensitivity)
-  write.csv(sensitivity, file="../../outputs/transcriptomics/ssid/deseq2/sensitivity_ramped_DEGs.csv", row.names=FALSE)
-
-  # 3) PERMANOVA (treatment within colonies) without the resampled fragments
-  load("../../outputs/transcriptomics/ssid/deseq2/vsd.RData")
-  conditions_nr <- design[!ramped, ]
-  conditions_nr$treat    <- factor(conditions_nr$treat, levels = c("CC", "LC", "CH", "LH"))
-  conditions_nr$genotype <- droplevels(factor(conditions_nr$genotype))
-  set.seed(23485)
-  ad_noramp <- adonis2(t(vsd[, !ramped])~genotype+treat, data=conditions_nr, method="manhattan", by="terms",
-                       permutations=how(nperm=1e6, blocks=conditions_nr$genotype))
-  ad_noramp$`Pr(>F)`[1] <- NA
-  print(ad_noramp)
-  write.csv(ad_noramp, file="../../outputs/transcriptomics/ssid/deseq2/sensitivity_ramped_PERMANOVA.csv")
-
-  save(ramped, dds_noramp, res_noramp, urban_reef_noramp, sensitivity, ad_noramp,
-       file="../../outputs/transcriptomics/ssid/deseq2/sensitivity_ramped.RData")
-}
+resampled_ids <- full_design$id[full_design$treat %in% c("CH","LH") &
+                                full_design$sampleid %in% full_design$sampleid[full_design$treat %in% c("CC","LC")]]
+stopifnot(length(resampled_ids) == 0)
 ```
 
 
@@ -458,10 +447,52 @@ venn_treat=venn.diagram(
   cat.fontfamily = "sans",
   cat.just = list(c(0.25,0),c(0.75,0),c(0.5,1))
 )
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/Venn_treatment.pdf", height=12, width=12)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/Venn_treatment.pdf", height=12, width=12, {
 grid.draw(venn_treat)
-dev.off()
+})
+
+# urban vs reef DEGs compared with the stress-response DEGs (does habitat differ in the same genes that respond to
+# OA and/or heat?). Overlap tested with Fisher's exact test within the genes tested in BOTH analyses
+# (DESeq2 contrast with a non-NA padj, and the limma urban vs reef gene universe); same_direction = share of
+# overlapping genes whose urban-minus-reef difference has the same sign as the stress response.
+load("../../outputs/transcriptomics/ssid/deseq2/urban_reef.RData")
+overlap_test <- function(k) {
+  r <- get(k)
+  tested <- intersect(rownames(r)[!is.na(r$padj)], rownames(urban_reef))
+  a <- intersect(degs_urban_reef, tested)
+  b <- intersect(get(paste0("degs_", k)), tested)
+  ov <- intersect(a, b)
+  tab <- matrix(c(length(ov), length(a) - length(ov), length(b) - length(ov),
+                  length(tested) - length(a) - length(b) + length(ov)), nrow = 2)
+  ft <- fisher.test(tab)
+  data.frame(contrast = k, genes_tested = length(tested), urban_reef_DEGs = length(a), contrast_DEGs = length(b),
+             overlap = length(ov), expected = round(length(a) * length(b) / length(tested), 1),
+             odds_ratio = round(unname(ft$estimate), 2), p = signif(ft$p.value, 3),
+             same_direction = if (length(ov)) round(mean(sign(urban_reef[ov, "logFC"]) == sign(r[ov, "log2FoldChange"])), 2) else NA)
+}
+habitat_overlap <- do.call(rbind, lapply(c("LC_CC", "CH_CC", "LH_CC"), overlap_test))
+habitat_overlap
+write.csv(habitat_overlap, file="../../outputs/transcriptomics/ssid/deseq2/urban_reef_vs_treatment_overlap.csv", row.names=FALSE)
+
+venn_habitat=venn.diagram(
+  x = list("Urban vs reef"=degs_urban_reef, "LC_CC"=degs_LC_CC, "CH_CC"=degs_CH_CC, "LH_CC"=degs_LH_CC),
+  filename=NULL,
+  col = "transparent",
+  fill = c("#636363","#0571b0","#f4a582","#ca0020"),
+  alpha = 0.5,
+  label.col = "black",
+  cex = 2.5,
+  fontfamily = "sans",
+  fontface = "bold",
+  cat.col = c("#636363","#0571b0","#f4a582","#ca0020"),
+  cat.cex = 2.5,
+  cat.fontfamily = "sans"
+)
+save_plot(file="../../outputs/transcriptomics/ssid/deseq2/Venn_habitat_treatment.pdf", height=12, width=12, {
+grid.draw(venn_habitat)
+})
 ```
+
 
 
 # GO/KOG EXPORT
@@ -476,6 +507,7 @@ load("../../outputs/transcriptomics/ssid/deseq2/urban_reef.RData")
 urban_reef.p=data.frame("gene"=row.names(urban_reef))
 urban_reef.p$lpv=-log(urban_reef$adj.P.Val,10)
 urban_reef.p$lpv[urban_reef$t<0]=urban_reef.p$lpv[urban_reef$t<0]*-1
+urban_reef.p=urban_reef.p[!is.na(urban_reef.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(urban_reef.p)
 write.csv(urban_reef.p,file="../../outputs/transcriptomics/ssid/deseq2/urban_reef_lpv.csv",row.names=F,quote=F)
 save(urban_reef.p,file="../../outputs/transcriptomics/ssid/deseq2/urban_reef_lpv.RData")
@@ -487,6 +519,7 @@ source=LC_CC[!is.na(LC_CC$pvalue),]
 LC_CC.p=data.frame("gene"=row.names(source))
 LC_CC.p$lpv=-log(source[,"padj"],10)
 LC_CC.p$lpv[source$stat<0]=LC_CC.p$lpv[source$stat<0]*-1
+LC_CC.p=LC_CC.p[!is.na(LC_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LC_CC.p)
 write.csv(LC_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.csv",row.names=F,quote=F)
 save(LC_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.RData")
@@ -495,6 +528,7 @@ source=CH_CC[!is.na(CH_CC$pvalue),]
 CH_CC.p=data.frame("gene"=row.names(source))
 CH_CC.p$lpv=-log(source[,"padj"],10)
 CH_CC.p$lpv[source$stat<0]=CH_CC.p$lpv[source$stat<0]*-1
+CH_CC.p=CH_CC.p[!is.na(CH_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(CH_CC.p)
 write.csv(CH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.csv",row.names=F,quote=F)
 save(CH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.RData")
@@ -503,6 +537,7 @@ source=LH_CC[!is.na(LH_CC$pvalue),]
 LH_CC.p=data.frame("gene"=row.names(source))
 LH_CC.p$lpv=-log(source[,"padj"],10)
 LH_CC.p$lpv[source$stat<0]=LH_CC.p$lpv[source$stat<0]*-1
+LH_CC.p=LH_CC.p[!is.na(LH_CC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_CC.p)
 write.csv(LH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.csv",row.names=F,quote=F)
 save(LH_CC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.RData")
@@ -511,6 +546,7 @@ source=CH_LC[!is.na(CH_LC$pvalue),]
 CH_LC.p=data.frame("gene"=row.names(source))
 CH_LC.p$lpv=-log(source[,"padj"],10)
 CH_LC.p$lpv[source$stat<0]=CH_LC.p$lpv[source$stat<0]*-1
+CH_LC.p=CH_LC.p[!is.na(CH_LC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(CH_LC.p)
 write.csv(CH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.csv",row.names=F,quote=F)
 save(CH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.RData")
@@ -519,6 +555,7 @@ source=LH_LC[!is.na(LH_LC$pvalue),]
 LH_LC.p=data.frame("gene"=row.names(source))
 LH_LC.p$lpv=-log(source[,"padj"],10)
 LH_LC.p$lpv[source$stat<0]=LH_LC.p$lpv[source$stat<0]*-1
+LH_LC.p=LH_LC.p[!is.na(LH_LC.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_LC.p)
 write.csv(LH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.csv",row.names=F,quote=F)
 save(LH_LC.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.RData")
@@ -527,6 +564,7 @@ source=LH_CH[!is.na(LH_CH$pvalue),]
 LH_CH.p=data.frame("gene"=row.names(source))
 LH_CH.p$lpv=-log(source[,"padj"],10)
 LH_CH.p$lpv[source$stat<0]=LH_CH.p$lpv[source$stat<0]*-1
+LH_CH.p=LH_CH.p[!is.na(LH_CH.p$lpv),] # drop genes with no adjusted p-value (NA padj, e.g. independent filtering)
 head(LH_CH.p)
 write.csv(LH_CH.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.csv",row.names=F,quote=F)
 save(LH_CH.p,file="../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.RData")
@@ -1007,6 +1045,8 @@ urban_reef_degs %>%
 
 load("../../outputs/transcriptomics/ssid/deseq2/vsd.RData")
 vsd_treatment <- subset(vsd, rownames(vsd) %in% commongenes_treatment_heatmap$gene)
+# keep the significance metric in the same gene order as the vsd rows
+commongenes_treatment_heatmap <- commongenes_treatment_heatmap[match(rownames(vsd_treatment), commongenes_treatment_heatmap$gene), ]
 vsd_site <- subset(vsd, rownames(vsd) %in% urban_reef_heatmap$gene)
 # keep the significance metric in the same gene order as the vsd rows
 urban_reef_heatmap <- urban_reef_heatmap[match(rownames(vsd_site), urban_reef_heatmap$gene), ]
@@ -1014,48 +1054,61 @@ urban_reef_heatmap <- urban_reef_heatmap[match(rownames(vsd_site), urban_reef_he
 # Make sure the 'uniHeatmap.R' script is in your working directory
 source("uniHeatmap.R")
 
+# heatmap drawing with square cells; the page is sized to fit the cells.
+# Up to 100 genes: 9-pt cells with gene names; more genes: smaller square cells (page ~12.5 in tall), names hidden.
+draw_heatmap <- function(file, vsd, gene_names, metric, cutoff, sort, gaps_col = NULL) {
+  n <- sum(metric <= cutoff, na.rm = TRUE)
+  message(basename(file), ": ", n, " annotated genes")
+  if (n < 2) return(invisible(NULL)) # skipped: too few genes pass this cutoff
+  show_names <- n <= 100
+  cell <- if (show_names) 9 else max(4, min(9, 900 / n))
+  pdf_w <- (ncol(vsd) * cell + (if (show_names) 330 else 60) + 110) / 72
+  pdf_h <- (n * cell + 140) / 72
+  save_plot(file = file, width = pdf_w, height = pdf_h, {
+    uniHeatmap(vsd = vsd, gene.names = gene_names, metric = metric, cutoff = cutoff, sort = sort, pdf = F,
+               cellwidth = cell, cellheight = cell, fontsize_row = 7, fontsize_col = min(6, cell * 0.8),
+               show_rownames = show_names, gaps_col = gaps_col)
+  })
+}
+# shows the heatmaps drawn in a loop in the knitted HTML
+show_heatmaps <- function(imgs) {
+  imgs <- unlist(Filter(Negate(is.null), imgs))
+  if (length(imgs) && isTRUE(getOption("knitr.in.progress"))) knitr::include_graphics(imgs, rel_path = FALSE, dpi = 150) else invisible(imgs)
+}
+
 # Treatment
 # creating a lookup table of gene ID to gene annotations
 gene_names <- as.data.frame(cbind(commongenes_treatment_heatmap$gene, commongenes_treatment_heatmap$annot))
-
-# heatmaps
-# cutoff -1 (0.1), -1.3 (0.05), -2 (0.01), -3 (0.001), -6 (1e6)
-# p < 0.1
-pdf(file="../../outputs/transcriptomics/ssid/deseq2/heatmap_treatment_p0.1.pdf", height=25, width=50)
-uniHeatmap(vsd=vsd_treatment,gene.names=gene_names,
-           metric=-(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
-           # metric2=-(abs(MacN_Emerald$lpv_ofav)),
-           cutoff=-1, 
-           sort=c(1:ncol(vsd_treatment)), # overrides sorting of columns according to hierarchical clustering
-           # sort=order(design_comb$full_id), 
-           cex=0.8,
-           pdf=F,
-)
-dev.off()
+# long annotations are shortened for the row labels (full annotations are in the DEG tables)
+gene_names$V2 <- ifelse(nchar(gene_names$V2) > 60, paste0(substr(gene_names$V2, 1, 57), "..."), gene_names$V2)
+# heatmaps of LH vs CC genes, columns in design order (grouped by treatment, gaps between treatments)
+treat_gaps <- cumsum(rle(as.character(design$treat))$lengths)
+treat_gaps <- treat_gaps[-length(treat_gaps)]
+treat_files <- c("-1" = "0.1", "-3" = "0.001", "-6" = "1e-6")
+hm_treatment <- lapply(c(-1, -3, -6), function(cut) # p < 0.1, 0.001, 1e-6; cutoffs with < 2 annotated genes are skipped
+  draw_heatmap(file = paste0("../../outputs/transcriptomics/ssid/deseq2/heatmap_treatment_p", treat_files[as.character(cut)], ".pdf"),
+               vsd = vsd_treatment, gene_names = gene_names,
+               metric = -(abs(commongenes_treatment_heatmap$lpv.LH_CC)), # metric of gene significance
+               cutoff = cut, sort = c(1:ncol(vsd_treatment)), gaps_col = treat_gaps))
+show_heatmaps(hm_treatment)
 
 # Urban vs reef
 # creating a lookup table of gene ID to gene annotations
 gene_names_site <- as.data.frame(cbind(urban_reef_heatmap$gene, urban_reef_heatmap$annot))
+# long annotations are shortened for the row labels (full annotations are in urban_reef_DEGs.csv)
+gene_names_site$V2 <- ifelse(nchar(gene_names_site$V2) > 60, paste0(substr(gene_names_site$V2, 1, 57), "..."), gene_names_site$V2)
 # columns ordered by habitat, then site
 # (uniHeatmap orders columns by order(sort), so 'sort' is a sorting key)
 site_key <- 10 * as.numeric(factor(ifelse(design$site %in% c("Star","MacN"), "urban", "reef"), levels=c("reef","urban"))) +
             as.numeric(factor(as.character(design$site), levels=c("Emerald","Rainbow","Star","MacN")))
-# page height scales with the number of genes passing each cutoff
-hm_height <- function(cut) max(4, 2 + 0.15 * sum(-(abs(urban_reef_heatmap$lpv.urban_reef)) <= cut))
+n_reef <- sum(site_key < 20) # reef columns come first; a gap separates reef from urban
 
-# cutoff -2 (p < 0.01), -3 (p < 0.001), -6 (p < 1e-6)
-for (cut in c(-2, -3, -6)) {
-  if (sum(-(abs(urban_reef_heatmap$lpv.urban_reef)) <= cut) < 2) next
-  pdf(file=paste0("../../outputs/transcriptomics/ssid/deseq2/heatmap_urban_reef_p1e", cut, ".pdf"), height=hm_height(cut), width=24)
-  uniHeatmap(vsd=vsd_site,gene.names=gene_names_site,
-             metric=-(abs(urban_reef_heatmap$lpv.urban_reef)), # metric of gene significance
-             cutoff=cut,
-             sort=site_key, # columns ordered by habitat and site instead of clustering
-             cex=0.8,
-             pdf=F,
-  )
-  dev.off()
-}
+hm_site <- lapply(c(-1, -2, -3, -6), function(cut) # p < 0.1, 0.01, 0.001, 1e-6; cutoffs with < 2 annotated genes are skipped
+  draw_heatmap(file = paste0("../../outputs/transcriptomics/ssid/deseq2/heatmap_urban_reef_p1e", cut, ".pdf"),
+               vsd = vsd_site, gene_names = gene_names_site,
+               metric = -(abs(urban_reef_heatmap$lpv.urban_reef)), # metric of gene significance
+               cutoff = cut, sort = site_key, gaps_col = n_reef)) # columns ordered by habitat and site
+show_heatmaps(hm_site)
 ```
 
 

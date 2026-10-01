@@ -27,6 +27,23 @@ knitr::opts_chunk$set(
   fig.height = 6,
   dpi        = 300
 )
+
+# save_plot(): writes a figure to PDF (outputs folder) and shows the same figure in the knitted HTML.
+# The plotting code is run once for the PDF and once for a PNG copy at the same size, which is embedded in
+# the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
+save_plot <- function(file, width, height, expr) {
+  expr <- substitute(expr); env <- parent.frame()
+  pdf(file = file, width = width, height = height)
+  tryCatch(eval(expr, env), finally = dev.off())
+  if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
+    ok <- try(eval(expr, env), silent = TRUE)
+    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    return(invisible(file)) }
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
+  png(png_file, width = width, height = height, units = "in", res = 150)
+  tryCatch(eval(expr, env), finally = dev.off())
+  knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
+}
 ```
 
 
@@ -94,37 +111,13 @@ tank %>%
   dplyr::select(-TA_selected) %>%
   filter(!bottle %in% ta_bottles$bottle[ta_bottles$ta_flag]) -> tank # weekly bottles with no accepted duplicate pair are excluded
 
-# species/treatment labels in the data file come from a fixed tank lookup, so they don't follow corals that
-# were moved after tank failures. Corrected here (data file unchanged); second heat-stress groups keep their
-# original treatment label (CC/LC), as for T4, T11 and T12
-bottle_relabel <- tribble(
-  ~bottle,   ~species_new, ~treatment_new, ~reason,
-  21042609, "Ofav", "CC", "Ofav CC corals moved T1 -> T9 after T1 failed (Apr 24)",
-  21050309, "Ofav", "CC", "Ofav CC corals in T9",
-  21051009, "Ofav", "CC", "Ofav CC corals in T9 (second heat-stress group)",
-  21051709, "Ofav", "CC", "Ofav CC corals in T9 (second heat-stress group)",
-  21042610, "Ofav", "LH", "Ofav LH corals moved T8 -> T10 after T8 failed (Apr 24)",
-  21050310, "Ofav", "LH", "Ofav LH corals in T10",
-  21051010, "Ofav", "LH", "Ofav LH corals in T10",
-  21060105, "Ofav", "CC", "Ofav CC corals moved T9 -> T5 after T9 failed (May 24)",
-  21060102, "Ssid", "LC", "Ssid LC corals moved T11 -> T2 after T11 failed (May 24)")
-
-# samples from tanks that held no experimental corals at the time; kept in the data file, excluded from means
-bottle_exclude <- tribble(
-  ~bottle,   ~reason,
-  21041903, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24); tank at low pH",
-  21042603, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24); tank at low pH",
-  21050303, "T3 not in use (Ssid CC corals in T12 Mar 20-May 24)",
-  21041909, "T9 before Ofav CC corals were moved in (Apr 25)",
-  21041910, "T10 before Ofav LH corals were moved in (Apr 25)")
-stopifnot(all(c(bottle_relabel$bottle, bottle_exclude$bottle) %in% tank$bottle))
-
-tank %>%
-  left_join(dplyr::select(bottle_relabel, -reason), by = "bottle") %>%
-  mutate(species = coalesce(species_new, species),
-         treatment = coalesce(treatment_new, treatment)) %>%
-  dplyr::select(-species_new, -treatment_new) %>%
-  filter(!bottle %in% bottle_exclude$bottle) -> tank
+# species/treatment labels in the data file follow the corals when they were moved after tank failures (the
+# `correction` column records the 9 bottles whose labels were corrected from the original fixed tank lookup;
+# second heat-stress groups keep their original treatment label, CC/LC, as for T4, T11 and T12). Bottles from
+# tanks that held no experimental corals at the time are kept in the file with the reason in `exclude`.
+tank %>% filter(!is.na(exclude) & exclude != "") %>% dplyr::select(bottle, tank, exclude) # bottles excluded
+tank <- tank %>% filter(is.na(exclude) | exclude == "")
+stopifnot(sum(tank$correction != "", na.rm = TRUE) == 9)
 
 tank$species <- as.factor(tank$species)
 tank$treatment <- as.factor(tank$treatment)
@@ -342,7 +335,7 @@ shapiro.test(incubations_ofav_night$calcificationadj) # normal
 shapiro.test(incubations_ssid_day$calcificationadj) # normal
 shapiro.test(incubations_ssid_night$calcificationadj) # p = 0.03 on raw rates (no outliers removed); model residuals are normal (see residual checks)
 
-pdf("../../outputs/calcification/urban incubations ofav normality.pdf") # histograms and Q-Q plots
+save_plot("../../outputs/calcification/urban incubations ofav normality.pdf", width = 7, height = 7, { # histograms and Q-Q plots
 par(mfrow=c(2,2))
 hist(incubations_ofav_day$calcificationadj)
 hist(incubations_ofav_night$calcificationadj)
@@ -350,9 +343,9 @@ qqnorm(incubations_ofav_day$calcificationadj)
 qqline(incubations_ofav_day$calcificationadj)
 qqnorm(incubations_ofav_night$calcificationadj)
 qqline(incubations_ofav_night$calcificationadj)
-dev.off()
+})
 
-pdf("../../outputs/calcification/urban incubations ssid normality.pdf") # histograms and Q-Q plots
+save_plot("../../outputs/calcification/urban incubations ssid normality.pdf", width = 7, height = 7, { # histograms and Q-Q plots
 par(mfrow=c(2,2))
 hist(incubations_ssid_day$calcificationadj)
 hist(incubations_ssid_night$calcificationadj)
@@ -360,7 +353,7 @@ qqnorm(incubations_ssid_day$calcificationadj)
 qqline(incubations_ssid_day$calcificationadj)
 qqnorm(incubations_ssid_night$calcificationadj)
 qqline(incubations_ssid_night$calcificationadj)
-dev.off()
+})
 ```
 
 
@@ -913,7 +906,7 @@ outliers_ssid <- boxplot(incubations_mean_ssid$calcificationavg, plot=T)$out # n
 shapiro.test(incubations_mean_ofav$calcificationavg) # normal
 shapiro.test(incubations_mean_ssid$calcificationavg) # normal
 
-pdf("../../outputs/calcification/urban incubations daynight normality.pdf") # histograms and Q-Q plots
+save_plot("../../outputs/calcification/urban incubations daynight normality.pdf", width = 7, height = 7, { # histograms and Q-Q plots
 par(mfrow=c(2,2))
 hist(incubations_mean_ofav$calcificationavg)
 hist(incubations_mean_ssid$calcificationavg)
@@ -921,7 +914,7 @@ qqnorm(incubations_mean_ofav$calcificationavg)
 qqline(incubations_mean_ofav$calcificationavg)
 qqnorm(incubations_mean_ssid$calcificationavg)
 qqline(incubations_mean_ssid$calcificationavg)
-dev.off()
+})
 ```
 
 
@@ -1129,7 +1122,7 @@ calc_models_final <- list(ofav_day = lm_ofav_day_noint, ofav_night = lm_ofav_nig
 # Shapiro test on model residuals, p-values below 0.05 indicate violations of normality assumptions
 lapply(calc_models_final, function(m) shapiro.test(resid(m)))
 
-pdf("../../outputs/calcification/urban incubations model residuals.pdf", width = 10, height = 18)
+save_plot("../../outputs/calcification/urban incubations model residuals.pdf", width = 10, height = 18, {
 par(mfrow = c(6, 3))
 for (nm in names(calc_models_final)) {
   m <- calc_models_final[[nm]]
@@ -1140,7 +1133,7 @@ for (nm in names(calc_models_final)) {
   abline(h = 0, lty = 2)
   qqnorm(re, main = paste(nm, "genotype effects Q-Q")); qqline(re) # random effect normality
 }
-dev.off()
+})
 
 capture.output({
   cat("=== Shapiro-Wilk test on model residuals ===\n")

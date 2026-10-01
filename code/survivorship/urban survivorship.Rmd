@@ -59,17 +59,13 @@ urban <- urban %>% filter(exclude == "") %>% dplyr::select(-exclude)
 # unique genotype ID (genotype numbers are nested within site and species)
 urban$geno_id <- paste(urban$species, urban$site, urban$geno, sep = "_")
 
-# second heat-stress cohort (control temperature fragments moved to heat): the data file dates this ramp from
-# the experiment schedule (ramp 4/23, 33 C set point 5/7). The tank loggers show the ambient tanks at 22.5 C
-# through Apr 24 and at 24.0 C on Apr 28 23:15, reaching 33 C on May 10 (0.75 C/day), i.e. ramp from Apr 26
-# and set point May 10, seven days after the first cohort reached its set point (Apr 19). Dates follow the loggers
-# (data file unchanged): ramp 4/26, start 5/10; the control temperature period ends the day before (5/9).
-# Days are recalculated from start and end.
+# second heat-stress cohort (control temperature fragments moved to heat): dates in the data file follow the
+# tank loggers, which show the ambient tanks at 22.5 C through Apr 24 and at 24.0 C on Apr 28 23:15, reaching
+# 33 C on May 10 (0.75 C/day): ramp 4/26, set point 5/10, seven days after the first cohort reached its set point
+# (Apr 19); the control temperature period ends the day before (5/9). The file's `correction` column records the
+# original schedule dates (ramp 4/23, set point 5/7, control end 5/6). Days are calculated from start and end.
 urban %>%
-  mutate(ramp  = if_else(ramp == "4/23/21", "4/26/21", ramp),
-         start = if_else(start == "5/7/21", "5/10/21", start),
-         end   = if_else(treat %in% c("CC", "LC") & end == "5/6/21", "5/9/21", end),
-         days  = as.numeric(as.Date(end, "%m/%d/%y") - as.Date(start, "%m/%d/%y"))) -> urban
+  mutate(days = as.numeric(as.Date(end, "%m/%d/%y") - as.Date(start, "%m/%d/%y"))) -> urban
 stopifnot(all(urban$days >= 0), !any(urban$ramp == "4/23/21"))
 str(urban)
 head(urban)

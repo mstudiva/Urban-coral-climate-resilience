@@ -44,7 +44,6 @@ library(ggpubr)
 templog <- read.csv(file="../../data/treatments/urban temp.csv", head=T) 
 templog$Time<- lubridate::mdy_hms(templog$Time) # reformats time as month day year hours minutes seconds
 templog$OA <- as.factor(templog$OA)
-templog$Thermal <- as.factor(templog$Thermal)
 str(templog)
 
 temp_melt <- pivot_longer(templog, Ssid.C.C:Ofav2.L.H, names_to = "spp.ph.temp", values_to = "measurement") # reshapes dataframe to long format
@@ -65,17 +64,19 @@ event_start <- lubridate::ymd_hm("2021-04-28 23:00")
 event_end   <- lubridate::ymd_hm("2021-04-30 10:00")
 in_event <- function(time) time >= event_start & time < event_end
 
-# thermal periods by treatment group: the two heat-stress groups were ramped ~3 weeks apart, so the
-# row-level Thermal label in the data file doesn't apply to every column. Periods are set per group:
+# thermal periods by treatment group: the two heat-stress groups were ramped ~3 weeks apart, so periods
+# are set per group from the dates (the data files carry no period label, only the OA ramp/OA label,
+# which applies to all tanks):
 #   control: before the first ramp (Apr 5), all tanks
 #   thermal: original heat-stress tanks (temp H) from Apr 19 12:00, when 33 C was reached;
 #            ambient tanks (temp C) from Apr 19 12:00 until their own ramp began (~Apr 25);
 #            second heat-stress group (Ssid2/Ofav2 columns, recorded only once at 33 C) throughout
 #   ramp:    everything else (ramps, and the ambient tanks' ramp Apr 28-May 10)
+control_end   <- lubridate::ymd("2021-04-05")        # first heat ramp began
 thermal_start <- lubridate::ymd_hm("2021-04-19 12:00")
 temp_melt %>%
   mutate(period = case_when(
-    Thermal == "control" ~ "control",
+    Time < control_end ~ "control",
     str_detect(species, "2") ~ "thermal",
     temp == "H" & Time >= thermal_start ~ "thermal",
     temp == "C" & Time >= thermal_start & Time < lubridate::ymd("2021-04-25") ~ "thermal",
@@ -144,7 +145,6 @@ write.csv(temp_mean, file = "../../outputs/treatments/urban temp mean.csv")
 ```{r ph-data-import}
 phlog <- read.csv(file="../../data/treatments/urban ph.csv", head=T) 
 phlog$Time<- lubridate::mdy_hms(phlog$Time)
-phlog$Thermal <- as.factor(phlog$Thermal)
 str(phlog)
 
 ph_melt <- pivot_longer(phlog, Ssid.C.C:Ofav.L.H, names_to = "spp.ph.temp", values_to = "measurement")

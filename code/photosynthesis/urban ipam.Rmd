@@ -137,18 +137,13 @@ ipam <- ipam %>%
 
 # -----------------------------------------------------------------------------
 # Second heat-stress cohort timing (replicates 1 and 3: control temperature
-# fragments moved to heat, CC -> CH and LC -> LH). Timepoint labels in the data
-# file follow the planned schedule (ramp 23 April: 26 April = day 3). The tank
-# loggers show the ramp began 26 April and reached 33 C on 10 May, 21 days after
-# the first cohort, so each late-cohort measurement moves back one scheduled
-# timepoint (26 April = day 0, 10 May = day 14), matching the first cohort's
-# labels for the same stage of the ramp. Data file unchanged.
+# fragments moved to heat, CC -> CH and LC -> LH). Timepoints in the data file
+# are already on the logger timeline (ramp began 26 April = day 0, 33 C on
+# 10 May = day 14), matching the first cohort's labels for the same stage of
+# the ramp; the file's `correction` column records the original labels, which
+# followed the planned 23 April schedule.
 # -----------------------------------------------------------------------------
-late_time <- c(`3` = 0, `7` = 3, `10` = 7, `14` = 10, `17` = 14, `21` = 17,
-               `24` = 21, `28` = 24, `31` = 28, `35` = 31, `39` = 35, `42` = 39)
-late_cohort <- ipam$temp == "high temp" & ipam$replicate %in% c(1, 3)
-stopifnot(all(as.character(ipam$time[late_cohort]) %in% names(late_time)))
-ipam$time[late_cohort] <- unname(late_time[as.character(ipam$time[late_cohort])])
+stopifnot(!any(ipam$temp == "high temp" & ipam$replicate %in% c(1, 3) & ipam$time == "42"))
 
 str(ipam)
 ```
@@ -560,7 +555,10 @@ estimate_rho <- function(dat) {
 #   basis (bs = "sz"): one curve per level, constrained so the level curves
 #   average zero at every time. s(time) is therefore the overall trajectory
 #   (averaged across treatments and sites), and each sz term tests whether
-#   the levels of that factor differ in trajectory shape. With ordinary
+#   the levels of that factor follow different curves over time. The sz
+#   curves are not individually centred, so they carry each level's average
+#   offset as well as its shape: the test covers differences in level and
+#   shape together (the joint tests isolate the time-averaged level). With ordinary
 #   by = factor smooths plus a global s(time), the same curve can be split
 #   between terms in many ways; the model is then not identifiable, mgcv
 #   silently drops basis functions (gam.side) and the smooth-term tests are
@@ -569,11 +567,11 @@ estimate_rho <- function(dat) {
 #   s(time):                    overall time trajectory, averaged across
 #                               treatments and sites
 #   s(treatment, time, bs="sz"): treatment deviations from the overall
-#                               trajectory — tests whether the shape of the
-#                               decline differs among treatment combinations
+#                               trajectory — tests whether treatments follow
+#                               different curves (level and/or shape)
 #   s(site, time, bs="sz"):     site deviations from the overall trajectory —
 #                               key term for testing whether resilient sites
-#                               decline differently over time
+#                               follow different curves over time
 #
 # Random smooth:
 #   s(time, exp_unit, bs = "fs"): factor-smooth fitting a smooth trajectory
@@ -651,9 +649,10 @@ fit_bam <- function(dat, rho_est) {
 #   edf = 1: approximately linear. Higher edf = more curvature.
 #   s(time) tests the overall change over time (averaged across treatments
 #   and sites). A significant s(treatment,time) term indicates that
-#   treatments differ in trajectory shape; a significant s(site,time) term
-#   indicates that sites differ in trajectory shape — the key signal for the
-#   resilience hypothesis.
+#   treatments follow different curves over time (in average level and/or
+#   shape); likewise s(site,time) for sites — the key signal for the
+#   resilience hypothesis. The joint tests give the time-averaged level
+#   differences on their own.
 #
 # Arguments:
 #   mod:      fitted bam model object
@@ -1132,6 +1131,52 @@ run_full_analysis <- function(dat, mod_name) {
 
 ---
 
+```{r effects-function}
+# --- extract_effects() ---------------------------------------------------------
+# Time-averaged treatment, site and treatment x site effects expressed as
+# deviations from the overall mean, computed from the fitted model's estimated
+# marginal means (averaged over the observed timepoints). Replaces the model's
+# parametric coefficient table, whose coefficients are coded relative to a
+# reference group and whose main effects are absorbed by the sz smooths.
+#   overall mean: mean of all treatment x site cells
+#   treatment / site: level mean minus overall mean (emmeans "eff" contrasts)
+#   treatment x site: cell mean minus its treatment and site means plus the
+#     overall mean (interaction "eff" contrasts)
+# Tests are unadjusted t-tests against zero. This chunk is kept outside the
+# helper-functions chunk so adding it does not invalidate the cached models.
+#
+# Arguments:
+#   mod:      fitted bam model (results_*$model)
+#   dat:      the data subset the model was fitted to (for the timepoints)
+#   mod_name: character label
+# Returns:
+#   data frame: term, estimate, SE, df, t_ratio, p_value, model
+extract_effects <- function(mod, dat, mod_name) {
+  at  <- list(time = unique(dat$time))
+  tidy <- function(x, term) {
+    x <- as.data.frame(x)
+    data.frame(term = term, estimate = x$estimate, SE = x$SE, df = x$df,
+               t_ratio = x$t.ratio, p_value = x$p.value)
+  }
+  grand <- as.data.frame(emmeans(mod, ~ 1, at = at))
+  grand <- data.frame(term = "overall mean", estimate = grand$emmean, SE = grand$SE,
+                      df = grand$df, t_ratio = NA, p_value = NA)
+  trt  <- contrast(emmeans(mod, ~ treatment, at = at), method = "eff", adjust = "none")
+  site <- contrast(emmeans(mod, ~ site, at = at), method = "eff", adjust = "none")
+  int  <- contrast(emmeans(mod, ~ treatment * site, at = at),
+                   interaction = c("eff", "eff"), adjust = "none")
+  int_df <- as.data.frame(int)
+  bind_rows(
+    grand,
+    tidy(trt,  paste0("treatment ", sub(" effect$", "", as.data.frame(trt)$contrast))),
+    tidy(site, paste0("site ", sub(" effect$", "", as.data.frame(site)$contrast))),
+    tidy(int,  paste0("treatment x site ", sub(" effect$", "", int_df$treatment_eff), " : ",
+                      sub(" effect$", "", int_df$site_eff)))
+  ) %>%
+    mutate(model = mod_name)
+}
+```
+
 # *Orbicella faveolata* — Control {.tabset}
 
 All treatments, timepoints < 21 days (control period and the first heat ramp). Tests whether pH affects
@@ -1172,13 +1217,13 @@ knitr::kable(
 )
 ```
 
-## Parametric coefficients
+## Effects (vs overall mean)
 
 ```{r ofav-control-params}
 knitr::kable(
-  results_ofav_control$stats$parametric,
+  extract_effects(results_ofav_control$model, ipam_ofav_control, "ofav_control"),
   digits  = 4,
-  caption = "Fixed effect estimates — O. faveolata control"
+  caption = "Time-averaged effects (deviations from the overall mean) — O. faveolata control"
 )
 ```
 
@@ -1264,13 +1309,13 @@ knitr::kable(
 )
 ```
 
-## Parametric coefficients
+## Effects (vs overall mean)
 
 ```{r ofav-heat-params}
 knitr::kable(
-  results_ofav_heat$stats$parametric,
+  extract_effects(results_ofav_heat$model, ipam_ofav_heat, "ofav_heat"),
   digits  = 4,
-  caption = "Fixed effect estimates — O. faveolata heat"
+  caption = "Time-averaged effects (deviations from the overall mean) — O. faveolata heat"
 )
 ```
 
@@ -1355,13 +1400,13 @@ knitr::kable(
 )
 ```
 
-## Parametric coefficients
+## Effects (vs overall mean)
 
 ```{r ssid-control-params}
 knitr::kable(
-  results_ssid_control$stats$parametric,
+  extract_effects(results_ssid_control$model, ipam_ssid_control, "ssid_control"),
   digits  = 4,
-  caption = "Fixed effect estimates — S. siderea control"
+  caption = "Time-averaged effects (deviations from the overall mean) — S. siderea control"
 )
 ```
 
@@ -1446,13 +1491,13 @@ knitr::kable(
 )
 ```
 
-## Parametric coefficients
+## Effects (vs overall mean)
 
 ```{r ssid-heat-params}
 knitr::kable(
-  results_ssid_heat$stats$parametric,
+  extract_effects(results_ssid_heat$model, ipam_ssid_heat, "ssid_heat"),
   digits  = 4,
-  caption = "Fixed effect estimates — S. siderea heat"
+  caption = "Time-averaged effects (deviations from the overall mean) — S. siderea heat"
 )
 ```
 
@@ -1516,7 +1561,12 @@ all_results <- list(
 
 # Stack each table type across all four datasets
 all_fit         <- bind_rows(lapply(all_results, function(r) r$stats$fit))
-all_parametric  <- bind_rows(lapply(all_results, function(r) r$stats$parametric))
+all_effects     <- bind_rows(
+  extract_effects(results_ofav_control$model, ipam_ofav_control, "ofav_control"),
+  extract_effects(results_ofav_heat$model,    ipam_ofav_heat,    "ofav_heat"),
+  extract_effects(results_ssid_control$model, ipam_ssid_control, "ssid_control"),
+  extract_effects(results_ssid_heat$model,    ipam_ssid_heat,    "ssid_heat")
+)
 all_smooths     <- bind_rows(lapply(all_results, function(r) r$stats$smooths))
 all_kcheck      <- bind_rows(lapply(all_results, function(r) r$kcheck))
 all_means       <- bind_rows(lapply(all_results, function(r) r$emmeans$means))
@@ -1556,7 +1606,7 @@ write_xlsx(
     "Model fit"                = all_fit,
     "Rho estimates"            = rho_summary,
     "Joint tests"              = all_joint_tests,
-    "Parametric coefficients"  = all_parametric,
+    "Effects vs overall mean"  = all_effects,
     "Smooth significance"      = all_smooths,
     "k.check"                  = all_kcheck,
     "Estimated marginal means" = all_means,

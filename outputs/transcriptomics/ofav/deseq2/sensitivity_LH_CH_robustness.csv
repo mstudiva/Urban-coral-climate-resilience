@@ -1,0 +1,9 @@
+"fit","LH_n","LH_CH_DEGs","LH_CH_shared_with_primary","LH_CH_LFC_r","LH_CC_DEGs","LH_CC_shared_with_primary","LH_CC_LFC_r","LH_LC_DEGs","LH_LC_shared_with_primary","LH_LC_LFC_r"
+"primary",6,19,19,1,2252,2252,1,1678,1678,1
+"no count replacement",6,19,19,1,2252,2252,1,1678,1678,1
+"without Ofav_132 (Eo4-4)",5,3,3,0.91,1661,1559,0.94,1341,1265,0.934
+"without Ofav_133 (Eo5-4)",5,12,10,0.911,1505,1416,0.922,1310,1234,0.927
+"without Ofav_134 (Ro5-4)",5,3,3,0.903,1226,1204,0.921,1241,1186,0.913
+"without Ofav_136 (Mo4-4)",5,11,11,0.866,2178,1818,0.901,1361,1252,0.875
+"without Ofav_137 (Mo5-4)",5,947,16,0.899,3370,2052,0.916,2094,1509,0.919
+"without Ofav_138 (CR049)",5,13,10,0.887,1310,1257,0.907,1260,1171,0.91

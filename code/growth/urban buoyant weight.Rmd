@@ -27,6 +27,23 @@ knitr::opts_chunk$set(
   fig.height = 6,
   dpi        = 300
 )
+
+# save_plot(): writes a figure to PDF (outputs folder) and shows the same figure in the knitted HTML.
+# The plotting code is run once for the PDF and once for a PNG copy at the same size, which is embedded in
+# the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
+save_plot <- function(file, width, height, expr) {
+  expr <- substitute(expr); env <- parent.frame()
+  pdf(file = file, width = width, height = height)
+  tryCatch(eval(expr, env), finally = dev.off())
+  if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
+    ok <- try(eval(expr, env), silent = TRUE)
+    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    return(invisible(file)) }
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
+  png(png_file, width = width, height = height, units = "in", res = 150)
+  tryCatch(eval(expr, env), finally = dev.off())
+  knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
+}
 ```
 
 
@@ -120,7 +137,7 @@ shapiro.test(bw_ofav$growthadj) # meets normality assumptions
 
 shapiro.test(bw_ssid$growthadj) # violates normality assumptions
 
-pdf("../../outputs/growth/urban bw normality.pdf")
+save_plot("../../outputs/growth/urban bw normality.pdf", width = 7, height = 7, {
 par(mfrow=c(2,2))
 hist(bw_ofav$growthadj)
 hist(bw_ssid$growthadj)
@@ -128,7 +145,7 @@ qqnorm(bw_ofav$growthadj)
 qqline(bw_ofav$growthadj)
 qqnorm(bw_ssid$growthadj)
 qqline(bw_ssid$growthadj)
-dev.off() # despite violation of SW assumptions in ssid, both species data appear normally distributed
+}) # despite violation of SW assumptions in ssid, both species data appear normally distributed
 ```
 
 
@@ -465,7 +482,7 @@ shapiro.test(resid_ssid)
 re_ofav <- ranef(lm_ofav_noint)
 re_ssid <- ranef(lm_ssid)
 
-pdf("../../outputs/growth/urban bw model residuals.pdf", width = 10, height = 8)
+save_plot("../../outputs/growth/urban bw model residuals.pdf", width = 10, height = 8, {
 par(mfrow = c(2, 4))
 final_models <- list(ofav = lm_ofav_noint, ssid = lm_ssid)
 for (sp in c("ofav", "ssid")) {
@@ -481,7 +498,7 @@ for (sp in c("ofav", "ssid")) {
   qqnorm(re$`site:genotype`[, 1], main = paste(sp, "genotype effects Q-Q")); qqline(re$`site:genotype`[, 1])
   qqnorm(re$`pH:tank`[, 1], main = paste(sp, "tank effects Q-Q")); qqline(re$`pH:tank`[, 1])
 }
-dev.off()
+})
 
 capture.output({
   cat("=== Shapiro-Wilk test on model residuals ===\n")
