@@ -33,15 +33,31 @@ knitr::opts_chunk$set(
 # the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
 save_plot <- function(file, width, height, expr) {
   expr <- substitute(expr); env <- parent.frame()
-  pdf(file = file, width = width, height = height)
-  tryCatch(eval(expr, env), finally = dev.off())
+  # draw on a newly opened device and close exactly that device (never whichever device happens to be current).
+  # Some plotting functions move drawing away from that device: pheatmap() opens and closes a temporary device
+  # (pdf(NULL) ... dev.off()) before drawing, and R then makes some other open device current, which left PDFs blank or
+  # missing from the HTML. RStudio/knitr graphics hooks can do the same. While the file is drawn, those hooks are
+  # replaced by one that switches back to the file's device each time a new plot page starts (plot.new / grid.newpage).
+  hooks <- c("before.plot.new", "plot.new", "before.grid.newpage", "grid.newpage")
+  draw_on <- function(open_device) {
+    saved <- lapply(setNames(hooks, hooks), getHook)
+    open_device(); d <- dev.cur()
+    back_to_d <- function() if (d %in% dev.list() && dev.cur() != d) dev.set(d)
+    for (h in hooks) setHook(h, NULL, "replace")
+    setHook("before.plot.new", back_to_d); setHook("before.grid.newpage", back_to_d)
+    on.exit({ if (d %in% dev.list()) dev.off(d)
+              for (h in hooks) setHook(h, saved[[h]], "replace") })
+    eval(expr, env)
+  }
+  draw_on(function() pdf(file = file, width = width, height = height))
   if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
     ok <- try(eval(expr, env), silent = TRUE)
-    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    if (inherits(ok, "try-error") && dev.cur() > 1)
+      try(dev.off(dev.cur()), silent = TRUE) # reset the screen device left in a broken state (the PDF is already closed)
     return(invisible(file)) }
   png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
-  png(png_file, width = width, height = height, units = "in", res = 150)
-  tryCatch(eval(expr, env), finally = dev.off())
+  draw_on(function() png(png_file, width = width, height = height, units = "in", res = 150))
+  if (!file.exists(png_file)) { warning("nothing was drawn for ", basename(file)); return(invisible(file)) }
   knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
 }
 ```
@@ -153,7 +169,9 @@ library(Biobase)
 e=ExpressionSet(assay(Vsd), AnnotatedDataFrame(as.data.frame(colData(Vsd))))
 
 # running outlier detection
+devs_before <- dev.list() # arrayQualityMetrics leaves graphics devices open; close only the ones it opened
 arrayQualityMetrics(e, outdir="../../outputs/transcriptomics/ssid/deseq2/arrayQualityMetrics", intgroup=c("site"), force=T)
+for (dd in setdiff(dev.list(), devs_before)) dev.off(dd)
 ```
 
 Open the directory "outputs/transcriptomics/ssid/deseq2/arrayQualityMetrics" and open index.html  
@@ -428,6 +446,7 @@ library(DESeq2)
 
 # install.packages("VennDiagram")
 library(VennDiagram)
+invisible(futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")) # no VennDiagram .log file per plot
 
 pairwise_treat=list("LC_CC"=degs_LC_CC, "CH_CC"=degs_CH_CC, "LH_CC"=degs_LH_CC)
 # pairwise comparisons among treatments

@@ -35,6 +35,7 @@ knitr::opts_chunk$set(
 ```{r packages}
 library(tidyverse)
 library(VennDiagram)
+invisible(futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")) # no VennDiagram .log file per plot
 library(pheatmap)
 library(reshape2)
 library(RColorBrewer)
@@ -1171,7 +1172,7 @@ if (!file.exists(lookup_file)) {
   message("Wrote a gene boxplot lookup template with ", nrow(template), " orthogroups to '", lookup_file,
           "'. Fill in stress_family (one of: Apoptosis/cell death, DNA repair, Heat shock proteins, Immune response, ",
           "Oxidative stress/antioxidants, Ubiquitin-proteasome, Other stress-related) and gene_name, then re-run. ",
-          "Unfilled orthogroups are plotted under stress_family 'unassigned'.")
+          "Only orthogroups with a stress_family are plotted.")
 }
 gene_lookup <- read.csv(lookup_file, header = TRUE, check.names = FALSE, colClasses = "character",
                         na.strings = c("", "NA")) %>%
@@ -1182,14 +1183,35 @@ gene_lookup <- read.csv(lookup_file, header = TRUE, check.names = FALSE, colClas
 df <- df %>%
   dplyr::left_join(gene_lookup, by = "og_base") %>%
   dplyr::mutate(
-    # empty stress family -> plotted as 'unassigned'; empty gene name -> O. faveolata annotation (shortened), else orthogroup
+    # empty stress family -> 'unassigned' (dropped below); empty gene name -> O. faveolata annotation (shortened), else orthogroup
     stress_family = dplyr::coalesce(dplyr::na_if(stress_family, ""), "unassigned"),
     gene_name     = dplyr::coalesce(dplyr::na_if(gene_name, ""),
                                     stringr::str_trunc(dplyr::na_if(Ofaveolata_annotation, ""), 40),
                                     og_base)
   ) %>%
   dplyr::select(-og_base)
-cat("Boxplot orthogroups without a curated stress family:", sum(df$stress_family == "unassigned"), "of", nrow(df), "rows\n")
+cat("Boxplot orthogroups without a curated stress family (not plotted):", sum(df$stress_family == "unassigned"), "of", nrow(df), "rows\n")
+# only orthogroups curated into a stress family in the lookup are plotted (several hundred discordant orthologs otherwise)
+df <- df %>% dplyr::filter(stress_family != "unassigned")
+if (!nrow(df)) stop("No curated stress-family orthologs among the discordant orthologs; fill in the gene boxplot lookup.")
+
+# One boxplot panel per gene pair. An orthogroup ID does not identify a gene pair: an orthogroup can hold several
+# pairs (the ortholog table is not restricted to one-to-one orthologs), and the _1, _2 suffixes are assigned within
+# each comparison, so the same ID can refer to different pairs in different comparisons. From here on `orthogroup_ID`
+# is therefore a pair label: orthogroup, O. faveolata gene and S. siderea gene (shown in the panel titles and file names).
+df$orthogroup_ID <- paste0(sub("_[0-9]+$", "", df$orthogroup_ID), ": ", df$Ofaveolata_ID, " / ", df$Ssiderea_ID)
+
+# One panel per orthogroup: where an orthogroup has several gene pairs in a subset (factor x relationship), only the
+# pair with the strongest combined signal is plotted (largest |lpv O. faveolata| + |lpv S. siderea| in any comparison).
+# All pairs remain in the discordance tables.
+df <- df %>%
+  dplyr::mutate(og_group = sub(":.*$", "", orthogroup_ID), signal = abs(Ofaveolata_lpv) + abs(Ssiderea_lpv)) %>%
+  dplyr::group_by(factor, relationship, og_group) %>%
+  dplyr::mutate(best_pair = orthogroup_ID[which.max(signal)]) %>%
+  dplyr::ungroup()
+cat("Gene pairs not plotted because another pair of the same orthogroup is shown:",
+    dplyr::n_distinct(paste(df$relationship, df$orthogroup_ID)[df$orthogroup_ID != df$best_pair]), "\n")
+df <- df %>% dplyr::filter(orthogroup_ID == best_pair) %>% dplyr::select(-og_group, -signal, -best_pair)
 
 needed <- c("factor","comparison","stress_family","orthogroup_ID",
             "Ofaveolata_ID","Ssiderea_ID","Ofaveolata_lpv","Ssiderea_lpv",
@@ -1220,7 +1242,7 @@ site_inverse      <- df_norm %>% filter(factor=="Site",      relationship=="Inve
 treatment_direct  <- df_norm %>% filter(factor=="Treatment", relationship=="Direct")  %>% distinct(orthogroup_ID, .keep_all = TRUE)
 treatment_inverse <- df_norm %>% filter(factor=="Treatment", relationship=="Inverse") %>% distinct(orthogroup_ID, .keep_all = TRUE)
 
-cat("\nRows per subset:\n",
+cat("\nGene pairs per subset:\n",
     "Site-Direct:   ", nrow(site_direct), "\n",
     "Site-Inverse:  ", nrow(site_inverse), "\n",
     "Treat-Direct:  ", nrow(treatment_direct), "\n",
@@ -1235,12 +1257,7 @@ counts_root <- "../../outputs/transcriptomics/orthofinder/counts"
 # clear previous exports so stale gene files from earlier runs are not read back in below
 unlink(counts_root, recursive = TRUE)
 dir.create(counts_root, recursive = TRUE, showWarnings = FALSE)
-for (s in c(
-  "Site_Direct/Ofaveolata","Site_Direct/Ssiderea",
-  "Site_Inverse/Ofaveolata","Site_Inverse/Ssiderea",
-  "Treatment_Direct/Ofaveolata","Treatment_Direct/Ssiderea",
-  "Treatment_Inverse/Ofaveolata","Treatment_Inverse/Ssiderea"
-)) dir.create(file.path(counts_root, s), showWarnings = FALSE, recursive = TRUE)
+# subset/species folders are created when the first gene file is written, so empty subsets leave no empty folders
 
 .export_counts_species <- function(dds, gene_id, intgroup, out_dir, species_tag){
   stopifnot(is.character(gene_id), length(gene_id)==1, nzchar(gene_id))
@@ -1321,25 +1338,30 @@ read_gene_file <- function(file_path){
   id_col      <- if (species == "Ofaveolata") "Ofaveolata_ID" else "Ssiderea_ID"
   id_col_safe <- paste0(id_col, "_safe")
   
-  meta_row <- df_norm %>%
+  # a gene can belong to more than one gene pair (e.g. one O. faveolata gene matched to two S. siderea genes),
+  # so its counts are returned once for every pair it belongs to in this subset
+  meta_rows <- df_norm %>%
     filter(factor == factor_name,
            relationship == .env$relationship,
-           (!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)) %>% slice(1)
-  if (!nrow(meta_row)) {
-    meta_row <- df_norm %>%
+           (!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)) %>%
+    distinct(orthogroup_ID, .keep_all = TRUE)
+  if (!nrow(meta_rows)) {
+    meta_rows <- df_norm %>%
       filter((!!rlang::sym(id_col) == gene_id) | (!!rlang::sym(id_col_safe) == gene_id)) %>% slice(1)
   }
+  if (!nrow(meta_rows)) # gene not in the boxplot table: keep one row with missing labels
+    meta_rows <- tibble(orthogroup_ID = NA_character_, gene_name = NA_character_, stress_family = NA_character_)
   
   tibble(
     species       = species,
     gene_id       = gene_id,
-    orthogroup_ID = meta_row$orthogroup_ID %||% NA_character_,
-    gene_name     = meta_row$gene_name %||% NA_character_,
-    stress_family = meta_row$stress_family %||% NA_character_,
+    orthogroup_ID = meta_rows$orthogroup_ID,
+    gene_name     = meta_rows$gene_name,
+    stress_family = meta_rows$stress_family,
     relationship  = relationship,
     factor        = factor_name,
     subset        = paste(factor_name, relationship, sep = "_"),
-    count_data    = list(dfc)
+    count_data    = rep(list(dfc), nrow(meta_rows))
   )
 }
 
@@ -1403,7 +1425,9 @@ panel_with_colored_title <- function(left_plot, right_plot, title_text, stress_f
   
   title_strip <- ggplot() +
     geom_rect(aes(xmin=-Inf,xmax=Inf,ymin=-Inf,ymax=Inf), fill=fill_col, color=NA) +
-    annotate("text", x=0, y=0, label=title_text, color="white", fontface="bold", size=4.2, hjust=0.5, vjust=0.5) +
+    annotate("text", x=0, y=0, label=title_text, color="white", fontface="bold",
+             size=if (nchar(title_text) > 65) 4.2 * 65 / nchar(title_text) else 4.2, # long gene-pair titles are shrunk to fit the bar
+             hjust=0.5, vjust=0.5) +
     coord_cartesian(xlim=c(-1,1), ylim=c(-1,1), expand=FALSE) + theme_void()
   
   cowplot::plot_grid(title_strip, core, ncol=1, rel_heights=c(0.12, 1))
@@ -1707,7 +1731,7 @@ export_subset_fixed_grid_no_shrink <- function(dat_sub, fac, rel, ogs, out_dir,
                                                panel_w = 8, panel_h = 4.5,
                                                margin_l = 0.35, margin_r = 0.35,
                                                margin_t = 0.30, margin_b = 0.30,
-                                               legend_ncol = 3) {
+                                               legend_ncol = 3, tag = NULL) { # tag: added to the file name (stress family)
   if (!length(ogs)) return(invisible(NULL))
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
   
@@ -1824,7 +1848,7 @@ export_subset_fixed_grid_no_shrink <- function(dat_sub, fac, rel, ogs, out_dir,
   page_w <- margin_l + cols * panel_w + margin_r
   page_h <- margin_t + rows * panel_h + margin_b
   
-  outfile <- file.path(out_dir, sprintf("ONEPAGE_%s_%s_fixedgrid.pdf", fac, rel))
+  outfile <- file.path(out_dir, sprintf("ONEPAGE_%s_%s%s_fixedgrid.pdf", fac, rel, if (is.null(tag)) "" else paste0("_", .safe(tag))))
   invisible(safe_ggsave_pdf(grid_core, outfile, width = page_w, height = page_h, limitsize = FALSE))
   # PNG copy of the one-page composite, shown in the knitted HTML after the main loop
   png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(outfile)))
@@ -1864,18 +1888,19 @@ for (k in seq_len(nrow(targets))) {
   fac <- targets$factor_name[k]
   rel <- targets$relationship[k]
   out_dir <- file.path(panels_root, targets$out_subdir[k])
-  dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
   # Site: Welch t-test on colony means (no Tukey); Treatment: fragment-level ANOVA + Tukey (descriptive)
   stats_subdir <- if (fac == "Site") "ttest" else "anova"
   stats_prefix <- if (fac == "Site") "Ttest" else "ANOVA"
-  if (fac != "Site") dir.create(file.path(out_dir, "tukey"), showWarnings = FALSE)
-  dir.create(file.path(out_dir, stats_subdir), showWarnings = FALSE)
   
   dat_sub <- counts_long %>% dplyr::filter(factor == fac, relationship == rel)
   if (!nrow(dat_sub)) {
     message(sprintf("No rows for %s | %s", fac, rel))
     next
   }
+  # output folders are created only for subsets that have panels
+  dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+  if (fac != "Site") dir.create(file.path(out_dir, "tukey"), showWarnings = FALSE)
+  dir.create(file.path(out_dir, stats_subdir), showWarnings = FALSE)
   
   if (fac == "Site") {
     # urban vs reef: average each gene's normalized counts per parent colony (genotype) within habitat,
@@ -1998,10 +2023,16 @@ for (k in seq_len(nrow(targets))) {
     
     # Fixed-grid, no-shrink, legend-in-empty-cell (LANDSCAPE), NO page title
     # grid size from the number of panels (+1 cell for the stress-family legend)
-    n_cells   <- length(ogs) + 1L
-    grid_cols <- ceiling(sqrt(n_cells))
-    grid_rows <- ceiling(n_cells / grid_cols)
-    onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub, fac, rel, ogs, out_dir, rows = grid_rows, cols = grid_cols))
+    # one composite per stress family, so the panels stay readable
+    for (sf in names(stress_family_palette)) {
+      ogs_sf <- ogs[ogs %in% unique(dat_sub$orthogroup_ID[dat_sub$stress_family == sf])]
+      if (!length(ogs_sf)) next
+      n_cells   <- length(ogs_sf) + 1L
+      grid_cols <- ceiling(sqrt(n_cells))
+      grid_rows <- ceiling(n_cells / grid_cols)
+      onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub[dat_sub$stress_family == sf, ], fac, rel, ogs_sf, out_dir,
+                                                                         rows = grid_rows, cols = grid_cols, tag = sf))
+    }
   }
   
   # ✅ per-subset panel summary

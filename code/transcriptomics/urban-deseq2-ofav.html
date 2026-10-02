@@ -11,7 +11,7 @@
 
 <meta name="author" content="Michael Studivan" />
 
-<meta name="date" content="2026-09-30" />
+<meta name="date" content="2026-10-02" />
 
 <title>O. faveolata Gene Expression — DESeq2 Analysis</title>
 
@@ -1588,7 +1588,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">O. faveolata Gene Expression — DESeq2
 Analysis</h1>
 <h4 class="author">Michael Studivan</h4>
-<h4 class="date">2026-09-30</h4>
+<h4 class="date">2026-10-02</h4>
 
 </div>
 
@@ -1966,7 +1966,9 @@ library(Biobase)
 e=ExpressionSet(assay(Vsd), AnnotatedDataFrame(as.data.frame(colData(Vsd))))
 
 # running outlier detection
-arrayQualityMetrics(e, outdir=&quot;../../outputs/transcriptomics/ofav/deseq2/arrayQualityMetrics&quot;, intgroup=c(&quot;site&quot;), force=T)</code></pre>
+devs_before &lt;- dev.list() # arrayQualityMetrics leaves graphics devices open; close only the ones it opened
+arrayQualityMetrics(e, outdir=&quot;../../outputs/transcriptomics/ofav/deseq2/arrayQualityMetrics&quot;, intgroup=c(&quot;site&quot;), force=T)
+for (dd in setdiff(dev.list(), devs_before)) dev.off(dd)</code></pre>
 <p>Open the directory
 “outputs/transcriptomics/ofav/deseq2/arrayQualityMetrics” and open
 index.html<br />
@@ -2632,6 +2634,7 @@ library(DESeq2)
 
 # install.packages(&quot;VennDiagram&quot;)
 library(VennDiagram)
+invisible(futile.logger::flog.threshold(futile.logger::ERROR, name = &quot;VennDiagramLogger&quot;)) # no VennDiagram .log file per plot
 
 pairwise_treat=list(&quot;LC_CC&quot;=degs_LC_CC, &quot;CH_CC&quot;=degs_CH_CC, &quot;LH_CC&quot;=degs_LH_CC)
 # pairwise comparisons among treatments

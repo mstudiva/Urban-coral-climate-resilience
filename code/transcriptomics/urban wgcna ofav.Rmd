@@ -33,15 +33,31 @@ knitr::opts_chunk$set(
 # the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
 save_plot <- function(file, width, height, expr) {
   expr <- substitute(expr); env <- parent.frame()
-  pdf(file = file, width = width, height = height)
-  tryCatch(eval(expr, env), finally = dev.off())
+  # draw on a newly opened device and close exactly that device (never whichever device happens to be current).
+  # Some plotting functions move drawing away from that device: pheatmap() opens and closes a temporary device
+  # (pdf(NULL) ... dev.off()) before drawing, and R then makes some other open device current, which left PDFs blank or
+  # missing from the HTML. RStudio/knitr graphics hooks can do the same. While the file is drawn, those hooks are
+  # replaced by one that switches back to the file's device each time a new plot page starts (plot.new / grid.newpage).
+  hooks <- c("before.plot.new", "plot.new", "before.grid.newpage", "grid.newpage")
+  draw_on <- function(open_device) {
+    saved <- lapply(setNames(hooks, hooks), getHook)
+    open_device(); d <- dev.cur()
+    back_to_d <- function() if (d %in% dev.list() && dev.cur() != d) dev.set(d)
+    for (h in hooks) setHook(h, NULL, "replace")
+    setHook("before.plot.new", back_to_d); setHook("before.grid.newpage", back_to_d)
+    on.exit({ if (d %in% dev.list()) dev.off(d)
+              for (h in hooks) setHook(h, saved[[h]], "replace") })
+    eval(expr, env)
+  }
+  draw_on(function() pdf(file = file, width = width, height = height))
   if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
     ok <- try(eval(expr, env), silent = TRUE)
-    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    if (inherits(ok, "try-error") && dev.cur() > 1)
+      try(dev.off(dev.cur()), silent = TRUE) # reset the screen device left in a broken state (the PDF is already closed)
     return(invisible(file)) }
   png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
-  png(png_file, width = width, height = height, units = "in", res = 150)
-  tryCatch(eval(expr, env), finally = dev.off())
+  draw_on(function() png(png_file, width = width, height = height, units = "in", res = 150))
+  if (!file.exists(png_file)) { warning("nothing was drawn for ", basename(file)); return(invisible(file)) }
   knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
 }
 ```
@@ -224,6 +240,9 @@ Outlier samples will show as red in the outlierC row
 ```{r outlier-detection-cont2}
 # Remove outlying samples from expression and trait data
 remove.samples= Z.k<thresholdZ.k | is.na(Z.k)
+# report which samples (if any) are dropped from the network; state these in the Methods
+cat("samples removed as connectivity outliers (Z.k <", thresholdZ.k, "):",
+    if (any(remove.samples)) paste(rownames(datt)[remove.samples], collapse = ", ") else "none", "\n")
 datt=datt[!remove.samples,]
 traits=traits[!remove.samples,]
 # parent colony of each fragment (used for colony-level tests of habitat)
@@ -288,9 +307,12 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 
 # run from the line below to the save command
 s.th=8 # re-specify according to previous section
-adjacency = adjacency(datt, power = s.th,type="signed");
-TOM = TOMsimilarity(adjacency,TOMType="signed");
-dissTOM = 1-TOM
+# memory: each gene x gene matrix is ~4 GB for ~23,000 genes, so holding adjacency, TOM and dissTOM together exceeded
+# R's 16 GB limit. TOM is computed directly from expression (the same signed adjacency and signed TOM as
+# adjacency() + TOMsimilarity()) and then converted to dissimilarity in place; only dissTOM is kept.
+dissTOM = TOMsimilarityFromExpr(datt, power = s.th, networkType = "signed", TOMType = "signed")
+dissTOM = 1 - dissTOM # TOM -> TOM-based dissimilarity
+invisible(gc())
 # Call the hierarchical clustering function
 geneTree = flashClust(as.dist(dissTOM), method = "average")
 save_plot("../../outputs/transcriptomics/ofav/wgcna/gene dendrogram.pdf", width = 12, height = 6, {
@@ -712,12 +734,17 @@ for (whichModule in modules_to_plot) {
   	}
   } 
   row.names(hubs)=gnames
+  # gaps between treatment groups, as in the DESeq2 heatmaps (columns are in design order, grouped by treatment;
+  # the treatment is the last part of each sample name, e.g. Ssid_001.Emerald.CC)
+  col_treat <- sub(".*\\.", "", colnames(hubs))
+  stopifnot(!anyDuplicated(rle(col_treat)$values)) # each treatment is one contiguous block
+  treat_gaps <- head(cumsum(rle(col_treat)$lengths), -1)
 
   # square 9-pt cells, page sized to fit (as in the DESeq2 heatmaps)
   hub_heatmaps[[whichModule]] <- save_plot(file=paste0("../../outputs/transcriptomics/ofav/wgcna/heatmap top", top, " ", whichModule, ".pdf"),
                                            width=(ncol(hubs)*9 + 400)/72, height=(nrow(hubs)*9 + 140)/72, {
     pheatmap(hubs,scale="row",col=contrasting2,border_color=NA,treeheight_col=0,cluster_rows=F,cluster_cols=F,
-             cellwidth=9,cellheight=9,fontsize_row=7,fontsize_col=6,main=whichModule)
+             cellwidth=9,cellheight=9,fontsize_row=7,fontsize_col=6,main=whichModule,gaps_col=treat_gaps)
   })
 }
 # show the module heatmaps in the knitted HTML

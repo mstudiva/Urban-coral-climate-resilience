@@ -33,15 +33,31 @@ knitr::opts_chunk$set(
 # the HTML; when run interactively (not knitting) the plot is also drawn in the plot pane.
 save_plot <- function(file, width, height, expr) {
   expr <- substitute(expr); env <- parent.frame()
-  pdf(file = file, width = width, height = height)
-  tryCatch(eval(expr, env), finally = dev.off())
+  # draw on a newly opened device and close exactly that device (never whichever device happens to be current).
+  # Some plotting functions move drawing away from that device: pheatmap() opens and closes a temporary device
+  # (pdf(NULL) ... dev.off()) before drawing, and R then makes some other open device current, which left PDFs blank or
+  # missing from the HTML. RStudio/knitr graphics hooks can do the same. While the file is drawn, those hooks are
+  # replaced by one that switches back to the file's device each time a new plot page starts (plot.new / grid.newpage).
+  hooks <- c("before.plot.new", "plot.new", "before.grid.newpage", "grid.newpage")
+  draw_on <- function(open_device) {
+    saved <- lapply(setNames(hooks, hooks), getHook)
+    open_device(); d <- dev.cur()
+    back_to_d <- function() if (d %in% dev.list() && dev.cur() != d) dev.set(d)
+    for (h in hooks) setHook(h, NULL, "replace")
+    setHook("before.plot.new", back_to_d); setHook("before.grid.newpage", back_to_d)
+    on.exit({ if (d %in% dev.list()) dev.off(d)
+              for (h in hooks) setHook(h, saved[[h]], "replace") })
+    eval(expr, env)
+  }
+  draw_on(function() pdf(file = file, width = width, height = height))
   if (!isTRUE(getOption("knitr.in.progress"))) { # interactive: also draw in the plot pane (skipped if the pane is too small)
     ok <- try(eval(expr, env), silent = TRUE)
-    if (inherits(ok, "try-error")) try(dev.off(), silent = TRUE) # reset a device left in a broken state
+    if (inherits(ok, "try-error") && dev.cur() > 1)
+      try(dev.off(dev.cur()), silent = TRUE) # reset the screen device left in a broken state (the PDF is already closed)
     return(invisible(file)) }
   png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(file)))
-  png(png_file, width = width, height = height, units = "in", res = 150)
-  tryCatch(eval(expr, env), finally = dev.off())
+  draw_on(function() png(png_file, width = width, height = height, units = "in", res = 150))
+  if (!file.exists(png_file)) { warning("nothing was drawn for ", basename(file)); return(invisible(file)) }
   knitr::include_graphics(png_file, rel_path = FALSE, dpi = 150) # displayed at its true size
 }
 ```
@@ -1262,4 +1278,215 @@ incubations_daynight <-ggarrange(ofav_daynight, # both panels
 incubations_daynight
 
 ggsave("../../outputs/calcification/urban carbonate mean incubations.pdf", incubations_daynight, width=8, height=8,dpi = 300)
+```
+
+
+# oxygen flux (test): photosynthesis and respiration
+
+```{r oxygen-flux}
+# TEST ANALYSIS: net photosynthesis (day incubations) and respiration (night incubations) from the chamber O2 readings.
+# O2 was recorded as % air saturation at the start and end of each incubation. It is converted to concentration with
+# the O2 solubility of seawater at each chamber's temperature and salinity (Garcia & Gordon 1992, Benson & Krause
+# fit, umol/kg; check value 274.61 umol/kg at 10 C and salinity 35), assuming 1 atm (no barometric pressure record).
+#   O2 flux (umol O2 cm-2 h-1) = (final - initial % saturation) / 100 * O2 solubility * seawater mass / time / area
+# Skeleton controls: the dead skeletons are NOT used as a blank here. In the light they produced O2 at rates similar to
+# the corals and very variably (0.03-2.3 umol cm-2 h-1, n = 4; higher for the two low pH / T8 skeletons), i.e. they
+# measure the metabolism of the skeleton's own algal film rather than a seawater background, and subtracting them
+# would make S. siderea net photosynthesis negative. Rates below are therefore uncorrected chamber rates. Subtracting
+# a pooled blank would shift every fragment by the same amount, so it would not change any test of pH or site for
+# net photosynthesis, respiration or gross photosynthesis (only the absolute rates, % changes and P:R). The skeleton
+# rates are saved for reference, and blank-corrected rates are kept as extra columns in the rates file.
+# Caveats: initial readings were 109-124% (tank supersaturation or probe offset; an offset cancels in the difference);
+# final day readings up to ~208% may lose O2 to bubbles, so the highest photosynthesis rates may be underestimates;
+# pH treatment is confounded with tank (one tank per species x pH), and the low pH O. faveolata tank (T8) is also the
+# tank whose skeleton controls produced the most O2 in the light.
+o2_solubility <- function(t, S) { # umol/kg at 100% air saturation, 1 atm
+  Ts <- log((298.15 - t) / (273.15 + t))
+  exp(5.80871 + 3.20291 * Ts + 4.17887 * Ts^2 + 5.10006 * Ts^3 - 9.86643e-2 * Ts^4 + 3.80369 * Ts^5 +
+        S * (-7.01577e-3 - 7.70028e-3 * Ts - 1.13864e-2 * Ts^2 - 9.51519e-3 * Ts^3) - 2.75915e-7 * S^2)
+}
+stopifnot(abs(o2_solubility(10, 35) - 274.61) < 0.01)
+
+incubations %>%
+  mutate(O2_sol   = o2_solubility(temp, salinity),                      # umol/kg at 100% saturation
+         netO2_pct = finalO2 - initialO2,                               # change in % saturation
+         netO2_umolkg = netO2_pct / 100 * O2_sol,                       # change in concentration
+         O2flux   = netO2_umolkg * seawater_kg / time / area) -> o2     # umol O2 cm-2 h-1
+stopifnot(!anyNA(o2$O2flux), all(abs(o2$netO2_pct - o2$netO2) < 0.051)) # netO2 column in the data file agrees
+range(o2$O2_sol)
+
+# skeleton controls (for reference): pooled by incubation type, and by pH treatment (tank)
+o2 %>%
+  filter(species == "control") %>%
+  group_by(incubation) %>%
+  summarise(treatment = "pooled", blank = mean(O2flux), sd_blank = sd(O2flux), n_blank = n(), .groups = "drop") -> o2_blanks
+o2 %>%
+  filter(species == "control") %>%
+  group_by(incubation, treatment) %>%
+  summarise(blank = mean(O2flux), sd_blank = sd(O2flux), n_blank = n(), .groups = "drop") %>%
+  mutate(treatment = as.character(treatment)) -> o2_blanks_pH
+o2_blanks_all <- bind_rows(o2_blanks, o2_blanks_pH)
+o2_blanks_all
+write.csv(o2_blanks_all, file = "../../outputs/calcification/urban incubations O2 skeleton controls.csv", row.names = FALSE)
+
+o2 %>%
+  left_join(dplyr::select(o2_blanks, incubation, o2_blank = blank), by = "incubation") %>% # (`blank` is the calcification blank)
+  mutate(O2fluxadj = O2flux - o2_blank) %>% # pooled-blank-corrected, for reference only
+  filter(site != "control", !surv_excluded) %>% # skeleton controls and survivorship-excluded fragments
+  droplevels() -> o2_frag
+
+# one row per fragment (uncorrected rates): net photosynthesis (day), respiration (night, as a positive rate), gross
+# photosynthesis (net photosynthesis + respiration) and the hourly P:R ratio (gross photosynthesis / respiration)
+o2_frag %>%
+  dplyr::select(sampleID, species, treatment, site, genotype, incubation, O2flux, O2fluxadj) %>%
+  tidyr::pivot_wider(names_from = incubation, values_from = c(O2flux, O2fluxadj)) %>%
+  mutate(Pnet = O2flux_day, R = -O2flux_night, Pgross = Pnet + R, PR = Pgross / R,
+         Pnet_blankcorr = O2fluxadj_day, R_blankcorr = -O2fluxadj_night, # pooled skeleton blank subtracted (reference only)
+         habitat = factor(ifelse(site %in% c("Star Island", "MacArthur North"), "urban", "reef"))) %>%
+  dplyr::select(-starts_with("O2flux")) -> o2_rates
+stopifnot(!anyDuplicated(o2_rates$sampleID))
+o2_rates %>% count(species, treatment, has_day = !is.na(Pnet), has_night = !is.na(R))
+
+# outliers: 1.5 x IQR rule within species (pH treatments and sites pooled), as in the calcification analysis.
+# Net photosynthesis (day) and respiration (night) outliers are removed first; gross photosynthesis and P:R are then
+# calculated only for fragments with both values kept, and their own outliers removed (as for the day/night
+# calcification means). Removed values are listed in the outliers file; results with all values kept are saved
+# as a sensitivity table below.
+o2_rates_all <- o2_rates # all values, for the sensitivity models
+o2_outliers <- list()
+flag_outliers <- function(d, resp) {
+  out <- rep(FALSE, nrow(d))
+  for (sp in levels(d$species)) {
+    i <- d$species == sp & !is.na(d[[resp]])
+    out[i] <- d[[resp]][i] %in% boxplot.stats(d[[resp]][i])$out
+  }
+  if (any(out)) o2_outliers[[resp]] <<- data.frame(response = resp, d[out, c("sampleID", "species", "treatment", "site")], value = d[[resp]][out])
+  out
+}
+for (resp in c("Pnet", "R")) o2_rates[[resp]][flag_outliers(o2_rates, resp)] <- NA
+o2_rates <- o2_rates %>% mutate(Pgross = Pnet + R, PR = Pgross / R)
+for (resp in c("Pgross", "PR")) o2_rates[[resp]][flag_outliers(o2_rates, resp)] <- NA
+o2_outliers <- do.call(rbind, o2_outliers[c("Pnet", "R", "Pgross", "PR")])
+rownames(o2_outliers) <- NULL
+o2_outliers
+write.csv(o2_outliers, file = "../../outputs/calcification/urban incubations O2 outliers.csv", row.names = FALSE)
+write.csv(o2_rates, file = "../../outputs/calcification/urban incubations O2 rates.csv", row.names = FALSE) # analysed values (outliers NA)
+
+# means by species, pH treatment and site
+o2_rates %>%
+  tidyr::pivot_longer(c(Pnet, R, Pgross, PR), names_to = "response", values_to = "value") %>%
+  filter(!is.na(value)) %>%
+  group_by(species, response, treatment, site) %>%
+  summarise(mean = mean(value), sd = sd(value), n = n(), .groups = "drop") -> o2_means
+write.csv(o2_means, file = "../../outputs/calcification/urban incubations O2 means.csv", row.names = FALSE)
+
+# skeleton controls by pH treatment in the same layout (for the incubation table; not used as a blank)
+o2 %>%
+  filter(species == "control") %>%
+  dplyr::select(sampleID, treatment, incubation, O2flux) %>%
+  tidyr::pivot_wider(names_from = incubation, values_from = O2flux) %>%
+  mutate(Pnet = day, R = -night, Pgross = Pnet + R) %>%
+  tidyr::pivot_longer(c(Pnet, R, Pgross), names_to = "response", values_to = "value") %>%
+  group_by(response, treatment) %>%
+  summarise(mean = mean(value), sd = sd(value), n = n(), .groups = "drop") -> o2_control_means
+o2_control_means
+write.csv(o2_control_means, file = "../../outputs/calcification/urban incubations O2 skeleton control means.csv", row.names = FALSE)
+
+# models: same structure as the calcification models (pH treatment + site, parent colony nested in site as a random
+# effect; pH x site interaction tested by likelihood ratio and reported, main effects from the model without it),
+# plus the planned urban - reef contrast.
+o2_models <- list() # final models (no interaction, outliers removed), kept for the plot labels
+o2_model <- function(sp, resp, dat = o2_rates, keep = TRUE) {
+  d <- dat[dat$species == sp & !is.na(dat[[resp]]), ]
+  f_full  <- as.formula(paste(resp, "~ treatment * site + (1 | site:genotype)"))
+  f_noint <- as.formula(paste(resp, "~ treatment + site + (1 | site:genotype)"))
+  m_full <- lmer(f_full, data = d, REML = TRUE); m <- lmer(f_noint, data = d, REML = TRUE)
+  if (keep) o2_models[[paste(sp, resp)]] <<- m
+  lrt <- anova(update(m_full, REML = FALSE), update(m, REML = FALSE))
+  a <- as.data.frame(anova(m))
+  ur <- as.data.frame(contrast(emmeans(m, ~ site), method = list(`urban - reef` = c(-0.5, -0.5, 0.5, 0.5))))
+  ph <- as.data.frame(pairs(emmeans(m, ~ treatment), reverse = TRUE)) # low pH - control pH
+  ctrl_mean <- mean(d[[resp]][d$treatment == "control pH"])
+  # as for calcification (Table S3): parent colony effect by likelihood ratio against the model without it, its share
+  # of the random + residual variance, and each fixed effect's contribution to the marginal R2 (ML fits)
+  m_ml <- update(m, REML = FALSE)
+  lrt_geno <- anova(m_ml, lm(as.formula(paste(resp, "~ treatment + site")), data = d))
+  vc <- as.data.frame(VarCorr(m))
+  r2_full <- r.squaredGLMM(m_ml)[, "R2m"]
+  data.frame(species = sp, response = resp, n = nrow(d),
+             pH_F = a["treatment", "F value"], pH_df = a["treatment", "DenDF"], pH_p = a["treatment", "Pr(>F)"],
+             pH_R2 = r2_full - r.squaredGLMM(update(m_ml, . ~ . - treatment))[, "R2m"],
+             pH_low_minus_control = ph$estimate, pH_pct_change = 100 * ph$estimate / ctrl_mean,
+             site_F = a["site", "F value"], site_df = a["site", "DenDF"], site_p = a["site", "Pr(>F)"],
+             site_R2 = r2_full - r.squaredGLMM(update(m_ml, . ~ . - site))[, "R2m"],
+             genotype_chisq = lrt_geno$Chisq[2], genotype_p = lrt_geno$`Pr(>Chisq)`[2],
+             genotype_var_share = vc$vcov[vc$grp == "site:genotype"] / sum(vc$vcov),
+             interaction_chisq = lrt$Chisq[2], interaction_p = lrt$`Pr(>Chisq)`[2],
+             urban_minus_reef = ur$estimate, urban_reef_t = ur$t.ratio, urban_reef_df = ur$df, urban_reef_p = ur$p.value,
+             singular = isSingular(m))
+}
+o2_stats <- do.call(rbind, lapply(c("Ofav", "Ssid"), function(sp)
+  do.call(rbind, lapply(c("Pnet", "R", "Pgross", "PR"), function(r) o2_model(sp, r)))))
+o2_stats %>% mutate(across(where(is.numeric), ~ signif(.x, 3)))
+write.csv(o2_stats, file = "../../outputs/calcification/urban incubations O2 stats.csv", row.names = FALSE)
+
+# sensitivity: the same models with all values kept (no outlier removal)
+o2_stats_all <- do.call(rbind, lapply(c("Ofav", "Ssid"), function(sp)
+  do.call(rbind, lapply(c("Pnet", "R", "Pgross", "PR"), function(r) o2_model(sp, r, dat = o2_rates_all, keep = FALSE)))))
+o2_stats_all %>% mutate(across(where(is.numeric), ~ signif(.x, 3)))
+write.csv(o2_stats_all, file = "../../outputs/calcification/urban incubations O2 stats with outliers.csv", row.names = FALSE)
+
+# plots in the style of the calcification figures: boxes by site (site colours), control pH and low pH panels,
+# pH and site statistics from the final models (stat_label() and fill.color are defined in the incubation-plots chunk).
+# Day and night panels have their own y-axes because photosynthesis and respiration differ several-fold.
+# Outliers removed from the models are not plotted. No site letters unless site is significant (none here).
+o2_panel <- function(sp, resp, title, ylab, ymax, show_x) {
+  d <- o2_rates[o2_rates$species == sp & !is.na(o2_rates[[resp]]), ]
+  m <- o2_models[[paste(sp, resp)]]
+  labs_df <- data.frame(treatment = factor("control pH", levels = levels(d$treatment)),
+                        lab = c(stat_label(m, "treatment", "pH"), stat_label(m, "site", "site")),
+                        y = ymax * c(1, 0.94))
+  # values above the axis limit (extreme P:R when respiration is near zero) are written at the top of their box
+  off <- d[d[[resp]] > ymax * 0.9, , drop = FALSE]
+  off$lab <- if (nrow(off)) paste0("(", sprintf("%.1f", off[[resp]]), ")") else character(0)
+  ggboxplot(d, x = "site", y = resp, fill = "site", width = 0.7, size = 0.75, title = title, legend = "none") +
+    facet_grid(~treatment) +
+    xlab(NULL) + ylab(ylab) +
+    scale_fill_manual(values = fill.color) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.text.x = if (show_x) element_text() else element_blank()) +
+    geom_text(data = labs_df, aes(x = 2, y = y, label = lab), inherit.aes = FALSE) +
+    geom_text(data = off, aes(x = site, y = ymax * 0.84, label = lab), size = 3, inherit.aes = FALSE) +
+    coord_cartesian(ylim = c(min(0, min(d[[resp]])), ymax))
+}
+# axis limit shared by both species, with room for the labels. For the P:R ratio only, the limit is set from the
+# largest value that is not an extreme outlier (more than 3 x IQR above the upper quartile), because a fragment with
+# respiration near zero gives a very large ratio that would flatten every box. Off-scale values stay in the data,
+# the boxplot statistics and the models; they are printed in brackets above their box.
+o2_ymax <- function(resp) {
+  v <- o2_rates[[resp]][!is.na(o2_rates[[resp]])]
+  if (resp != "PR") return(max(v) / 0.85)
+  fence <- quantile(v, 0.75) + 3 * IQR(v)
+  max(v[v <= fence]) / 0.8
+}
+o2_figure <- function(resp_left, resp_right, title_left, title_right, ylab_left, ylab_right) {
+  ggarrange(o2_panel("Ofav", resp_left,  paste("Orbicella faveolata", title_left),  ylab_left,  o2_ymax(resp_left),  FALSE),
+            o2_panel("Ofav", resp_right, paste("Orbicella faveolata", title_right), ylab_right, o2_ymax(resp_right), FALSE),
+            o2_panel("Ssid", resp_left,  paste("Siderastrea siderea", title_left),  ylab_left,  o2_ymax(resp_left),  TRUE),
+            o2_panel("Ssid", resp_right, paste("Siderastrea siderea", title_right), ylab_right, o2_ymax(resp_right), TRUE),
+            heights = c(4, 4), widths = c(4, 4), ncol = 2, nrow = 2)
+}
+
+# day (net photosynthesis) and night (respiration, shown as a positive rate)
+o2_daynight <- o2_figure("Pnet", "R", "Day", "Night",
+                         "Net photosynthesis (umol O2 cm-2 hr-1)", "Respiration (umol O2 cm-2 hr-1)")
+o2_daynight
+ggsave("../../outputs/calcification/urban incubations O2.pdf", o2_daynight, width = 16, height = 8, dpi = 300)
+
+# gross photosynthesis and P:R ratio
+o2_gross <- o2_figure("Pgross", "PR", "Gross photosynthesis", "P:R",
+                      "Gross photosynthesis (umol O2 cm-2 hr-1)", "Gross photosynthesis : respiration")
+o2_gross
+ggsave("../../outputs/calcification/urban incubations O2 gross.pdf", o2_gross, width = 16, height = 8, dpi = 300)
 ```

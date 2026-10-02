@@ -1,0 +1,62 @@
+"species","response","treatment","site","mean","sd","n"
+"Ofav","PR","control pH","Emerald",3.65064280510193,1.37621870526277,5
+"Ofav","PR","control pH","Rainbow",2.98503973982278,1.57639804531002,5
+"Ofav","PR","control pH","Star Island",3.68311696484003,1.04702316370035,5
+"Ofav","PR","control pH","MacArthur North",3.41317255329432,1.36040185923829,6
+"Ofav","PR","low pH","Emerald",4.42447196102727,0.917989127203904,2
+"Ofav","PR","low pH","Star Island",6.25261108198709,NA,1
+"Ofav","PR","low pH","MacArthur North",4.38394381278736,2.20777742288133,3
+"Ofav","Pgross","control pH","Emerald",2.676999571315,0.855492299510482,5
+"Ofav","Pgross","control pH","Rainbow",2.35095245877792,0.75938200224932,5
+"Ofav","Pgross","control pH","Star Island",2.81698151110637,1.11400837092201,5
+"Ofav","Pgross","control pH","MacArthur North",2.50743248364957,0.904617613417826,6
+"Ofav","Pgross","low pH","Emerald",3.25661932374438,0.230964033688393,2
+"Ofav","Pgross","low pH","Star Island",3.27202456347931,NA,1
+"Ofav","Pgross","low pH","MacArthur North",2.60215913892009,0.818100525150945,2
+"Ofav","Pnet","control pH","Emerald",1.90657136948709,0.741612483171708,5
+"Ofav","Pnet","control pH","Rainbow",1.5037565029166,0.806176985975209,5
+"Ofav","Pnet","control pH","Star Island",2.0424241135759,0.961557847493865,5
+"Ofav","Pnet","control pH","MacArthur North",1.74560960259619,0.933826900515086,6
+"Ofav","Pnet","low pH","Emerald",2.49884667204246,0.0215399268107701,2
+"Ofav","Pnet","low pH","Star Island",2.74871925621247,NA,1
+"Ofav","Pnet","low pH","MacArthur North",2.68948627095105,1.68679329138715,3
+"Ofav","R","control pH","Emerald",0.770428201827905,0.268523081498228,5
+"Ofav","R","control pH","Rainbow",0.847195955861318,0.238280538127159,5
+"Ofav","R","control pH","Star Island",0.774557397530463,0.227590566280628,5
+"Ofav","R","control pH","MacArthur North",0.761822881053381,0.150234041258776,6
+"Ofav","R","low pH","Emerald",0.807290685832841,0.171129586522378,3
+"Ofav","R","low pH","Rainbow",1.05243853642278,NA,1
+"Ofav","R","low pH","Star Island",0.52330530726684,NA,1
+"Ofav","R","low pH","MacArthur North",0.808430671536504,0.037708613399172,3
+"Ssid","PR","control pH","Emerald",2.93861371991387,0.551749577075635,5
+"Ssid","PR","control pH","Rainbow",3.09088698221151,0.594372085559104,5
+"Ssid","PR","control pH","Star Island",3.5662157935301,0.783410827500293,4
+"Ssid","PR","control pH","MacArthur North",2.1520288301134,0.649716153001903,5
+"Ssid","PR","low pH","Emerald",2.67090668348134,0.602133627586207,4
+"Ssid","PR","low pH","Rainbow",2.44786218228604,0.655495267160282,5
+"Ssid","PR","low pH","Star Island",2.01197687025271,0.785225008958127,4
+"Ssid","PR","low pH","MacArthur North",2.20914404341199,0.68134168579468,4
+"Ssid","Pgross","control pH","Emerald",1.61715316509001,0.484983122327639,5
+"Ssid","Pgross","control pH","Rainbow",1.33096950861441,0.237978718049286,5
+"Ssid","Pgross","control pH","Star Island",2.22052496554247,0.516766555347454,5
+"Ssid","Pgross","control pH","MacArthur North",1.31458990430558,0.513606088662248,5
+"Ssid","Pgross","low pH","Emerald",1.34963133577212,0.843092382051844,5
+"Ssid","Pgross","low pH","Rainbow",1.18695023703283,0.350183777768381,5
+"Ssid","Pgross","low pH","Star Island",1.13766888307771,0.928089295866686,4
+"Ssid","Pgross","low pH","MacArthur North",1.33691103981572,0.693666454758128,4
+"Ssid","Pnet","control pH","Emerald",1.06937504839965,0.375916674717603,5
+"Ssid","Pnet","control pH","Rainbow",0.897658121855704,0.235135274600676,5
+"Ssid","Pnet","control pH","Star Island",1.63785219904876,0.438069538775548,5
+"Ssid","Pnet","control pH","MacArthur North",0.703387041318029,0.460033189816379,5
+"Ssid","Pnet","low pH","Emerald",0.951267764533929,0.783340249854891,5
+"Ssid","Pnet","low pH","Rainbow",0.705440511774753,0.321607923702185,5
+"Ssid","Pnet","low pH","Star Island",0.748228093845583,0.674522049292582,5
+"Ssid","Pnet","low pH","MacArthur North",0.861546002529901,0.505576782681104,5
+"Ssid","R","control pH","Emerald",0.547778116690366,0.142533148186384,5
+"Ssid","R","control pH","Rainbow",0.433311386758709,0.0457349515071588,5
+"Ssid","R","control pH","Star Island",0.582672766493711,0.207720177654479,5
+"Ssid","R","control pH","MacArthur North",0.611202862987551,0.133338301018742,5
+"Ssid","R","low pH","Emerald",0.398363571238194,0.115751253163594,5
+"Ssid","R","low pH","Rainbow",0.481509725258075,0.050744085695095,5
+"Ssid","R","low pH","Star Island",0.516896784367696,0.234098594400543,4
+"Ssid","R","low pH","MacArthur North",0.582993724384447,0.223410242526053,4
