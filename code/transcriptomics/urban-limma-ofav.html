@@ -11,7 +11,7 @@
 
 <meta name="author" content="Michael Studivan" />
 
-<meta name="date" content="2026-10-06" />
+<meta name="date" content="2026-10-07" />
 
 <title>O. faveolata Gene Expression — Differential Expression (dream)</title>
 
@@ -1588,7 +1588,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">O. faveolata Gene Expression — Differential
 Expression (dream)</h1>
 <h4 class="author">Michael Studivan</h4>
-<h4 class="date">2026-10-06</h4>
+<h4 class="date">2026-10-07</h4>
 
 </div>
 
@@ -1992,8 +1992,9 @@ the following section</p>
 # (Earlier reports that still included the excluded fragments and/or resamples also flagged Ofav_109, 127 and 135.)
 # Ofav_135 (So5-4, LH) is also removed (Michael, 2026-09-30): it was flagged as an array outlier in both earlier
 # reports, is the most distant sample after removing colony differences (~2x the typical distance), and alone
-# drives the LH vs CH contrast (2,089 DEGs with it, 19 without, in the earlier DESeq2 colony model; rechecked with
-# the site model in SENSITIVITY: LH vs CH ROBUSTNESS). Report this removal and its reason in the Methods.
+# changes the LH results on its own: with the primary model (SENSITIVITY: LH vs CH ROBUSTNESS, 2026-10-06), adding it
+# back gives 84 LH vs CH DEGs instead of 0 and doubles LH vs CC (3,959 vs 1,914 DEGs); in the earlier DESeq2 colony
+# model it was 2,089 vs 19 LH vs CH DEGs. Report this removal and its reason in the Methods.
 outlier_ids &lt;- c(&quot;Ofav_125&quot;,&quot;Ofav_131&quot;,&quot;Ofav_135&quot;)
 outs &lt;- which(design$id %in% outlier_ids)
 stopifnot(length(outs) == length(outlier_ids))
@@ -2330,7 +2331,11 @@ fit_site_model &lt;- function(counts, meta, genes = NULL, ddf = dream_ddf) {
     MacN_reef       = &quot;siteMacN - (siteEmerald + siteRainbow)/2&quot;,
     Star_reef       = &quot;siteStar - (siteEmerald + siteRainbow)/2&quot;,
     MacN_Star       = &quot;siteMacN - siteStar&quot;,
-    Rainbow_Emerald = &quot;siteRainbow - siteEmerald&quot;))
+    Rainbow_Emerald = &quot;siteRainbow - siteEmerald&quot;,
+    Star_Emerald    = &quot;siteStar - siteEmerald&quot;,
+    Star_Rainbow    = &quot;siteStar - siteRainbow&quot;,
+    MacN_Emerald    = &quot;siteMacN - siteEmerald&quot;,
+    MacN_Rainbow    = &quot;siteMacN - siteRainbow&quot;))
   fit &lt;- dream(v, form, meta, L = L, ddf = ddf, BPPARAM = site_model_param)
   fit &lt;- variancePartition::eBayes(fit)
   all_contrasts &lt;- c(treat_contrasts, site_contrasts)
@@ -2343,7 +2348,9 @@ fit_site_model &lt;- function(counts, meta, genes = NULL, ddf = dream_ddf) {
   list(tt = tt, genes_tested = nrow(dge), samples = table(meta$site, meta$treat), ddf = ddf)
 }
 treat_contrasts &lt;- c(&quot;LC_CC&quot;, &quot;CH_CC&quot;, &quot;LH_CC&quot;, &quot;CH_LC&quot;, &quot;LH_CH&quot;, &quot;LH_LC&quot;)
-site_contrasts  &lt;- c(&quot;urban_reef&quot;, &quot;MacN_reef&quot;, &quot;Star_reef&quot;, &quot;MacN_Star&quot;, &quot;Rainbow_Emerald&quot;)
+# urban vs reef, each urban site vs the reef sites, and all six pairwise site comparisons
+site_contrasts  &lt;- c(&quot;urban_reef&quot;, &quot;MacN_reef&quot;, &quot;Star_reef&quot;, &quot;MacN_Star&quot;, &quot;Rainbow_Emerald&quot;,
+                     &quot;Star_Emerald&quot;, &quot;Star_Rainbow&quot;, &quot;MacN_Emerald&quot;, &quot;MacN_Rainbow&quot;)
 
 # as_res(): contrast table with the column names used by the sections below
 # (log2 fold change, moderated t, p and BH-adjusted p)
@@ -2357,7 +2364,7 @@ as_res &lt;- function(x) data.frame(AveExpr = x$AveExpr, log2FoldChange = x$logF
 # gene with dream (see SITE MODEL HELPERS), so colonies, not fragments, are the replicates for site.
 # - treatment: the six pairwise contrasts among CC, LC, CH and LH
 # - urban vs reef: planned contrast (Star + MacN)/2 - (Emerald + Rainbow)/2
-# - sites: each urban site vs the reef sites, and the two sites within each habitat
+# - sites: each urban site vs the reef sites, and all six pairwise site comparisons
 # History: until 2026-10-05 treatments were tested with DESeq2 (~ genotype + treat) and urban vs reef with limma
 # (duplicateCorrelation). The limma colony blocking uses one within-colony correlation for all genes and fragment-
 # based degrees of freedom, which overstated the evidence for between-colony (site, urban vs reef) differences;
@@ -2398,7 +2405,11 @@ de_summary</code></pre>
 ## 8        MacN_reef        19855  554  235  319
 ## 9        Star_reef        19855    0    0    0
 ## 10       MacN_Star        19855    0    0    0
-## 11 Rainbow_Emerald        19855    0    0    0</code></pre>
+## 11 Rainbow_Emerald        19855    0    0    0
+## 12    Star_Emerald        19855    0    0    0
+## 13    Star_Rainbow        19855    0    0    0
+## 14    MacN_Emerald        19855  126   34   92
+## 15    MacN_Rainbow        19855  287  123  164</code></pre>
 <pre class="r"><code>write.csv(de_summary, file = &quot;../../outputs/transcriptomics/ofav/limma/DE_summary.csv&quot;, row.names = FALSE)
 
 # treatment contrasts: one table per contrast (log2 fold change, moderated t, p and BH-adjusted p; the column names
@@ -2460,7 +2471,7 @@ for (k in site_contrasts) {
 }
 site_genes &lt;- site_genes[apply(site_genes[, paste0(site_contrasts, &quot;_padj&quot;)] &lt; 0.1, 1, any), ]
 nrow(site_genes)</code></pre>
-<pre><code>## [1] 556</code></pre>
+<pre><code>## [1] 623</code></pre>
 <pre class="r"><code>write.csv(site_genes, file = &quot;../../outputs/transcriptomics/ofav/limma/site_contrasts_genes.csv&quot;, row.names = FALSE)
 
 # size-factor normalised counts for the gene boxplots in the orthofinder script (no DESeq2 model is fitted)
@@ -2539,6 +2550,10 @@ con_l &lt;- makeContrasts(LC_CC = treatLC, CH_CC = treatCH, LH_CC = treatLH,
                        Star_reef       = Star - (Emerald + Rainbow)/2,
                        MacN_Star       = MacN - Star,
                        Rainbow_Emerald = Rainbow - Emerald,
+                       Star_Emerald    = Star - Emerald,
+                       Star_Rainbow    = Star - Rainbow,
+                       MacN_Emerald    = MacN - Emerald,
+                       MacN_Rainbow    = MacN - Rainbow,
                        levels = des_l)
 fit_l &lt;- limma::eBayes(contrasts.fit(fit_l, con_l))
 limma_res &lt;- lapply(setNames(names(primary_res), names(primary_res)),
@@ -2566,6 +2581,10 @@ model_limma</code></pre>
 ## 9        Star_reef        19855          0          8      0
 ## 10       MacN_Star        19855          0        286      0
 ## 11 Rainbow_Emerald        19855          0          6      0
+## 12    Star_Emerald        19855          0          1      0
+## 13    Star_Rainbow        19855          0         15      0
+## 14    MacN_Emerald        19855        126        818    123
+## 15    MacN_Rainbow        19855        287       1142    270
 ##    shared_same_direction dream_only limma_only logFC_r
 ## 1                    358         39        177   0.980
 ## 2                   3426        340        301   0.988
@@ -2577,7 +2596,11 @@ model_limma</code></pre>
 ## 8                    508         46       1051   0.992
 ## 9                      0          0          8   0.985
 ## 10                     0          0        286   0.989
-## 11                     0          0          6   0.985</code></pre>
+## 11                     0          0          6   0.985
+## 12                     0          0          1   0.983
+## 13                     0          0         15   0.986
+## 14                   123          3        695   0.991
+## 15                   270         17        872   0.992</code></pre>
 <pre class="r"><code>write.csv(model_limma, file = &quot;../../outputs/transcriptomics/ofav/limma/sensitivity_model_limma_duplicateCorrelation.csv&quot;, row.names = FALSE)
 
 # 3) share of variance explained by parent colony (alongside site and treatment; variancePartition needs all
@@ -2646,6 +2669,10 @@ model_sat</code></pre>
 ## 9        Star_reef                  0                  0      0
 ## 10       MacN_Star                  0                 25      0
 ## 11 Rainbow_Emerald                  0                  1      0
+## 12    Star_Emerald                  0                  0      0
+## 13    Star_Rainbow                  0                  4      0
+## 14    MacN_Emerald                126                186    123
+## 15    MacN_Rainbow                287                500    286
 ##    Kenward_Roger_only Satterthwaite_only p_value_r_log10
 ## 1                   0                 31          0.9995
 ## 2                   0                 76          0.9987
@@ -2657,7 +2684,11 @@ model_sat</code></pre>
 ## 8                   0                168          0.9913
 ## 9                   0                  0          0.9986
 ## 10                  0                 25          0.9969
-## 11                  0                  1          0.9952</code></pre>
+## 11                  0                  1          0.9952
+## 12                  0                  0          0.9991
+## 13                  0                  4          0.9970
+## 14                  3                 63          0.9926
+## 15                  1                214          0.9931</code></pre>
 <pre class="r"><code>write.csv(model_sat, file = &quot;../../outputs/transcriptomics/ofav/limma/sensitivity_model_Satterthwaite.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="sensitivity-pooled-model-second-cohort-resamples-included" class="section level1">
@@ -2716,6 +2747,10 @@ sensitivity</code></pre>
 ## 9        Star_reef            0           0      0            0           0
 ## 10       MacN_Star            0           0      0            0           0
 ## 11 Rainbow_Emerald            0           0      0            0           0
+## 12    Star_Emerald            0           0      0            0           0
+## 13    Star_Rainbow            0           0      0            0           0
+## 14    MacN_Emerald          126          97     84           42          13
+## 15    MacN_Rainbow          287         506    278            9         228
 ##    LFC_r
 ## 1  0.997
 ## 2  0.999
@@ -2727,7 +2762,11 @@ sensitivity</code></pre>
 ## 8  0.992
 ## 9  0.975
 ## 10 0.981
-## 11 0.991</code></pre>
+## 11 0.991
+## 12 0.970
+## 13 0.985
+## 14 0.987
+## 15 0.995</code></pre>
 <pre class="r"><code>write.csv(sensitivity, file=&quot;../../outputs/transcriptomics/ofav/limma/sensitivity_pooled_DEGs.csv&quot;, row.names=FALSE)
 
 # 2) PERMANOVAs: treatment within colonies, and urban vs reef and site on colony means (as in the primary analysis)
@@ -2806,7 +2845,8 @@ save(design_pooled, res_pooled, sensitivity, ad_pooled, ad_habitat_pooled, ad_si
 # Result of the earlier DESeq2 run (2026-09-30), which led to the first-cohort primary analysis: 10 samples from
 # 5 colonies, ~2,300 cohort DEGs (padj &lt; 0.1) with 4 residual df; 12.5% of genes p &lt; 0.05. LH vs CC DEGs found only
 # in the first-cohort model carried strong cohort effects (55% p &lt; 0.05), i.e. pooling dilutes first-cohort LH
-# responses. Update these numbers from the limma run.
+# responses. limma run (2026-10-06 knit): 1,970 cohort DEGs, 22% of genes p &lt; 0.05; LH vs CC DEGs found only in the
+# first-cohort model: 69% with cohort p &lt; 0.05 (17% for genes found in both models).
 # Note: the LFC-shift correlation is largely mechanical (pooling only adds cohort-2 samples).
 load(&quot;../../outputs/transcriptomics/ofav/limma/pvals.RData&quot;)              # primary (first-cohort) contrasts
 load(&quot;../../outputs/transcriptomics/ofav/limma/urban_reef.RData&quot;)         # primary gene set
@@ -2896,7 +2936,10 @@ write.csv(cohort_summary, file = &quot;../../outputs/transcriptomics/ofav/limma/
 # after SITE MODEL HELPERS once the script has been knit.
 # Ofav_135 (So5-4, the only Star Island LH sample) was removed as an outlier because it alone drove the LH vs CH
 # contrast (earlier DESeq2 colony model, 2026-09-30: 2,089 DEGs with it, 19 without). The same checks with the
-# site model, each on the primary gene set:
+# site model, each on the primary gene set. Result (2026-10-06 knit): with Ofav_135 added back, LH vs CH 84 DEGs
+# (primary 0) and LH vs CC 3,959 (primary 1,914). Leave-one-out: LH vs CH stays at 0-2 DEGs except without Ofav_137
+# (Mo5-4): 293; LH vs CC ranges from 994 to 3,234 DEGs. With six LH samples the LH contrasts depend on which
+# samples are included, so LH results should be reported with that caution:
 #   1) Ofav_135 added back to the primary samples
 #   2) leave-one-out: each remaining LH sample dropped in turn
 # If LH vs CH stays about the same in every leave-one-out fit and changes only when Ofav_135 is added, the
@@ -3226,6 +3269,15 @@ head(urban_reef.p)</code></pre>
 ## 6 Ofaveolata000011  0.012962983</code></pre>
 <pre class="r"><code>write.csv(urban_reef.p,file=&quot;../../outputs/transcriptomics/ofav/limma/urban_reef_lpv.csv&quot;,row.names=F,quote=F)
 save(urban_reef.p,file=&quot;../../outputs/transcriptomics/ofav/limma/urban_reef_lpv.RData&quot;)
+
+# site contrasts (each urban site vs the reef sites, and the six pairwise site comparisons): signed log p-values
+# for the KOG script (first site minus second, e.g. MacN_Star &gt; 0 = higher at MacArthur North than at Star Island)
+for (k in setdiff(names(site_tt), &quot;urban_reef&quot;)) {
+  x &lt;- site_tt[[k]]
+  site_lpv &lt;- data.frame(gene = row.names(x), lpv = -log(x$adj.P.Val, 10) * ifelse(x$t &lt; 0, -1, 1))
+  site_lpv &lt;- site_lpv[!is.na(site_lpv$lpv), ]
+  write.csv(site_lpv, file = paste0(&quot;../../outputs/transcriptomics/ofav/limma/&quot;, k, &quot;_lpv.csv&quot;), row.names = FALSE, quote = FALSE)
+}
 
 # treatment contrasts
 

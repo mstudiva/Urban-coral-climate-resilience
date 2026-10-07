@@ -104,3 +104,7 @@ code/transcriptomics/VennDiagram.2026-10-01_10-16-40.602222.log
 outputs/transcriptomics/orthofinder/orthofinder_DEGs.RData
 Claude outputs/
 outputs/transcriptomics/orthofinder/orthofinder_DEGs.RData
+
+# macOS folder metadata and local Claude settings
+.DS_Store
+.claude/

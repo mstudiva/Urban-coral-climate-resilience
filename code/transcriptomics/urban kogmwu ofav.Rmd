@@ -259,9 +259,17 @@ corrPlot(x="urban_reef",y="LH_CC",ktable)
 # run for contrasts with few or no individually significant genes.
 site_sets <- c("urban_reef", "MacN_reef", "Star_reef", "Rainbow_Emerald", "Star_Emerald", "MacN_Emerald",
                "Star_Rainbow", "MacN_Rainbow", "MacN_Star")
+# Genes are ranked here by the signed -log10 of the unadjusted p-value. The ranking is the same as with adjusted
+# p-values wherever those differ, but the BH adjustment gives many genes the same value when a contrast has few or
+# no significant genes (in the extreme, one value for every gene, which KOG-MWU cannot rank), so the unadjusted
+# p-values keep the full ranking.
+site_env <- new.env()
+load("../../outputs/transcriptomics/ofav/limma/urban_reef.RData", envir = site_env) # site_tt: one table per site contrast
+stopifnot(all(site_sets %in% names(site_env$site_tt)))
 site_kog <- lapply(setNames(site_sets, site_sets), function(k) {
-  d <- read.csv(paste0("../../outputs/transcriptomics/ofav/limma/", k, "_lpv.csv"))
-  d <- d[!is.na(d$lpv), c("gene", "lpv")]
+  x <- site_env$site_tt[[k]]
+  d <- data.frame(gene = rownames(x), lpv = -log10(x$P.Value) * sign(x$t))
+  d <- d[is.finite(d$lpv), ]
   kog.mwu(d, gene2kog)
 })
 ktable_site=makeDeltaRanksTable(site_kog)
