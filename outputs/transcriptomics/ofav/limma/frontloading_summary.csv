@@ -1,0 +1,4 @@
+"gene_set","genes","share_higher_in_urban_at_control","median_baseline_logFC","baseline_DEGs_higher_in_urban","baseline_DEGs_lower_in_urban","share_smaller_increase_in_urban","median_heat_by_habitat_logFC","heat_by_habitat_DEGs_negative","heat_by_habitat_DEGs_positive","frontloaded_pattern"
+"all_genes",19855,0.483,-0.017,0,0,0.502,-0.003,0,0,1055
+"heat_up",1728,0.326,-0.162,0,0,0.44,0.05,0,0,30
+"heat_down",2038,0.4,-0.083,0,0,0.281,0.216,0,0,50

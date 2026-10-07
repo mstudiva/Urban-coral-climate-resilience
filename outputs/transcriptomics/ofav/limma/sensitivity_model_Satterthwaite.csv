@@ -1,0 +1,12 @@
+"contrast","Kenward_Roger_DEGs","Satterthwaite_DEGs","shared","Kenward_Roger_only","Satterthwaite_only","p_value_r_log10"
+"LC_CC",397,428,397,0,31,0.9995
+"CH_CC",3766,3842,3766,0,76,0.9987
+"LH_CC",1914,2054,1914,0,140,0.9986
+"CH_LC",2779,2895,2779,0,116,0.9988
+"LH_CH",0,3,0,0,3,0.9996
+"LH_LC",1402,1468,1402,0,66,0.998
+"urban_reef",44,79,41,3,38,0.9957
+"MacN_reef",554,722,554,0,168,0.9913
+"Star_reef",0,0,0,0,0,0.9986
+"MacN_Star",0,25,0,0,25,0.9969
+"Rainbow_Emerald",0,1,0,0,1,0.9952

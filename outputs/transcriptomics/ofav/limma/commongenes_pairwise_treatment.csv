@@ -1,0 +1,1739 @@
+"","gene","lpv.LC_CC","lpv.CH_CC","annot","KOG","lpv.LH_CC"
+"1","Ofaveolata000010",1.24286850485143,6.20974469294879,NA,NA,NA
+"2","Ofaveolata000053",2.05606866376099,-4.16305798909217,"protein-disulfide reductase (glutathione) activity",NA,NA
+"3","Ofaveolata000449",1.65443787710687,-7.19818374363529,"Lactose-binding lectin l-2-like","Signal transduction mechanisms",NA
+"4","Ofaveolata000533",-1.3743744502888,-2.66629813718059,NA,NA,NA
+"5","Ofaveolata000882",1.44639118009745,5.45359628120472,"cortical actin cytoskeleton organization","Replication, recombination and repair",NA
+"6","Ofaveolata000952",1.6174242821728,-1.00798773812257,NA,NA,NA
+"7","Ofaveolata000959",1.98023758099248,-1.12103785859312,NA,NA,NA
+"8","Ofaveolata000962",1.27987001890326,-3.97387502209229,NA,NA,NA
+"9","Ofaveolata001036",1.926900121901,1.5558336678411,"fibroblast growth factor-activated receptor activity","Signal transduction mechanisms",NA
+"10","Ofaveolata001202",2.6110901540164,-5.13262635381969,NA,NA,NA
+"11","Ofaveolata001318",2.07411687435505,-2.61690839508356,NA,NA,NA
+"12","Ofaveolata001366",-1.15061587604435,-1.44362821633013,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",NA
+"13","Ofaveolata001713",1.65443787710687,-4.96372117644875,NA,NA,NA
+"14","Ofaveolata001714",1.47752736851904,-4.55072837908455,NA,NA,NA
+"15","Ofaveolata001715",1.7065640456903,-4.27845321895546,NA,NA,NA
+"16","Ofaveolata001720",1.43891127834116,-2.68172168422702,NA,NA,NA
+"17","Ofaveolata001721",1.76496809618642,-3.60500655255951,NA,NA,NA
+"18","Ofaveolata001724",2.03746027654235,-2.42484053782029,NA,NA,NA
+"19","Ofaveolata001725",1.47752736851904,-1.82548962358952,NA,NA,NA
+"20","Ofaveolata001729",1.24286850485143,-3.48546828881963,NA,NA,NA
+"21","Ofaveolata001730",1.65443787710687,-4.60274060016169,NA,NA,NA
+"22","Ofaveolata001732",1.65443787710687,-4.17247853811152,NA,NA,NA
+"23","Ofaveolata001733",1.65443787710687,-4.58149137901911,NA,NA,NA
+"24","Ofaveolata001734",2.27084843434423,-6.50588992129711,NA,NA,NA
+"25","Ofaveolata001887",1.9066574429713,-3.45279081822647,"negative regulation of canonical Wnt signaling pathway involved in cardiac muscle cell fate commitment",NA,NA
+"26","Ofaveolata002238",1.36107969609681,-4.02528885216114,NA,NA,NA
+"27","Ofaveolata002239",1.40179659533917,-3.71606027773652,NA,NA,NA
+"28","Ofaveolata002242",1.54062429822164,-2.66288682296998,NA,NA,NA
+"29","Ofaveolata002345",1.23503777126218,-6.23767616974805,NA,NA,NA
+"30","Ofaveolata002392",-1.77035497854187,1.34449746858693,"Cryptochrome circadian clock 1ba","",NA
+"31","Ofaveolata002477",1.22515115937817,-4.32382222929781,"Belongs to the peptidase S1 family","Posttranslational modification, protein turnover, chaperones",NA
+"32","Ofaveolata002551",-1.02035895392265,-1.76211991898397,NA,NA,NA
+"33","Ofaveolata002574",1.02896449054525,-4.21147300846839,NA,NA,NA
+"34","Ofaveolata002648",1.38017246258405,-3.03474239555257,"Prostaglandin G H synthase","Secondary metabolites biosynthesis, transport and catabolism",NA
+"35","Ofaveolata002898",1.3276318408606,-5.21689430890107,NA,NA,NA
+"36","Ofaveolata002916",1.3276318408606,-6.43948330927046,NA,NA,NA
+"37","Ofaveolata002917",2.05606866376099,-1.86478568509608,NA,NA,NA
+"38","Ofaveolata003085",1.48756513438849,-5.65755970490645,NA,NA,NA
+"39","Ofaveolata003086",1.3276318408606,-5.38482817677295,"-","",NA
+"40","Ofaveolata003181",-1.03599337366604,-1.10849691878357,"neurexin family protein binding","Lipid transport and metabolism",NA
+"41","Ofaveolata003229",1.39256269611734,-3.08646791827115,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",NA
+"42","Ofaveolata003232",1.46863535120856,-5.02184118325966,NA,NA,NA
+"43","Ofaveolata003233",1.40459369463577,-4.54592976275964,NA,NA,NA
+"44","Ofaveolata003608",1.98023758099248,2.6187222939587,NA,NA,NA
+"45","Ofaveolata003633",-1.25739336771175,-1.39226562184422,"ephrin receptor activity","Signal transduction mechanisms",NA
+"46","Ofaveolata003857",1.42273043931816,-1.43937071493334,NA,NA,NA
+"47","Ofaveolata003976",-1.28099868186594,-1.23621718039555,NA,NA,NA
+"48","Ofaveolata004231",-1.25739336771175,-3.64897781668211,NA,NA,NA
+"49","Ofaveolata004233",1.52906701066795,-3.29126383258296,NA,NA,NA
+"50","Ofaveolata004474",-1.11689978098993,-1.98020321294253,"ubiquitin-like protein ligase activity","Posttranslational modification, protein turnover, chaperones",NA
+"51","Ofaveolata004540",1.44430359001077,1.94392337013894,"unfolded protein binding","Posttranslational modification, protein turnover, chaperones",NA
+"52","Ofaveolata004807",-1.54813354157395,2.35799506761813,NA,NA,NA
+"53","Ofaveolata004828",-1.63753515964443,-2.91178739768622,NA,NA,NA
+"54","Ofaveolata004912",-1.09658365172227,-1.56490992545604,NA,NA,NA
+"55","Ofaveolata005158",1.68011496945541,-4.4993276852221,NA,NA,NA
+"56","Ofaveolata005301",-1.03599337366604,-2.17506803715508,"iron-sulfur transferase activity","Energy production and conversion",NA
+"57","Ofaveolata005736",1.22943647624538,-2.27015952067975,"Kinesin motor, catalytic domain. ATPase.","Cytoskeleton",NA
+"58","Ofaveolata005887",-1.22515115937817,-3.86832926889845,"Dienelactone hydrolase family","Posttranslational modification, protein turnover, chaperones",NA
+"59","Ofaveolata005964",1.14527377825143,2.37475314280073,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",NA
+"60","Ofaveolata006253",1.0299804424394,-4.16305798909217,NA,NA,NA
+"61","Ofaveolata006256",1.76314548740691,-1.33154204363959,NA,NA,NA
+"62","Ofaveolata006370",1.77665485073693,-7.49142843909992,NA,NA,NA
+"63","Ofaveolata006376",-1.43891127834116,-3.00317535615347,NA,NA,NA
+"64","Ofaveolata006566",-1.24286850485143,-1.67547286489527,"barrier to autointegration factor 1","",NA
+"65","Ofaveolata007062",4.24964703606766,-1.54004826149019,"Pentafunctional AROM polypeptide-like","Amino acid transport and metabolism",NA
+"66","Ofaveolata007849",1.88641448388583,-1.28465749617182,"positive regulation of epithelial to mesenchymal transition",NA,NA
+"67","Ofaveolata008257",1.06033635641687,-3.97832912399442,NA,NA,NA
+"68","Ofaveolata008267",1.00617906928986,-2.42934470078594,"peroxidase activity","Signal transduction mechanisms",NA
+"69","Ofaveolata008394",1.9066574429713,-7.86190872611043,"peptidyl-prolyl cis-trans isomerase activity","Posttranslational modification, protein turnover, chaperones",NA
+"70","Ofaveolata008535",1.47752736851904,-2.04678760123635,NA,NA,NA
+"71","Ofaveolata009043",1.00269872424935,-2.17269851601859,NA,NA,NA
+"72","Ofaveolata009049",1.49893401218081,-3.13365697293237,NA,NA,NA
+"73","Ofaveolata009257",2.27319123687594,-1.68560712262434,"Belongs to the glycosyltransferase 43 family","Posttranslational modification, protein turnover, chaperones",NA
+"74","Ofaveolata009302",2.05606866376099,-6.16794261689306,"neurogenic locus notch homolog protein","Signal transduction mechanisms",NA
+"75","Ofaveolata009609",1.6174242821728,3.36567677535295,"RNA binding motif protein","RNA processing and modification",NA
+"76","Ofaveolata009708",-1.47220795130986,-2.93274935604297,"deoxyhypusine monooxygenase activity","Energy production and conversion",NA
+"77","Ofaveolata010190",1.03204551381735,4.21147300846839,"neurotrophin receptor activity","Signal transduction mechanisms",NA
+"78","Ofaveolata010222",1.84467150180722,-2.4294440978222,NA,NA,NA
+"79","Ofaveolata010511",-1.05132649529389,-2.8126155289442,NA,NA,NA
+"80","Ofaveolata010570",1.82167381906217,-2.62378369153769,NA,NA,NA
+"81","Ofaveolata010677",1.43275633060026,1.86081214146976,"manganese ion transmembrane transporter activity","Inorganic ion transport and metabolism",NA
+"82","Ofaveolata010796",1.49118982465143,-3.37446888618821,"glutathione peroxidase activity","Posttranslational modification, protein turnover, chaperones",NA
+"83","Ofaveolata011077",1.82167381906217,1.99259247977266,"neuronal",NA,NA
+"84","Ofaveolata011519",-1.46235159718443,1.14236363439529,"GTPase activity",NA,NA
+"85","Ofaveolata011707",-1.06760690070612,-1.82762141867729,NA,NA,NA
+"86","Ofaveolata012632",1.18364085668536,-3.01306508293987,NA,NA,NA
+"87","Ofaveolata012694",1.64014801080511,-5.11404202606761,NA,NA,NA
+"88","Ofaveolata012700",1.02943692336827,-1.56528184109259,NA,NA,NA
+"89","Ofaveolata012701",1.77035497854187,-2.92459704498583,NA,NA,NA
+"90","Ofaveolata012708",1.5558514772895,-3.43891537387812,NA,NA,NA
+"91","Ofaveolata012899",1.11299892515645,-3.1163496096576,"sulfuric ester hydrolase activity","Inorganic ion transport and metabolism",NA
+"92","Ofaveolata013005",1.62069557015241,2.23054529175629,"Belongs to the sodium solute symporter (SSF) (TC 2.A.21) family","Inorganic ion transport and metabolism",NA
+"93","Ofaveolata013130",1.60464933752273,-1.63743414718692,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",NA
+"94","Ofaveolata013368",-1.24286850485143,-2.57873939382426,NA,NA,NA
+"95","Ofaveolata013386",-1.47220795130986,-2.27281425364243,NA,NA,NA
+"96","Ofaveolata013549",1.25013214564697,-1.96355330637168,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",NA
+"97","Ofaveolata013952",-1.23000606094945,-2.95609098155862,"Belongs to the actin family","Cytoskeleton",NA
+"98","Ofaveolata014189",1.12332532065966,-2.7459725075182,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",NA
+"99","Ofaveolata014852",3.16648289743813,1.46633658276468,"IPT/TIG domain",NA,NA
+"100","Ofaveolata014975",1.49627236774435,-5.73332517223115,NA,NA,NA
+"101","Ofaveolata015011",1.63996357103016,1.05552532638377,"N-acetyl-beta-glucosaminyl-glycoprotein 4-beta-N-acetylgalactosaminyltransferase activity","Carbohydrate transport and metabolism",NA
+"102","Ofaveolata015225",1.44884351214019,5.06303913581678,NA,NA,NA
+"103","Ofaveolata015292",-1.15400526327433,-1.10966316758694,"positive regulation of fibroblast apoptotic process","Signal transduction mechanisms",NA
+"104","Ofaveolata016131",1.13926173736921,-4.64128206682832,NA,NA,NA
+"105","Ofaveolata016246",1.54062429822164,-2.38062883820814,NA,NA,NA
+"106","Ofaveolata016252",1.68309830662764,-1.42690163805021,NA,NA,NA
+"107","Ofaveolata016257",1.77665485073693,-2.64032559686704,NA,NA,NA
+"108","Ofaveolata016258",2.00247485721104,-5.4816474615063,NA,NA,NA
+"109","Ofaveolata016260",2.27084843434423,-3.73564330404144,NA,NA,NA
+"110","Ofaveolata016491",-1.43486705306063,-1.32166326929505,NA,NA,NA
+"111","Ofaveolata016588",1.43275633060026,-7.94974948692581,NA,NA,NA
+"112","Ofaveolata016589",1.11192397495922,-4.84031487376192,NA,NA,NA
+"113","Ofaveolata016590",1.77665485073693,-4.62837978166287,NA,NA,NA
+"114","Ofaveolata016591",1.62069557015241,-4.11340169338251,NA,NA,NA
+"115","Ofaveolata016596",1.16841886084595,-5.49998499946611,NA,NA,NA
+"116","Ofaveolata016671",1.65443787710687,4.11901590377482,"NADH dehydrogenase ubiquinone 1 alpha subcomplex subunit 4",NA,NA
+"117","Ofaveolata017057",1.83638791031906,-5.59345780296658,NA,NA,NA
+"118","Ofaveolata017058",1.55021032490372,-4.58784679842354,NA,NA,NA
+"119","Ofaveolata017062",1.47897096768966,-6.34683963393221,NA,NA,NA
+"120","Ofaveolata017075",1.77665485073693,2.83341214546063,NA,NA,NA
+"121","Ofaveolata017130",2.6110901540164,-1.27277776001337,NA,NA,NA
+"122","Ofaveolata017138",1.21934833964428,-7.33630588596418,NA,NA,NA
+"123","Ofaveolata017142",1.58729282751443,-6.72742005969163,"Galactose binding lectin domain",NA,NA
+"124","Ofaveolata017337",-1.09769432988457,-2.5758038607565,"Defective in cullin neddylation 1 domain containing",NA,NA
+"125","Ofaveolata017552",1.06735630107582,1.97401860422833,"mitochondrial fusion","Posttranslational modification, protein turnover, chaperones",NA
+"126","Ofaveolata017578",1.25739336771175,1.60006791236586,NA,NA,NA
+"127","Ofaveolata017869",1.39313734845556,-4.6094558616277,NA,NA,NA
+"128","Ofaveolata017873",1.14168098958196,3.24937705622856,NA,NA,NA
+"129","Ofaveolata017910",1.57456953793754,1.68098936110094,NA,NA,NA
+"130","Ofaveolata018302",-1.18250795235598,-1.98910594784061,"ectonucleotide pyrophosphatase phosphodiesterase",NA,NA
+"131","Ofaveolata018979",1.97251073853032,1.18239776195112,NA,NA,NA
+"132","Ofaveolata019014",1.65443787710687,-6.80585741032717,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism",NA
+"133","Ofaveolata019732",1.2468794249487,1.53763357309723,"NACHT and WD repeat","Chromatin structure and dynamics",NA
+"134","Ofaveolata019868",-1.00708717623046,-1.52182519645594,NA,NA,NA
+"135","Ofaveolata019918",1.47220795130986,3.81957465465582,"Rho guanyl-nucleotide exchange factor activity","Signal transduction mechanisms",NA
+"136","Ofaveolata020991",1.2468794249487,1.44577719896986,"Glutamate/Leucine/Phenylalanine/Valine dehydrogenase","Amino acid transport and metabolism",NA
+"137","Ofaveolata021396",1.72448791461848,-2.76670138616206,"glutamic-type peptidase activity","Posttranslational modification, protein turnover, chaperones",NA
+"138","Ofaveolata021485",-1.62069557015241,-2.266487937492,NA,NA,NA
+"139","Ofaveolata021870",1.06553853098211,-5.69972448871977,NA,NA,NA
+"140","Ofaveolata021968",1.82167381906217,-5.5944592027154,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis",NA
+"141","Ofaveolata022011",-1.40943458206486,3.27998624875578,NA,NA,NA
+"142","Ofaveolata022018",1.06692862632843,-5.79256831994075,NA,NA,NA
+"143","Ofaveolata022366",1.95801044056759,-7.20564299360148,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",NA
+"144","Ofaveolata022639",1.30557037489941,-3.82960596043221,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",NA
+"145","Ofaveolata022726",1.64014801080511,-3.02398224753956,NA,NA,NA
+"146","Ofaveolata022881",-1.28434450626365,-4.03116776894375,"bleomycin hydrolase","Amino acid transport and metabolism",NA
+"147","Ofaveolata023142",-1.49118982465143,1.85275663989428,"protein modification by small protein conjugation","Posttranslational modification, protein turnover, chaperones",NA
+"148","Ofaveolata023156",-1.24072621180817,-1.7637981080014,"Cystatin-like domain",NA,NA
+"149","Ofaveolata023337",1.12759644484425,-1.53053905715883,"glutathione hydrolase activity","Amino acid transport and metabolism",NA
+"150","Ofaveolata023451",-1.41778063350716,-10.6177456698051,NA,NA,NA
+"151","Ofaveolata024021",1.47137363659157,1.56137828023249,NA,NA,NA
+"152","Ofaveolata024251",1.91069924618016,-1.54795688912169,NA,NA,NA
+"153","Ofaveolata024255",1.92930619958399,-1.00999970242084,NA,NA,NA
+"154","Ofaveolata024342",1.13968486629859,-3.37446888618821,"Animal haem peroxidase","Signal transduction mechanisms",NA
+"155","Ofaveolata024384",2.05606866376099,-2.55302492452188,NA,NA,NA
+"156","Ofaveolata024486",1.34328610709071,-1.44141385050099,NA,NA,NA
+"157","Ofaveolata025087",1.42565927256496,2.72544365055437,"Collagen triple helix",NA,NA
+"158","Ofaveolata025153",1.70430127860101,2.00538297459824,NA,NA,NA
+"159","Ofaveolata025193",1.23000606094945,-6.77146767252646,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",NA
+"160","Ofaveolata025222",1.43427689039993,1.62404797401694,NA,NA,NA
+"161","Ofaveolata025430",1.46977733499549,-3.47681675529312,NA,NA,NA
+"162","Ofaveolata025436",1.44430359001077,-3.27507137009342,"positive regulation of epithelial to mesenchymal transition",NA,NA
+"163","Ofaveolata025437",1.84467150180722,-5.23501678179733,"peptidase inhibitor activity","",NA
+"164","Ofaveolata025439",1.71757536002352,-2.30470752613686,"positive regulation of epithelial to mesenchymal transition",NA,NA
+"165","Ofaveolata025547",3.16648289743813,2.37242833624099,"Ankyrin repeats (many copies)","Cell wall/membrane/envelope biogenesis",NA
+"166","Ofaveolata025727",-1.55290659727597,-2.00885776761679,"carbohydrate binding","Signal transduction mechanisms",NA
+"167","Ofaveolata025891",-1.77665485073693,-4.66454275276475,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",NA
+"168","Ofaveolata025892",-1.43275633060026,-1.99640753575453,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",NA
+"169","Ofaveolata026043",-1.34791391863638,-1.94733214873973,NA,NA,NA
+"170","Ofaveolata026191",-1.77035497854187,-3.35836802766636,NA,NA,NA
+"171","Ofaveolata026214",-1.13926173736921,-1.77812528268348,NA,NA,NA
+"172","Ofaveolata026390",1.55125729811891,-3.12662607282094,NA,NA,NA
+"173","Ofaveolata026674",1.65443787710687,-2.87679540064907,"structural constituent of cytoskeleton","Cytoskeleton",NA
+"174","Ofaveolata026871",1.15897196144896,2.90176257946731,NA,NA,NA
+"175","Ofaveolata026963",1.40448634283848,3.33157672889624,"glutaryl-CoA dehydrogenase","Amino acid transport and metabolism",NA
+"176","Ofaveolata027450",1.50715977192749,-5.91871687872433,NA,NA,NA
+"177","Ofaveolata027520",1.00744710067952,1.00475065653191,NA,NA,NA
+"178","Ofaveolata027542",-1.82043553327368,-2.15145721119507,"Eukaryotic-type carbonic anhydrase","Inorganic ion transport and metabolism",NA
+"179","Ofaveolata027545",-1.40929804588251,-4.93000705972413,"carbonic anhydrase","Inorganic ion transport and metabolism",NA
+"180","Ofaveolata027696",1.2241017700779,-1.03943931855876,"prolyl 4-hydroxylase","Amino acid transport and metabolism",NA
+"181","Ofaveolata027747",-1.12759644484425,-2.29090396838678,NA,NA,NA
+"182","Ofaveolata027838",1.46977733499549,-1.0838162324786,"lung ciliated cell differentiation","Transcription",NA
+"183","Ofaveolata027889",-1.65443787710687,-3.04849971884651,"tachykinin receptor activity",NA,NA
+"184","Ofaveolata028041",1.34963445576658,1.45973725937599,"Lipoxygenase","Amino acid transport and metabolism",NA
+"185","Ofaveolata028098",-1.70430127860101,-2.05390418064831,NA,NA,NA
+"186","Ofaveolata028190",-1.3276318408606,-4.09016814749907,"camera-type eye development","Transcription",NA
+"187","Ofaveolata028311",1.4244496575345,-4.42421492300557,"intramolecular oxidoreductase activity, transposing S-S bonds","",NA
+"188","Ofaveolata028964",-1.43275633060026,-1.5596690327818,"nucleic acid binding",NA,NA
+"189","Ofaveolata028976",2.27084843434423,3.01306508293987,NA,NA,NA
+"190","Ofaveolata029199",1.15482075742422,3.05985254896752,NA,NA,NA
+"191","Ofaveolata029384",1.431051700142,1.0707748776243,"Belongs to the glycosyl hydrolase 18 family","Carbohydrate transport and metabolism",NA
+"192","Ofaveolata029423",1.09658365172227,-2.95717286746048,"miRNA binding","Posttranslational modification, protein turnover, chaperones",NA
+"193","Ofaveolata029486",1.13968486629859,1.92625172483543,"neuronal calcium sensor","Signal transduction mechanisms",NA
+"194","Ofaveolata029659",-1.08275781443109,-1.22144538673586,"Specifically binds 5-hydroxymethylcytosine (5hmC)- containing DNA in stem cells, suggesting that it acts as a specific reader of 5hmC in stem cells. May act as a peptidase",NA,NA
+"195","Ofaveolata029942",-1.82167381906217,-1.8614244863963,"serotonin receptor activity","Signal transduction mechanisms",NA
+"196","Ofaveolata030362",1.48756513438849,-3.5281943332078,NA,NA,NA
+"197","Ofaveolata030454",-1.77665485073693,-3.95621433432358,NA,NA,NA
+"198","Ofaveolata030458",1.54062429822164,-1.27702662175832,NA,NA,NA
+"199","Ofaveolata030596",2.88479603161227,1.09325237888965,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",NA
+"200","Ofaveolata031084",2.23851390744362,-1.85416377384682,"Carboxypeptidase","Posttranslational modification, protein turnover, chaperones",NA
+"201","Ofaveolata031172",-1.77497885255184,-2.63396000409074,"sequence-specific DNA binding","Transcription",NA
+"202","Ofaveolata031645",1.76496809618642,-1.45752275301014,NA,NA,NA
+"203","Ofaveolata031675",1.49118982465143,-1.53013040686965,NA,NA,NA
+"204","Ofaveolata031713",1.56212549828516,1.07617276221685,"Protein rolling stone-like",NA,NA
+"205","Ofaveolata031959",1.09063817485947,1.02936907076746,NA,NA,NA
+"206","Ofaveolata033040",-1.24286850485143,2.97555455738255,"basic region leucin zipper","Transcription",NA
+"207","Ofaveolata033143",-1.13664043022562,-1.34022401014708,NA,NA,NA
+"208","Ofaveolata033342",1.30266823639927,-4.85071032933053,NA,NA,NA
+"209","Ofaveolata033678",1.926900121901,-5.26187370432145,NA,NA,NA
+"210","Ofaveolata033690",1.65443787710687,-2.45595567149066,NA,NA,NA
+"211","Ofaveolata033695",-1.44430359001077,-2.69289792619698,NA,NA,NA
+"212","Ofaveolata033931",-1.0299804424394,-3.23658724225499,NA,NA,NA
+"213","Ofaveolata034016",1.19761589169706,-2.30929872326546,NA,NA,NA
+"214","Ofaveolata034020",1.23503777126218,-4.16091819919654,NA,NA,NA
+"215","Ofaveolata034137",1.49118982465143,1.14341851489988,"response to hypoxia","Transcription",NA
+"216","Ofaveolata034304",-1.09945522402379,-2.08446215812986,NA,NA,NA
+"217","Ofaveolata034323",-1.82167381906217,-1.27745323985596,NA,NA,NA
+"218","Ofaveolata034812",1.62868307039843,-3.22375509998705,"arachidonic acid secretion","Lipid transport and metabolism",NA
+"219","Ofaveolata034906",-1.95801044056759,2.75531450008713,"-","",NA
+"220","Ofaveolata035042",1.926900121901,-4.71177715993125,NA,NA,NA
+"221","Ofaveolata035554",-1.81379343429001,-1.18163050312559,"Kelch-like protein 17","Signal transduction mechanisms",NA
+"222","Ofaveolata035717",2.14258407261267,-1.61490314372234,NA,NA,NA
+"223","Ofaveolata036068",1.05590410109688,2.5795273444438,"pogo transposable element with KRAB domain","",NA
+"224","Ofaveolata000010",1.24286850485143,NA,NA,NA,3.09806748263543
+"225","Ofaveolata000053",2.05606866376099,NA,"protein-disulfide reductase (glutathione) activity",NA,-1.70603050100336
+"226","Ofaveolata000449",1.65443787710687,NA,"Lactose-binding lectin l-2-like","Signal transduction mechanisms",-2.66023304188133
+"227","Ofaveolata000533",-1.3743744502888,NA,NA,NA,-1.19148105589606
+"228","Ofaveolata000962",1.27987001890326,NA,NA,NA,-1.79858408682615
+"229","Ofaveolata001202",2.6110901540164,NA,NA,NA,-2.1192228473188
+"230","Ofaveolata001318",2.07411687435505,NA,NA,NA,-1.41336798011531
+"231","Ofaveolata001366",-1.15061587604435,NA,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-1.15606585015445
+"232","Ofaveolata001713",1.65443787710687,NA,NA,NA,-2.18040149495278
+"233","Ofaveolata001714",1.47752736851904,NA,NA,NA,-2.39500548897061
+"234","Ofaveolata001715",1.7065640456903,NA,NA,NA,-2.0135426938964
+"235","Ofaveolata001720",1.43891127834116,NA,NA,NA,-1.51051280541185
+"236","Ofaveolata001721",1.76496809618642,NA,NA,NA,-2.07473221537281
+"237","Ofaveolata001724",2.03746027654235,NA,NA,NA,-1.79070851456385
+"238","Ofaveolata001725",1.47752736851904,NA,NA,NA,-1.44057878586056
+"239","Ofaveolata001729",1.24286850485143,NA,NA,NA,-1.14749141156316
+"240","Ofaveolata001730",1.65443787710687,NA,NA,NA,-1.35301477101381
+"241","Ofaveolata001732",1.65443787710687,NA,NA,NA,-1.72171055968182
+"242","Ofaveolata001733",1.65443787710687,NA,NA,NA,-2.26407748654028
+"243","Ofaveolata001734",2.27084843434423,NA,NA,NA,-3.01341313763578
+"244","Ofaveolata001887",1.9066574429713,NA,"negative regulation of canonical Wnt signaling pathway involved in cardiac muscle cell fate commitment",NA,-1.12872002528657
+"245","Ofaveolata002016",-1.65443787710687,NA,"Hairy and enhancer of split-related protein helt","Transcription",-2.95532073948529
+"246","Ofaveolata002238",1.36107969609681,NA,NA,NA,-1.83671500584472
+"247","Ofaveolata002239",1.40179659533917,NA,NA,NA,-1.09106809871874
+"248","Ofaveolata002242",1.54062429822164,NA,NA,NA,-1.67633736043484
+"249","Ofaveolata002345",1.23503777126218,NA,NA,NA,-2.73793018913154
+"250","Ofaveolata002477",1.22515115937817,NA,"Belongs to the peptidase S1 family","Posttranslational modification, protein turnover, chaperones",-2.36428738466295
+"251","Ofaveolata002551",-1.02035895392265,NA,NA,NA,-1.75872547451335
+"252","Ofaveolata002574",1.02896449054525,NA,NA,NA,-1.88658047413481
+"253","Ofaveolata002898",1.3276318408606,NA,NA,NA,-1.67069957962865
+"254","Ofaveolata002916",1.3276318408606,NA,NA,NA,-2.49427520703312
+"255","Ofaveolata003085",1.48756513438849,NA,NA,NA,-2.60626618872559
+"256","Ofaveolata003086",1.3276318408606,NA,"-","",-1.91417625840806
+"257","Ofaveolata003102",1.27987001890326,NA,"It is involved in the biological process described with","Posttranslational modification, protein turnover, chaperones",-1.16657953145811
+"258","Ofaveolata003229",1.39256269611734,NA,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",-1.0131055741568
+"259","Ofaveolata003232",1.46863535120856,NA,NA,NA,-1.45330803299465
+"260","Ofaveolata003233",1.40459369463577,NA,NA,NA,-2.24885337723917
+"261","Ofaveolata003633",-1.25739336771175,NA,"ephrin receptor activity","Signal transduction mechanisms",-1.18741086660265
+"262","Ofaveolata003661",2.88479603161227,NA,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",-1.17375215649659
+"263","Ofaveolata003857",1.42273043931816,NA,NA,NA,-1.2531210431009
+"264","Ofaveolata004140",1.3926306730761,NA,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism",1.49686643048018
+"265","Ofaveolata004231",-1.25739336771175,NA,NA,NA,-1.46682959826298
+"266","Ofaveolata004233",1.52906701066795,NA,NA,NA,-1.16408847522433
+"267","Ofaveolata004474",-1.11689978098993,NA,"ubiquitin-like protein ligase activity","Posttranslational modification, protein turnover, chaperones",-1.26284750344134
+"268","Ofaveolata004912",-1.09658365172227,NA,NA,NA,-1.14704472424399
+"269","Ofaveolata005158",1.68011496945541,NA,NA,NA,-1.41193057449322
+"270","Ofaveolata005301",-1.03599337366604,NA,"iron-sulfur transferase activity","Energy production and conversion",-2.8243369112183
+"271","Ofaveolata005887",-1.22515115937817,NA,"Dienelactone hydrolase family","Posttranslational modification, protein turnover, chaperones",-2.18945449444717
+"272","Ofaveolata006253",1.0299804424394,NA,NA,NA,-1.28179622284275
+"273","Ofaveolata006370",1.77665485073693,NA,NA,NA,-3.08382344763226
+"274","Ofaveolata006376",-1.43891127834116,NA,NA,NA,-1.98470368392196
+"275","Ofaveolata006566",-1.24286850485143,NA,"barrier to autointegration factor 1","",-1.34288346745862
+"276","Ofaveolata007098",-1.16404576916065,NA,"negative regulation of appetite",NA,-1.75945538301031
+"277","Ofaveolata008257",1.06033635641687,NA,NA,NA,-1.70603050100336
+"278","Ofaveolata008394",1.9066574429713,NA,"peptidyl-prolyl cis-trans isomerase activity","Posttranslational modification, protein turnover, chaperones",-3.3852736553743
+"279","Ofaveolata008745",-1.13926173736921,NA,NA,NA,-1.03491050072731
+"280","Ofaveolata009302",2.05606866376099,NA,"neurogenic locus notch homolog protein","Signal transduction mechanisms",-2.11332002534547
+"281","Ofaveolata009708",-1.47220795130986,NA,"deoxyhypusine monooxygenase activity","Energy production and conversion",-1.36067081051567
+"282","Ofaveolata010190",1.03204551381735,NA,"neurotrophin receptor activity","Signal transduction mechanisms",1.7729746967503
+"283","Ofaveolata010222",1.84467150180722,NA,NA,NA,-1.52471640075543
+"284","Ofaveolata010570",1.82167381906217,NA,NA,NA,-1.00114993458955
+"285","Ofaveolata010796",1.49118982465143,NA,"glutathione peroxidase activity","Posttranslational modification, protein turnover, chaperones",-1.64100836558813
+"286","Ofaveolata011074",1.66375924780947,NA,"heparin binding","Signal transduction mechanisms",1.92141640742863
+"287","Ofaveolata011707",-1.06760690070612,NA,NA,NA,-1.0210005545318
+"288","Ofaveolata012651",1.49118982465143,NA,"zinc ion binding","Posttranslational modification, protein turnover, chaperones",1.05001994158055
+"289","Ofaveolata012694",1.64014801080511,NA,NA,NA,-2.7681747827152
+"290","Ofaveolata012708",1.5558514772895,NA,NA,NA,-1.84648469562577
+"291","Ofaveolata013368",-1.24286850485143,NA,NA,NA,-1.40320490301171
+"292","Ofaveolata013386",-1.47220795130986,NA,NA,NA,-1.1545332327473
+"293","Ofaveolata013549",1.25013214564697,NA,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",-1.28447063785946
+"294","Ofaveolata014852",3.16648289743813,NA,"IPT/TIG domain",NA,2.1192228473188
+"295","Ofaveolata014975",1.49627236774435,NA,NA,NA,-2.3492828951928
+"296","Ofaveolata015225",1.44884351214019,NA,NA,NA,1.38891447691391
+"297","Ofaveolata015856",-2.14331896562879,NA,NA,NA,-2.37956076714335
+"298","Ofaveolata016131",1.13926173736921,NA,NA,NA,-1.41611360422561
+"299","Ofaveolata016246",1.54062429822164,NA,NA,NA,-1.17014052720239
+"300","Ofaveolata016257",1.77665485073693,NA,NA,NA,-1.43271377106898
+"301","Ofaveolata016258",2.00247485721104,NA,NA,NA,-1.90852166712919
+"302","Ofaveolata016260",2.27084843434423,NA,NA,NA,-1.62255629049045
+"303","Ofaveolata016491",-1.43486705306063,NA,NA,NA,-1.0034010441668
+"304","Ofaveolata016588",1.43275633060026,NA,NA,NA,-3.15693495964045
+"305","Ofaveolata016589",1.11192397495922,NA,NA,NA,-1.40683936151419
+"306","Ofaveolata016590",1.77665485073693,NA,NA,NA,-1.92141640742863
+"307","Ofaveolata016591",1.62069557015241,NA,NA,NA,-1.10198855629195
+"308","Ofaveolata016596",1.16841886084595,NA,NA,NA,-2.88186796716642
+"309","Ofaveolata016671",1.65443787710687,NA,"NADH dehydrogenase ubiquinone 1 alpha subcomplex subunit 4",NA,1.70345882472839
+"310","Ofaveolata017057",1.83638791031906,NA,NA,NA,-1.92141640742863
+"311","Ofaveolata017058",1.55021032490372,NA,NA,NA,-2.3115813262124
+"312","Ofaveolata017062",1.47897096768966,NA,NA,NA,-2.66248964435651
+"313","Ofaveolata017138",1.21934833964428,NA,NA,NA,-2.95532073948529
+"314","Ofaveolata017142",1.58729282751443,NA,"Galactose binding lectin domain",NA,-2.61135356558331
+"315","Ofaveolata017337",-1.09769432988457,NA,"Defective in cullin neddylation 1 domain containing",NA,-2.25287041300838
+"316","Ofaveolata017869",1.39313734845556,NA,NA,NA,-1.88698050269959
+"317","Ofaveolata017873",1.14168098958196,NA,NA,NA,1.72734470054742
+"318","Ofaveolata018302",-1.18250795235598,NA,"ectonucleotide pyrophosphatase phosphodiesterase",NA,-1.44527261174038
+"319","Ofaveolata019014",1.65443787710687,NA,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism",-2.75831296781308
+"320","Ofaveolata019016",1.09063817485947,NA,NA,NA,1.6967051412318
+"321","Ofaveolata019732",1.2468794249487,NA,"NACHT and WD repeat","Chromatin structure and dynamics",1.27398473674346
+"322","Ofaveolata020827",-2.00247485721104,NA,"Hepatic leukemia factor","Transcription",-2.37956076714335
+"323","Ofaveolata021396",1.72448791461848,NA,"glutamic-type peptidase activity","Posttranslational modification, protein turnover, chaperones",-1.28487968064816
+"324","Ofaveolata021485",-1.62069557015241,NA,NA,NA,-1.25172205206064
+"325","Ofaveolata021870",1.06553853098211,NA,NA,NA,-1.54731903897289
+"326","Ofaveolata021968",1.82167381906217,NA,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis",-2.42260273175917
+"327","Ofaveolata022018",1.06692862632843,NA,NA,NA,-2.13253477138014
+"328","Ofaveolata022366",1.95801044056759,NA,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",-2.8604221281806
+"329","Ofaveolata022639",1.30557037489941,NA,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",-1.44833722933475
+"330","Ofaveolata022726",1.64014801080511,NA,NA,NA,-1.28586524485911
+"331","Ofaveolata022881",-1.28434450626365,NA,"bleomycin hydrolase","Amino acid transport and metabolism",-2.67613432519389
+"332","Ofaveolata023156",-1.24072621180817,NA,"Cystatin-like domain",NA,-1.92625730890548
+"333","Ofaveolata023451",-1.41778063350716,NA,NA,NA,-4.98754011706778
+"334","Ofaveolata024251",1.91069924618016,NA,NA,NA,-1.21995452891095
+"335","Ofaveolata024342",1.13968486629859,NA,"Animal haem peroxidase","Signal transduction mechanisms",-1.4217042191689
+"336","Ofaveolata024384",2.05606866376099,NA,NA,NA,-1.36067081051567
+"337","Ofaveolata025102",1.13926173736921,NA,"cellular response to nitroglycerin","Transcription",-1.61779627361958
+"338","Ofaveolata025193",1.23000606094945,NA,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",-2.8604221281806
+"339","Ofaveolata025430",1.46977733499549,NA,NA,NA,-1.67069957962865
+"340","Ofaveolata025436",1.44430359001077,NA,"positive regulation of epithelial to mesenchymal transition",NA,-1.56476716164502
+"341","Ofaveolata025437",1.84467150180722,NA,"peptidase inhibitor activity","",-1.72171055968182
+"342","Ofaveolata025818",1.24286850485143,NA,NA,NA,1.49686643048018
+"343","Ofaveolata025891",-1.77665485073693,NA,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",-2.24620248491102
+"344","Ofaveolata025892",-1.43275633060026,NA,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",-2.17978957393747
+"345","Ofaveolata026043",-1.34791391863638,NA,NA,NA,-1.5485580056245
+"346","Ofaveolata026191",-1.77035497854187,NA,NA,NA,-1.55797028077271
+"347","Ofaveolata026390",1.55125729811891,NA,NA,NA,-1.27612921489358
+"348","Ofaveolata026871",1.15897196144896,NA,NA,NA,1.27162628096463
+"349","Ofaveolata026963",1.40448634283848,NA,"glutaryl-CoA dehydrogenase","Amino acid transport and metabolism",1.35582423588661
+"350","Ofaveolata027450",1.50715977192749,NA,NA,NA,-2.49090433932081
+"351","Ofaveolata027545",-1.40929804588251,NA,"carbonic anhydrase","Inorganic ion transport and metabolism",-2.00024443809484
+"352","Ofaveolata027747",-1.12759644484425,NA,NA,NA,-1.60256797629346
+"353","Ofaveolata027889",-1.65443787710687,NA,"tachykinin receptor activity",NA,-1.57444582147371
+"354","Ofaveolata028098",-1.70430127860101,NA,NA,NA,-1.85384527108032
+"355","Ofaveolata028190",-1.3276318408606,NA,"camera-type eye development","Transcription",-1.25064111862469
+"356","Ofaveolata028311",1.4244496575345,NA,"intramolecular oxidoreductase activity, transposing S-S bonds","",-1.93126122879553
+"357","Ofaveolata028976",2.27084843434423,NA,NA,NA,1.14600547473735
+"358","Ofaveolata029423",1.09658365172227,NA,"miRNA binding","Posttranslational modification, protein turnover, chaperones",-1.09525144281941
+"359","Ofaveolata030362",1.48756513438849,NA,NA,NA,-1.68512996066662
+"360","Ofaveolata030454",-1.77665485073693,NA,NA,NA,-1.62038301817682
+"361","Ofaveolata030728",2.05606866376099,NA,"major facilitator superfamily","Carbohydrate transport and metabolism",1.08425919141251
+"362","Ofaveolata031084",2.23851390744362,NA,"Carboxypeptidase","Posttranslational modification, protein turnover, chaperones",-1.69418131704594
+"363","Ofaveolata031172",-1.77497885255184,NA,"sequence-specific DNA binding","Transcription",-1.98470368392196
+"364","Ofaveolata031675",1.49118982465143,NA,NA,NA,-1.49170591883972
+"365","Ofaveolata033143",-1.13664043022562,NA,NA,NA,-1.3100901239096
+"366","Ofaveolata033342",1.30266823639927,NA,NA,NA,-2.16961190356271
+"367","Ofaveolata033476",-1.08447865671374,NA,NA,NA,-1.20113838384523
+"368","Ofaveolata033678",1.926900121901,NA,NA,NA,-1.36613514479979
+"369","Ofaveolata033695",-1.44430359001077,NA,NA,NA,-1.28544084176424
+"370","Ofaveolata033931",-1.0299804424394,NA,NA,NA,-1.47564525039294
+"371","Ofaveolata034020",1.23503777126218,NA,NA,NA,-1.7729746967503
+"372","Ofaveolata034812",1.62868307039843,NA,"arachidonic acid secretion","Lipid transport and metabolism",-1.59567267019644
+"373","Ofaveolata035042",1.926900121901,NA,NA,NA,-2.16961190356271
+"374","Ofaveolata035717",2.14258407261267,NA,NA,NA,-1.44669420377697
+"375","Ofaveolata036020",1.62069557015241,NA,"Galactose binding lectin domain","Posttranslational modification, protein turnover, chaperones",-1.49279850876483
+"376","Ofaveolata000010",NA,6.20974469294879,NA,NA,3.09806748263543
+"377","Ofaveolata000012",NA,1.84210586098041,"RNA polymerase II intronic transcription regulatory region sequence-specific DNA binding","Transcription",1.48400898064487
+"378","Ofaveolata000050",NA,-1.96356595693951,"folate import across plasma membrane","Posttranslational modification, protein turnover, chaperones",-1.49689172836772
+"379","Ofaveolata000053",NA,-4.16305798909217,"protein-disulfide reductase (glutathione) activity",NA,-1.70603050100336
+"380","Ofaveolata000114",NA,-1.38890547095541,"PX domain","Signal transduction mechanisms",-1.44278957237698
+"381","Ofaveolata000164",NA,3.49090331383677,NA,NA,1.60745849649808
+"382","Ofaveolata000189",NA,-2.84020259134761,"Ectonucleoside triphosphate diphosphohydrolase","Nucleotide transport and metabolism",-1.74458281359933
+"383","Ofaveolata000200",NA,4.96048389456081,NA,NA,1.25267794963462
+"384","Ofaveolata000201",NA,2.43044122815908,NA,NA,1.0956492428908
+"385","Ofaveolata000218",NA,-1.83918240894193,"RNA recognition motif. (a.k.a. RRM, RBD, or RNP domain)","RNA processing and modification",-1.23791155900172
+"386","Ofaveolata000230",NA,-2.07967111985524,NA,NA,-1.24906403701505
+"387","Ofaveolata000304",NA,-2.14639072224908,"Phosphoethanolamine","Lipid transport and metabolism",-1.49279850876483
+"388","Ofaveolata000340",NA,-2.31004355004531,"UPF0704 protein C6orf165 homolog",NA,-1.49279850876483
+"389","Ofaveolata000407",NA,1.85416377384682,NA,NA,1.33710445646646
+"390","Ofaveolata000415",NA,5.2116485552689,"Protein canopy homolog 4",NA,2.55844723243364
+"391","Ofaveolata000449",NA,-7.19818374363529,"Lactose-binding lectin l-2-like","Signal transduction mechanisms",-2.66023304188133
+"392","Ofaveolata000468",NA,-2.1774872864115,"inositol monophosphate 3-phosphatase activity","Lipid transport and metabolism",-1.16408847522433
+"393","Ofaveolata000475",NA,-2.29907769649917,"Transmembrane channel-like",NA,-1.05857780426196
+"394","Ofaveolata000533",NA,-2.66629813718059,NA,NA,-1.19148105589606
+"395","Ofaveolata000578",NA,-1.53114053642374,"MFS/sugar transport protein",NA,-1.25846243438572
+"396","Ofaveolata000590",NA,1.25534702990454,"cyclic-GMP-AMP binding",NA,1.1423919883446
+"397","Ofaveolata000604",NA,2.72394374946563,"Galactose oxidase, central domain",NA,1.58584222190494
+"398","Ofaveolata000649",NA,-2.9145951725033,NA,NA,-1.64100836558813
+"399","Ofaveolata000765",NA,-1.27756567521962,"6,7-dihydropteridine reductase activity","Amino acid transport and metabolism",-1.24906403701505
+"400","Ofaveolata000778",NA,3.60665499786316,"IPT/TIG domain",NA,1.7729746967503
+"401","Ofaveolata000806",NA,-2.94821244066132,NA,NA,-1.16657953145811
+"402","Ofaveolata000921",NA,-2.10092187122901,"histone H4-K16 acetylation",NA,-1.23791155900172
+"403","Ofaveolata000928",NA,-3.20651566652012,"BTB POZ domain-containing protein",NA,-1.53206961759167
+"404","Ofaveolata000943",NA,2.20877427783721,"NFX1-type zinc finger-containing protein","Replication, recombination and repair",1.34792326711155
+"405","Ofaveolata000962",NA,-3.97387502209229,NA,NA,-1.79858408682615
+"406","Ofaveolata000973",NA,1.16310023914294,"microtubule binding","",1.36067081051567
+"407","Ofaveolata001007",NA,-4.06258102786197,NA,NA,-1.36012915343803
+"408","Ofaveolata001011",NA,-3.18835135820461,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",-1.42569528872602
+"409","Ofaveolata001052",NA,5.68519346326896,NA,NA,2.6066486038896
+"410","Ofaveolata001053",NA,2.2929605018162,"Regulatory subunit of the condensin complex, a complex required for conversion of interphase chromatin into mitotic-like condense chromosomes","",1.16657953145811
+"411","Ofaveolata001100",NA,-2.41476405809328,"TIA1 cytotoxic granule-associated RNA binding protein-like 1","RNA processing and modification",-1.43231450277262
+"412","Ofaveolata001103",NA,-2.04678760123635,NA,NA,-1.2379477717941
+"413","Ofaveolata001171",NA,1.56078472454566,"plasma membrane repair","Cell wall/membrane/envelope biogenesis",1.08521563482339
+"414","Ofaveolata001178",NA,-1.85775738781278,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.0354127981702
+"415","Ofaveolata001197",NA,4.61286346879151,"maturation of 5.8S rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA, LSU-rRNA)","RNA processing and modification",1.15863920994832
+"416","Ofaveolata001202",NA,-5.13262635381969,NA,NA,-2.1192228473188
+"417","Ofaveolata001227",NA,-2.6064277921347,"positive regulation of glomerular metanephric mesangial cell proliferation","Transcription",-2.86326640268131
+"418","Ofaveolata001253",NA,-2.42168375448966,"negative regulation of ERK1 and ERK2 cascade",NA,-1.99566936141837
+"419","Ofaveolata001258",NA,-2.89288712110453,"homophilic cell adhesion via plasma membrane adhesion molecules","Posttranslational modification, protein turnover, chaperones",-1.02781887315618
+"420","Ofaveolata001260",NA,-2.95412567094936,NA,NA,-1.81562415938831
+"421","Ofaveolata001267",NA,4.12895760976801,"Phosphatidylethanolamine-binding protein","Transcription",1.89536424901623
+"422","Ofaveolata001318",NA,-2.61690839508356,NA,NA,-1.41336798011531
+"423","Ofaveolata001337",NA,-2.11126932637934,"spermatogenesis","",-1.18157915282517
+"424","Ofaveolata001345",NA,-2.35799506761813,"mannose-ethanolamine phosphotransferase activity","Signal transduction mechanisms",-1.06101759883199
+"425","Ofaveolata001358",NA,-3.09088832199822,NA,NA,-1.60745849649808
+"426","Ofaveolata001364",NA,-3.03340110018473,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-1.45959976276164
+"427","Ofaveolata001366",NA,-1.44362821633013,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-1.15606585015445
+"428","Ofaveolata001369",NA,-4.94100914351196,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-2.75831296781308
+"429","Ofaveolata001383",NA,3.63217127896012,"Copper/zinc superoxide dismutase (SODC)",NA,1.42055696794764
+"430","Ofaveolata001384",NA,-3.98006822450631,"Copper/zinc superoxide dismutase (SODC)",NA,-1.07800316093216
+"431","Ofaveolata001406",NA,3.48883595504172,NA,NA,2.41174850675664
+"432","Ofaveolata001417",NA,-6.94704252990824,NA,NA,-2.75594925692463
+"433","Ofaveolata001455",NA,-1.5786245319917,"transmembrane transport","Carbohydrate transport and metabolism",-1.11730702973123
+"434","Ofaveolata001524",NA,-1.81493377281391,"Nipsnap homolog",NA,-1.81370907734949
+"435","Ofaveolata001530",NA,-3.7717329848689,"mitochondrial electron transport, NADH to ubiquinone","Energy production and conversion",-2.62308286829705
+"436","Ofaveolata001543",NA,2.55407460711146,"tryptophan 5-monooxygenase activity","Amino acid transport and metabolism",1.01798430474525
+"437","Ofaveolata001563",NA,-2.64445101159983,"Belongs to the carnitine choline acetyltransferase family","Lipid transport and metabolism",-1.58461015732842
+"438","Ofaveolata001584",NA,3.90539888443477,NA,NA,1.37290565126097
+"439","Ofaveolata001594",NA,-5.62410496144631,NA,NA,-2.05352686814682
+"440","Ofaveolata001600",NA,-4.66236308774392,"BCCT, betaine/carnitine/choline family transporter","Cell wall/membrane/envelope biogenesis",-2.05818021851824
+"441","Ofaveolata001602",NA,-8.50245275147523,NA,NA,-4.36154965679125
+"442","Ofaveolata001666",NA,-1.91458119232168,"eukaryotic initiation factor 4E binding","Translation, ribosomal structure and biogenesis",-2.1192228473188
+"443","Ofaveolata001712",NA,-2.96291952654086,NA,NA,-1.81538408118984
+"444","Ofaveolata001713",NA,-4.96372117644875,NA,NA,-2.18040149495278
+"445","Ofaveolata001714",NA,-4.55072837908455,NA,NA,-2.39500548897061
+"446","Ofaveolata001715",NA,-4.27845321895546,NA,NA,-2.0135426938964
+"447","Ofaveolata001720",NA,-2.68172168422702,NA,NA,-1.51051280541185
+"448","Ofaveolata001721",NA,-3.60500655255951,NA,NA,-2.07473221537281
+"449","Ofaveolata001724",NA,-2.42484053782029,NA,NA,-1.79070851456385
+"450","Ofaveolata001725",NA,-1.82548962358952,NA,NA,-1.44057878586056
+"451","Ofaveolata001729",NA,-3.48546828881963,NA,NA,-1.14749141156316
+"452","Ofaveolata001730",NA,-4.60274060016169,NA,NA,-1.35301477101381
+"453","Ofaveolata001732",NA,-4.17247853811152,NA,NA,-1.72171055968182
+"454","Ofaveolata001733",NA,-4.58149137901911,NA,NA,-2.26407748654028
+"455","Ofaveolata001734",NA,-6.50588992129711,NA,NA,-3.01341313763578
+"456","Ofaveolata001746",NA,-1.66217452466995,NA,NA,-1.27785620068153
+"457","Ofaveolata001752",NA,-3.31666004657789,"adenosine kinase activity","Carbohydrate transport and metabolism",-1.36775980506484
+"458","Ofaveolata001771",NA,-1.67822736681504,"2 iron, 2 sulfur cluster binding",NA,-1.71684754389666
+"459","Ofaveolata001805",NA,3.24080511369924,"Ligand for members of the frizzled family of seven transmembrane receptors","Signal transduction mechanisms",1.44641515471378
+"460","Ofaveolata001827",NA,1.09154117310982,"heme binding","Secondary metabolites biosynthesis, transport and catabolism",1.07812038733088
+"461","Ofaveolata001834",NA,-2.14332656936262,NA,NA,-1.02853248041338
+"462","Ofaveolata001837",NA,-6.19880104612828,NA,NA,-2.99734065140288
+"463","Ofaveolata001856",NA,-3.25244030573421,NA,NA,-1.62504726209026
+"464","Ofaveolata001861",NA,4.83743859050646,"PRELI domain-containing protein 2",NA,2.896489609039
+"465","Ofaveolata001887",NA,-3.45279081822647,"negative regulation of canonical Wnt signaling pathway involved in cardiac muscle cell fate commitment",NA,-1.12872002528657
+"466","Ofaveolata001889",NA,-4.36497169320561,NA,NA,-1.70696235897404
+"467","Ofaveolata001919",NA,-1.19862841415852,"Occurs in almost all aerobically respiring organisms and serves to protect cells from the toxic effects of hydrogen peroxide","Inorganic ion transport and metabolism",-1.49279850876483
+"468","Ofaveolata001955",NA,-1.27999626883865,"deoxyribose-phosphate aldolase activity","Nucleotide transport and metabolism",-1.1211310210476
+"469","Ofaveolata002144",NA,-1.55404102033496,"Transmembrane protein 258",NA,-1.57302306932709
+"470","Ofaveolata002172",NA,-2.59329314399226,"carboxypeptidase Q","",-1.51473155490851
+"471","Ofaveolata002186",NA,-3.22880021650056,"Belongs to the sodium neurotransmitter symporter (SNF) (TC 2.A.22) family","Inorganic ion transport and metabolism",-1.54731903897289
+"472","Ofaveolata002188",NA,-2.06501389266165,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",-1.34285495631933
+"473","Ofaveolata002203",NA,-2.55702690972824,"spliceosomal snRNP assembly","RNA processing and modification",-1.70489694762046
+"474","Ofaveolata002238",NA,-4.02528885216114,NA,NA,-1.83671500584472
+"475","Ofaveolata002239",NA,-3.71606027773652,NA,NA,-1.09106809871874
+"476","Ofaveolata002241",NA,-3.81957465465582,NA,NA,-1.21004231257877
+"477","Ofaveolata002242",NA,-2.66288682296998,NA,NA,-1.67633736043484
+"478","Ofaveolata002275",NA,-3.25244030573421,NA,NA,-1.32599065564802
+"479","Ofaveolata002278",NA,-2.63427682256513,NA,NA,-1.03542901086388
+"480","Ofaveolata002291",NA,-1.81175150266612,"oxidoreductase activity","Secondary metabolites biosynthesis, transport and catabolism",-2.13253477138014
+"481","Ofaveolata002293",NA,-3.44268226584206,"positive regulation of Golgi to plasma membrane protein transport","Signal transduction mechanisms",-2.14736056637265
+"482","Ofaveolata002294",NA,-3.66216692104325,"arginine transport",NA,-1.76206266427781
+"483","Ofaveolata002328",NA,-3.01306508293987,NA,NA,-1.14842879401673
+"484","Ofaveolata002345",NA,-6.23767616974805,NA,NA,-2.73793018913154
+"485","Ofaveolata002359",NA,-1.99699958004379,"Family of unknown function (DUF572)",NA,-1.21585773624287
+"486","Ofaveolata002362",NA,-4.03132414519329,"brassinosteroid metabolic process","",-1.42481586924419
+"487","Ofaveolata002363",NA,-4.12402864247788,"Haloacid dehalogenase-like hydrolase",NA,-1.87692197720341
+"488","Ofaveolata002385",NA,2.7683933674717,NA,NA,2.36428738466295
+"489","Ofaveolata002438",NA,2.02577615753476,NA,NA,1.26801659923462
+"490","Ofaveolata002461",NA,-3.42027599633014,"ephrin receptor binding","Signal transduction mechanisms",-1.73601121329622
+"491","Ofaveolata002477",NA,-4.32382222929781,"Belongs to the peptidase S1 family","Posttranslational modification, protein turnover, chaperones",-2.36428738466295
+"492","Ofaveolata002486",NA,-2.75216642551154,NA,NA,-1.56666652221147
+"493","Ofaveolata002487",NA,-6.61310714008946,NA,NA,-2.6217567659714
+"494","Ofaveolata002516",NA,-1.52234809232988,"Catalyzes the three sequential steps of the methylation pathway of phosphatidylcholine biosynthesis, the SAM-dependent methylation of phosphatidylethanolamine (PE) to phosphatidylmonomethylethanolamine (PMME), PMME to phosphatidyldimethylethanolamine (PDME), and PDME to phosphatidylcholine (PC)","Lipid transport and metabolism",-1.68495519682287
+"495","Ofaveolata002519",NA,-4.55399266881383,"mesenchymal-epithelial cell signaling involved in prostate gland development","Signal transduction mechanisms",-1.56476716164502
+"496","Ofaveolata002535",NA,-6.67978006851139,"BCCT, betaine/carnitine/choline family transporter","Cell wall/membrane/envelope biogenesis",-2.825621192309
+"497","Ofaveolata002551",NA,-1.76211991898397,NA,NA,-1.75872547451335
+"498","Ofaveolata002554",NA,-4.16590615324061,"Guanidinoacetate N-methyltransferase","Amino acid transport and metabolism",-1.59452959907585
+"499","Ofaveolata002556",NA,2.3949823673112,"dihydrofolate reductase activity","Coenzyme transport and metabolism",1.01397861600461
+"500","Ofaveolata002557",NA,-2.57511735558502,"regulation of peroxisome size","Intracellular trafficking, secretion, and vesicular transport",-2.0983573862747
+"501","Ofaveolata002574",NA,-4.21147300846839,NA,NA,-1.88658047413481
+"502","Ofaveolata002590",NA,2.09884213719289,"mannosyl-oligosaccharide 1,3-1,6-alpha-mannosidase activity","Carbohydrate transport and metabolism",1.56476716164502
+"503","Ofaveolata002604",NA,-1.86220301708877,NA,NA,-1.26960837398835
+"504","Ofaveolata002628",NA,-3.85876117537409,"structural constituent of ribosome","Translation, ribosomal structure and biogenesis",-2.04416443023695
+"505","Ofaveolata002636",NA,-2.56371783063771,"O-phospho-L-serine:2-oxoglutarate aminotransferase activity","Amino acid transport and metabolism",-1.68558001520845
+"506","Ofaveolata002657",NA,3.11421668174223,NA,NA,1.07861819722311
+"507","Ofaveolata002676",NA,-1.45188398784307,NA,NA,-1.59421491680232
+"508","Ofaveolata002768",NA,-1.53759096661675,NA,NA,-1.48859207068283
+"509","Ofaveolata002790",NA,-4.80417645715328,NA,NA,-2.7263296471293
+"510","Ofaveolata002794",NA,-3.85876117537409,NA,NA,-1.65687052714002
+"511","Ofaveolata002804",NA,-2.64700685379065,NA,NA,-1.26299213396048
+"512","Ofaveolata002808",NA,-1.03953107290032,"Interferon-induced transmembrane protein",NA,-1.01060937480673
+"513","Ofaveolata002823",NA,-4.19052159536872,NA,NA,-1.04311883704733
+"514","Ofaveolata002833",NA,4.44757418605388,"Sulfide quinone","Energy production and conversion",1.70794041494324
+"515","Ofaveolata002854",NA,-3.29946408877376,"glutathione hydrolase activity","Amino acid transport and metabolism",-2.06278262112907
+"516","Ofaveolata002890",NA,1.47868903270182,"protein-glutamine gamma-glutamyltransferase activity",NA,1.72977549195559
+"517","Ofaveolata002891",NA,2.93274935604297,"phytanoyl-CoA dioxygenase activity","Lipid transport and metabolism",1.40254035875946
+"518","Ofaveolata002898",NA,-5.21689430890107,NA,NA,-1.67069957962865
+"519","Ofaveolata002902",NA,1.02690891451742,"hydrolase activity, acting on ester bonds","Lipid transport and metabolism",1.05539169315876
+"520","Ofaveolata002916",NA,-6.43948330927046,NA,NA,-2.49427520703312
+"521","Ofaveolata002932",NA,1.63626808882942,NA,NA,1.34288346745862
+"522","Ofaveolata002950",NA,4.46207081607271,"Enoyl-(Acyl carrier protein) reductase","Secondary metabolites biosynthesis, transport and catabolism",2.66248964435651
+"523","Ofaveolata002958",NA,-2.70412688727968,NA,NA,-1.51320274363178
+"524","Ofaveolata002990",NA,-1.48754046878844,"positive regulation of microtubule binding","Signal transduction mechanisms",-1.43824678232849
+"525","Ofaveolata003058",NA,1.58412914877279,NA,NA,1.06045564682804
+"526","Ofaveolata003063",NA,-2.62789169520167,"pyruvate kinase activity","Carbohydrate transport and metabolism",-1.34285495631933
+"527","Ofaveolata003085",NA,-5.65755970490645,NA,NA,-2.60626618872559
+"528","Ofaveolata003086",NA,-5.38482817677295,"-","",-1.91417625840806
+"529","Ofaveolata003113",NA,-1.862251594222,"aspartic endopeptidase activity, intramembrane cleaving","Posttranslational modification, protein turnover, chaperones",-1.25405908289963
+"530","Ofaveolata003122",NA,-4.14736372440026,"peptide-methionine (S)-S-oxide reductase activity","Posttranslational modification, protein turnover, chaperones",-2.75207811027996
+"531","Ofaveolata003159",NA,-4.66601933131617,"zinc ion binding","RNA processing and modification",-1.78490396589297
+"532","Ofaveolata003174",NA,-1.62424324264693,NA,NA,-1.71624910240786
+"533","Ofaveolata003196",NA,2.85620594005157,"zinc ion binding",NA,1.11080980639689
+"534","Ofaveolata003229",NA,-3.08646791827115,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",-1.0131055741568
+"535","Ofaveolata003232",NA,-5.02184118325966,NA,NA,-1.45330803299465
+"536","Ofaveolata003233",NA,-4.54592976275964,NA,NA,-2.24885337723917
+"537","Ofaveolata003234",NA,-2.12050245040239,NA,NA,-1.15021511895981
+"538","Ofaveolata003267",NA,-1.54048087613519,"threonine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.00999978214156
+"539","Ofaveolata003294",NA,-2.65019296270803,NA,NA,-1.36608898576692
+"540","Ofaveolata003303",NA,-1.56223324656164,"prostaglandin-F synthase activity",NA,-1.26823770516858
+"541","Ofaveolata003306",NA,-4.52727998780945,NA,NA,-2.06576609123907
+"542","Ofaveolata003309",NA,-3.71549074773578,"eukaryotic translation initiation factor","Translation, ribosomal structure and biogenesis",-2.7425100012284
+"543","Ofaveolata003351",NA,1.7480332031383,"peptidyl-serine phosphorylation","Signal transduction mechanisms",1.22429602127767
+"544","Ofaveolata003359",NA,1.01144203549436,NA,NA,1.74458281359933
+"545","Ofaveolata003364",NA,1.62404797401694,NA,NA,1.62504726209026
+"546","Ofaveolata003365",NA,3.66216692104325,"cytochrome P450","Secondary metabolites biosynthesis, transport and catabolism",3.28513591308471
+"547","Ofaveolata003373",NA,-2.42934470078594,"Ankyrin repeat","",-1.25965388554939
+"548","Ofaveolata003377",NA,-1.59000221306882,NA,NA,-1.34277893717018
+"549","Ofaveolata003378",NA,-1.170854635621,NA,NA,-1.89154683515575
+"550","Ofaveolata003411",NA,2.6064277921347,NA,NA,1.58879626731258
+"551","Ofaveolata003422",NA,1.09026781947697,NA,NA,1.17300711602518
+"552","Ofaveolata003439",NA,-1.80568322871079,NA,NA,-1.05001923111977
+"553","Ofaveolata003478",NA,-2.77099204722536,"MMPL family","Signal transduction mechanisms",-1.56664169051286
+"554","Ofaveolata003504",NA,-3.3154534193377,NA,NA,-1.60494685815694
+"555","Ofaveolata003517",NA,2.41943505424711,NA,NA,1.51673111976551
+"556","Ofaveolata003523",NA,-3.00317535615347,NA,NA,-1.05001994158055
+"557","Ofaveolata003547",NA,-1.02035135985132,"ATP10 protein",NA,-1.2531210431009
+"558","Ofaveolata003559",NA,1.37886579618383,"oxidoreductase activity","Translation, ribosomal structure and biogenesis",1.17375215649659
+"559","Ofaveolata003567",NA,-5.35149606876098,NA,NA,-1.69125276915341
+"560","Ofaveolata003593",NA,5.95527778768385,"procollagen-lysine 5-dioxygenase activity","Posttranslational modification, protein turnover, chaperones",2.50757560911626
+"561","Ofaveolata003606",NA,-3.27507137009342,"cellular copper ion homeostasis","Energy production and conversion",-2.95532073948529
+"562","Ofaveolata003609",NA,-1.18283867378738,"IMP dehydrogenase activity","Nucleotide transport and metabolism",-1.18846132944097
+"563","Ofaveolata003611",NA,-1.25248819061247,"Signal recognition particle receptor","Intracellular trafficking, secretion, and vesicular transport",-1.54226137008985
+"564","Ofaveolata003633",NA,-1.39226562184422,"ephrin receptor activity","Signal transduction mechanisms",-1.18741086660265
+"565","Ofaveolata003639",NA,-1.09620164020383,"ephrin receptor activity","Signal transduction mechanisms",-1.25405908289963
+"566","Ofaveolata003648",NA,-4.97573027954762,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-2.27724684407443
+"567","Ofaveolata003688",NA,-1.79253044313347,"OTU domain-containing protein 3",NA,-2.52539654956037
+"568","Ofaveolata003700",NA,-2.9118737263568,NA,NA,-2.24885337723917
+"569","Ofaveolata003705",NA,-3.57492621531344,"Concanavalin A-like lectin/glucanases superfamily",NA,-1.51320274363178
+"570","Ofaveolata003712",NA,-1.05496591053322,"c-SKI Smad4 binding domain",NA,-1.12008454324728
+"571","Ofaveolata003718",NA,1.80568322871079,NA,NA,1.12207902121217
+"572","Ofaveolata003719",NA,1.66187341652978,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.9838097505515
+"573","Ofaveolata003747",NA,1.65436364749682,"Cytochrome P450, family 46, subfamily A, polypeptide","",1.67069957962865
+"574","Ofaveolata003751",NA,3.70148323274039,"Tachylectin",NA,1.60835480734041
+"575","Ofaveolata003761",NA,-2.84400665018608,"methylenetetrahydrofolate reductase (NAD(P)H) activity","Amino acid transport and metabolism",-1.63245255343652
+"576","Ofaveolata003777",NA,-2.65171787621455,"Cytosolic acyl coenzyme A thioester","Lipid transport and metabolism",-1.12207902121217
+"577","Ofaveolata003857",NA,-1.43937071493334,NA,NA,-1.2531210431009
+"578","Ofaveolata003977",NA,3.15976268460898,NA,NA,1.38819161073778
+"579","Ofaveolata004008",NA,-3.35034723515979,NA,NA,-1.61779627361958
+"580","Ofaveolata004097",NA,-2.63959053777885,"ceramide 1-phosphate binding",NA,-1.17014052720239
+"581","Ofaveolata004101",NA,-3.29138128138555,"oxoglutarate:malate antiporter activity","Energy production and conversion",-2.41174850675664
+"582","Ofaveolata004104",NA,-2.31568493783444,NA,NA,-1.14178842555638
+"583","Ofaveolata004154",NA,3.20012753550806,"transposition, RNA-mediated","Replication, recombination and repair",1.13046718541108
+"584","Ofaveolata004196",NA,-2.73940458245981,NA,NA,-1.76132539949463
+"585","Ofaveolata004231",NA,-3.64897781668211,NA,NA,-1.46682959826298
+"586","Ofaveolata004233",NA,-3.29126383258296,NA,NA,-1.16408847522433
+"587","Ofaveolata004240",NA,2.31089498240173,NA,NA,1.6317912344467
+"588","Ofaveolata004348",NA,2.9582298674176,NA,NA,1.30126125914297
+"589","Ofaveolata004384",NA,-3.02792245725429,"spermine synthase","Amino acid transport and metabolism",-1.92141640742863
+"590","Ofaveolata004450",NA,-1.58251030147344,"RNA splicing","RNA processing and modification",-1.29611854228769
+"591","Ofaveolata004466",NA,-6.1490752953207,"Leukocyte cysteine proteinase inhibitor 1-like",NA,-3.0170689997002
+"592","Ofaveolata004468",NA,-1.32756462073041,"ligase activity","Posttranslational modification, protein turnover, chaperones",-1.42234743412118
+"593","Ofaveolata004470",NA,-10.049038096444,"GXGXG motif","Amino acid transport and metabolism",-4.98754011706778
+"594","Ofaveolata004474",NA,-1.98020321294253,"ubiquitin-like protein ligase activity","Posttranslational modification, protein turnover, chaperones",-1.26284750344134
+"595","Ofaveolata004483",NA,-1.34127533331824,"RNA splicing","",-1.36931667946232
+"596","Ofaveolata004503",NA,-1.68637354577859,"Methyltransferase domain","Secondary metabolites biosynthesis, transport and catabolism",-1.38794523339719
+"597","Ofaveolata004536",NA,-3.03575007459072,"BAG family molecular chaperone regulator 3","",-1.63203379851121
+"598","Ofaveolata004557",NA,2.5816002818951,NA,NA,1.83535049964412
+"599","Ofaveolata004560",NA,1.27764509005874,NA,NA,1.09519123972663
+"600","Ofaveolata004606",NA,2.43995165644787,"positive regulation of CD8-positive, alpha-beta T cell differentiation","Transcription",1.08963746722584
+"601","Ofaveolata004610",NA,2.24063577649914,"ribosomal large subunit assembly","Translation, ribosomal structure and biogenesis",1.79625215538948
+"602","Ofaveolata004629",NA,-1.41141461897532,"CAAX-box protein maturation","Posttranslational modification, protein turnover, chaperones",-1.29049377696092
+"603","Ofaveolata004639",NA,-2.68510257441849,"Brefeldin A-inhibited guanine nucleotide-exchange protein","Intracellular trafficking, secretion, and vesicular transport",-1.08134930259808
+"604","Ofaveolata004759",NA,2.01898714138281,NA,NA,1.70696235897404
+"605","Ofaveolata004809",NA,1.75063301715315,NA,NA,1.15522895337906
+"606","Ofaveolata004812",NA,4.51351625906351,NA,NA,2.52770699346871
+"607","Ofaveolata004830",NA,-2.62112884146515,NA,NA,-1.14612355608576
+"608","Ofaveolata004849",NA,-2.00538297459824,"1-acylglycerophosphocholine O-acyltransferase activity",NA,-1.34285495631933
+"609","Ofaveolata004880",NA,3.41088812712496,NA,NA,1.72977549195559
+"610","Ofaveolata004899",NA,-2.4530305871012,"translocon-associated protein","Intracellular trafficking, secretion, and vesicular transport",-1.98320801272616
+"611","Ofaveolata004908",NA,-1.63072393909736,"aldonic acid metabolic process","Carbohydrate transport and metabolism",-1.49791772124814
+"612","Ofaveolata004912",NA,-1.56490992545604,NA,NA,-1.14704472424399
+"613","Ofaveolata004922",NA,-2.22484698119964,"Synaptotagmin","",-1.08970892943181
+"614","Ofaveolata004949",NA,-4.49791631929314,"-","",-1.1423919883446
+"615","Ofaveolata004950",NA,-3.00120733375649,NA,NA,-1.29846723822468
+"616","Ofaveolata004976",NA,-3.30731036645428,"Peroxisomal biogenesis factor 14","",-1.76132539949463
+"617","Ofaveolata005037",NA,-4.92781755883338,NA,NA,-2.31804904813874
+"618","Ofaveolata005158",NA,-4.4993276852221,NA,NA,-1.41193057449322
+"619","Ofaveolata005171",NA,3.60170891075174,"homophilic cell adhesion via plasma membrane adhesion molecules","Posttranslational modification, protein turnover, chaperones",1.85853126983077
+"620","Ofaveolata005175",NA,1.68829595256711,"May play a role in anchoring the cytoskeleton to the plasma membrane","Cytoskeleton",1.11730702973123
+"621","Ofaveolata005198",NA,-1.40932217632672,"calcium ion binding","Intracellular trafficking, secretion, and vesicular transport",-1.11730702973123
+"622","Ofaveolata005238",NA,2.76354123841406,"actin filament network formation","Cytoskeleton",1.11319359194229
+"623","Ofaveolata005242",NA,-1.41872239566722,"posttranslational protein targeting to membrane, translocation","",-1.62504726209026
+"624","Ofaveolata005249",NA,2.27339055146134,"cilium assembly",NA,1.64100836558813
+"625","Ofaveolata005285",NA,-4.85071032933053,"Lysine-specific metallo-endopeptidase",NA,-1.76132539949463
+"626","Ofaveolata005300",NA,-2.67904737914969,"Belongs to the universal ribosomal protein uL13 family","Translation, ribosomal structure and biogenesis",-1.37678109605458
+"627","Ofaveolata005301",NA,-2.17506803715508,"iron-sulfur transferase activity","Energy production and conversion",-2.8243369112183
+"628","Ofaveolata005305",NA,-4.04143228299422,"zinc ion binding","Cell cycle control, cell division, chromosome partitioning",-1.84369964295745
+"629","Ofaveolata005346",NA,-1.40213392038229,"mitochondrial pyruvate transmembrane transport","Energy production and conversion",-1.05311671382847
+"630","Ofaveolata005368",NA,-2.28306138699069,"coagulation factor V","Signal transduction mechanisms",-1.3303494356747
+"631","Ofaveolata005370",NA,-4.71096262671522,"cellular iron ion homeostasis","Secondary metabolites biosynthesis, transport and catabolism",-2.13741547574623
+"632","Ofaveolata005433",NA,3.80961377122273,"Chromosome 5 open reading frame 63","Energy production and conversion",1.04550521701779
+"633","Ofaveolata005450",NA,-2.86065395072515,"coagulation factor V","Signal transduction mechanisms",-1.25300996229813
+"634","Ofaveolata005469",NA,-1.15572309753488,"1-acylglycerol-3-phosphate O-acyltransferase activity","Lipid transport and metabolism",-1.97918186156312
+"635","Ofaveolata005492",NA,-1.00948352331954,"negative regulation of meiotic chromosome separation","Signal transduction mechanisms",-1.27398473674346
+"636","Ofaveolata005495",NA,-1.26532877575063,NA,NA,-1.04003566129591
+"637","Ofaveolata005525",NA,-1.30329033183691,NA,NA,-1.08021683588353
+"638","Ofaveolata005589",NA,1.09325237888965,"Nucleoporin","Nuclear structure",1.1423919883446
+"639","Ofaveolata005592",NA,2.00360056248373,"mitochondrial respiratory chain complex I assembly",NA,1.56476716164502
+"640","Ofaveolata005644",NA,2.93274935604297,NA,NA,1.25405908289963
+"641","Ofaveolata005653",NA,-2.3949823673112,"nucleoside:sodium symporter activity","",-1.06073365222754
+"642","Ofaveolata005667",NA,-2.02661487077029,"heterogeneous nuclear ribonucleoprotein","RNA processing and modification",-1.14054580073963
+"643","Ofaveolata005719",NA,1.86674833097466,NA,NA,1.75872547451335
+"644","Ofaveolata005720",NA,-1.03006289630998,"K63-linked polyubiquitin modification-dependent protein binding",NA,-1.23181648891541
+"645","Ofaveolata005723",NA,1.29907635052626,NA,NA,1.53363752160382
+"646","Ofaveolata005725",NA,-2.41435543052189,"RNA splicing",NA,-1.61194971711883
+"647","Ofaveolata005792",NA,-2.98916667968733,"UTP:glucose-1-phosphate uridylyltransferase activity","Carbohydrate transport and metabolism",-2.17978957393747
+"648","Ofaveolata005802",NA,-2.42025102294333,"N-glycan processing to lysosome",NA,-1.96644116791663
+"649","Ofaveolata005875",NA,-3.98006822450631,"sphingolipid delta-4 desaturase activity","Lipid transport and metabolism",-3.27154886997791
+"650","Ofaveolata005887",NA,-3.86832926889845,"Dienelactone hydrolase family","Posttranslational modification, protein turnover, chaperones",-2.18945449444717
+"651","Ofaveolata005897",NA,-1.1037067923389,"negative regulation of sodium ion transmembrane transport",NA,-1.58879626731258
+"652","Ofaveolata005912",NA,4.72581073204529,"negative regulation of inclusion body assembly",NA,1.27785620068153
+"653","Ofaveolata005935",NA,-2.84514192564269,NA,NA,-1.53536806927355
+"654","Ofaveolata005963",NA,1.66478479054723,"Zinc-dependent metalloprotease","",1.15077405941545
+"655","Ofaveolata005998",NA,2.21064976349347,"CAAX-box protein maturation","Posttranslational modification, protein turnover, chaperones",1.17852188461543
+"656","Ofaveolata006009",NA,2.64282748592992,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.75825114204827
+"657","Ofaveolata006054",NA,-2.27281425364243,"Belongs to the Ca(2 ) cation antiporter (CaCA) (TC 2.A.19) family","",-1.21585773624287
+"658","Ofaveolata006061",NA,1.60449764686311,"DNA-binding transcription factor activity","Transcription",-1.10096496458302
+"659","Ofaveolata006088",NA,1.1037067923389,NA,NA,1.44669420377697
+"660","Ofaveolata006128",NA,3.33157672889624,"ARF-like small GTPases; ARF, ADP-ribosylation factor","Intracellular trafficking, secretion, and vesicular transport",1.58461015732842
+"661","Ofaveolata006151",NA,1.35273362348932,"DNA clamp loader activity","Amino acid transport and metabolism",1.10941004459095
+"662","Ofaveolata006152",NA,-2.71635849757528,"glycogen phosphorylase activity","Carbohydrate transport and metabolism",-2.18396496584911
+"663","Ofaveolata006157",NA,1.40426083451146,NA,NA,1.21987439588271
+"664","Ofaveolata006205",NA,-1.84589895027751,"zinc ion transport","Inorganic ion transport and metabolism",-1.01487114933951
+"665","Ofaveolata006213",NA,-2.93207733363127,"CRT-like, chloroquine-resistance transporter-like",NA,-1.07798110404228
+"666","Ofaveolata006235",NA,-4.00672365720487,NA,NA,-1.00114993458955
+"667","Ofaveolata006246",NA,-1.35286544313424,"ATPase activity, coupled to transmembrane movement of substances","Energy production and conversion",-1.3499607632165
+"668","Ofaveolata006248",NA,3.81118097546834,NA,NA,1.11351799018002
+"669","Ofaveolata006253",NA,-4.16305798909217,NA,NA,-1.28179622284275
+"670","Ofaveolata006294",NA,2.25548641437488,"cell-matrix adhesion","Signal transduction mechanisms",1.35301477101381
+"671","Ofaveolata006325",NA,-5.69972448871977,"maltose alpha-glucosidase activity","Carbohydrate transport and metabolism",-2.99734065140288
+"672","Ofaveolata006347",NA,1.62543829439706,"RNA binding","Transcription",1.22496778007195
+"673","Ofaveolata006360",NA,-1.48097121263453,"translation elongation factor activity","Translation, ribosomal structure and biogenesis",-1.03364562814954
+"674","Ofaveolata006370",NA,-7.49142843909992,NA,NA,-3.08382344763226
+"675","Ofaveolata006376",NA,-3.00317535615347,NA,NA,-1.98470368392196
+"676","Ofaveolata006427",NA,-3.04160597968022,NA,NA,-1.213929692405
+"677","Ofaveolata006433",NA,3.42878384187469,NA,NA,2.62741432634173
+"678","Ofaveolata006443",NA,-2.12388812847033,NA,NA,-1.1410265434124
+"679","Ofaveolata006473",NA,-3.29608888472097,"spliceosomal snRNP assembly","RNA processing and modification",-2.09046642724783
+"680","Ofaveolata006518",NA,-2.61415197369873,"Belongs to the eukaryotic ribosomal protein eS30 family","Translation, ribosomal structure and biogenesis",-1.62077133180653
+"681","Ofaveolata006540",NA,-1.48202197795797,"RNA splicing, via transesterification reactions with bulged adenosine as nucleophile","RNA processing and modification",-1.05356590735055
+"682","Ofaveolata006566",NA,-1.67547286489527,"barrier to autointegration factor 1","",-1.34288346745862
+"683","Ofaveolata006576",NA,-4.54181067981308,"response to corticosterone","Transcription",-1.46124944492766
+"684","Ofaveolata006594",NA,2.1602437144317,NA,NA,1.41304563209648
+"685","Ofaveolata006607",NA,-10.8132738489992,"Acid trehalase-like","Carbohydrate transport and metabolism",-5.01808319118457
+"686","Ofaveolata006691",NA,-1.66517392204319,"rRNA (uridine-2'-O-)-methyltransferase activity","Cell cycle control, cell division, chromosome partitioning",-1.03542901086388
+"687","Ofaveolata006693",NA,-2.35651839906166,"ubiquitin","Posttranslational modification, protein turnover, chaperones",-1.34927555434605
+"688","Ofaveolata006704",NA,-3.48478711750382,"-","",-1.30782450095726
+"689","Ofaveolata006910",NA,-5.00266142711843,"-","",-2.05207550222101
+"690","Ofaveolata006978",NA,5.61552309481444,NA,NA,2.66023304188133
+"691","Ofaveolata007023",NA,-4.22504217751394,"acid phosphatase activity","Carbohydrate transport and metabolism",-1.84189471866974
+"692","Ofaveolata007024",NA,-1.67931339190748,"acid phosphatase activity","Carbohydrate transport and metabolism",-1.91766624215087
+"693","Ofaveolata007026",NA,-2.6029982344429,"acid phosphatase activity","Carbohydrate transport and metabolism",-1.92141640742863
+"694","Ofaveolata007094",NA,-3.03601642309851,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",-1.50132191376018
+"695","Ofaveolata007104",NA,-1.84265205035663,"dynactin binding","Intracellular trafficking, secretion, and vesicular transport",-1.88266388928474
+"696","Ofaveolata007200",NA,-1.90053552407658,"Papain family cysteine protease","Posttranslational modification, protein turnover, chaperones",-1.23962540204392
+"697","Ofaveolata007210",NA,-3.08646791827115,"Putative zinc finger in N-recognin (UBR box)",NA,-2.1294139757149
+"698","Ofaveolata007221",NA,-1.47352603909696,NA,NA,-1.14178842555638
+"699","Ofaveolata007232",NA,-1.29238048025154,"DR1-associated protein 1 (negative cofactor 2 alpha)","Transcription",-2.02876194854051
+"700","Ofaveolata007273",NA,-1.86952273653218,NA,NA,-1.75872547451335
+"701","Ofaveolata007289",NA,-1.84669937015526,NA,NA,-1.42481586924419
+"702","Ofaveolata007296",NA,2.38366059741593,"ER to Golgi vesicle-mediated transport",NA,1.17375215649659
+"703","Ofaveolata007303",NA,-1.6980567537604,"Bifunctional enzyme that catalyzes the enolization of 2,3-diketo-5-methylthiopentyl-1-phosphate (DK-MTP-1-P) into the intermediate 2-hydroxy-3-keto-5-methylthiopentenyl-1-phosphate (HK-MTPenyl-1-P), which is then dephosphorylated to form the acireductone 1,2-dihydroxy-3-keto-5-methylthiopentene (DHK- MTPene)","Amino acid transport and metabolism",-1.23232685080265
+"704","Ofaveolata007309",NA,-1.26223366724472,"cytochrome C oxidase",NA,-1.06064631896785
+"705","Ofaveolata007313",NA,1.1548736757048,"DNA demethylation of male pronucleus",NA,2.06411009878616
+"706","Ofaveolata007382",NA,3.41155348795297,NA,NA,1.61386252074523
+"707","Ofaveolata007418",NA,-1.69436565313013,"translation","Translation, ribosomal structure and biogenesis",-2.3115813262124
+"708","Ofaveolata007437",NA,7.94974948692581,"acetyl-CoA metabolic process","Energy production and conversion",5.01808319118457
+"709","Ofaveolata007471",NA,2.92174528686701,"structural constituent of eye lens",NA,1.30950005180763
+"710","Ofaveolata007491",NA,3.75038064563039,"hydrolase activity, acting on ester bonds","Lipid transport and metabolism",1.87027902063426
+"711","Ofaveolata007495",NA,6.61310714008946,"Belongs to the small heat shock protein (HSP20) family","Posttranslational modification, protein turnover, chaperones",3.65000544607341
+"712","Ofaveolata007501",NA,-1.88471837870493,"calmodulin-dependent protein kinase activity","Signal transduction mechanisms",-1.75510561004664
+"713","Ofaveolata007532",NA,-3.13404684905694,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",-1.38819161073778
+"714","Ofaveolata007542",NA,-4.64128206682832,"Belongs to the peptidase M10A family","Posttranslational modification, protein turnover, chaperones",-1.85243658995504
+"715","Ofaveolata007545",NA,1.96356595693951,"tyrosinase",NA,1.13538137768244
+"716","Ofaveolata007549",NA,2.42855208363928,"Ribonuclease H protein",NA,1.80224675237891
+"717","Ofaveolata007592",NA,-2.84027332781837,"Thiolase, C-terminal domain","Lipid transport and metabolism",-1.18998268134405
+"718","Ofaveolata007679",NA,-2.68528316950219,"mRNA CDS binding","RNA processing and modification",-1.41390210604895
+"719","Ofaveolata007725",NA,5.49998499946611,"polycystic kidney disease protein 1-like","",4.37109521579966
+"720","Ofaveolata007753",NA,-3.95483922542874,"Spondin 2b, extracellular matrix protein","Extracellular structures",-2.31210403070037
+"721","Ofaveolata007785",NA,-1.32756462073041,"acyl-CoA oxidase activity","",-1.85243658995504
+"722","Ofaveolata007786",NA,-2.40906842737198,"acyl-CoA oxidase activity","",-1.30201902918553
+"723","Ofaveolata007815",NA,2.04286004388835,NA,NA,1.10066071822603
+"724","Ofaveolata007848",NA,2.83341946144652,"stress-induced-phosphoprotein 1","Posttranslational modification, protein turnover, chaperones",1.51320274363178
+"725","Ofaveolata007941",NA,-2.29617612238174,NA,NA,-1.25608802390655
+"726","Ofaveolata007957",NA,-3.24216425980479,"serum response element binding","Transcription",-1.59936268384058
+"727","Ofaveolata007989",NA,-3.16959929041841,"subunit of the gamma-secretase complex, an endoprotease complex that catalyzes the intramembrane cleavage of integral membrane proteins such as Notch receptors","Signal transduction mechanisms",-2.66248964435651
+"728","Ofaveolata008015",NA,-2.7978692653551,"regulation of T cell differentiation in thymus","Replication, recombination and repair",-1.35582423588661
+"729","Ofaveolata008051",NA,2.00885776761679,"TAF6-like RNA polymerase II, p300 CBP-associated","Transcription",1.83535049964412
+"730","Ofaveolata008052",NA,4.09016814749907,"pyruvate carboxylase activity","Energy production and conversion",1.5948888425673
+"731","Ofaveolata008101",NA,-3.00999998916846,"threonine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.83535049964412
+"732","Ofaveolata008102",NA,-4.2623469255261,NA,NA,-1.76132539949463
+"733","Ofaveolata008115",NA,-3.75289537323771,"prolyl-tRNA synthetase associated domain-containing protein",NA,-2.46900623440975
+"734","Ofaveolata008116",NA,-3.06417697635822,"Initiation factor","Translation, ribosomal structure and biogenesis",-1.35582423588661
+"735","Ofaveolata008149",NA,-2.23169816651021,NA,NA,-1.14723317286286
+"736","Ofaveolata008179",NA,2.29197267064292,NA,NA,1.25223448949713
+"737","Ofaveolata008204",NA,5.8792601184593,"acireductone dioxygenase [iron(II)-requiring] activity","Amino acid transport and metabolism",1.77040968171073
+"738","Ofaveolata008207",NA,-3.97938085631949,"FMN binding","Energy production and conversion",-2.95532073948529
+"739","Ofaveolata008254",NA,-1.00440634097126,"5'-tyrosyl-DNA phosphodiesterase activity","Signal transduction mechanisms",-1.76132539949463
+"740","Ofaveolata008257",NA,-3.97832912399442,NA,NA,-1.70603050100336
+"741","Ofaveolata008332",NA,2.3453358846142,NA,NA,1.40683936151419
+"742","Ofaveolata008341",NA,-2.92784122803397,"Belongs to the universal ribosomal protein uL5 family","Translation, ribosomal structure and biogenesis",-1.44641515471378
+"743","Ofaveolata008350",NA,5.97539842986978,"Dual specificity protein kinase","Signal transduction mechanisms",2.39500548897061
+"744","Ofaveolata008361",NA,-1.04359141803804,"protein polyubiquitination","Replication, recombination and repair",-1.33898038006032
+"745","Ofaveolata008370",NA,-2.32035932370587,NA,NA,-2.08452025976053
+"746","Ofaveolata008394",NA,-7.86190872611043,"peptidyl-prolyl cis-trans isomerase activity","Posttranslational modification, protein turnover, chaperones",-3.3852736553743
+"747","Ofaveolata008431",NA,-1.20898638048474,"transcription by RNA polymerase I","Transcription",-1.12656811103423
+"748","Ofaveolata008437",NA,-3.78373699842395,"symporter activity","",-1.18809398710985
+"749","Ofaveolata008471",NA,2.48079696835149,"Poly (ADP-ribose) polymerase","",1.21475499562255
+"750","Ofaveolata008509",NA,-3.63485912708259,"elongation of very long chain fatty acids protein","Lipid transport and metabolism",-1.5533097595914
+"751","Ofaveolata008714",NA,1.29630154898247,"LicD family",NA,1.42975372085435
+"752","Ofaveolata008781",NA,2.00608329951858,"AP-5 complex subunit sigma-1",NA,1.31570614906045
+"753","Ofaveolata008802",NA,4.38129185306674,"inorganic diphosphatase activity","Energy production and conversion",2.48711801814569
+"754","Ofaveolata008962",NA,1.90009963053944,"SCF complex assembly",NA,1.09483345947607
+"755","Ofaveolata008980",NA,3.78472064560348,"positive regulation of interleukin-13 biosynthetic process",NA,1.16657953145811
+"756","Ofaveolata009000",NA,-1.46570843849124,NA,NA,-1.07355699033417
+"757","Ofaveolata009012",NA,1.91251426799047,NA,NA,1.01573589245616
+"758","Ofaveolata009031",NA,3.36585401535576,"endoplasmic reticulum-plasma membrane tethering",NA,1.86385205954413
+"759","Ofaveolata009069",NA,1.4227154240595,NA,NA,1.2137235344744
+"760","Ofaveolata009176",NA,1.30350865036466,NA,NA,1.20185588893184
+"761","Ofaveolata009234",NA,-2.08328402572478,"Wnt-activated receptor activity","Signal transduction mechanisms",-1.10921528248624
+"762","Ofaveolata009240",NA,-1.7521209008752,NA,NA,-1.85903486189598
+"763","Ofaveolata009242",NA,-2.08836110347392,"mismatch repair","Replication, recombination and repair",-1.62031512090924
+"764","Ofaveolata009302",NA,-6.16794261689306,"neurogenic locus notch homolog protein","Signal transduction mechanisms",-2.11332002534547
+"765","Ofaveolata009315",NA,1.60116950561436,"mitochondrial transport","Energy production and conversion",1.26801659923462
+"766","Ofaveolata009338",NA,-2.1568053210686,NA,NA,-1.58372599397927
+"767","Ofaveolata009358",NA,-1.74855824889442,"Inositol polyphosphate multikinase","",-1.34277893717018
+"768","Ofaveolata009582",NA,1.00388499584724,"nuclear export signal receptor activity",NA,1.48390575752601
+"769","Ofaveolata009584",NA,-2.33451545261127,NA,NA,-1.53263346373038
+"770","Ofaveolata009587",NA,2.17297227013218,NA,NA,1.20800362656095
+"771","Ofaveolata009599",NA,4.01039546666565,NA,NA,2.5406128379766
+"772","Ofaveolata009674",NA,1.12824724763182,NA,NA,1.71684754389666
+"773","Ofaveolata009708",NA,-2.93274935604297,"deoxyhypusine monooxygenase activity","Energy production and conversion",-1.36067081051567
+"774","Ofaveolata009737",NA,-4.14736372440026,NA,NA,-1.51874479582158
+"775","Ofaveolata009790",NA,-1.58180908542326,NA,NA,-1.35335577975397
+"776","Ofaveolata009816",NA,1.20618499181355,"DNA annealing helicase and endonuclease ZRANB3","Chromatin structure and dynamics",1.66765459524605
+"777","Ofaveolata009837",NA,2.85287035368151,NA,NA,1.62401486782125
+"778","Ofaveolata009906",NA,-3.7300147577978,"Signal-recognition-particle assembly has a crucial role in targeting secretory proteins to the rough endoplasmic reticulum membrane. SRP9 together with SRP14 and the Alu portion of the SRP RNA, constitutes the elongation arrest domain of SRP. The complex of SRP9 and SRP14 is required for SRP RNA binding","Intracellular trafficking, secretion, and vesicular transport",-2.36558906898139
+"779","Ofaveolata009926",NA,-1.34127533331824,NA,NA,-1.56476716164502
+"780","Ofaveolata009928",NA,3.55926300618367,NA,NA,2.66248964435651
+"781","Ofaveolata009933",NA,-2.72426165845078,"Lys63-specific deubiquitinase activity","Posttranslational modification, protein turnover, chaperones",-2.31074523998713
+"782","Ofaveolata009967",NA,-1.5464832816004,"negative regulation of centrosome duplication",NA,-1.665789533417
+"783","Ofaveolata009970",NA,-1.52676292243333,"negative regulation of SMAD protein signal transduction",NA,-1.40188851906694
+"784","Ofaveolata009975",NA,4.54181067981308,NA,NA,1.71684754389666
+"785","Ofaveolata010110",NA,2.63788975151332,NA,NA,1.68228883742256
+"786","Ofaveolata010112",NA,2.92402102370771,"frizzled binding","Signal transduction mechanisms",1.08134930259808
+"787","Ofaveolata010126",NA,5.00137289163997,"enhancer sequence-specific DNA binding",NA,1.62529625734167
+"788","Ofaveolata010131",NA,-7.42298495520738,"Belongs to the short-chain dehydrogenases reductases (SDR) family","Secondary metabolites biosynthesis, transport and catabolism",-4.03298396142591
+"789","Ofaveolata010163",NA,1.27162075067245,"sodium:inorganic phosphate symporter activity","Inorganic ion transport and metabolism",2.50177026809339
+"790","Ofaveolata010179",NA,-2.37809072316624,"E3 ubiquitin-protein ligase RNF181","Posttranslational modification, protein turnover, chaperones",-1.05517639505708
+"791","Ofaveolata010190",NA,4.21147300846839,"neurotrophin receptor activity","Signal transduction mechanisms",1.7729746967503
+"792","Ofaveolata010194",NA,-2.39340122478725,"Marginal zone B and",NA,-1.40240590461849
+"793","Ofaveolata010215",NA,-4.59573441194173,"BIR domain binding","Cell cycle control, cell division, chromosome partitioning",-2.7263296471293
+"794","Ofaveolata010222",NA,-2.4294440978222,NA,NA,-1.52471640075543
+"795","Ofaveolata010234",NA,-1.43844105006259,"negative regulation of bile acid biosynthetic process","Signal transduction mechanisms",-1.53025800549982
+"796","Ofaveolata010262",NA,-4.66501601761448,"pyrophosphorylase 1","Cell wall/membrane/envelope biogenesis",-2.09293660505036
+"797","Ofaveolata010263",NA,-4.48761794406042,"pyrophosphorylase 1","Cell wall/membrane/envelope biogenesis",-2.13194364779647
+"798","Ofaveolata010299",NA,-1.84190675404264,"acyl-coenzyme A thioesterase",NA,-1.02587984859443
+"799","Ofaveolata010342",NA,-1.25071308653312,NA,NA,-1.20769806321003
+"800","Ofaveolata010351",NA,-2.14423589533077,"protein KIAA2026 homolog",NA,-1.39334871016854
+"801","Ofaveolata010356",NA,-2.9118737263568,"Required for the first step in the synthesis of diphthamide, a post-translational modification of histidine which occurs in translation elongation factor 2","Translation, ribosomal structure and biogenesis",-1.83060706669851
+"802","Ofaveolata010363",NA,-4.54592976275964,NA,NA,-1.98216236796079
+"803","Ofaveolata010364",NA,-1.35719882268514,"cerebellum vasculature morphogenesis","Signal transduction mechanisms",-1.06101759883199
+"804","Ofaveolata010383",NA,-1.13388041778991,"6-phosphofructo-2-kinase activity","Carbohydrate transport and metabolism",-1.27691903059304
+"805","Ofaveolata010456",NA,-4.96048389456081,"Belongs to the aldehyde dehydrogenase family","Energy production and conversion",-2.6986303287008
+"806","Ofaveolata010556",NA,3.63887315527906,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",2.1294139757149
+"807","Ofaveolata010565",NA,-1.53183175655579,"RNA recognition motif. (a.k.a. RRM, RBD, or RNP domain)","RNA processing and modification",-1.34285495631933
+"808","Ofaveolata010569",NA,-10.8132738489992,"RNA recognition motif","RNA processing and modification",-8.09099576210084
+"809","Ofaveolata010570",NA,-2.62378369153769,NA,NA,-1.00114993458955
+"810","Ofaveolata010606",NA,-1.55265434955156,"N-acetyl-beta-D-galactosaminidase activity","Carbohydrate transport and metabolism",-1.88698050269959
+"811","Ofaveolata010698",NA,2.79531663995237,"Nuclear factor of kappa light polypeptide gene enhancer in B-cells 1","Transcription",1.0511293092945
+"812","Ofaveolata010709",NA,-1.63200370726564,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.02747605658958
+"813","Ofaveolata010782",NA,4.05155862342868,NA,NA,2.99734065140288
+"814","Ofaveolata010796",NA,-3.37446888618821,"glutathione peroxidase activity","Posttranslational modification, protein turnover, chaperones",-1.64100836558813
+"815","Ofaveolata010804",NA,2.02874608121596,"negative regulation of non-canonical Wnt signaling pathway","Posttranslational modification, protein turnover, chaperones",1.02747605658958
+"816","Ofaveolata010805",NA,2.3453358846142,NA,NA,1.13538137768244
+"817","Ofaveolata010806",NA,1.79698790947862,NA,NA,1.38456381401805
+"818","Ofaveolata010854",NA,-1.18748397980011,"Galactose binding lectin domain","Posttranslational modification, protein turnover, chaperones",-1.38370892761804
+"819","Ofaveolata010878",NA,-2.0914657120142,"Splicing factor 3a, subunit 2","RNA processing and modification",-2.13253477138014
+"820","Ofaveolata010880",NA,-4.30562263693483,"Belongs to the small GTPase superfamily. Arf family","Intracellular trafficking, secretion, and vesicular transport",-2.13194364779647
+"821","Ofaveolata010904",NA,-3.50896535841142,NA,NA,-1.87234011033002
+"822","Ofaveolata010918",NA,-5.62249930437731,"L-gulonolactone oxidase-like","Defense mechanisms",-2.49046378866786
+"823","Ofaveolata010921",NA,1.73543007104118,NA,NA,1.97746936862853
+"824","Ofaveolata010923",NA,3.15020712563089,"coagulation factor V","Signal transduction mechanisms",1.4146276527283
+"825","Ofaveolata011061",NA,-1.63512884887612,NA,NA,-1.02567013455411
+"826","Ofaveolata011062",NA,-2.02542823003752,"acetyl-CoA C-acyltransferase activity","Lipid transport and metabolism",-1.86807399254019
+"827","Ofaveolata011071",NA,-5.79256831994075,"Glucan (1,4-alpha-), branching enzyme 1","Carbohydrate transport and metabolism",-2.84574173999457
+"828","Ofaveolata011218",NA,1.62404797401694,NA,NA,1.09753392828376
+"829","Ofaveolata011227",NA,-7.03085430248481,NA,NA,-3.34466897068816
+"830","Ofaveolata011254",NA,-2.10406889759021,"Belongs to the eukaryotic ribosomal protein eS24 family","Translation, ribosomal structure and biogenesis",-1.36012915343803
+"831","Ofaveolata011289",NA,2.32231655228775,"metalloendopeptidase activity","Posttranslational modification, protein turnover, chaperones",1.20111801131558
+"832","Ofaveolata011295",NA,-2.38366059741593,"protein adenylyltransferase activity",NA,-1.54731903897289
+"833","Ofaveolata011375",NA,-1.09310312916139,"Universal stress protein family","Signal transduction mechanisms",-1.38794523339719
+"834","Ofaveolata011377",NA,-2.10406889759021,"heterogeneous nuclear ribonucleoprotein","RNA processing and modification",-1.24283372425053
+"835","Ofaveolata011442",NA,3.57755964205413,"protein phosphatase inhibitor activity","",1.02747605658958
+"836","Ofaveolata011458",NA,-3.78956860115589,NA,NA,-1.62504726209026
+"837","Ofaveolata011523",NA,-1.83961529396373,"rRNA binding","Translation, ribosomal structure and biogenesis",-1.15099045188284
+"838","Ofaveolata011653",NA,-4.65710473813806,"-","",-1.99885318413157
+"839","Ofaveolata011693",NA,3.69718756203768,"-","",2.8604221281806
+"840","Ofaveolata011707",NA,-1.82762141867729,NA,NA,-1.0210005545318
+"841","Ofaveolata011731",NA,1.25177208856724,NA,NA,1.31603229938004
+"842","Ofaveolata011879",NA,1.37783544226594,NA,NA,1.6967051412318
+"843","Ofaveolata011968",NA,2.5758038607565,NA,NA,1.12656811103423
+"844","Ofaveolata012199",NA,2.86255998628409,NA,NA,1.70794041494324
+"845","Ofaveolata012317",NA,-2.94381901650263,"Belongs to the MT-A70-like family","RNA processing and modification",-1.5533097595914
+"846","Ofaveolata012526",NA,-4.05155862342868,"N,N-dimethylaniline monooxygenase activity","Secondary metabolites biosynthesis, transport and catabolism",-1.51817939755091
+"847","Ofaveolata012686",NA,-1.53289755740224,"Autophagy-related protein 13",NA,-1.34285495631933
+"848","Ofaveolata012694",NA,-5.11404202606761,NA,NA,-2.7681747827152
+"849","Ofaveolata012705",NA,-6.03101593209462,NA,NA,-1.25172205206064
+"850","Ofaveolata012706",NA,-3.09146431258374,NA,NA,-1.05759853205545
+"851","Ofaveolata012708",NA,-3.43891537387812,NA,NA,-1.84648469562577
+"852","Ofaveolata012769",NA,-2.40910738868142,"General transcription factor IIH","",-1.91557277172944
+"853","Ofaveolata012779",NA,1.27400231437305,NA,NA,1.01850215920189
+"854","Ofaveolata012817",NA,-2.89590462008329,"photoreceptor cell maintenance",NA,-1.50064261050023
+"855","Ofaveolata012818",NA,-3.5267038491736,"hydrolase activity",NA,-1.60638150907827
+"856","Ofaveolata012906",NA,1.98681864626581,"Involved in the maturation of specific proteins in the endoplasmic reticulum",NA,1.02070749903694
+"857","Ofaveolata012927",NA,-2.57873939382426,NA,NA,-1.61047982736395
+"858","Ofaveolata012943",NA,-1.40932217632672,"Ring finger protein","Posttranslational modification, protein turnover, chaperones",-1.28586524485911
+"859","Ofaveolata012944",NA,-2.31595382795168,NA,NA,-2.46900623440975
+"860","Ofaveolata012950",NA,-1.45755777249188,"cationic amino acid transporter","Amino acid transport and metabolism",-2.7681747827152
+"861","Ofaveolata012966",NA,2.18759095357587,"re-entry into mitotic cell cycle","Cell cycle control, cell division, chromosome partitioning",1.01502098585569
+"862","Ofaveolata012985",NA,-4.36876769663224,NA,NA,-2.25287041300838
+"863","Ofaveolata013028",NA,-2.71325111484338,NA,NA,-1.83535049964412
+"864","Ofaveolata013039",NA,-2.5517893432987,NA,NA,-1.74458281359933
+"865","Ofaveolata013050",NA,-6.72742005969163,"adiponectin receptor","Signal transduction mechanisms",-3.49657898951047
+"866","Ofaveolata013053",NA,-3.51207718017008,"Solute carrier family 4, sodium bicarbonate transporter, member 10","Inorganic ion transport and metabolism",-1.55594318063393
+"867","Ofaveolata013059",NA,-2.63542485103383,"Ran GTPase binding","",-1.20148642194822
+"868","Ofaveolata013074",NA,1.73755718826748,"intrinsic apoptotic signaling pathway in response to endoplasmic reticulum stress",NA,1.06101759883199
+"869","Ofaveolata013087",NA,6.61310714008946,"calcium ion binding","",1.99735807318977
+"870","Ofaveolata013088",NA,8.98724897357997,"calcium ion binding","",5.01808319118457
+"871","Ofaveolata013097",NA,-2.78270292004591,"Activating molecule in BECN1-regulated autophagy protein",NA,-1.00973385833895
+"872","Ofaveolata013115",NA,-3.06434839352889,"sulfuric ester hydrolase activity","Inorganic ion transport and metabolism",-1.66317726100125
+"873","Ofaveolata013159",NA,-1.46129090236135,"transmembrane transport",NA,-1.43228547092297
+"874","Ofaveolata013182",NA,1.65061578340967,"Small nuclear ribonucleoprotein","RNA processing and modification",1.29846723822468
+"875","Ofaveolata013246",NA,2.36990382540177,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",2.16961190356271
+"876","Ofaveolata013260",NA,-1.22334453483028,"sequence-specific DNA binding","Transcription",-1.5513995925669
+"877","Ofaveolata013287",NA,-2.37366771269531,"Si dkey-5i3.5","Cell cycle control, cell division, chromosome partitioning",-1.71624910240786
+"878","Ofaveolata013340",NA,5.65364796461143,NA,NA,1.96644116791663
+"879","Ofaveolata013368",NA,-2.57873939382426,NA,NA,-1.40320490301171
+"880","Ofaveolata013370",NA,-2.31848638682366,NA,NA,-1.15473551258448
+"881","Ofaveolata013371",NA,-1.10744839538293,NA,NA,-1.00114993458955
+"882","Ofaveolata013386",NA,-2.27281425364243,NA,NA,-1.1545332327473
+"883","Ofaveolata013408",NA,-1.93123495008526,NA,NA,-1.29796248165122
+"884","Ofaveolata013409",NA,-4.55835759456319,NA,NA,-2.27092799204097
+"885","Ofaveolata013410",NA,-2.40035238363994,NA,NA,-1.02969322188863
+"886","Ofaveolata013452",NA,-1.82864372300548,"ribosomal protein","Translation, ribosomal structure and biogenesis",-1.24096840550918
+"887","Ofaveolata013458",NA,-1.73757264998555,"thyroid hormone transmembrane transporter activity","Carbohydrate transport and metabolism",-1.15851539212684
+"888","Ofaveolata013459",NA,-1.55415036905292,"actin filament severing","Cytoskeleton",-1.18488090020299
+"889","Ofaveolata013485",NA,-2.06709813860091,"glycogen (starch) synthase activity","Carbohydrate transport and metabolism",-1.08314797598533
+"890","Ofaveolata013501",NA,-4.67818649088988,"actin filament severing","Cytoskeleton",-2.17885664993638
+"891","Ofaveolata013505",NA,2.03851582747826,NA,NA,1.13889010028206
+"892","Ofaveolata013525",NA,-2.80945509251986,"positive regulation of mediator complex assembly","Transcription",-1.25300996229813
+"893","Ofaveolata013543",NA,3.80895255177381,"Broad-Complex, Tramtrack and Bric a brac",NA,1.39373702176235
+"894","Ofaveolata013549",NA,-1.96355330637168,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",-1.28447063785946
+"895","Ofaveolata013555",NA,-2.24750963422972,"FMN transmembrane transporter activity","Energy production and conversion",-1.6967051412318
+"896","Ofaveolata013566",NA,1.29361274423506,NA,NA,1.2531210431009
+"897","Ofaveolata013569",NA,1.58777575379732,"complement activation, classical pathway","",2.20964189490149
+"898","Ofaveolata013580",NA,-1.86337241171852,"Mitochondrial import receptor subunit TOM22 homolog","Intracellular trafficking, secretion, and vesicular transport",-1.26801659923462
+"899","Ofaveolata013758",NA,-2.24657660475227,"long-chain fatty acid catabolic process",NA,-1.61386252074523
+"900","Ofaveolata013791",NA,-1.21798579759216,NA,NA,-1.26299213396048
+"901","Ofaveolata013818",NA,-3.22496415723399,"Glutathione S-transferase, N-terminal domain","Posttranslational modification, protein turnover, chaperones",-1.99735807318977
+"902","Ofaveolata013866",NA,3.87666838296126,NA,NA,1.45147557382425
+"903","Ofaveolata013926",NA,2.70354471368331,NA,NA,1.33684133471105
+"904","Ofaveolata013934",NA,-1.8014298503219,NA,NA,-1.18102246956403
+"905","Ofaveolata013966",NA,-3.70619182111147,"ATPase activity, coupled to transmembrane movement of substances","Lipid transport and metabolism",-1.92141640742863
+"906","Ofaveolata013991",NA,-2.87519410118876,NA,NA,-1.81935606174368
+"907","Ofaveolata014006",NA,4.54592976275964,"Histone H1-delta-like","Chromatin structure and dynamics",1.32733831420023
+"908","Ofaveolata014037",NA,-1.97650307964174,"mannosyl-glycoprotein endo-beta-N-acetylglucosaminidase activity","Carbohydrate transport and metabolism",-1.07193863750011
+"909","Ofaveolata014046",NA,-1.11758125821701,NA,NA,-1.29375058048673
+"910","Ofaveolata014048",NA,2.15608108910584,"respiratory chain complex III assembly",NA,1.49170591883972
+"911","Ofaveolata014115",NA,-2.63320253733559,"Component of the eukaryotic translation initiation factor 3 (eIF-3) complex, which is involved in protein synthesis and, together with other initiation factors, stimulates binding of mRNA and methionyl-tRNAi to the 40S ribosome","Translation, ribosomal structure and biogenesis",-1.40683936151419
+"912","Ofaveolata014240",NA,3.01878886205335,NA,NA,1.35301477101381
+"913","Ofaveolata014247",NA,2.9183932772089,NA,NA,1.15473551258448
+"914","Ofaveolata014249",NA,-2.13247857842658,"DBH-like monooxygenase protein 1","Amino acid transport and metabolism",-1.88266388928474
+"915","Ofaveolata014269",NA,2.19873267290254,"biological adhesion","Lipid transport and metabolism",1.21004231257877
+"916","Ofaveolata014321",NA,-1.66188288289367,NA,NA,-1.05016035659552
+"917","Ofaveolata014376",NA,-3.81543544119657,"glycine biosynthetic process from serine","Amino acid transport and metabolism",-1.16652429977378
+"918","Ofaveolata014380",NA,-1.41709832755311,"PHD finger-like domain-containing protein 5A",NA,-1.37290565126097
+"919","Ofaveolata014387",NA,-1.53183175655579,"phosphatidylinositol transporter activity","",-1.03542901086388
+"920","Ofaveolata014437",NA,-1.11184067751507,"negative regulation of RIG-I signaling pathway","",-1.16207490165915
+"921","Ofaveolata014442",NA,-2.57430786422037,"ubiquinone biosynthetic process","Coenzyme transport and metabolism",-1.16220959467115
+"922","Ofaveolata014443",NA,-1.42776079107218,"gamma-glutamyl-peptidase activity","Coenzyme transport and metabolism",-1.71375243301839
+"923","Ofaveolata014463",NA,-1.20898638048474,"ion transport",NA,-1.34042170278364
+"924","Ofaveolata014473",NA,-3.8431104220706,NA,NA,-1.40740369035672
+"925","Ofaveolata014482",NA,2.43995165644787,"protein glycosylation in Golgi",NA,1.01922596670364
+"926","Ofaveolata014495",NA,-2.92645563548477,"cytoplasmic translational termination","Translation, ribosomal structure and biogenesis",-1.47312708139583
+"927","Ofaveolata014500",NA,-1.31613910034693,"ribosomal protein L12","Translation, ribosomal structure and biogenesis",-1.44278957237698
+"928","Ofaveolata014591",NA,-3.67002888579752,"RNA splicing","RNA processing and modification",-1.99735807318977
+"929","Ofaveolata014631",NA,-1.56899484565917,"protein disulfide isomerase activity","Posttranslational modification, protein turnover, chaperones",-1.63245255343652
+"930","Ofaveolata014671",NA,-2.57809727520011,"WAP four-disulfide core domain","Extracellular structures",-1.23332342210975
+"931","Ofaveolata014691",NA,-1.55796184842175,"steroid hormone mediated signaling pathway","Transcription",-1.55927610525751
+"932","Ofaveolata014692",NA,-3.70723024568141,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-2.17978957393747
+"933","Ofaveolata014693",NA,-1.84288810372976,"alpha-L-fucosidase activity","Carbohydrate transport and metabolism",-2.26407748654028
+"934","Ofaveolata014728",NA,-2.80852384296364,"Belongs to the glycosyl hydrolase 18 family","Carbohydrate transport and metabolism",-1.78546218710031
+"935","Ofaveolata014740",NA,-1.84963933242902,"Serine threonine-protein phosphatase","Signal transduction mechanisms",-1.51874479582158
+"936","Ofaveolata014749",NA,-3.48495093986723,"RNA polymerase II intronic transcription regulatory region sequence-specific DNA binding","Chromatin structure and dynamics",-1.10449104738453
+"937","Ofaveolata014771",NA,1.38035411214417,"AP endonuclease family 2","Replication, recombination and repair",1.13567757126969
+"938","Ofaveolata014832",NA,-4.76705363516263,"calcium, potassium:sodium antiporter activity","",-1.59515883539722
+"939","Ofaveolata014852",NA,1.46633658276468,"IPT/TIG domain",NA,2.1192228473188
+"940","Ofaveolata014876",NA,-2.0528834199148,"GTPase activity","Replication, recombination and repair",-1.15328241348303
+"941","Ofaveolata014883",NA,1.8014298503219,NA,NA,1.33884750544834
+"942","Ofaveolata014923",NA,-3.82861043886352,"pri-miRNA transcription by RNA polymerase II","RNA processing and modification",-1.37290565126097
+"943","Ofaveolata014925",NA,-3.21964060706811,NA,NA,-1.06771406899155
+"944","Ofaveolata014947",NA,-4.4515696775381,"MFS_1 like family",NA,-1.26299213396048
+"945","Ofaveolata014951",NA,-1.31958976276195,"L-asparagine biosynthetic process","Amino acid transport and metabolism",-1.31498850288914
+"946","Ofaveolata014959",NA,-5.96590844809803,"ER overload response",NA,-3.14588818096709
+"947","Ofaveolata014970",NA,-1.39951779739339,"negative regulation of protein localization to ciliary membrane",NA,-1.45330803299465
+"948","Ofaveolata014975",NA,-5.73332517223115,NA,NA,-2.3492828951928
+"949","Ofaveolata014980",NA,-1.86966875429701,"Belongs to the short-chain dehydrogenases reductases (SDR) family","Secondary metabolites biosynthesis, transport and catabolism",-1.7454970441787
+"950","Ofaveolata015089",NA,3.29126383258296,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",3.28513591308471
+"951","Ofaveolata015101",NA,-4.82733644934422,NA,NA,-2.07260475832301
+"952","Ofaveolata015125",NA,1.16120600541306,NA,NA,1.02546059792477
+"953","Ofaveolata015206",NA,-1.63514496218948,"structural constituent of ribosome","Translation, ribosomal structure and biogenesis",-1.09479980151147
+"954","Ofaveolata015208",NA,3.67241976656285,NA,NA,1.41390343224361
+"955","Ofaveolata015215",NA,-1.62044605602962,"Discs, large (Drosophila) homolog-associated protein","Signal transduction mechanisms",-1.34277893717018
+"956","Ofaveolata015217",NA,-2.42615560842093,"O-fucosyltransferase 2","Carbohydrate transport and metabolism",-1.0344362950482
+"957","Ofaveolata015221",NA,4.3823491711189,"glucose:sodium symporter activity","Inorganic ion transport and metabolism",1.75070283838652
+"958","Ofaveolata015225",NA,5.06303913581678,NA,NA,1.38891447691391
+"959","Ofaveolata015240",NA,1.38890547095541,NA,NA,1.02657403538158
+"960","Ofaveolata015320",NA,-1.02867026066043,"ATP synthase subunit beta, mitochondrial","Energy production and conversion",-1.33174662942095
+"961","Ofaveolata015357",NA,-3.46335570538119,"vesicle fusion with Golgi apparatus","Intracellular trafficking, secretion, and vesicular transport",-1.57110238757785
+"962","Ofaveolata015406",NA,1.4391012485975,NA,NA,1.56411815205736
+"963","Ofaveolata015437",NA,3.86087620871773,"zinc ion binding",NA,1.22622816121147
+"964","Ofaveolata015441",NA,-2.40480538630829,NA,NA,-1.29642777102029
+"965","Ofaveolata015444",NA,-3.97878437855916,NA,NA,-1.29154783264271
+"966","Ofaveolata015496",NA,-1.79253044313347,NA,NA,-1.13340716116692
+"967","Ofaveolata015497",NA,-3.70148323274039,NA,NA,-1.61779627361958
+"968","Ofaveolata015516",NA,-1.76211991898397,NA,NA,-1.01020870395536
+"969","Ofaveolata015524",NA,1.56955932143026,"GTPase activity",NA,1.1045871017059
+"970","Ofaveolata015526",NA,1.77670247504179,NA,NA,1.68791373671696
+"971","Ofaveolata015530",NA,2.79357472552327,NA,NA,2.25287041300838
+"972","Ofaveolata015559",NA,1.24678280210221,"meiotic chromosome separation","Cell cycle control, cell division, chromosome partitioning",1.38109358610568
+"973","Ofaveolata015563",NA,3.13695901935351,NA,NA,1.09956865931743
+"974","Ofaveolata015567",NA,5.68519346326896,NA,NA,2.68820256198397
+"975","Ofaveolata015587",NA,1.03729618582438,NA,NA,1.05457383332663
+"976","Ofaveolata015589",NA,2.6863725384549,"Amidohydrolase family","Nucleotide transport and metabolism",2.14736056637265
+"977","Ofaveolata015598",NA,-1.67756230504874,"Ion channel","Inorganic ion transport and metabolism",-1.08134930259808
+"978","Ofaveolata015629",NA,2.1858197610258,NA,NA,2.09293660505036
+"979","Ofaveolata015705",NA,-1.85996113276087,"this phosphorylation event is a prerequisite for the subsequent ligation of the two exon halves and the production of a mature tRNA. Component of the pre-mRNA cleavage complex II (CF-II), which seems to be required for mRNA 3'-end formation. Also phosphorylates the 5'-terminus of exogenously introduced short interfering RNAs (siRNAs), which is a necessary prerequisite for their incorporation into the RNA- induced silencing complex (RISC). However, endogenous siRNAs and microRNAs (miRNAs) that are produced by the cleavage of dsRNA precursors by DICER1 already contain a 5'-phosphate group, so this protein may be dispensible for normal RNA-mediated gene silencing","RNA processing and modification",-1.72179044024301
+"980","Ofaveolata015809",NA,-1.40567897012879,NA,NA,-1.70345882472839
+"981","Ofaveolata015832",NA,-7.42468931318995,NA,NA,-3.07847453633967
+"982","Ofaveolata015834",NA,3.78373699842395,"metal ion binding","Posttranslational modification, protein turnover, chaperones",1.35301477101381
+"983","Ofaveolata015845",NA,2.26971288590672,NA,NA,1.32056432372565
+"984","Ofaveolata015999",NA,1.17064995345524,"GPI anchor metabolic process",NA,1.39589754197334
+"985","Ofaveolata016019",NA,6.34683963393221,"Universal stress protein family","Signal transduction mechanisms",3.59981218814889
+"986","Ofaveolata016020",NA,4.93795968416347,"Universal stress protein family","Signal transduction mechanisms",2.75207811027996
+"987","Ofaveolata016131",NA,-4.64128206682832,NA,NA,-1.41611360422561
+"988","Ofaveolata016157",NA,-2.01683434800656,NA,NA,-1.81538408118984
+"989","Ofaveolata016188",NA,-2.20636477355509,NA,NA,-1.17375215649659
+"990","Ofaveolata016199",NA,-1.78976257025476,"hair follicle maturation","Signal transduction mechanisms",-1.00105357471253
+"991","Ofaveolata016238",NA,-4.14736372440026,"MFS_1 like family",NA,-2.58971181769661
+"992","Ofaveolata016246",NA,-2.38062883820814,NA,NA,-1.17014052720239
+"993","Ofaveolata016257",NA,-2.64032559686704,NA,NA,-1.43271377106898
+"994","Ofaveolata016258",NA,-5.4816474615063,NA,NA,-1.90852166712919
+"995","Ofaveolata016260",NA,-3.73564330404144,NA,NA,-1.62255629049045
+"996","Ofaveolata016270",NA,-4.94726640076353,NA,NA,-3.65000544607341
+"997","Ofaveolata016273",NA,-2.95368326879518,"26s proteasome non-ATPase regulatory subunit","Posttranslational modification, protein turnover, chaperones",-1.82838301082862
+"998","Ofaveolata016274",NA,-2.02323066269076,"Cupin superfamily protein","",-1.04862459560357
+"999","Ofaveolata016297",NA,1.96861258185358,NA,NA,1.48400898064487
+"1000","Ofaveolata016315",NA,2.93754712431071,NA,NA,1.46218606010849
+"1001","Ofaveolata016326",NA,-2.80055369187436,NA,NA,-1.70794041494324
+"1002","Ofaveolata016327",NA,-1.70115298855304,"ubiquitin-protein transferase activity",NA,-1.74458281359933
+"1003","Ofaveolata016375",NA,-1.89419323919644,"3-hydroxyisobutyryl-CoA hydrolase activity","Lipid transport and metabolism",-1.4241767295285
+"1004","Ofaveolata016420",NA,2.90176257946731,NA,NA,1.14064669802383
+"1005","Ofaveolata016450",NA,-1.6177788028566,NA,NA,-1.62529625734167
+"1006","Ofaveolata016454",NA,3.15789182354066,"protein ubiquitination","Posttranslational modification, protein turnover, chaperones",1.51874479582158
+"1007","Ofaveolata016460",NA,2.59602123209094,NA,NA,1.38601666853365
+"1008","Ofaveolata016487",NA,4.83364440664993,"Methyltransferase domain","Secondary metabolites biosynthesis, transport and catabolism",1.84762600722598
+"1009","Ofaveolata016488",NA,-2.57792458674719,"Methyltransferase domain","Secondary metabolites biosynthesis, transport and catabolism",-1.02853248041338
+"1010","Ofaveolata016489",NA,-1.96477826518754,"Methyltransferase domain","Secondary metabolites biosynthesis, transport and catabolism",-1.06101759883199
+"1011","Ofaveolata016491",NA,-1.32166326929505,NA,NA,-1.0034010441668
+"1012","Ofaveolata016495",NA,2.49659646662484,NA,NA,1.25762615856438
+"1013","Ofaveolata016500",NA,2.95852546254841,"Domain of unknown function (DUF4062)",NA,1.40683936151419
+"1014","Ofaveolata016501",NA,3.77602174428748,NA,NA,1.27398473674346
+"1015","Ofaveolata016502",NA,3.40186128995711,NA,NA,1.27969049749169
+"1016","Ofaveolata016585",NA,-1.79363960577494,"uridine phosphorylase activity","Nucleotide transport and metabolism",-1.13889010028206
+"1017","Ofaveolata016588",NA,-7.94974948692581,NA,NA,-3.15693495964045
+"1018","Ofaveolata016589",NA,-4.84031487376192,NA,NA,-1.40683936151419
+"1019","Ofaveolata016590",NA,-4.62837978166287,NA,NA,-1.92141640742863
+"1020","Ofaveolata016591",NA,-4.11340169338251,NA,NA,-1.10198855629195
+"1021","Ofaveolata016596",NA,-5.49998499946611,NA,NA,-2.88186796716642
+"1022","Ofaveolata016643",NA,-5.3698625792067,NA,NA,-2.27092799204097
+"1023","Ofaveolata016659",NA,-1.26399002474601,"mitochondrial electron transport, NADH to ubiquinone","Energy production and conversion",-1.55631632868859
+"1024","Ofaveolata016667",NA,-1.38035411214417,NA,NA,-1.24426455261597
+"1025","Ofaveolata016671",NA,4.11901590377482,"NADH dehydrogenase ubiquinone 1 alpha subcomplex subunit 4",NA,1.70345882472839
+"1026","Ofaveolata016819",NA,2.90176257946731,"Allows the formation of correctly charged Gln-tRNA(Gln) through the transamidation of misacylated Glu-tRNA(Gln) in the mitochondria. The reaction takes place in the presence of glutamine and ATP through an activated gamma-phospho-Glu- tRNA(Gln)","Translation, ribosomal structure and biogenesis",2.34426436755089
+"1027","Ofaveolata016839",NA,-1.37190742710302,"non-membrane spanning protein tyrosine phosphatase activity","Signal transduction mechanisms",-1.2379477717941
+"1028","Ofaveolata016859",NA,6.19692657498147,NA,NA,1.50069303084492
+"1029","Ofaveolata016948",NA,-1.90758314799966,"60s ribosomal protein","Translation, ribosomal structure and biogenesis",-1.09745890542045
+"1030","Ofaveolata016995",NA,-1.52608700486096,"Thiamin pyrophosphokinase 1","Coenzyme transport and metabolism",-1.35038479595161
+"1031","Ofaveolata017050",NA,-2.10486280335067,NA,NA,-2.1192228473188
+"1032","Ofaveolata017057",NA,-5.59345780296658,NA,NA,-1.92141640742863
+"1033","Ofaveolata017058",NA,-4.58784679842354,NA,NA,-2.3115813262124
+"1034","Ofaveolata017062",NA,-6.34683963393221,NA,NA,-2.66248964435651
+"1035","Ofaveolata017067",NA,-5.35385169990421,"Solute carrier family 12","Inorganic ion transport and metabolism",-2.18477074648348
+"1036","Ofaveolata017088",NA,3.08646791827115,NA,NA,1.55311179902687
+"1037","Ofaveolata017091",NA,-1.01772331606478,"actin filament polymerization",NA,-1.0426591243811
+"1038","Ofaveolata017138",NA,-7.33630588596418,NA,NA,-2.95532073948529
+"1039","Ofaveolata017139",NA,-8.98043781202304,NA,NA,-4.60504756243741
+"1040","Ofaveolata017140",NA,-7.94974948692581,NA,NA,-3.3852736553743
+"1041","Ofaveolata017141",NA,-9.07872346922232,NA,NA,-4.32580437721557
+"1042","Ofaveolata017142",NA,-6.72742005969163,"Galactose binding lectin domain",NA,-2.61135356558331
+"1043","Ofaveolata017157",NA,3.09088832199822,"integrin","Extracellular structures",1.38386103387251
+"1044","Ofaveolata017184",NA,-1.39007580503519,"ABRA C-terminal like",NA,-1.62563302771977
+"1045","Ofaveolata017214",NA,-2.66288682296998,"Galactose binding lectin domain",NA,-1.15077405941545
+"1046","Ofaveolata017291",NA,-4.87181893653041,"Acyl-CoA synthetase long-chain family member","Lipid transport and metabolism",-2.52539654956037
+"1047","Ofaveolata017337",NA,-2.5758038607565,"Defective in cullin neddylation 1 domain containing",NA,-2.25287041300838
+"1048","Ofaveolata017342",NA,-2.62075759432694,"TNF(Tumour Necrosis Factor) family","Extracellular structures",-1.2166955059468
+"1049","Ofaveolata017411",NA,4.42421492300557,"DNA helicase","Replication, recombination and repair",2.95532073948529
+"1050","Ofaveolata017432",NA,-2.52393354565446,"structural constituent of ribosome","Translation, ribosomal structure and biogenesis",-1.51874479582158
+"1051","Ofaveolata017440",NA,1.85996113276087,"thymidylate kinase","Nucleotide transport and metabolism",1.75872547451335
+"1052","Ofaveolata017502",NA,-1.39172037549207,"O-acyltransferase","Lipid transport and metabolism",-1.10066071822603
+"1053","Ofaveolata017525",NA,-2.59165623329466,"box H/ACA snoRNA 3'-end processing","Translation, ribosomal structure and biogenesis",-1.48782091749537
+"1054","Ofaveolata017553",NA,1.10491020189465,NA,NA,1.0956492428908
+"1055","Ofaveolata017556",NA,2.49639453244699,NA,NA,1.10676353886557
+"1056","Ofaveolata017559",NA,2.20472008847676,NA,NA,1.00999978214156
+"1057","Ofaveolata017695",NA,-2.71150108833338,"positive regulation of TOR signaling","Intracellular trafficking, secretion, and vesicular transport",-1.28586524485911
+"1058","Ofaveolata017710",NA,-4.38129185306674,"Eukaryotic initiation factor 4A-II isoform X1","RNA processing and modification",-2.75831296781308
+"1059","Ofaveolata017738",NA,2.15027712237466,NA,NA,1.02292037746269
+"1060","Ofaveolata017744",NA,4.085218548392,NA,NA,2.02243296285657
+"1061","Ofaveolata017749",NA,3.21964060706811,NA,NA,1.54731903897289
+"1062","Ofaveolata017752",NA,2.56573192815722,NA,NA,1.28241481914247
+"1063","Ofaveolata017800",NA,4.83364440664993,NA,NA,1.06101759883199
+"1064","Ofaveolata017809",NA,-2.60164768823513,"inositol hexakisphosphate 6-kinase activity","",-1.52479847203951
+"1065","Ofaveolata017850",NA,-2.51602671623656,"cobalt ion transmembrane transporter activity",NA,-1.61779627361958
+"1066","Ofaveolata017869",NA,-4.6094558616277,NA,NA,-1.88698050269959
+"1067","Ofaveolata017873",NA,3.24937705622856,NA,NA,1.72734470054742
+"1068","Ofaveolata017875",NA,1.58370287356869,NA,NA,1.61779627361958
+"1069","Ofaveolata017937",NA,-1.51200061750353,"serine-type endopeptidase inhibitor activity","Defense mechanisms",-1.00643658841831
+"1070","Ofaveolata017944",NA,-1.44089329924048,"uridine-diphosphatase activity","Nucleotide transport and metabolism",-1.23791155900172
+"1071","Ofaveolata017965",NA,-3.40186128995711,"positive regulation of rhodopsin gene expression","Transcription",-1.1189695426089
+"1072","Ofaveolata017972",NA,-4.76705363516263,NA,NA,-2.33825082151073
+"1073","Ofaveolata017999",NA,-4.65710473813806,"chromatin organization",NA,-2.4552573137696
+"1074","Ofaveolata018002",NA,4.39539897444038,"propionyl-CoA carboxylase activity","",1.02781887315618
+"1075","Ofaveolata018015",NA,-1.85775738781278,"succinate-CoA ligase (ADP-forming) activity","Energy production and conversion",-1.74458281359933
+"1076","Ofaveolata018040",NA,-2.92645563548477,"translation initiation factor activity","Translation, ribosomal structure and biogenesis",-1.84554432433636
+"1077","Ofaveolata018045",NA,-5.75907095883811,"sodium potassium-transporting ATPase subunit","Inorganic ion transport and metabolism",-2.92187128481196
+"1078","Ofaveolata018073",NA,-3.96596841907005,"Multidrug resistance-associated protein 1","Secondary metabolites biosynthesis, transport and catabolism",-1.74458281359933
+"1079","Ofaveolata018104",NA,1.46635543648491,NA,NA,1.41122708555654
+"1080","Ofaveolata018107",NA,-3.85880142033606,NA,NA,-1.86385205954413
+"1081","Ofaveolata018127",NA,1.64588674523224,NA,NA,1.39963502184947
+"1082","Ofaveolata018140",NA,-3.88424564453843,"Fumble","Coenzyme transport and metabolism",-1.5487180740019
+"1083","Ofaveolata018234",NA,-1.64843467522082,"CTPase activity","RNA processing and modification",-1.28586524485911
+"1084","Ofaveolata018261",NA,1.09154117310982,"COX assembly mitochondrial protein","Posttranslational modification, protein turnover, chaperones",1.05434277063058
+"1085","Ofaveolata018280",NA,3.19993343236611,"succinate dehydrogenase cytochrome b560 subunit","Carbohydrate transport and metabolism",1.23791155900172
+"1086","Ofaveolata018302",NA,-1.98910594784061,"ectonucleotide pyrophosphatase phosphodiesterase",NA,-1.44527261174038
+"1087","Ofaveolata018309",NA,1.99364833453593,"propionyl-CoA carboxylase activity","",1.53505984205315
+"1088","Ofaveolata018311",NA,-3.78826159952864,"dolichol-linked oligosaccharide biosynthetic process",NA,-2.49427520703312
+"1089","Ofaveolata018318",NA,-3.3017778411952,NA,NA,-1.49170591883972
+"1090","Ofaveolata018344",NA,-4.89792238180911,"Leucine rich repeat",NA,-3.28513591308471
+"1091","Ofaveolata018355",NA,-1.51200061750353,"Stores iron in a soluble, non-toxic, readily available form. Important for iron homeostasis. Iron is taken up in the ferrous form and deposited as ferric hydroxides after oxidation","Inorganic ion transport and metabolism",-1.40683936151419
+"1092","Ofaveolata018360",NA,-3.64682568529977,"Stores iron in a soluble, non-toxic, readily available form. Important for iron homeostasis. Iron is taken up in the ferrous form and deposited as ferric hydroxides after oxidation","Inorganic ion transport and metabolism",-2.8153525140603
+"1093","Ofaveolata018394",NA,-2.27221059619529,"Ubiquitin-associated domain-containing protein 2",NA,-1.12420891184321
+"1094","Ofaveolata018486",NA,4.10697901239302,"Serine-type peptidase activity. It is involved in the biological process described with proteolysis","Posttranslational modification, protein turnover, chaperones",2.13253477138014
+"1095","Ofaveolata018491",NA,-1.66187341652978,"translation initiation factor activity","Translation, ribosomal structure and biogenesis",-1.7847472364736
+"1096","Ofaveolata018782",NA,-2.91560295097156,"TMEM192 family",NA,-1.99735807318977
+"1097","Ofaveolata018851",NA,-1.61790406310912,"ribosomal protein","Translation, ribosomal structure and biogenesis",-1.06750219955756
+"1098","Ofaveolata018926",NA,3.06760338791812,NA,NA,1.71624910240786
+"1099","Ofaveolata018927",NA,-2.16812945704211,"Belongs to the SelWTH family. Selenoprotein T subfamily",NA,-1.86807399254019
+"1100","Ofaveolata018998",NA,-5.27914792248641,"quinone binding","Energy production and conversion",-2.95532073948529
+"1101","Ofaveolata019003",NA,-2.02612283875666,"proteasome-activating ATPase activity","Posttranslational modification, protein turnover, chaperones",-1.19448530660076
+"1102","Ofaveolata019014",NA,-6.80585741032717,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism",-2.75831296781308
+"1103","Ofaveolata019022",NA,3.97670756968499,"omega-amidase activity","Amino acid transport and metabolism",1.16220959467115
+"1104","Ofaveolata019039",NA,-2.77345784205423,NA,NA,-1.59018757434553
+"1105","Ofaveolata019067",NA,1.30018301253771,NA,NA,1.02298915729653
+"1106","Ofaveolata019080",NA,-4.01478579881162,"peptidyl-dipeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.99566936141837
+"1107","Ofaveolata019111",NA,1.97639190015845,NA,NA,1.08796312777686
+"1108","Ofaveolata019112",NA,-1.59242141524278,"structural constituent of ribosome","Translation, ribosomal structure and biogenesis",-1.27010779306899
+"1109","Ofaveolata019113",NA,-1.39047896369938,"negative regulation of triglyceride biosynthetic process","Signal transduction mechanisms",-1.51817939755091
+"1110","Ofaveolata019130",NA,-4.0683376733493,NA,NA,-1.98216236796079
+"1111","Ofaveolata019148",NA,-4.25884578831129,NA,NA,-1.86385205954413
+"1112","Ofaveolata019158",NA,3.41515033111348,"calcium-dependent cysteine-type endopeptidase activity","",2.14736056637265
+"1113","Ofaveolata019178",NA,-1.04178136401132,"positive regulation of transforming growth factor beta1 production","Energy production and conversion",-1.18089366102387
+"1114","Ofaveolata019225",NA,-1.0060243411138,"Transmembrane protein 145","",-1.38386103387251
+"1115","Ofaveolata019280",NA,3.66216692104325,NA,NA,1.54731903897289
+"1116","Ofaveolata019310",NA,-2.74160611567817,NA,NA,-1.69125276915341
+"1117","Ofaveolata019318",NA,-1.68858267827102,"Malate synthase","Energy production and conversion",-1.70794041494324
+"1118","Ofaveolata019357",NA,-1.20330932576612,"L-ornithine transmembrane transport","Energy production and conversion",-1.49170591883972
+"1119","Ofaveolata019367",NA,3.51532683118017,NA,NA,1.37678109605458
+"1120","Ofaveolata019396",NA,-2.69489083979789,NA,NA,-1.58461015732842
+"1121","Ofaveolata019403",NA,-1.58293970800727,NA,NA,-1.34085341283298
+"1122","Ofaveolata019611",NA,-6.2140801690687,"high mobility group","Transcription",-4.50846076066972
+"1123","Ofaveolata019617",NA,-2.44357223492213,"tripeptidyl-peptidase activity","Posttranslational modification, protein turnover, chaperones",-1.61386252074523
+"1124","Ofaveolata019723",NA,-5.45359628120472,"ATP-dependent chromatin remodeling","Transcription",-2.50757560911626
+"1125","Ofaveolata019732",NA,1.53763357309723,"NACHT and WD repeat","Chromatin structure and dynamics",1.27398473674346
+"1126","Ofaveolata019804",NA,3.30606419543478,NA,NA,1.97918186156312
+"1127","Ofaveolata019823",NA,-3.70148323274039,"-","",-1.50462349549084
+"1128","Ofaveolata019884",NA,-1.862251594222,NA,NA,-1.27213834582863
+"1129","Ofaveolata019962",NA,-4.08757295767196,NA,NA,-1.26709462859991
+"1130","Ofaveolata019974",NA,-4.15997376774727,NA,NA,-1.18180983116735
+"1131","Ofaveolata020047",NA,-2.3949823673112,"Nucleoporin","",-2.14583861099431
+"1132","Ofaveolata020644",NA,-4.21147300846839,"Metalloendopeptidase activity. It is involved in the biological process described with proteolysis","Amino acid transport and metabolism",-1.10449104738453
+"1133","Ofaveolata020675",NA,3.91513832814109,NA,NA,2.21885183298642
+"1134","Ofaveolata020677",NA,1.46801154209215,NA,NA,1.98696392784727
+"1135","Ofaveolata020752",NA,-1.71782579284831,"Belongs to the class I-like SAM-binding methyltransferase superfamily. RsmB NOP family","Cell cycle control, cell division, chromosome partitioning",-1.23697047805738
+"1136","Ofaveolata020790",NA,-1.4604402025615,"protein serine/threonine phosphatase activity","Signal transduction mechanisms",-1.84189471866974
+"1137","Ofaveolata020805",NA,2.22153893853535,NA,NA,1.39420591222535
+"1138","Ofaveolata020815",NA,-3.8415959552113,"signal peptide processing","Intracellular trafficking, secretion, and vesicular transport",-1.84175965535352
+"1139","Ofaveolata020822",NA,-4.44368879810316,"oxidoreductase activity, oxidizing metal ions with flavin as acceptor","Energy production and conversion",-2.48711801814569
+"1140","Ofaveolata020921",NA,-1.32362993782842,NA,NA,-1.47792488237184
+"1141","Ofaveolata020961",NA,-1.32166326929505,"Methyltransferase domain","Secondary metabolites biosynthesis, transport and catabolism",-1.62529625734167
+"1142","Ofaveolata021025",NA,-2.80737985009472,"transmembrane transport","Inorganic ion transport and metabolism",-1.28241481914247
+"1143","Ofaveolata021143",NA,-1.19206138032274,"mRNA transport","RNA processing and modification",-1.29426685335715
+"1144","Ofaveolata021184",NA,1.68199651113939,NA,NA,1.29049377696092
+"1145","Ofaveolata021268",NA,-3.15252429242236,NA,NA,-1.49971471970549
+"1146","Ofaveolata021270",NA,-1.58028277386767,NA,NA,-1.11319359194229
+"1147","Ofaveolata021285",NA,1.06795732047767,"ThiF family","Coenzyme transport and metabolism",1.05253783221685
+"1148","Ofaveolata021288",NA,5.04499426876641,NA,NA,2.68349704503977
+"1149","Ofaveolata021347",NA,1.99699958004379,NA,NA,1.24034140881362
+"1150","Ofaveolata021396",NA,-2.76670138616206,"glutamic-type peptidase activity","Posttranslational modification, protein turnover, chaperones",-1.28487968064816
+"1151","Ofaveolata021485",NA,-2.266487937492,NA,NA,-1.25172205206064
+"1152","Ofaveolata021507",NA,-1.36775776629435,"protein localization to perinuclear region of cytoplasm",NA,-1.19556483699209
+"1153","Ofaveolata021550",NA,-1.01527940120761,"Sparc osteonectin, cwcv and kazal-like domains proteoglycan (testican) 2",NA,-1.02841109919718
+"1154","Ofaveolata021821",NA,-1.20983905566617,"LON peptidase N-terminal domain and RING finger","Posttranslational modification, protein turnover, chaperones",-2.36558906898139
+"1155","Ofaveolata021870",NA,-5.69972448871977,NA,NA,-1.54731903897289
+"1156","Ofaveolata021895",NA,4.71136804000342,NA,NA,2.67613432519389
+"1157","Ofaveolata021934",NA,-3.42011716535511,NA,NA,-1.74458281359933
+"1158","Ofaveolata021960",NA,-4.06467223902739,"ATP:ADP antiporter activity","Energy production and conversion",-2.3115813262124
+"1159","Ofaveolata021968",NA,-5.5944592027154,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis",-2.42260273175917
+"1160","Ofaveolata021969",NA,2.09728914872708,NA,NA,1.66152927761376
+"1161","Ofaveolata021990",NA,4.20988608944559,NA,NA,1.16653290760128
+"1162","Ofaveolata021991",NA,2.04217933856593,NA,NA,1.13538137768244
+"1163","Ofaveolata021995",NA,4.50376919707331,NA,NA,1.97994367824519
+"1164","Ofaveolata022006",NA,2.64445101159983,NA,NA,1.00198368063647
+"1165","Ofaveolata022018",NA,-5.79256831994075,NA,NA,-2.13253477138014
+"1166","Ofaveolata022032",NA,-1.13420798250954,"nicotinamidase activity","Defense mechanisms",-1.13112712769574
+"1167","Ofaveolata022059",NA,-3.82861043886352,NA,NA,-1.31077790900839
+"1168","Ofaveolata022092",NA,-2.78150231369784,"pyrimidine nucleotide transmembrane transporter activity","Energy production and conversion",-1.89536424901623
+"1169","Ofaveolata022162",NA,-1.11852090521983,"Aminoacylase 1","Amino acid transport and metabolism",-1.16720572202029
+"1170","Ofaveolata022163",NA,1.80172298160588,"PRA1 family","",1.26801659923462
+"1171","Ofaveolata022177",NA,-2.69289792619698,"Folate receptor",NA,-1.68495519682287
+"1172","Ofaveolata022181",NA,1.39307018502235,"UvrD/REP helicase N-terminal domain",NA,1.06226886004561
+"1173","Ofaveolata022205",NA,-1.48357270114739,NA,NA,-1.15606585015445
+"1174","Ofaveolata022229",NA,-2.03314691979363,"regulation of DNA recombination at telomere","Transcription",-1.66765459524605
+"1175","Ofaveolata022259",NA,-1.97243241131912,NA,NA,-1.86385205954413
+"1176","Ofaveolata022261",NA,-2.63930310243738,NA,NA,-1.02853248041338
+"1177","Ofaveolata022273",NA,-1.10744839538293,"pronephric nephron development","Intracellular trafficking, secretion, and vesicular transport",-1.25405908289963
+"1178","Ofaveolata022366",NA,-7.20564299360148,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",-2.8604221281806
+"1179","Ofaveolata022372",NA,-2.36816571068452,"Belongs to the sodium solute symporter (SSF) (TC 2.A.21) family","Inorganic ion transport and metabolism",-1.28544084176424
+"1180","Ofaveolata022400",NA,-3.95540457086524,"secondary active sulfate transmembrane transporter activity","Inorganic ion transport and metabolism",-2.03164560507427
+"1181","Ofaveolata022421",NA,-1.49998108591736,"DIS3 exosome endoribonuclease and 3'-5' exoribonuclease","Translation, ribosomal structure and biogenesis",-1.28321687875189
+"1182","Ofaveolata022425",NA,4.0011848672789,"FAD binding domain of DNA photolyase","Transcription",3.07951318126235
+"1183","Ofaveolata022464",NA,-3.04452011583252,"Dynein, light chain","Cytoskeleton",-2.48711801814569
+"1184","Ofaveolata022467",NA,-2.0360242889682,"protein serine/threonine phosphatase activity","Signal transduction mechanisms",-1.60993355953227
+"1185","Ofaveolata022468",NA,-2.86041764275781,"Complement component 1 q","Defense mechanisms",-2.20964189490149
+"1186","Ofaveolata022471",NA,-4.17181021763002,NA,NA,-1.16812185512448
+"1187","Ofaveolata022474",NA,-1.06832928942084,"RAB, member of RAS oncogene family-like 3","Intracellular trafficking, secretion, and vesicular transport",-1.61961139412192
+"1188","Ofaveolata022485",NA,-1.08533331587557,"phosphatidylserine decarboxylase activity","Lipid transport and metabolism",-1.56411815205736
+"1189","Ofaveolata022486",NA,-1.87878388794916,"L27 domain binding","Extracellular structures",-1.25267794963462
+"1190","Ofaveolata022552",NA,2.01667075557392,NA,NA,1.1133350962924
+"1191","Ofaveolata022580",NA,-7.42196972493262,"histone pre-mRNA DCP binding","RNA processing and modification",-3.90062458018962
+"1192","Ofaveolata022583",NA,-3.62345095469733,"Isocitrate lyase family","Energy production and conversion",-2.39584815015573
+"1193","Ofaveolata022622",NA,-1.17697163217068,NA,NA,-1.09938528445274
+"1194","Ofaveolata022638",NA,-4.84031487376192,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",-1.62504726209026
+"1195","Ofaveolata022639",NA,-3.82960596043221,"carbohydrate binding","Posttranslational modification, protein turnover, chaperones",-1.44833722933475
+"1196","Ofaveolata022663",NA,2.00885776761679,"phenanthrene-epoxide hydrolase activity","Energy production and conversion",1.70345882472839
+"1197","Ofaveolata022668",NA,2.41343104866887,"SET domain containing 6",NA,1.85243658995504
+"1198","Ofaveolata022676",NA,-1.86402463746351,"Phosphoenolpyruvate phosphomutase","Energy production and conversion",-1.51320274363178
+"1199","Ofaveolata022678",NA,-4.78357494239492,"snRNA import into nucleus","Intracellular trafficking, secretion, and vesicular transport",-2.92446420896088
+"1200","Ofaveolata022690",NA,-2.32231655228775,"telomerase activity",NA,-1.28192721512509
+"1201","Ofaveolata022703",NA,-1.66217452466995,"Major Facilitator Superfamily","Carbohydrate transport and metabolism",-2.20964189490149
+"1202","Ofaveolata022713",NA,-1.19023019240858,"vWA found in TerF C terminus","Signal transduction mechanisms",-2.0576333882792
+"1203","Ofaveolata022718",NA,-2.01521920447783,"1-acylglycerol-3-phosphate O-acyltransferase activity","Lipid transport and metabolism",-1.18449378954149
+"1204","Ofaveolata022726",NA,-3.02398224753956,NA,NA,-1.28586524485911
+"1205","Ofaveolata022754",NA,-1.22606728266654,NA,NA,-1.75825114204827
+"1206","Ofaveolata022806",NA,-3.1163496096576,"positive regulation of epithelial to mesenchymal transition",NA,-1.2732624857318
+"1207","Ofaveolata022848",NA,-1.58804963759246,"PGAM family member 5, serine threonine protein phosphatase, mitochondrial",NA,-1.67252032545543
+"1208","Ofaveolata022881",NA,-4.03116776894375,"bleomycin hydrolase","Amino acid transport and metabolism",-2.67613432519389
+"1209","Ofaveolata022918",NA,2.28994170242351,"Trypsin-like serine protease","Posttranslational modification, protein turnover, chaperones",1.15606585015445
+"1210","Ofaveolata023014",NA,-2.20066977008141,NA,NA,-1.89536424901623
+"1211","Ofaveolata023019",NA,-1.57711542874771,"SOR/SNZ family","Coenzyme transport and metabolism",-1.05387007949165
+"1212","Ofaveolata023020",NA,4.12968242744665,"Belongs to the peptidase C14A family","Posttranslational modification, protein turnover, chaperones",1.37097357831862
+"1213","Ofaveolata023028",NA,1.35286544313424,"Septin","",1.91251589244014
+"1214","Ofaveolata023041",NA,2.60462807328567,"recombination hotspot binding","Transcription",1.47360555786165
+"1215","Ofaveolata023065",NA,-1.82458086561143,"positive regulation of dipeptide transport","Inorganic ion transport and metabolism",-1.72171055968182
+"1216","Ofaveolata023141",NA,2.70354471368331,"spleen development","Transcription",1.68909109044435
+"1217","Ofaveolata023156",NA,-1.7637981080014,"Cystatin-like domain",NA,-1.92625730890548
+"1218","Ofaveolata023171",NA,-1.0123914732061,"ribosomal protein S6 kinase activity","Signal transduction mechanisms",-1.24250844211641
+"1219","Ofaveolata023209",NA,-3.3885511278675,"[3-methyl-2-oxobutanoate dehydrogenase (acetyl-transferring)] kinase activity","Signal transduction mechanisms",-1.98470368392196
+"1220","Ofaveolata023222",NA,-1.37163926870528,"Domain of unknown function (DUF4042)",NA,-1.12316496226195
+"1221","Ofaveolata023245",NA,2.36333374709155,"nitric-oxide synthase activity","Energy production and conversion",1.93074948387411
+"1222","Ofaveolata023246",NA,1.62024836148213,"nitric-oxide synthase activity","Energy production and conversion",1.49972755778729
+"1223","Ofaveolata023261",NA,-1.7637981080014,"It is involved in the biological process described with chromatin remodeling","",-1.15613136008515
+"1224","Ofaveolata023296",NA,-1.29927561736587,NA,NA,-1.34285495631933
+"1225","Ofaveolata023339",NA,-6.16368656182675,"Receptor for arginine vasopressin. The activity of this receptor is mediated by G proteins which activate a phosphatidyl- inositol-calcium second messenger system","Signal transduction mechanisms",-1.78540773105577
+"1226","Ofaveolata023400",NA,3.65375988655515,"Belongs to the MIP aquaporin (TC 1.A.8) family","Carbohydrate transport and metabolism",2.99734065140288
+"1227","Ofaveolata023437",NA,1.7554116870458,NA,NA,2.95118086844451
+"1228","Ofaveolata023443",NA,-2.94402973634454,"membrane protein proteolysis involved in retrograde protein transport, ER to cytosol",NA,-1.24034140881362
+"1229","Ofaveolata023450",NA,-6.19843776273311,NA,NA,-1.96644116791663
+"1230","Ofaveolata023451",NA,-10.6177456698051,NA,NA,-4.98754011706778
+"1231","Ofaveolata023505",NA,3.00732580457185,NA,NA,2.45139217122375
+"1232","Ofaveolata023506",NA,2.12074090971705,NA,NA,1.48400898064487
+"1233","Ofaveolata023540",NA,-2.63473633431063,NA,NA,-1.53679512248181
+"1234","Ofaveolata023548",NA,-2.35214362027609,"protein import into mitochondrial inner membrane","Intracellular trafficking, secretion, and vesicular transport",-2.13088244889291
+"1235","Ofaveolata023563",NA,-3.53551801283536,"nitric oxide catabolic process","Energy production and conversion",-2.27092799204097
+"1236","Ofaveolata023564",NA,-1.12716828044716,"unfolded protein binding","Posttranslational modification, protein turnover, chaperones",-1.03503856093748
+"1237","Ofaveolata023578",NA,-1.74621904632943,"peptidyl-threonine dephosphorylation","Signal transduction mechanisms",-1.86385205954413
+"1238","Ofaveolata023642",NA,-1.74855824889442,"translation elongation factor activity","Translation, ribosomal structure and biogenesis",-1.06115427385673
+"1239","Ofaveolata023777",NA,2.55371035874075,NA,NA,1.54060588897489
+"1240","Ofaveolata023810",NA,2.85184281587261,"protein depalmitoleylation","Cell wall/membrane/envelope biogenesis",1.0426591243811
+"1241","Ofaveolata023828",NA,4.96048389456081,"protein-disulfide reductase activity",NA,1.90297532326634
+"1242","Ofaveolata023871",NA,2.93754712431071,NA,NA,1.49311350825364
+"1243","Ofaveolata023872",NA,4.24485451755322,NA,NA,2.73356153867423
+"1244","Ofaveolata024000",NA,-1.59761855556916,"retrograde transport, endosome to Golgi","Intracellular trafficking, secretion, and vesicular transport",-1.05103794237117
+"1245","Ofaveolata024019",NA,3.29946408877376,NA,NA,1.88702722120055
+"1246","Ofaveolata024079",NA,4.16590615324061,"RNA-directed 5'-3' RNA polymerase activity","Translation, ribosomal structure and biogenesis",1.16207490165915
+"1247","Ofaveolata024125",NA,5.00266142711843,NA,NA,2.66248964435651
+"1248","Ofaveolata024163",NA,3.95505021144422,NA,NA,1.75540129309697
+"1249","Ofaveolata024165",NA,-1.31210966432477,NA,NA,-1.03145951352684
+"1250","Ofaveolata024209",NA,3.63608285594999,"copper ion binding",NA,2.3115813262124
+"1251","Ofaveolata024225",NA,-2.26115503982055,"regulation of kinetochore assembly","",-1.3126242955609
+"1252","Ofaveolata024236",NA,-1.32228196814055,"SRY (sex determining region Y)-box","Transcription",-1.05103794237117
+"1253","Ofaveolata024239",NA,-2.56597754989153,"UDP-N-acetylglucosamine catabolic process","Carbohydrate transport and metabolism",-1.0515214091326
+"1254","Ofaveolata024251",NA,-1.54795688912169,NA,NA,-1.21995452891095
+"1255","Ofaveolata024256",NA,-4.03642191535552,NA,NA,-1.47312708139583
+"1256","Ofaveolata024308",NA,-4.11340169338251,"positive regulation of exoribonuclease activity","Transcription",-1.58461015732842
+"1257","Ofaveolata024320",NA,3.91513832814109,"Phosphotyrosine interaction domain (PTB/PID)",NA,1.54731903897289
+"1258","Ofaveolata024326",NA,-5.60343455962812,"Animal haem peroxidase",NA,-2.4660886519153
+"1259","Ofaveolata024334",NA,-3.35849800139851,"Animal haem peroxidase","Signal transduction mechanisms",-1.85228457715923
+"1260","Ofaveolata024336",NA,-4.44191102601543,"Animal haem peroxidase","Signal transduction mechanisms",-2.02243296285657
+"1261","Ofaveolata024338",NA,-3.85072553916328,"Animal haem peroxidase","Signal transduction mechanisms",-1.92141640742863
+"1262","Ofaveolata024342",NA,-3.37446888618821,"Animal haem peroxidase","Signal transduction mechanisms",-1.4217042191689
+"1263","Ofaveolata024357",NA,-1.31848634266345,NA,NA,-1.13538137768244
+"1264","Ofaveolata024364",NA,-1.76971305281763,"acetate-CoA ligase activity","Lipid transport and metabolism",-1.42481586924419
+"1265","Ofaveolata024384",NA,-2.55302492452188,NA,NA,-1.36067081051567
+"1266","Ofaveolata024441",NA,4.30741522969073,"GPN-loop GTPase 3","Transcription",1.64434523861561
+"1267","Ofaveolata024483",NA,-2.26450993096028,"translation initiation factor activity","Translation, ribosomal structure and biogenesis",-1.94879261289606
+"1268","Ofaveolata024491",NA,1.36775776629435,NA,NA,1.09826179365051
+"1269","Ofaveolata024494",NA,-4.57784609665737,"Protein of unknown function (DUF2615)",NA,-2.1192228473188
+"1270","Ofaveolata024504",NA,1.97243241131912,NA,NA,1.7749035390142
+"1271","Ofaveolata024555",NA,-2.27860040085299,"translation initiation factor activity","Translation, ribosomal structure and biogenesis",-1.0131055741568
+"1272","Ofaveolata024601",NA,-1.09325237888965,"Phosphoserine phosphatase","Amino acid transport and metabolism",-1.85853126983077
+"1273","Ofaveolata024609",NA,4.21130159531899,"RNA splicing","RNA processing and modification",1.22026947448772
+"1274","Ofaveolata024631",NA,1.11605451674323,NA,NA,1.03542901086388
+"1275","Ofaveolata024667",NA,-4.65710473813806,"Mitochondrial genome maintenance MGM101",NA,-2.15854277794467
+"1276","Ofaveolata024679",NA,-2.96995635400705,"phosphoenolpyruvate carboxykinase activity","Energy production and conversion",-1.73742214311504
+"1277","Ofaveolata024680",NA,3.94080306847574,"phosphoenolpyruvate carboxykinase activity","Energy production and conversion",1.31381803539877
+"1278","Ofaveolata024689",NA,2.58402898096155,"tubulin binding","Signal transduction mechanisms",1.01020870395536
+"1279","Ofaveolata024715",NA,1.85339707201578,NA,NA,1.15606585015445
+"1280","Ofaveolata024782",NA,1.35656466905371,NA,NA,1.30339763366306
+"1281","Ofaveolata024791",NA,-3.76826129517604,"calcium ion binding","Signal transduction mechanisms",-1.76132539949463
+"1282","Ofaveolata024878",NA,-2.41655117962226,NA,NA,-1.39371802139463
+"1283","Ofaveolata024912",NA,1.22632426959714,NA,NA,1.41963066150387
+"1284","Ofaveolata024964",NA,-2.97555455738255,"cysteine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.2568944001184
+"1285","Ofaveolata024967",NA,-1.73442520275938,"cysteine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.41832876946952
+"1286","Ofaveolata024970",NA,-2.13098281832288,"protein targeting to lysosome","Intracellular trafficking, secretion, and vesicular transport",-1.0131055741568
+"1287","Ofaveolata024974",NA,-1.98408653909694,"ER membrane protein complex subunit",NA,-1.51817939755091
+"1288","Ofaveolata025000",NA,2.48050686488676,"protein O-GlcNAc transferase activity",NA,1.01577944163002
+"1289","Ofaveolata025013",NA,-3.64196201052413,"GDP-mannose","Carbohydrate transport and metabolism",-2.7689150121797
+"1290","Ofaveolata025017",NA,4.96048389456081,"saccharopine dehydrogenase (NAD+, L-lysine-forming) activity","Amino acid transport and metabolism",2.54237184997151
+"1291","Ofaveolata025070",NA,-2.42970311657874,"positive regulation of NLRP3 inflammasome complex assembly","RNA processing and modification",-1.12707794951594
+"1292","Ofaveolata025167",NA,3.71113178404418,"vascular endothelial growth factor receptor-2 signaling pathway","Signal transduction mechanisms",1.0201491571039
+"1293","Ofaveolata025176",NA,3.36585401535576,NA,NA,1.01263458699045
+"1294","Ofaveolata025184",NA,-2.35453802128948,"syndrome nuclear autoantigen 1",NA,-2.04169029286977
+"1295","Ofaveolata025189",NA,-6.94704252990824,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",-2.8243369112183
+"1296","Ofaveolata025190",NA,-6.94259615411968,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",-2.7689150121797
+"1297","Ofaveolata025193",NA,-6.77146767252646,"structural constituent of cuticle","Cell cycle control, cell division, chromosome partitioning",-2.8604221281806
+"1298","Ofaveolata025221",NA,-1.862251594222,"positive regulation of epithelial to mesenchymal transition",NA,-1.41582472960248
+"1299","Ofaveolata025267",NA,-5.70518480943971,NA,NA,-1.3496213286397
+"1300","Ofaveolata025271",NA,-1.66478479054723,"Saccharopine","Coenzyme transport and metabolism",-1.06494059913476
+"1301","Ofaveolata025301",NA,3.3606186620118,"positive regulation of extracellular matrix disassembly","Inorganic ion transport and metabolism",1.35582423588661
+"1302","Ofaveolata025336",NA,2.89590462008329,"Fibrinogen beta and gamma chains, C-terminal globular domain",NA,1.62038301817682
+"1303","Ofaveolata025342",NA,-5.85151373104935,NA,NA,-2.56370109914398
+"1304","Ofaveolata025374",NA,-1.5819736465025,"protein destabilization","Translation, ribosomal structure and biogenesis",-1.02668759921086
+"1305","Ofaveolata025429",NA,-3.35849800139851,"positive regulation of epithelial to mesenchymal transition",NA,-1.26700106959384
+"1306","Ofaveolata025430",NA,-3.47681675529312,NA,NA,-1.67069957962865
+"1307","Ofaveolata025436",NA,-3.27507137009342,"positive regulation of epithelial to mesenchymal transition",NA,-1.56476716164502
+"1308","Ofaveolata025437",NA,-5.23501678179733,"peptidase inhibitor activity","",-1.72171055968182
+"1309","Ofaveolata025438",NA,-1.24109054788413,"peptidase inhibitor activity","",-1.58581883521124
+"1310","Ofaveolata025444",NA,-1.45187028847411,"positive regulation of epithelial to mesenchymal transition",NA,-1.22620457799829
+"1311","Ofaveolata025449",NA,-6.72742005969163,"BolA-like protein","Signal transduction mechanisms",-2.99734065140288
+"1312","Ofaveolata025455",NA,-4.42421492300557,"Calbindin 2a","Signal transduction mechanisms",-1.32599466076779
+"1313","Ofaveolata025456",NA,4.28731048662132,"Calbindin 2a","Signal transduction mechanisms",1.8450234774998
+"1314","Ofaveolata025472",NA,-4.66601933131617,"tRNA threonylcarbamoyladenosine metabolic process","Signal transduction mechanisms",-1.99735807318977
+"1315","Ofaveolata025485",NA,-1.81493444325865,"DNA replication complex GINS protein",NA,-1.06204794723755
+"1316","Ofaveolata025486",NA,-7.49142843909992,"dolichyl-diphosphooligosaccharide-protein glycotransferase activity","",-5.20185711035564
+"1317","Ofaveolata025488",NA,2.84693824880869,NA,NA,1.1045871017059
+"1318","Ofaveolata025489",NA,3.35034723515979,NA,NA,1.0131055741568
+"1319","Ofaveolata025531",NA,1.25177208856724,"NACHT and WD repeat","Chromatin structure and dynamics",1.2531210431009
+"1320","Ofaveolata025694",NA,-3.54022834404634,NA,NA,-1.27064023507792
+"1321","Ofaveolata025698",NA,-4.16590615324061,NA,NA,-1.64260104988294
+"1322","Ofaveolata025760",NA,-1.37163926870528,"peptidyl-cysteine oxidation","",-1.72171055968182
+"1323","Ofaveolata025762",NA,-2.50426434157541,"protein modification by small protein conjugation","Posttranslational modification, protein turnover, chaperones",-1.35038479595161
+"1324","Ofaveolata025774",NA,-2.93049383470284,"threonine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-2.14736056637265
+"1325","Ofaveolata025786",NA,-3.91304268288125,"S-adenosylhomocysteine catabolic process","Coenzyme transport and metabolism",-2.49090433932081
+"1326","Ofaveolata025836",NA,3.6661062793192,NA,NA,2.44359580755828
+"1327","Ofaveolata025849",NA,-4.25842065269709,"Myosin, light","Cytoskeleton",-1.71961387628814
+"1328","Ofaveolata025856",NA,-1.88370404824346,"RmlD substrate binding domain","",-1.51925719224541
+"1329","Ofaveolata025879",NA,4.67818649088988,"calcium ion binding","Posttranslational modification, protein turnover, chaperones",2.6986303287008
+"1330","Ofaveolata025891",NA,-4.66454275276475,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",-2.24620248491102
+"1331","Ofaveolata025892",NA,-1.99640753575453,"antigen processing and presentation of exogenous peptide antigen via MHC class I","Posttranslational modification, protein turnover, chaperones",-2.17978957393747
+"1332","Ofaveolata025972",NA,-1.76211991898397,"Protein phosphatase 1 regulatory subunit 27","",-2.06317508620468
+"1333","Ofaveolata025979",NA,-4.09520890092199,"defense response to fungus","Cytoskeleton",-2.18917003385839
+"1334","Ofaveolata025999",NA,-1.38716404000772,"response to unfolded protein","Posttranslational modification, protein turnover, chaperones",-1.05311671382847
+"1335","Ofaveolata026020",NA,3.21534659112407,"protein ADP-ribosylase activity","",1.10096496458302
+"1336","Ofaveolata026043",NA,-1.94733214873973,NA,NA,-1.5485580056245
+"1337","Ofaveolata026055",NA,-1.31791464640265,"ubiquitin-like protein-specific protease activity","",-1.42055696794764
+"1338","Ofaveolata026079",NA,3.41670862425192,NA,NA,1.37679814564146
+"1339","Ofaveolata026080",NA,3.63608285594999,NA,NA,1.4759653197691
+"1340","Ofaveolata026146",NA,-1.68516211657443,"Cytochrome c1, heme protein","Energy production and conversion",-1.16323241926525
+"1341","Ofaveolata026149",NA,-1.43401498973944,"Cleavage and polyadenylation","RNA processing and modification",-1.47564525039294
+"1342","Ofaveolata026173",NA,-3.44268226584206,"cysteine desulfurase activity","Amino acid transport and metabolism",-1.86213932308807
+"1343","Ofaveolata026191",NA,-3.35836802766636,NA,NA,-1.55797028077271
+"1344","Ofaveolata026194",NA,-2.61160006452089,"peptide-methionine (S)-S-oxide reductase activity","Posttranslational modification, protein turnover, chaperones",-1.56962263134619
+"1345","Ofaveolata026195",NA,1.52727995207967,"Enoyl-(Acyl carrier protein) reductase","Secondary metabolites biosynthesis, transport and catabolism",1.28586524485911
+"1346","Ofaveolata026211",NA,-3.19513829251921,"DNA binding","Transcription",-1.43834845131746
+"1347","Ofaveolata026212",NA,-2.57490317281949,"Iron/zinc purple acid phosphatase-like protein C","Carbohydrate transport and metabolism",-1.02997992475521
+"1348","Ofaveolata026264",NA,-2.84136864246722,"Cys/Met metabolism PLP-dependent enzyme","Amino acid transport and metabolism",-1.70719289852228
+"1349","Ofaveolata026338",NA,-1.10469084735242,"dodecenoyl-CoA delta-isomerase activity","Lipid transport and metabolism",-1.29718587953002
+"1350","Ofaveolata026375",NA,-2.87931657832187,NA,NA,-1.46949153685089
+"1351","Ofaveolata026380",NA,-1.02386400464849,"Glycosyl hydrolase family 9","Carbohydrate transport and metabolism",-1.50650053074077
+"1352","Ofaveolata026390",NA,-3.12662607282094,NA,NA,-1.27612921489358
+"1353","Ofaveolata026391",NA,3.97282306733247,"V-maf musculoaponeurotic fibrosarcoma oncogene family, protein B, duplicate b","Transcription",1.38911733625509
+"1354","Ofaveolata026393",NA,3.20604397585395,NA,NA,1.61900049231292
+"1355","Ofaveolata026397",NA,4.21147300846839,"Belongs to the bZIP family","Transcription",1.42148861188375
+"1356","Ofaveolata026398",NA,4.55835759456319,NA,NA,3.31890884481831
+"1357","Ofaveolata026402",NA,1.78715252777703,"abducens nerve formation","Transcription",1.25965388554939
+"1358","Ofaveolata026430",NA,2.04800292636431,NA,NA,1.208278598183
+"1359","Ofaveolata026455",NA,-5.35385169990421,"AFG3-like protein","Posttranslational modification, protein turnover, chaperones",-2.66248964435651
+"1360","Ofaveolata026466",NA,-2.82837346995469,"phosphatidic acid transporter activity","Intracellular trafficking, secretion, and vesicular transport",-1.98284896304995
+"1361","Ofaveolata026477",NA,-5.79256831994075,NA,NA,-2.26901160422612
+"1362","Ofaveolata026493",NA,-3.02539609342051,NA,NA,-1.48859207068283
+"1363","Ofaveolata026497",NA,-5.65364796461143,NA,NA,-1.84189471866974
+"1364","Ofaveolata026505",NA,-2.70730499131596,NA,NA,-1.72766164241462
+"1365","Ofaveolata026601",NA,-4.915093366489,"RNA splicing","RNA processing and modification",-2.58749411001603
+"1366","Ofaveolata026602",NA,-2.70945229746154,NA,NA,-1.60466563617725
+"1367","Ofaveolata026617",NA,-2.43317160582206,"Protein of unknown function (DUF974)",NA,-1.34288346745862
+"1368","Ofaveolata026623",NA,1.79253044313347,NA,NA,1.24718875830682
+"1369","Ofaveolata026631",NA,-2.70488286703616,NA,NA,-1.57858778292707
+"1370","Ofaveolata026677",NA,-2.38251191780327,"Rab GTPase binding",NA,-1.17375215649659
+"1371","Ofaveolata026855",NA,1.73181174668157,"NFX1-type zinc finger-containing protein 1-like","Replication, recombination and repair",1.64976097892766
+"1372","Ofaveolata026871",NA,2.90176257946731,NA,NA,1.27162628096463
+"1373","Ofaveolata026884",NA,-1.60499415229898,"NADP-retinol dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",-1.38463673957466
+"1374","Ofaveolata026893",NA,-2.60164768823513,"dolichyl pyrophosphate Man9GlcNAc2 alpha-1,3-glucosyltransferase activity","Carbohydrate transport and metabolism",-1.47295694174605
+"1375","Ofaveolata026897",NA,-1.16907940020435,NA,NA,-1.32806256928877
+"1376","Ofaveolata026917",NA,-1.05227112403437,"proton-transporting ATP synthase activity, rotational mechanism","Energy production and conversion",-1.27691903059304
+"1377","Ofaveolata026930",NA,-1.96569280019556,"Belongs to the V-ATPase proteolipid subunit family","Energy production and conversion",-2.2561573045455
+"1378","Ofaveolata026963",NA,3.33157672889624,"glutaryl-CoA dehydrogenase","Amino acid transport and metabolism",1.35582423588661
+"1379","Ofaveolata026967",NA,1.85890576730807,"metal ion binding","Translation, ribosomal structure and biogenesis",1.09781341981147
+"1380","Ofaveolata027010",NA,-1.54398372299547,"regulation of secretory granule organization","RNA processing and modification",-1.11730702973123
+"1381","Ofaveolata027016",NA,-3.57460782577643,"Sterol-sensing domain of SREBP cleavage-activation","Lipid transport and metabolism",-1.40683936151419
+"1382","Ofaveolata027033",NA,2.30246190637875,NA,NA,1.13681566129111
+"1383","Ofaveolata027037",NA,2.01556224558401,NA,NA,1.38601666853365
+"1384","Ofaveolata027059",NA,-2.77418958387243,"glycerol ether metabolic process","Posttranslational modification, protein turnover, chaperones",-1.58461015732842
+"1385","Ofaveolata027062",NA,-6.20603469692711,"glycerol ether metabolic process","Posttranslational modification, protein turnover, chaperones",-3.49657898951047
+"1386","Ofaveolata027109",NA,6.94704252990824,NA,NA,2.54399273627335
+"1387","Ofaveolata027158",NA,-3.97017611284518,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis",-1.86385205954413
+"1388","Ofaveolata027159",NA,-3.80807703934158,"metallocarboxypeptidase activity","Translation, ribosomal structure and biogenesis",-1.63564128444931
+"1389","Ofaveolata027164",NA,-1.0262309029097,"Ras subfamily of RAS small GTPases",NA,-1.18204304295917
+"1390","Ofaveolata027181",NA,-3.14343069230054,NA,NA,-1.18449378954149
+"1391","Ofaveolata027205",NA,3.25011877222777,"DNA synthesis involved in double-strand break repair via homologous recombination","Replication, recombination and repair",1.13538137768244
+"1392","Ofaveolata027208",NA,-2.77389671627515,NA,NA,-1.62031512090924
+"1393","Ofaveolata027249",NA,-2.95717286746048,"e3 ubiquitin-protein ligase","Posttranslational modification, protein turnover, chaperones",-1.03750960877115
+"1394","Ofaveolata027252",NA,1.21925941325692,"Polysaccharide deacetylase",NA,1.14567815377411
+"1395","Ofaveolata027253",NA,4.8379696300198,NA,NA,3.28513591308471
+"1396","Ofaveolata027302",NA,-1.54303705949792,"protein-disulfide reductase (glutathione) activity",NA,-1.7627369917846
+"1397","Ofaveolata027400",NA,-1.93940053924481,NA,NA,-1.26007212136117
+"1398","Ofaveolata027439",NA,4.06467223902739,NA,NA,2.06995952356848
+"1399","Ofaveolata027442",NA,-3.044055718284,"glutamine biosynthetic process","Amino acid transport and metabolism",-1.23483862806686
+"1400","Ofaveolata027450",NA,-5.91871687872433,NA,NA,-2.49090433932081
+"1401","Ofaveolata027534",NA,3.53502791461533,"glutathione peroxidase activity","Posttranslational modification, protein turnover, chaperones",1.65651633961094
+"1402","Ofaveolata027538",NA,-4.11340169338251,NA,NA,-1.49476677096455
+"1403","Ofaveolata027545",NA,-4.93000705972413,"carbonic anhydrase","Inorganic ion transport and metabolism",-2.00024443809484
+"1404","Ofaveolata027609",NA,-4.42421492300557,"Sterol-sensing domain of SREBP cleavage-activation","Lipid transport and metabolism",-2.24885337723917
+"1405","Ofaveolata027735",NA,-2.37366771269531,"diphthine synthase activity","Translation, ribosomal structure and biogenesis",-1.58461015732842
+"1406","Ofaveolata027737",NA,-1.28624738105002,"Belongs to the enoyl-CoA hydratase isomerase family","Lipid transport and metabolism",-2.07097843531715
+"1407","Ofaveolata027747",NA,-2.29090396838678,NA,NA,-1.60256797629346
+"1408","Ofaveolata027775",NA,-3.74852897637732,"protein serine/threonine kinase activity","Signal transduction mechanisms",-1.3800642890821
+"1409","Ofaveolata027777",NA,-1.12971190775953,NA,NA,-1.17300711602518
+"1410","Ofaveolata027778",NA,-3.58822094628915,"Sel1-like repeats.","Posttranslational modification, protein turnover, chaperones",-1.91909064533295
+"1411","Ofaveolata027832",NA,-1.29307979024935,NA,NA,-2.1192228473188
+"1412","Ofaveolata027840",NA,-1.77152131380017,"16-hydroxypalmitate dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",-1.02058943994577
+"1413","Ofaveolata027889",NA,-3.04849971884651,"tachykinin receptor activity",NA,-1.57444582147371
+"1414","Ofaveolata027933",NA,2.99407357764868,NA,NA,1.3628973589545
+"1415","Ofaveolata027959",NA,-1.24428633587155,"DNA-directed RNA polymerase activity. It is involved in the biological process described with transcription, DNA-templated","Transcription",-1.49972755778729
+"1416","Ofaveolata027973",NA,-2.11815992106387,"DIRAS family, GTP-binding Ras-like",NA,-1.49686643048018
+"1417","Ofaveolata027982",NA,3.70148323274039,"Pyruvate formate lyase-like","Inorganic ion transport and metabolism",1.31603229938004
+"1418","Ofaveolata028048",NA,1.47001147125441,"calcium ion transmembrane transport","Intracellular trafficking, secretion, and vesicular transport",1.1423919883446
+"1419","Ofaveolata028098",NA,-2.05390418064831,NA,NA,-1.85384527108032
+"1420","Ofaveolata028101",NA,1.08321855373074,NA,NA,1.71624910240786
+"1421","Ofaveolata028102",NA,-1.49998108591736,NA,NA,-1.75528866103695
+"1422","Ofaveolata028109",NA,-1.15976270741049,NA,NA,-1.02821474238926
+"1423","Ofaveolata028190",NA,-4.09016814749907,"camera-type eye development","Transcription",-1.25064111862469
+"1424","Ofaveolata028201",NA,-3.05032763949766,"Insulin gene enhancer protein","Transcription",-1.36764400759523
+"1425","Ofaveolata028208",NA,-3.86593512655008,"protein transport","Intracellular trafficking, secretion, and vesicular transport",-1.6564853397214
+"1426","Ofaveolata028211",NA,2.43995165644787,NA,NA,1.01316420951449
+"1427","Ofaveolata028243",NA,6.80585741032717,"helicase activity","Chromatin structure and dynamics",2.67613432519389
+"1428","Ofaveolata028249",NA,-5.26187370432145,"myristoyl-CoA hydrolase activity","Inorganic ion transport and metabolism",-1.4968046345158
+"1429","Ofaveolata028311",NA,-4.42421492300557,"intramolecular oxidoreductase activity, transposing S-S bonds","",-1.93126122879553
+"1430","Ofaveolata028325",NA,-1.05392367279366,"ubiquitin-like protein-specific protease activity","Posttranslational modification, protein turnover, chaperones",-1.32274684337895
+"1431","Ofaveolata028410",NA,6.04892567500963,NA,NA,2.95532073948529
+"1432","Ofaveolata028467",NA,3.01306508293987,NA,NA,2.49919676029826
+"1433","Ofaveolata028471",NA,2.51602671623656,"betaine-homocysteine S-methyltransferase activity","Amino acid transport and metabolism",1.62504726209026
+"1434","Ofaveolata028550",NA,-1.00907505771094,NA,NA,-1.1423919883446
+"1435","Ofaveolata028556",NA,-2.93587735792632,NA,NA,-1.87452308634603
+"1436","Ofaveolata028571",NA,-1.14315872753585,"calcium ion binding","",-1.0131055741568
+"1437","Ofaveolata028667",NA,2.02661487077029,"negative regulation of smooth muscle cell differentiation","Transcription",1.61900049231292
+"1438","Ofaveolata028673",NA,2.64700685379065,"regulation of proteasomal ubiquitin-dependent protein catabolic process",NA,1.72977549195559
+"1439","Ofaveolata028686",NA,3.44268226584206,"Cupin-like domain","",1.40240590461849
+"1440","Ofaveolata028697",NA,-2.04265995626156,"protein N-linked glycosylation via arginine",NA,-1.84964251496263
+"1441","Ofaveolata028699",NA,-2.53559057400379,"T cell proliferation involved in immune response","Translation, ribosomal structure and biogenesis",-1.46266848945958
+"1442","Ofaveolata028744",NA,-4.51351625906351,"positive regulation of phosphorylation of RNA polymerase II C-terminal domain","Cell cycle control, cell division, chromosome partitioning",-2.27092799204097
+"1443","Ofaveolata028760",NA,-3.40776378671035,"3-hydroxyacyl-CoA dehydratase activity","Lipid transport and metabolism",-1.62504726209026
+"1444","Ofaveolata028767",NA,-4.29565020138127,"PPIases accelerate the folding of proteins. It catalyzes the cis-trans isomerization of proline imidic peptide bonds in oligopeptides","Posttranslational modification, protein turnover, chaperones",-2.50836445698654
+"1445","Ofaveolata028772",NA,-1.93946975170787,"Short calmodulin-binding motif containing conserved Ile and Gln residues.",NA,-1.56476716164502
+"1446","Ofaveolata028788",NA,-2.69273985252688,"positive regulation of rRNA processing","Intracellular trafficking, secretion, and vesicular transport",-1.2057405061332
+"1447","Ofaveolata028792",NA,-2.26083266833773,"Belongs to the universal ribosomal protein uS19 family","Translation, ribosomal structure and biogenesis",-1.32136297756505
+"1448","Ofaveolata028888",NA,-1.80808035503781,"PFAM Thioredoxin","Posttranslational modification, protein turnover, chaperones",-1.11379539219653
+"1449","Ofaveolata028889",NA,-1.70524570444595,NA,NA,-1.37678109605458
+"1450","Ofaveolata028941",NA,-2.90324297269654,NA,NA,-1.34277893717018
+"1451","Ofaveolata028945",NA,-2.36971256358092,NA,NA,-1.94879261289606
+"1452","Ofaveolata028976",NA,3.01306508293987,NA,NA,1.14600547473735
+"1453","Ofaveolata029003",NA,-2.16735857488009,NA,NA,-1.38601666853365
+"1454","Ofaveolata029009",NA,-1.72159197642964,"fatty acid beta-oxidation using acyl-CoA dehydrogenase","Energy production and conversion",-1.58391082865757
+"1455","Ofaveolata029011",NA,1.75748330193229,NA,NA,1.05625487607029
+"1456","Ofaveolata029062",NA,-3.09484777626946,"Ankyrin repeat and SOCS box","Cell wall/membrane/envelope biogenesis",-1.9310368130084
+"1457","Ofaveolata029083",NA,-3.01878886205335,"calcium, potassium:sodium antiporter activity","",-1.59190719934048
+"1458","Ofaveolata029114",NA,1.28293622179493,NA,NA,1.04419329262445
+"1459","Ofaveolata029155",NA,2.03226861861151,NA,NA,1.36121834053323
+"1460","Ofaveolata029192",NA,-5.00266142711843,"MAC/Perforin domain",NA,-1.64100836558813
+"1461","Ofaveolata029208",NA,2.04678760123635,NA,NA,1.30657141027994
+"1462","Ofaveolata029238",NA,2.26506215449423,"Threonine dehydratase","Amino acid transport and metabolism",1.33059527325064
+"1463","Ofaveolata029248",NA,-2.26474157140496,"zinc ion binding","RNA processing and modification",-1.75872547451335
+"1464","Ofaveolata029252",NA,-2.50819674584863,"Asparaginyl-tRNA synthetase","Translation, ribosomal structure and biogenesis",-1.47312708139583
+"1465","Ofaveolata029258",NA,-8.00040181404459,NA,NA,-2.40121741462312
+"1466","Ofaveolata029259",NA,1.4746681601406,NA,NA,1.51320274363178
+"1467","Ofaveolata029294",NA,2.99076547488477,"Belongs to the oxygen-dependent FAD-linked oxidoreductase family","Energy production and conversion",2.06444240944213
+"1468","Ofaveolata029295",NA,2.11464324816565,NA,NA,1.64258998281804
+"1469","Ofaveolata029365",NA,1.52129713100302,"coreceptor activity involved in Wnt signaling pathway, planar cell polarity pathway","Intracellular trafficking, secretion, and vesicular transport",1.19403636486024
+"1470","Ofaveolata029374",NA,-1.19023019240858,"The coatomer is a cytosolic protein complex that binds to dilysine motifs and reversibly associates with Golgi non- clathrin-coated vesicles, which further mediate biosynthetic protein transport from the ER, via the Golgi up to the trans Golgi network. The coatomer complex is required for budding from Golgi membranes, and is essential for the retrograde Golgi-to-ER transport of dilysine-tagged proteins","Intracellular trafficking, secretion, and vesicular transport",-1.96287346760143
+"1471","Ofaveolata029412",NA,2.35973761480949,"DUF167",NA,1.28586524485911
+"1472","Ofaveolata029422",NA,-6.74370445724032,"Thioredoxin-like domain","Posttranslational modification, protein turnover, chaperones",-2.45547491998065
+"1473","Ofaveolata029423",NA,-2.95717286746048,"miRNA binding","Posttranslational modification, protein turnover, chaperones",-1.09525144281941
+"1474","Ofaveolata029427",NA,-4.4515696775381,"Elongation factor","Translation, ribosomal structure and biogenesis",-2.08942239867716
+"1475","Ofaveolata029623",NA,3.09088832199822,"Ribosomal protein S16","Translation, ribosomal structure and biogenesis",1.3499607632165
+"1476","Ofaveolata029640",NA,1.42095505208999,"cellular response to camptothecin","Replication, recombination and repair",1.36608898576692
+"1477","Ofaveolata029656",NA,-1.22632426959714,"ribonuclease P","Translation, ribosomal structure and biogenesis",-1.49170591883972
+"1478","Ofaveolata029667",NA,-5.65364796461143,NA,NA,-1.56476716164502
+"1479","Ofaveolata029710",NA,-2.21099883868462,NA,NA,-1.27626441327478
+"1480","Ofaveolata029723",NA,-4.01336906265482,NA,NA,-1.23791155900172
+"1481","Ofaveolata029746",NA,4.83364440664993,"Tuberous sclerosis",NA,2.3492828951928
+"1482","Ofaveolata029747",NA,-3.24212117864142,"HD domain",NA,-1.34288346745862
+"1483","Ofaveolata029756",NA,-2.74978106566127,"threonine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.61386252074523
+"1484","Ofaveolata029786",NA,-6.20603469692711,"cellular zinc ion homeostasis","Inorganic ion transport and metabolism",-3.28513591308471
+"1485","Ofaveolata029791",NA,-1.00572990044883,"Modulator","Signal transduction mechanisms",-1.5297929836207
+"1486","Ofaveolata029796",NA,1.60641187867159,"protein transport","Intracellular trafficking, secretion, and vesicular transport",1.54226137008985
+"1487","Ofaveolata029820",NA,-3.55798312793938,"NAD(P)+ nucleosidase activity",NA,-1.27286738604972
+"1488","Ofaveolata029838",NA,-1.8287821059075,"organic anion transmembrane transporter activity","Transcription",-1.62038301817682
+"1489","Ofaveolata029885",NA,-1.52336652322878,NA,NA,-1.16652429977378
+"1490","Ofaveolata029893",NA,3.58344517772231,"nitric oxide synthase","Signal transduction mechanisms",1.76206266427781
+"1491","Ofaveolata029935",NA,-6.61310714008946,"poly(U) RNA binding",NA,-3.3852736553743
+"1492","Ofaveolata029937",NA,-2.38805708985171,"protein processing involved in protein targeting to mitochondrion","Posttranslational modification, protein turnover, chaperones",-1.33884750544834
+"1493","Ofaveolata029978",NA,-5.35385169990421,"SOUL heme-binding protein",NA,-2.17978957393747
+"1494","Ofaveolata029979",NA,-3.24563387557892,"RNA polymerase II subunit B1 CTD phosphatase RPAP2","Transcription",-2.06995952356848
+"1495","Ofaveolata030009",NA,-3.42614275837266,NA,NA,-2.1192228473188
+"1496","Ofaveolata030010",NA,-2.89812497825565,"Far upstream element-binding protein","RNA processing and modification",-1.52471640075543
+"1497","Ofaveolata030095",NA,-3.57492621531344,"Dienelactone hydrolase family","Secondary metabolites biosynthesis, transport and catabolism",-1.37290565126097
+"1498","Ofaveolata030136",NA,-1.02867026066043,"Ubiquitin specific peptidase 20","Posttranslational modification, protein turnover, chaperones",-1.17300711602518
+"1499","Ofaveolata030138",NA,-3.22446305874631,"Ubiquitin carboxyl-terminal hydrolase","Posttranslational modification, protein turnover, chaperones",-1.17515937802002
+"1500","Ofaveolata030201",NA,2.10297877807776,NA,NA,1.31603229938004
+"1501","Ofaveolata030220",NA,4.30562263693483,"thioesterase binding","Signal transduction mechanisms",1.67069957962865
+"1502","Ofaveolata030277",NA,-3.90041608541897,"negative regulation of DNA damage checkpoint","RNA processing and modification",-2.45547491998065
+"1503","Ofaveolata030278",NA,-3.86705330800026,"Catalyzes conversion of folates to polyglutamate derivatives allowing concentration of folate compounds in the cell and the intracellular retention of these cofactors, which are important substrates for most of the folate-dependent enzymes that are involved in one-carbon transfer reactions involved in purine, pyrimidine and amino acid synthesis","Coenzyme transport and metabolism",-1.29140553304612
+"1504","Ofaveolata030283",NA,-2.35196434618506,"negative regulation of glucocorticoid receptor signaling pathway","",-1.60835480734041
+"1505","Ofaveolata030345",NA,-2.07886510861098,NA,NA,-1.25543203519815
+"1506","Ofaveolata030362",NA,-3.5281943332078,NA,NA,-1.68512996066662
+"1507","Ofaveolata030366",NA,4.67818649088988,"procollagen galactosyltransferase activity","Posttranslational modification, protein turnover, chaperones",1.19403636486024
+"1508","Ofaveolata030373",NA,-2.10406889759021,"thyroid hormone transmembrane transporter activity","Carbohydrate transport and metabolism",-1.54151527712443
+"1509","Ofaveolata030409",NA,-3.16959929041841,"sulfiredoxin activity","Replication, recombination and repair",-1.79625215538948
+"1510","Ofaveolata030417",NA,1.03943931855876,NA,NA,1.17717939498067
+"1511","Ofaveolata030454",NA,-3.95621433432358,NA,NA,-1.62038301817682
+"1512","Ofaveolata030469",NA,4.78357494239492,"Peyer's patch morphogenesis","Signal transduction mechanisms",2.41174850675664
+"1513","Ofaveolata030493",NA,-3.19987033134308,"Formyl transferase, C-terminal domain","Nucleotide transport and metabolism",-1.49170591883972
+"1514","Ofaveolata030528",NA,-4.25498628030271,"quinone binding","Energy production and conversion",-2.99734065140288
+"1515","Ofaveolata030541",NA,-2.4797655673934,"ATPase activity, coupled to transmembrane movement of substances","Lipid transport and metabolism",-1.28487968064816
+"1516","Ofaveolata030545",NA,-1.55294253041661,"RNA-binding component of the eukaryotic translation initiation factor 3 (eIF-3) complex, which is involved in protein synthesis of a specialized repertoire of mRNAs and, together with other initiation factors, stimulates binding of mRNA and methionyl-tRNAi to the 40S ribosome. The eIF-3 complex specifically targets and initiates translation of a subset of mRNAs involved in cell proliferation. This subunit can bind 18S rRNA","Translation, ribosomal structure and biogenesis",-1.1802352758609
+"1517","Ofaveolata030565",NA,-2.05153591134416,"scavenger receptor activity","Signal transduction mechanisms",-1.25172205206064
+"1518","Ofaveolata030603",NA,-1.44776584671299,NA,NA,-1.83535049964412
+"1519","Ofaveolata030623",NA,-2.00325882808732,"RNA splicing",NA,-1.58461015732842
+"1520","Ofaveolata030646",NA,-1.47961546797019,NA,NA,-1.12507882082644
+"1521","Ofaveolata030663",NA,1.31837552846661,NA,NA,1.05118719917611
+"1522","Ofaveolata030675",NA,-1.78083484484884,NA,NA,-1.13242584281737
+"1523","Ofaveolata030676",NA,-1.33930479100153,"Dienelactone hydrolase family","Secondary metabolites biosynthesis, transport and catabolism",-1.2341559769243
+"1524","Ofaveolata030703",NA,-4.07622169786138,NA,NA,-1.34288346745862
+"1525","Ofaveolata030734",NA,2.78265499067149,NA,NA,2.66248964435651
+"1526","Ofaveolata030757",NA,2.00802035381838,NA,NA,2.99734065140288
+"1527","Ofaveolata030762",NA,-3.58710938715094,NA,NA,-1.47312708139583
+"1528","Ofaveolata030812",NA,-3.15789182354066,"lysophospholipase activity","Lipid transport and metabolism",-1.23859676332085
+"1529","Ofaveolata030882",NA,-1.74137795621818,NA,NA,-1.08963746722584
+"1530","Ofaveolata030951",NA,-2.55267261767093,"negative regulation of cell growth","Signal transduction mechanisms",-1.28993310346105
+"1531","Ofaveolata030971",NA,-1.75101040399596,"lipid catabolic process","Signal transduction mechanisms",-1.27073001311515
+"1532","Ofaveolata030973",NA,1.89790088489489,"-","",1.2703952915064
+"1533","Ofaveolata030974",NA,2.29679836275252,"Fibronectin type 3 domain","Cytoskeleton",1.2379477717941
+"1534","Ofaveolata030982",NA,2.50420736198631,NA,NA,1.02249791839076
+"1535","Ofaveolata031067",NA,-1.6336386040059,"U6 snRNA-associated Sm-like protein","RNA processing and modification",-1.18102246956403
+"1536","Ofaveolata031084",NA,-1.85416377384682,"Carboxypeptidase","Posttranslational modification, protein turnover, chaperones",-1.69418131704594
+"1537","Ofaveolata031112",NA,-4.11340169338251,"Small nuclear ribonucleoprotein","RNA processing and modification",-2.38705215438366
+"1538","Ofaveolata031172",NA,-2.63396000409074,"sequence-specific DNA binding","Transcription",-1.98470368392196
+"1539","Ofaveolata031197",NA,-3.42453857076217,"S-adenosylmethionine cycle","Coenzyme transport and metabolism",-1.68512996066662
+"1540","Ofaveolata031226",NA,4.79820830935846,NA,NA,2.75146823760465
+"1541","Ofaveolata031232",NA,1.83460716234801,NA,NA,1.26801659923462
+"1542","Ofaveolata031261",NA,-1.11678174935548,"ATP-dependent RNA helicase","RNA processing and modification",-2.02113554948449
+"1543","Ofaveolata031292",NA,-2.72108847424114,NA,NA,-1.38819161073778
+"1544","Ofaveolata031293",NA,-3.70948233564072,NA,NA,-1.70794041494324
+"1545","Ofaveolata031337",NA,1.03227288517394,NA,NA,1.8018009298902
+"1546","Ofaveolata031346",NA,-3.49090331383677,NA,NA,-1.96644116791663
+"1547","Ofaveolata031439",NA,2.90714729353018,NA,NA,1.72127966385629
+"1548","Ofaveolata031441",NA,-6.72742005969163,"Solute carrier family 35","Carbohydrate transport and metabolism",-3.14588818096709
+"1549","Ofaveolata031570",NA,3.28978632468437,NA,NA,1.14589946200268
+"1550","Ofaveolata031651",NA,-1.96569280019556,"Glutaredoxin","Posttranslational modification, protein turnover, chaperones",-1.19976859602425
+"1551","Ofaveolata031675",NA,-1.53013040686965,NA,NA,-1.49170591883972
+"1552","Ofaveolata031693",NA,-1.80568322871079,"lysosomal lumen pH elevation",NA,-1.66317726100125
+"1553","Ofaveolata031779",NA,-4.66469804739366,"BCL (B-Cell lymphoma); contains BH1, BH2 regions","Signal transduction mechanisms",-2.64545125984844
+"1554","Ofaveolata031790",NA,4.68876771512779,NA,NA,2.82109223913712
+"1555","Ofaveolata031847",NA,-1.8595275618936,"GDP-fucose import into Golgi lumen","",-1.62231472301886
+"1556","Ofaveolata031852",NA,-4.65705596187103,"spliceosomal complex assembly","Signal transduction mechanisms",-2.25287041300838
+"1557","Ofaveolata031858",NA,-1.77727719659769,"negative regulation of zinc ion transmembrane import","Inorganic ion transport and metabolism",-1.70794041494324
+"1558","Ofaveolata031893",NA,-3.5059016171846,NA,NA,-1.71684754389666
+"1559","Ofaveolata031896",NA,-3.00317535615347,"thioredoxin-disulfide reductase activity","Energy production and conversion",-1.29154783264271
+"1560","Ofaveolata031915",NA,-1.28624738105002,NA,NA,-1.15021511895981
+"1561","Ofaveolata031923",NA,2.989356222521,"metanephric glomerular basement membrane development","Extracellular structures",1.7729746967503
+"1562","Ofaveolata031939",NA,-3.17806778264734,"carnitine O-palmitoyltransferase activity","Lipid transport and metabolism",-1.53917428232321
+"1563","Ofaveolata031944",NA,-1.61304285543815,"Ribosomal protein S12/S23","Translation, ribosomal structure and biogenesis",-1.86385205954413
+"1564","Ofaveolata031953",NA,-1.12907374164009,"vacuole inheritance",NA,-1.6374141980883
+"1565","Ofaveolata031957",NA,-1.01514414804908,NA,NA,-1.3941741347578
+"1566","Ofaveolata031964",NA,-2.23478716280839,NA,NA,-1.28544084176424
+"1567","Ofaveolata031965",NA,3.64389801480664,NA,NA,1.61386252074523
+"1568","Ofaveolata032027",NA,-2.15608108910584,NA,NA,-1.84964251496263
+"1569","Ofaveolata032082",NA,-1.02919612746296,"P granule disassembly","Signal transduction mechanisms",-1.30657141027994
+"1570","Ofaveolata032083",NA,-1.58314067280219,"SCF-dependent proteasomal ubiquitin-dependent protein catabolic process",NA,-1.89536424901623
+"1571","Ofaveolata032103",NA,1.59213391274285,NA,NA,1.25267794963462
+"1572","Ofaveolata032268",NA,-3.24815605957567,"Translocon-associated protein, delta subunit precursor (TRAP-delta)","Intracellular trafficking, secretion, and vesicular transport",-1.26709462859991
+"1573","Ofaveolata032270",NA,-1.86081214146976,"acylamino-acid-releasing enzyme","Posttranslational modification, protein turnover, chaperones",-1.46459299839912
+"1574","Ofaveolata032304",NA,2.27347676390032,"Catalyzes the formation of S-adenosylmethionine from methionine and ATP","Coenzyme transport and metabolism",1.88658047413481
+"1575","Ofaveolata032312",NA,-1.85031448934899,NA,NA,-1.35180812891357
+"1576","Ofaveolata032346",NA,-4.63124489659916,NA,NA,-1.91557277172944
+"1577","Ofaveolata032347",NA,-2.98624100055717,NA,NA,-1.41669002010836
+"1578","Ofaveolata032397",NA,-3.13256863147094,NA,NA,-1.0131055741568
+"1579","Ofaveolata032440",NA,2.64062762049056,NA,NA,1.00105357471253
+"1580","Ofaveolata032458",NA,-2.41786596123678,"Belongs to the peptidase M16 family","Posttranslational modification, protein turnover, chaperones",-1.86259560942534
+"1581","Ofaveolata032460",NA,1.4784236321387,"skeletal muscle satellite cell migration","Intracellular trafficking, secretion, and vesicular transport",1.87481060028735
+"1582","Ofaveolata032470",NA,-2.60765189869535,"purine-rich negative regulatory element binding","Transcription",-1.34241517143625
+"1583","Ofaveolata032471",NA,-3.33867624408892,"purine-rich negative regulatory element binding","Transcription",-1.62077133180653
+"1584","Ofaveolata032474",NA,-3.6376421811519,NA,NA,-1.7749035390142
+"1585","Ofaveolata032487",NA,-3.09088832199822,"acyl-CoA dehydrogenase family member 9","Lipid transport and metabolism",-2.52539654956037
+"1586","Ofaveolata032503",NA,1.26695390182914,NA,NA,2.00061087166175
+"1587","Ofaveolata032519",NA,-6.16794261689306,NA,NA,-1.63245255343652
+"1588","Ofaveolata032623",NA,-3.26731676906915,NA,NA,-1.79625215538948
+"1589","Ofaveolata032644",NA,1.22904963210043,NA,NA,2.3115813262124
+"1590","Ofaveolata032657",NA,-1.45092456093688,"GTP-specific succinyl-CoA synthetase functions in the citric acid cycle (TCA), coupling the hydrolysis of succinyl-CoA to the synthesis of GTP and thus represents the only step of substrate-level phosphorylation in the TCA. The beta subunit provides nucleotide specificity of the enzyme and binds the substrate succinate, while the binding sites for coenzyme A and phosphate are found in the alpha subunit","Energy production and conversion",-1.47516939670629
+"1591","Ofaveolata032658",NA,-2.90882596310411,"26s proteasome non-ATPase regulatory subunit","Posttranslational modification, protein turnover, chaperones",-1.10676353886557
+"1592","Ofaveolata032664",NA,-2.86942276273849,"N-succinyltransferase activity","Coenzyme transport and metabolism",-1.67641026245471
+"1593","Ofaveolata032676",NA,1.51200061750353,"box H/ACA snoRNP assembly",NA,1.37679814564146
+"1594","Ofaveolata032688",NA,4.07149448404438,"Filamin C, gamma","Cytoskeleton",1.28586524485911
+"1595","Ofaveolata032702",NA,3.20869582937587,"GTPase activity",NA,1.23855416268794
+"1596","Ofaveolata032816",NA,-2.03497705873005,"Required for protein import into peroxisomes","Posttranslational modification, protein turnover, chaperones",-1.21357638531334
+"1597","Ofaveolata032820",NA,-2.83511398137661,NA,NA,-1.48400898064487
+"1598","Ofaveolata032867",NA,1.09154117310982,NA,NA,1.42055696794764
+"1599","Ofaveolata032877",NA,-2.22062683918291,"cysteine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-2.13194364779647
+"1600","Ofaveolata032908",NA,-1.74349203214586,"nucleotidyltransferase activity","",-1.75825114204827
+"1601","Ofaveolata032952",NA,-4.79505418468828,"GPCR-Autoproteolysis INducing (GAIN) domain","Signal transduction mechanisms",-1.56476716164502
+"1602","Ofaveolata032967",NA,2.76590785912766,"Histone-lysine N-methyltransferase","Intracellular trafficking, secretion, and vesicular transport",1.33884750544834
+"1603","Ofaveolata033001",NA,3.59415942890631,"Cap1 CAP, adenylate cyclase-associated protein 1","",1.665789533417
+"1604","Ofaveolata033047",NA,-1.82858877707281,"oligopeptide transmembrane transporter activity","Amino acid transport and metabolism",-1.24159104366945
+"1605","Ofaveolata033061",NA,4.85071032933053,"Belongs to the glycosyl hydrolase 31 family","Carbohydrate transport and metabolism",2.27092799204097
+"1606","Ofaveolata033076",NA,-1.55665553635851,NA,NA,-1.39671960267994
+"1607","Ofaveolata033108",NA,2.5440850657556,"kynurenine 3-monooxygenase activity","Energy production and conversion",1.1802352758609
+"1608","Ofaveolata033129",NA,-1.08131170457371,"7S RNA binding","Intracellular trafficking, secretion, and vesicular transport",-1.62504726209026
+"1609","Ofaveolata033137",NA,-3.13466239482468,"5'-3' exoribonuclease activity","",-1.62077133180653
+"1610","Ofaveolata033143",NA,-1.34022401014708,NA,NA,-1.3100901239096
+"1611","Ofaveolata033195",NA,-2.95412567094936,NA,NA,-2.29892510380663
+"1612","Ofaveolata033196",NA,-2.16406765558392,"Protein of unknown function (DUF1387)",NA,-1.12008454324728
+"1613","Ofaveolata033218",NA,1.67384572159575,NA,NA,1.19179407230996
+"1614","Ofaveolata033269",NA,3.20757305615511,"Protein max isoform X1","Transcription",1.15924048525938
+"1615","Ofaveolata033271",NA,-6.17050604086698,"phosphatase 5","Signal transduction mechanisms",-3.62502465567655
+"1616","Ofaveolata033275",NA,-5.39525229675079,NA,NA,-2.67613432519389
+"1617","Ofaveolata033300",NA,5.35209270914816,"transcription by RNA polymerase II","Transcription",1.09525144281941
+"1618","Ofaveolata033340",NA,1.97815478422266,"metal ion binding",NA,1.1112436772318
+"1619","Ofaveolata033342",NA,-4.85071032933053,NA,NA,-2.16961190356271
+"1620","Ofaveolata033567",NA,-4.65451081607277,NA,NA,-2.26901160422612
+"1621","Ofaveolata033671",NA,-3.11001661964435,"sensory perception of sound",NA,-2.24885337723917
+"1622","Ofaveolata033678",NA,-5.26187370432145,NA,NA,-1.36613514479979
+"1623","Ofaveolata033691",NA,-3.07465669363759,NA,NA,-1.37820683094854
+"1624","Ofaveolata033695",NA,-2.69289792619698,NA,NA,-1.28544084176424
+"1625","Ofaveolata033697",NA,-1.44744629796869,"polypeptide","Posttranslational modification, protein turnover, chaperones",-1.1545332327473
+"1626","Ofaveolata033730",NA,-1.64913564277685,"optic vesicle morphogenesis","Transcription",-1.14054580073963
+"1627","Ofaveolata033764",NA,2.89956134170463,"procollagen-proline 4-dioxygenase activity","Amino acid transport and metabolism",2.34426436755089
+"1628","Ofaveolata033780",NA,2.24469498719581,NA,NA,1.1410265434124
+"1629","Ofaveolata033812",NA,-4.28147213381148,NA,NA,-1.7729746967503
+"1630","Ofaveolata033816",NA,-2.46947222447672,"histidine N-acetyltransferase activity",NA,-1.58113016746938
+"1631","Ofaveolata033849",NA,1.09238629688806,NA,NA,1.10856481056057
+"1632","Ofaveolata033931",NA,-3.23658724225499,NA,NA,-1.47564525039294
+"1633","Ofaveolata033949",NA,1.827469668663,NA,NA,1.84520791667604
+"1634","Ofaveolata033981",NA,1.98119707280258,"gluconolactonase activity","",1.54731903897289
+"1635","Ofaveolata034019",NA,-2.26971288590672,NA,NA,-1.03876929209817
+"1636","Ofaveolata034020",NA,-4.16091819919654,NA,NA,-1.7729746967503
+"1637","Ofaveolata034028",NA,3.93871351625601,"protein kinase activity","Signal transduction mechanisms",1.41611360422561
+"1638","Ofaveolata034031",NA,-4.29405438173298,"protein N-linked glycosylation via asparagine","Posttranslational modification, protein turnover, chaperones",-2.19956201101133
+"1639","Ofaveolata034039",NA,2.67718430837733,NA,NA,1.51320274363178
+"1640","Ofaveolata034052",NA,-2.07967111985524,"myelination","Signal transduction mechanisms",-2.24380661131556
+"1641","Ofaveolata034086",NA,-1.57557394235733,"sn-glycerol-3-phosphate:ubiquinone-8 oxidoreductase activity","Energy production and conversion",-1.68495519682287
+"1642","Ofaveolata034095",NA,2.99076547488477,NA,NA,1.63872638929985
+"1643","Ofaveolata034108",NA,-1.49722118173012,"phosphatidylethanolamine catabolic process","Lipid transport and metabolism",-1.89544826715062
+"1644","Ofaveolata034112",NA,2.82677304003369,NA,NA,1.1410265434124
+"1645","Ofaveolata034170",NA,-2.92180632441557,"NADP-retinol dehydrogenase activity","Secondary metabolites biosynthesis, transport and catabolism",-1.67184034190907
+"1646","Ofaveolata034244",NA,-6.61310714008946,"ATPase activity, coupled to transmembrane movement of substances","Lipid transport and metabolism",-2.61135356558331
+"1647","Ofaveolata034248",NA,1.51072477635556,"COG1231 Monoamine oxidase","Amino acid transport and metabolism",1.64258998281804
+"1648","Ofaveolata034261",NA,-1.45513664834005,"YLP motif-containing protein 1","Transcription",-1.0155706996597
+"1649","Ofaveolata034291",NA,-2.6064277921347,"translation activator activity","Translation, ribosomal structure and biogenesis",-1.86385205954413
+"1650","Ofaveolata034292",NA,-2.88775186268374,"regulation of acid-sensing ion channel activity","Energy production and conversion",-1.73742214311504
+"1651","Ofaveolata034310",NA,3.05890785111839,"Homeodomain","Transcription",1.81370907734949
+"1652","Ofaveolata034315",NA,-1.68098936110094,"Arp2/3 complex-mediated actin nucleation","Cytoskeleton",-1.84599818899251
+"1653","Ofaveolata034382",NA,1.27277776001337,"protein polyglutamylation",NA,1.13340716116692
+"1654","Ofaveolata034385",NA,-1.36510194103146,"medium-chain-acyl-CoA dehydrogenase activity","Lipid transport and metabolism",-1.83938047548548
+"1655","Ofaveolata034386",NA,-3.90538320970746,"Component of the BLOC-1 complex, a complex that is required for normal biogenesis of lysosome-related organelles (LRO), such as platelet dense granules and melanosomes. In concert with the AP-3 complex, the BLOC-1 complex is required to target membrane protein cargos into vesicles assembled at cell bodies for delivery into neurites and nerve terminals. The BLOC-1 complex, in association with SNARE proteins, is also proposed to be involved in neurite extension. Plays a role in intracellular vesicle trafficking and synaptic vesicle recycling",NA,-2.13253477138014
+"1656","Ofaveolata034394",NA,2.68528316950219,NA,NA,1.37861356712774
+"1657","Ofaveolata034398",NA,2.19187803010648,NA,NA,1.16557790216611
+"1658","Ofaveolata034414",NA,-2.68349579284867,"DNA binding","Transcription",-1.17375215649659
+"1659","Ofaveolata034416",NA,-1.83341581664279,"structural constituent of ribosome","Translation, ribosomal structure and biogenesis",-1.03750960877115
+"1660","Ofaveolata034548",NA,1.1037067923389,NA,NA,1.35079000968075
+"1661","Ofaveolata034655",NA,3.00999998916846,NA,NA,1.96644116791663
+"1662","Ofaveolata034704",NA,-1.8014298503219,NA,NA,-1.2531210431009
+"1663","Ofaveolata034718",NA,1.76293618909483,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.09529951518134
+"1664","Ofaveolata034724",NA,2.44357223492213,NA,NA,1.00334137800359
+"1665","Ofaveolata034736",NA,1.26706577849975,"multicellular organism development","Carbohydrate transport and metabolism",1.13112712769574
+"1666","Ofaveolata034812",NA,-3.22375509998705,"arachidonic acid secretion","Lipid transport and metabolism",-1.59567267019644
+"1667","Ofaveolata034823",NA,1.33148764047866,"Reverse transcriptase (RNA-dependent DNA polymerase)",NA,1.42493500903076
+"1668","Ofaveolata034835",NA,-3.73564330404144,"mesenchymal-epithelial cell signaling involved in prostate gland development","Signal transduction mechanisms",-1.20280691855162
+"1669","Ofaveolata034839",NA,-3.56236876445125,"chitin binding","Cell cycle control, cell division, chromosome partitioning",-1.25965388554939
+"1670","Ofaveolata034847",NA,1.4996773344346,NA,NA,1.44641515471378
+"1671","Ofaveolata034857",NA,-1.43019299855218,"hydrolase activity, acting on ester bonds","Lipid transport and metabolism",-1.9401703748027
+"1672","Ofaveolata034859",NA,2.40704460992764,NA,NA,1.34277893717018
+"1673","Ofaveolata034861",NA,2.93431477958758,NA,NA,1.60117430225819
+"1674","Ofaveolata034862",NA,1.79008756045989,"K02A2.6-like","Carbohydrate transport and metabolism",1.02781887315618
+"1675","Ofaveolata034884",NA,2.69784713775063,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.67976782050018
+"1676","Ofaveolata034897",NA,1.29995362072397,NA,NA,1.25794851706097
+"1677","Ofaveolata034947",NA,1.55584894278053,"ubiquitin protein ligase binding",NA,1.36067081051567
+"1678","Ofaveolata034950",NA,2.39957882499973,"ubiquitin protein ligase binding",NA,1.15606585015445
+"1679","Ofaveolata034996",NA,-1.3394085190369,NA,NA,-1.0586566074522
+"1680","Ofaveolata035042",NA,-4.71177715993125,NA,NA,-2.16961190356271
+"1681","Ofaveolata035073",NA,1.28985044467788,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.10096496458302
+"1682","Ofaveolata035074",NA,2.9582298674176,NA,NA,1.94913964240583
+"1683","Ofaveolata035079",NA,3.77486261936614,NA,NA,1.76206266427781
+"1684","Ofaveolata035121",NA,-4.97573027954762,"7 transmembrane receptor (rhodopsin family)","Signal transduction mechanisms",-1.51817939755091
+"1685","Ofaveolata035148",NA,-1.58219184152187,NA,NA,-1.06172371875352
+"1686","Ofaveolata035180",NA,4.01336906265482,NA,NA,1.56476716164502
+"1687","Ofaveolata035186",NA,2.69271952367488,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.29154783264271
+"1688","Ofaveolata035202",NA,1.11981239225809,NA,NA,1.42481586924419
+"1689","Ofaveolata035205",NA,1.35158706282922,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.07017687132173
+"1690","Ofaveolata035221",NA,2.18699931681528,NA,NA,1.14842972105789
+"1691","Ofaveolata035224",NA,1.65378556008553,"protein kinase activity","Signal transduction mechanisms",1.28978564056027
+"1692","Ofaveolata035255",NA,1.70557807744778,NA,NA,1.53206961759167
+"1693","Ofaveolata035261",NA,4.83364440664993,NA,NA,1.06320281995081
+"1694","Ofaveolata035272",NA,-1.69944056644167,"sulfuric ester hydrolase activity","Inorganic ion transport and metabolism",-1.37820683094854
+"1695","Ofaveolata035306",NA,2.37679958173984,NA,NA,1.3628973589545
+"1696","Ofaveolata035328",NA,1.7554116870458,"G-protein coupled receptor activity","Posttranslational modification, protein turnover, chaperones",1.48400898064487
+"1697","Ofaveolata035376",NA,1.98897085108294,NA,NA,1.22403670352785
+"1698","Ofaveolata035422",NA,2.04696146323868,NA,NA,1.34285495631933
+"1699","Ofaveolata035480",NA,3.68866366059399,NA,NA,1.77836651674658
+"1700","Ofaveolata035563",NA,3.14461930799069,NA,NA,1.3260363684562
+"1701","Ofaveolata035574",NA,-4.29565020138127,NA,NA,-1.15836913276792
+"1702","Ofaveolata035638",NA,-5.69972448871977,"serine-type endopeptidase activity","Posttranslational modification, protein turnover, chaperones",-1.71135402235596
+"1703","Ofaveolata035665",NA,1.38890547095541,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.03402371184373
+"1704","Ofaveolata035706",NA,-4.45851779760806,NA,NA,-2.18477074648348
+"1705","Ofaveolata035707",NA,2.69489083979789,"endopeptidase inhibitor activity","Translation, ribosomal structure and biogenesis",1.4217042191689
+"1706","Ofaveolata035717",NA,-1.61490314372234,NA,NA,-1.44669420377697
+"1707","Ofaveolata035744",NA,-3.56821352017271,"Domain of unknown function (DUF4419)",NA,-1.56411815205736
+"1708","Ofaveolata035745",NA,-2.18831470629074,"Domain of unknown function (DUF4419)",NA,-1.19774375802129
+"1709","Ofaveolata035748",NA,2.00430141773226,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",1.16557790216611
+"1710","Ofaveolata035788",NA,1.82229052028058,NA,NA,1.0586566074522
+"1711","Ofaveolata035790",NA,-1.95477541026495,"Belongs to the small heat shock protein (HSP20) family","Posttranslational modification, protein turnover, chaperones",-1.03750960877115
+"1712","Ofaveolata035791",NA,-3.06129833465372,"Belongs to the small heat shock protein (HSP20) family","Posttranslational modification, protein turnover, chaperones",-1.61386252074523
+"1713","Ofaveolata035793",NA,-3.01368212471187,"Belongs to the small heat shock protein (HSP20) family","Posttranslational modification, protein turnover, chaperones",-1.76924584337824
+"1714","Ofaveolata035842",NA,3.53170364669577,NA,NA,2.66023304188133
+"1715","Ofaveolata035867",NA,2.41943505424711,"N-acetyl-alpha-D-glucosaminyl L-malate synthase","Cell wall/membrane/envelope biogenesis",1.58987722668748
+"1716","Ofaveolata035874",NA,4.2711312756847,"N-acetyl-alpha-D-glucosaminyl L-malate synthase","Cell wall/membrane/envelope biogenesis",1.55631632868859
+"1717","Ofaveolata035928",NA,4.25884578831129,NA,NA,2.78935914856746
+"1718","Ofaveolata035974",NA,-1.02971004658438,"regulation of mitotic cell cycle","Posttranslational modification, protein turnover, chaperones",-1.17267506073262
+"1719","Ofaveolata035993",NA,3.07764004268193,NA,NA,1.71480900446625
+"1720","Ofaveolata036008",NA,-7.03085430248481,NA,NA,-2.66248964435651
+"1721","Ofaveolata036087",NA,-2.34724201371017,"Transferase activity, transferring acyl groups other than amino-acyl groups","Lipid transport and metabolism",-1.66765459524605
+"1722","Ofaveolata036102",NA,-3.56014875564267,"Belongs to the helicase family. RecQ subfamily","Replication, recombination and repair",-1.22838031311569
+"1723","Ofaveolata036135",NA,3.77007683376004,NA,NA,1.73049123438109
+"1724","Ofaveolata036180",NA,-2.26292742013361,NA,NA,-1.28891742756618
+"1725","Ofaveolata036184",NA,1.30079312412748,NA,NA,1.4070653451396
+"1726","Ofaveolata036204",NA,-2.72394374946563,"serine-type endopeptidase inhibitor activity","",-1.62504726209026
+"1727","Ofaveolata036205",NA,-3.67014826542372,"serine-type endopeptidase inhibitor activity","",-1.41684728320405
+"1728","Ofaveolata036250",NA,1.48455202306509,NA,NA,1.11266397783949
+"1729","Ofaveolata036256",NA,3.56919609809228,"Belongs to the helicase family","Replication, recombination and repair",1.75872547451335
+"1730","Ofaveolata036274",NA,2.48079696835149,NA,NA,1.61386252074523
+"1731","Ofaveolata036380",NA,2.42970311657874,NA,NA,1.32599466076779
+"1732","Ofaveolata036436",NA,2.87931657832187,"Reverse transcriptase (RNA-dependent DNA polymerase)","Carbohydrate transport and metabolism",1.4070653451396
+"1733","Ofaveolata036465",NA,-1.67717390152342,"meiotic spindle elongation","Signal transduction mechanisms",-1.55594318063393
+"1734","Ofaveolata036522",NA,1.33584553759981,NA,NA,1.0159678116235
+"1735","Ofaveolata036553",NA,-3.22321179982319,NA,NA,-1.26849937610376
+"1736","Ofaveolata036565",NA,1.13217816993951,NA,NA,1.98696392784727
+"1737","Ofaveolata036568",NA,-2.2596543292897,NA,NA,-1.26227149555695
+"1738","Ofaveolata036569",NA,-2.09450950513708,"Belongs to the glycosyl hydrolase 18 family","Carbohydrate transport and metabolism",-1.30782450095726

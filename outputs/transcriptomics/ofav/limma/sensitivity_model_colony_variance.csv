@@ -1,0 +1,17 @@
+"contrast","gene_set","genes","median_colony_variance_share"
+"LC_CC","all_genes",19855,0.309
+"LC_CC","both",358,0.135
+"LC_CC","dream_only",39,0.558
+"LC_CC","limma_only",177,0.107
+"CH_CC","all_genes",19855,0.309
+"CH_CC","both",3426,0.201
+"CH_CC","dream_only",340,0.643
+"CH_CC","limma_only",301,0.147
+"urban_reef","all_genes",19855,0.309
+"urban_reef","both",44,0.133
+"urban_reef","dream_only",0,NA
+"urban_reef","limma_only",475,0.457
+"MacN_reef","all_genes",19855,0.309
+"MacN_reef","both",508,0.275
+"MacN_reef","dream_only",46,0.027
+"MacN_reef","limma_only",1051,0.523

@@ -1,0 +1,4 @@
+"contrast","genes_tested","urban_reef_DEGs","contrast_DEGs","overlap","expected","odds_ratio","p","same_direction"
+"LC_CC",20643,1,2206,0,0.1,0,1,NA
+"CH_CC",20643,1,3386,1,0.2,Inf,0.164,1
+"LH_CC",20643,1,3311,1,0.2,Inf,0.16,1

@@ -1,0 +1,7 @@
+"contrast","dream_DEGs","DESeq2_DEGs","DESeq2_DEGs_in_dream_gene_set","shared","shared_same_direction","logFC_r"
+"LC_CC",397,619,616,344,344,0.954
+"CH_CC",3766,3730,3582,3235,3235,0.976
+"LH_CC",1914,2252,2215,1680,1680,0.967
+"CH_LC",2779,2817,2729,2433,2433,0.978
+"LH_CH",0,19,18,0,0,0.945
+"LH_LC",1402,1678,1656,1321,1321,0.978

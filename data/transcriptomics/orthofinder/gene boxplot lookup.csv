@@ -512,3 +512,115 @@
 "OG0013205","","","high mobility group","high mobility group"
 "OG0013207","","","Regulatory subunit of the condensin complex, a complex required for conversion of interphase chromatin into mitotic-like condense chromosomes","Regulatory subunit of the condensin complex, a complex required for conversion of interphase chromatin into mitotic-like condense chromosomes"
 "OG0013254","","","Enoyl-CoA hydratase/isomerase","Enoyl-CoA hydratase/isomerase"
+OG0000034,,,"transposition, RNA-mediated",Ribonuclease H protein
+OG0000040,,,NA,cellular response to cell-matrix adhesion
+OG0000074,,,NA,NA
+OG0000162,,,protein kinase activity,Protein tyrosine kinase
+OG0000163,,,NA,NA
+OG0000359,,,ATP binding. It is involved in the biological process described with protein phosphorylation,fibroblast growth factor-activated receptor activity
+OG0000435,,,Chondroitin sulfate synthase,Chondroitin sulfate synthase
+OG0000540,,,acid phosphatase activity,acid phosphatase activity
+OG0000580,,,Belongs to the peptidase C14A family,Belongs to the peptidase C14A family
+OG0000592,,,PLAC8 family,Placenta-specific gene 8 protein-like
+OG0000599,,,NFX1-type zinc finger-containing protein,NFX1-type zinc finger-containing protein
+OG0000607,,,NA,Growth factor receptor domain IV
+OG0000627,,,NA,store-operated calcium channel activity
+OG0000720,,,calcium ion transport,calcium ion transport
+OG0000761,,,NA,adenylate cyclase-inhibiting G-protein coupled glutamate receptor signaling pathway
+OG0001035,,,ammonium transmembrane transporter activity,ammonium transmembrane transporter activity
+OG0001045,,,intracellular cholesterol transport,intracellular cholesterol transport
+OG0001056,,,NA,von Willebrand factor D and EGF
+OG0001357,,,Belongs to the peptidase S1 family,Belongs to the peptidase S1 family
+OG0001383,,,zinc ion binding,zinc ion binding
+OG0001471,,,DOMON domain-containing protein,Ferric-chelate reductase
+OG0001476,,,iron ion binding,monooxygenase activity
+OG0001533,,,cytochrome P450,Cytochrome P450
+OG0001570,,,coagulation factor V,coagulation factor V
+OG0001684,,,gamma-aminobutyric acid:sodium symporter activity,gamma-aminobutyric acid:sodium symporter activity
+OG0001800,,,monooxygenase activity,monooxygenase activity
+OG0002101,,,vascular endothelial growth factor receptor-2 signaling pathway,vascular endothelial growth factor receptor-2 signaling pathway
+OG0002353,,,regulation of NAD+ ADP-ribosyltransferase activity,Macro domain
+OG0002356,Oxidative stress/antioxidants,Thioredoxin reductase,thioredoxin-disulfide reductase activity,thioredoxin-disulfide reductase activity
+OG0002458,,,NA,Ankyrin repeat
+OG0002482,,,Amino acid kinase family,Amino acid kinase family
+OG0002665,,,NA,Neural cell adhesion molecule
+OG0002715,,,peptidase inhibitor activity,peptidase inhibitor activity
+OG0002733,Ubiquitin-proteasome,E3 ubiquitin ligase,NA,E3 ubiquitin protein ligase 4
+OG0002760,,,serum response element binding,serum response element binding
+OG0002770,,,NA,tachykinin receptor activity
+OG0002863,,,RNA-directed 5'-3' RNA polymerase activity,AAA domain
+OG0002914,Oxidative stress/antioxidants,NADPH oxidase activator,NA,superoxide-generating NADPH oxidase activator activity
+OG0002916,,,negative regulation of histone acetylation,negative regulation of histone acetylation
+OG0002980,,,Ankyrin repeats (many copies),Ankyrin repeats (many copies)
+OG0003190,,,leucine rich repeat containing 6,leucine rich repeat containing 6
+OG0003232,Immune response,AIG1 (GIMAP) GTPase,AIG1 family,AIG1 family
+OG0003268,,,Fumarylacetoacetate (FAA) hydrolase family,acylpyruvate hydrolase activity
+OG0003650,,,acetyl-CoA metabolic process,acetyl-CoA metabolic process
+OG0003751,,,"DNA binding. It is involved in the biological process described with regulation of transcription, DNA-templated","DNA binding. It is involved in the biological process described with regulation of transcription, DNA-templated"
+OG0003767,,,peptidyl-prolyl,peptidyl-prolyl
+OG0003792,,,smoothened signaling pathway involved in regulation of secondary heart field cardioblast proliferation,smoothened signaling pathway involved in regulation of secondary heart field cardioblast proliferation
+OG0004022,,,Calponin homology domain,regulation of membrane repolarization during atrial cardiac muscle cell action potential
+OG0004152,,,"Glycosyl hydrolase family 20, catalytic domain","Glycosyl hydrolase family 20, catalytic domain"
+OG0004157,,,lens induction in camera-type eye,lens induction in camera-type eye
+OG0004300,,,adenosine kinase activity,adenosine kinase activity
+OG0004416,,,NADH dehydrogenase (ubiquinone) 1 alpha subcomplex,NADH dehydrogenase (ubiquinone) 1 alpha subcomplex
+OG0004489,,,protein phosphatase inhibitor activity,protein phosphatase inhibitor activity
+OG0004546,,,NA,Hemicentin 1
+OG0004608,,,ciliary basal body organization,Rootletin
+OG0004661,,,ATP-dependent chromatin remodeling,ATP-dependent chromatin remodeling
+OG0004762,,,actin filament polymerization,actin filament polymerization
+OG0004830,,,"spectrin, beta","spectrin, beta"
+OG0005204,,,adenylate cyclase-activating G-protein coupled receptor signaling pathway,Belongs to the G-protein coupled receptor 2 family
+OG0005340,,,Leucine rich repeat containing 43,Leucine rich repeat containing 43
+OG0005436,,,URB1 ribosome biogenesis 1 homolog (S. cerevisiae),URB1 ribosome biogenesis 1 homolog (S. cerevisiae)
+OG0005979,,,box H/ACA snoRNP assembly,box H/ACA snoRNP assembly
+OG0006152,,,steroid binding,steroid binding
+OG0006169,Immune response,Lactose-binding lectin,Lactose-binding lectin l-2-like,structural constituent of cell wall
+OG0006537,,,Galactose-3-O-sulfotransferase,Galactose-3-O-sulfotransferase
+OG0006639,Oxidative stress/antioxidants,Protein disulfide oxidoreductase,protein disulfide oxidoreductase activity. It is involved in the biological process described with,"over those bearing complex type oligosaccharides. Can recognize misfolded proteins in the endoplasmic reticulum that are exported to the cytosol to be destroyed and deglycosylate them, while it has no activity toward native proteins. Deglycosylation is a prerequisite for subsequent proteasome-mediated degradation of some, but not all, misfolded glycoproteins. Also displays oxidoreductase (thioredoxin) activity"
+OG0006732,Ubiquitin-proteasome,LONRF (RING finger) 2,NA,LON peptidase N-terminal domain and RING finger
+OG0006824,,,Ankyrin repeats (many copies),Ankyrin repeats (many copies)
+OG0006827,,,phenylalanyl-tRNA aminoacylation,phenylalanyl-tRNA aminoacylation
+OG0007115,,,metal ion binding,RNA splicing
+OG0007165,,,RNA polymerase II subunit B1 CTD phosphatase RPAP2,RNA polymerase II subunit B1 CTD phosphatase
+OG0007383,,,NMDA glutamate receptor activity,NMDA glutamate receptor activity
+OG0007657,,,transmembrane transport,transmembrane transport
+OG0007659,,,TeTratriCopeptide repeat,TeTratriCopeptide repeat
+OG0008265,,,Src homology 3 domains,Src homology 3 domains
+OG0008437,,,N(6)-L-threonylcarbamoyladenine synthase activity,N(6)-L-threonylcarbamoyladenine synthase activity
+OG0008555,Ubiquitin-proteasome,LONRF (RING finger) 3,LON peptidase N-terminal domain and RING finger,LON peptidase N-terminal domain and RING finger
+OG0008581,,,Uncharacterized conserved protein (DUF2358),Uncharacterized conserved protein (DUF2358)
+OG0008722,,,methylmalonyl-CoA mutase activity,methylmalonyl-CoA mutase activity
+OG0008813,,,tetratricopeptide repeat protein 14,tetratricopeptide repeat
+OG0008908,,,TELO2-interacting protein 1 homolog,TELO2-interacting protein 1 homolog
+OG0009016,,,L-fucose kinase,L-fucose kinase
+OG0009161,,,PHD finger protein 14,PHD-zinc-finger like domain
+OG0009360,,,peptidase inhibitor activity,peptidase inhibitor activity
+OG0009490,,,phytanoyl-CoA dioxygenase activity,phytanoyl-CoA dioxygenase activity
+OG0009526,,,ER to Golgi vesicle-mediated transport,ER to Golgi vesicle-mediated transport
+OG0009651,Ubiquitin-proteasome,Protein ubiquitination,protein ubiquitination,protein ubiquitination
+OG0009653,,,serine-type endopeptidase activity,serine-type endopeptidase activity
+OG0009656,Oxidative stress/antioxidants,Oxidative stress resistance (TLDc),TBC LysM-associated domain containing 1,negative regulation of oxidative stress-induced neuron death
+OG0009662,,,Far upstream element-binding protein,Far upstream element-binding protein
+OG0009753,,,N-box binding,Transcription factor
+OG0009918,,,dolichyl-diphosphooligosaccharide-protein glycotransferase activity,dolichyl-diphosphooligosaccharide-protein glycotransferase activity
+OG0010027,,,cellular iron ion homeostasis,cellular iron ion homeostasis
+OG0010154,,,Electron transfer flavoprotein subunit,Electron transfer flavoprotein subunit
+OG0010164,DNA repair,Flap endonuclease,3'-flap endonuclease activity,3'-flap endonuclease activity
+OG0010210,,,H2A histone acetyltransferase activity,H2A histone acetyltransferase activity
+OG0010374,,,sulfuric ester hydrolase activity,sulfuric ester hydrolase activity
+OG0010614,,,NA,collagen
+OG0010681,,,RNA pseudouridylate synthase,RNA pseudouridylate synthase
+OG0010724,,,positive regulation of Golgi to plasma membrane protein transport,positive regulation of Golgi to plasma membrane protein transport
+OG0010783,,,threonine-type endopeptidase activity,threonine-type endopeptidase activity
+OG0010896,,,sphingolipid transporter activity,sphingolipid transporter activity
+OG0011293,,,cellular copper ion homeostasis,cellular copper ion homeostasis
+OG0011307,Apoptosis/cell death,BNIP (Bcl-2/E1B-interacting),Bcl-2 adenovirus E1B,Bcl-2 adenovirus E1B
+OG0011480,,,"Mitochondrial membrane ATP synthase (F(1)F(0) ATP synthase or Complex V) produces ATP from ADP in the presence of a proton gradient across the membrane which is generated by electron transport complexes of the respiratory chain. F-type ATPases consist of two structural domains, F(1) - containing the extramembraneous catalytic core and F(0) - containing the membrane proton channel, linked together by a central stalk and a peripheral stalk. During catalysis, ATP synthesis in the catalytic domain of F(1) is coupled via a rotary mechanism of the central stalk subunits to proton translocation. Part of the complex F(0) domain and the peripheric stalk, which acts as a stator to hold the catalytic alpha(3)beta(3) subcomplex and subunit a ATP6 static relative to the rotary elements","Mitochondrial membrane ATP synthase (F(1)F(0) ATP synthase or Complex V) produces ATP from ADP in the presence of a proton gradient across the membrane which is generated by electron transport complexes of the respiratory chain. F-type ATPases consist of two structural domains, F(1) - containing the extramembraneous catalytic core and F(0) - containing the membrane proton channel, linked together by a central stalk and a peripheral stalk. During catalysis, ATP synthesis in the catalytic domain of F(1) is coupled via a rotary mechanism of the central stalk subunits to proton translocation. Part of the complex F(0) domain and the peripheric stalk, which acts as a stator to hold the catalytic alpha(3)beta(3) subcomplex and subunit a ATP6 static relative to the rotary elements"
+OG0011824,,,Cryptochrome circadian clock 1ba,Cryptochrome circadian clock
+OG0011875,,,Catalyzes the formation of N(7)-methylguanine at position 46 (m7G46) in tRNA,Catalyzes the formation of N(7)-methylguanine at position 46 (m7G46) in tRNA
+OG0011995,,,NA,zinc ion binding
+OG0012240,,,"posttranslational protein targeting to membrane, translocation","posttranslational protein targeting to membrane, translocation"
+OG0012267,,,hair follicle maturation,hair follicle maturation
+OG0012378,DNA repair,DNA damage checkpoint regulator,negative regulation of DNA damage checkpoint,negative regulation of DNA damage checkpoint
+OG0012573,Ubiquitin-proteasome,Ubiquitin C-terminal hydrolase,Ubiquitin carboxyl-terminal hydrolase,Ubiquitin carboxyl-terminal hydrolase

@@ -1,5 +1,0 @@
-"gene_set","genes","frac_cohort_p05","median_abs_cohort_LFC","cohort_DEGs"
-"all_genes",29905,0.125,0.431,2281
-"LH_CC_both",1841,0.11,0.313,85
-"LH_CC_pooled_only",2554,0.087,0.289,97
-"LH_CC_first_only",411,0.528,0.705,135

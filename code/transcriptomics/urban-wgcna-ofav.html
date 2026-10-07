@@ -11,7 +11,7 @@
 
 <meta name="author" content="Michael Studivan" />
 
-<meta name="date" content="2026-10-02" />
+<meta name="date" content="2026-10-06" />
 
 <title>O. faveolata Coexpression Networks — WGCNA</title>
 
@@ -1588,7 +1588,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">O. faveolata Coexpression Networks —
 WGCNA</h1>
 <h4 class="author">Michael Studivan</h4>
-<h4 class="date">2026-10-02</h4>
+<h4 class="date">2026-10-06</h4>
 
 </div>
 
@@ -1615,8 +1615,8 @@ allowWGCNAThreads() # ?WGCNA</code></pre>
 </div>
 <div id="data-import-and-traits" class="section level1">
 <h1>DATA IMPORT and TRAITS</h1>
-<pre class="r"><code># importing data generated from DESeq2 script
-lnames=load(&quot;../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData&quot;)
+<pre class="r"><code># importing data generated from the limma script
+lnames=load(&quot;../../outputs/transcriptomics/ofav/limma/data4wgcna.RData&quot;)
 lnames # &quot;vsd.wg&quot;  &quot;design&quot; # log-transformed variance-stabilized gene expression, and table or experimental conditions</code></pre>
 <pre><code>## [1] &quot;vsd.wg&quot; &quot;design&quot;</code></pre>
 <pre class="r"><code>datt=t(vsd.wg)
@@ -1673,7 +1673,7 @@ library(dplyr)
 stopifnot(identical(sub(&quot;\\..*$&quot;, &quot;&quot;, rownames(datt)), as.character(design$id))) # expression rows and design rows aligned
 
 # fragments removed from the survivorship analysis (non-empty `exclude`); their samples are removed upstream in
-# the DESeq2 script, and any that remain get NA for all measured traits
+# the limma script, and any that remain get NA for all measured traits
 surv_raw &lt;- read.csv(&quot;../../data/survivorship/urban survivorship.csv&quot;, head=TRUE)
 surv_excluded &lt;- unique(surv_raw$sample[!is.na(surv_raw$exclude) &amp; surv_raw$exclude != &quot;&quot;])
 excl_samples &lt;- design$id[design$sampleid %in% surv_excluded]
@@ -2251,6 +2251,7 @@ save(moduleTraitCor, moduleTraitPvalue, sig_by_trait, sig_modules, urban_modules
 <h1>URBAN MODULES AT COLONY LEVEL</h1>
 <pre class="r"><code># module-trait correlations above treat fragments as independent; urban vs reef differs only between parent colonies,
 # so habitat associations are re-tested with colony as the replicate (treatment effects removed, fragments averaged per colony)
+# using the site model (overall site test and the planned urban vs reef contrast)
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData&quot;)
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData&quot;)
 MEs = orderMEs(moduleEigengenes(datt, moduleColors)$eigengenes)
@@ -2269,29 +2270,51 @@ table(colony_urban) # colonies per habitat (0 = reef, 1 = urban)</code></pre>
 <pre><code>## colony_urban
 ##  0  1 
 ## 10 11</code></pre>
-<pre class="r"><code>urban_colony = t(apply(colony_MEs, 2, function(y) {
-  ct = cor.test(y, colony_urban); c(r = unname(ct$estimate), p = ct$p.value) }))
+<pre class="r"><code># site of each colony (second part of the sample names in datt, e.g. Ofav_001.Emerald.CC)
+colony_site = factor(tapply(sapply(strsplit(rownames(datt), &quot;.&quot;, fixed = TRUE), `[`, 2), colony, `[`, 1),
+                     levels = c(&quot;Emerald&quot;, &quot;Rainbow&quot;, &quot;Star&quot;, &quot;MacN&quot;))
+stopifnot(!anyNA(colony_site), identical(names(colony_urban), rownames(colony_MEs)),
+          all((colony_site %in% c(&quot;Star&quot;, &quot;MacN&quot;)) == (colony_urban == 1)))
+table(colony_site) # colonies per site</code></pre>
+<pre><code>## colony_site
+## Emerald Rainbow    Star    MacN 
+##       5       5       5       6</code></pre>
+<pre class="r"><code># same structure as the physiology and differential expression models: site (four levels) as the factor, with the
+# overall site test (F) and urban vs reef as the planned contrast (Star + MacN)/2 - (Emerald + Rainbow)/2
+site_contrast = function(y) {
+  fit = lm(y ~ 0 + colony_site)
+  L = c(-0.5, -0.5, 0.5, 0.5)
+  est = sum(L * coef(fit)); se = sqrt(drop(t(L) %*% vcov(fit) %*% L)); tval = est / se
+  a = anova(lm(y ~ colony_site))
+  c(site_F = a$`F value`[1], site_p = a$`Pr(&gt;F)`[1], urban_reef = est, t = tval, df = fit$df.residual,
+    p = 2 * pt(-abs(tval), fit$df.residual))
+}
+urban_colony = t(apply(colony_MEs, 2, site_contrast))
 # Benjamini-Hochberg adjustment across modules (grey, unassigned genes, not included)
 is_module = rownames(urban_colony) != &quot;MEgrey&quot;
-p_BH = rep(NA, nrow(urban_colony))
+p_BH = site_p_BH = rep(NA, nrow(urban_colony))
 p_BH[is_module] = p.adjust(urban_colony[is_module, &quot;p&quot;], method = &quot;BH&quot;)
-urban_colony = data.frame(r = round(urban_colony[, &quot;r&quot;], 2), p = signif(urban_colony[, &quot;p&quot;], 2), p_BH = signif(p_BH, 2),
+site_p_BH[is_module] = p.adjust(urban_colony[is_module, &quot;site_p&quot;], method = &quot;BH&quot;)
+urban_colony = data.frame(site_F = round(urban_colony[, &quot;site_F&quot;], 2), site_p = signif(urban_colony[, &quot;site_p&quot;], 2),
+                          site_p_BH = signif(site_p_BH, 2),
+                          urban_reef = signif(urban_colony[, &quot;urban_reef&quot;], 3), t = round(urban_colony[, &quot;t&quot;], 2),
+                          df = urban_colony[, &quot;df&quot;], p = signif(urban_colony[, &quot;p&quot;], 2), p_BH = signif(p_BH, 2),
                           row.names = rownames(urban_colony))
 urban_colony</code></pre>
-<pre><code>##                     r      p  p_BH
-## MEdarkturquoise  0.07 0.7800 0.820
-## MEblue          -0.15 0.5300 0.690
-## MEmagenta       -0.45 0.0410 0.180
-## MEblack         -0.39 0.0780 0.200
-## MEred           -0.56 0.0084 0.055
-## MEdarkred       -0.13 0.5900 0.690
-## MEtan           -0.05 0.8200 0.820
-## MElightgreen    -0.41 0.0660 0.200
-## MEmidnightblue  -0.28 0.2200 0.470
-## MEpurple        -0.13 0.5900 0.690
-## MEgrey60         0.62 0.0025 0.032
-## MEbrown          0.21 0.3600 0.670
-## MEgreen          0.19 0.4200 0.680</code></pre>
+<pre><code>##                 site_F site_p site_p_BH urban_reef     t df      p  p_BH
+## MEdarkturquoise   0.08 0.9700     0.970     0.0149  0.26 17 0.7900 0.800
+## MEblue            0.40 0.7500     0.890    -0.0358 -0.61 17 0.5500 0.700
+## MEmagenta         2.93 0.0630     0.210    -0.1160 -2.16 17 0.0450 0.150
+## MEblack           1.59 0.2300     0.550    -0.0772 -1.76 17 0.0960 0.250
+## MEred             5.81 0.0063     0.041    -0.1360 -3.11 17 0.0063 0.041
+## MEdarkred         1.43 0.2700     0.550    -0.0312 -0.67 17 0.5100 0.700
+## MEtan             0.18 0.9100     0.970    -0.0124 -0.26 17 0.8000 0.800
+## MElightgreen      4.59 0.0160     0.068    -0.0731 -2.28 17 0.0360 0.150
+## MEmidnightblue    0.72 0.5600     0.720    -0.0604 -1.22 17 0.2400 0.520
+## MEpurple          1.34 0.2900     0.550    -0.0100 -0.54 17 0.5900 0.700
+## MEgrey60          8.07 0.0015     0.019     0.1530  3.82 17 0.0014 0.018
+## MEbrown           1.00 0.4200     0.600     0.0443  0.90 17 0.3800 0.690
+## MEgreen           1.00 0.4200     0.600     0.0485  0.82 17 0.4200 0.690</code></pre>
 <pre class="r"><code>write.csv(urban_colony, file = &quot;../../outputs/transcriptomics/ofav/wgcna/urban modules colony level.csv&quot;)</code></pre>
 </div>
 <div id="merge-threshold-sensitivity" class="section level1">
@@ -2312,8 +2335,13 @@ urban_colony_p = function(MEs) {
     y - drop(model.matrix(fit)[, names(b), drop = FALSE] %*% b)
   })
   colony_means = apply(adj, 2, function(y) tapply(y, colony, mean))
-  colony_urban = tapply(traits$urban, colony, `[`, 1)
-  p = apply(colony_means, 2, function(y) cor.test(y, colony_urban)$p.value)
+  colony_site = factor(tapply(sapply(strsplit(rownames(datt), &quot;.&quot;, fixed = TRUE), `[`, 2), colony, `[`, 1),
+                       levels = c(&quot;Emerald&quot;, &quot;Rainbow&quot;, &quot;Star&quot;, &quot;MacN&quot;))
+  # urban vs reef as the planned contrast from the site model (as in URBAN MODULES AT COLONY LEVEL)
+  p = apply(colony_means, 2, function(y) {
+    fit = lm(y ~ 0 + colony_site); L = c(-0.5, -0.5, 0.5, 0.5)
+    tval = sum(L * coef(fit)) / sqrt(drop(t(L) %*% vcov(fit) %*% L))
+    2 * pt(-abs(tval), fit$df.residual) })
   p.adjust(p, method = &quot;BH&quot;)
 }
 thresholds = c(0, 0.15, 0.20, 0.25, 0.30, 0.35)
@@ -2336,10 +2364,10 @@ merge_sens</code></pre>
 ## 5      0.30      11     4     1        3          3    2          3        2
 ## 6      0.35      10     4     1        3          3    2          3        2
 ##   propB propD temp_actual ph_actual urban_colony_BH
-## 1     4     5           6         2               0
+## 1     4     5           6         2               3
 ## 2     4     5           5         1               3
 ## 3     4     5           4         1               3
-## 4     3     3           3         1               1
+## 4     3     3           3         1               2
 ## 5     2     2           3         1               2
 ## 6     2     2           3         1               2</code></pre>
 <pre class="r"><code>write.csv(merge_sens, file = &quot;../../outputs/transcriptomics/ofav/wgcna/merge threshold sensitivity.csv&quot;, row.names = FALSE)</code></pre>
@@ -2548,7 +2576,7 @@ for (which.module in modules_to_plot) {
 library(WGCNA)
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData&quot;) # moduleColors, MEs
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData&quot;) # datt, traits, colony
-load(file = &quot;../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData&quot;) # vsd table
+load(file = &quot;../../outputs/transcriptomics/ofav/limma/data4wgcna.RData&quot;) # vsd table
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData&quot;) # modules_to_plot
 
 # calculating modul memberships for all genes for all modules
@@ -2590,7 +2618,7 @@ for (whichModule in modules_to_plot) {
 <pre class="r"><code># plotting heatmap for named top-kME genes
 library(WGCNA)
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData&quot;)
-load(file = &quot;../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData&quot;) 
+load(file = &quot;../../outputs/transcriptomics/ofav/limma/data4wgcna.RData&quot;) 
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData&quot;);
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/moduleTraitSig.RData&quot;) # modules_to_plot
 allkME =as.data.frame(signedKME(datt, MEs))
@@ -2628,13 +2656,13 @@ for (whichModule in modules_to_plot) {
     }
   } 
   row.names(hubs)=gnames
-  # gaps between treatment groups, as in the DESeq2 heatmaps (columns are in design order, grouped by treatment;
+  # gaps between treatment groups, as in the limma script heatmaps (columns are in design order, grouped by treatment;
   # the treatment is the last part of each sample name, e.g. Ssid_001.Emerald.CC)
   col_treat &lt;- sub(&quot;.*\\.&quot;, &quot;&quot;, colnames(hubs))
   stopifnot(!anyDuplicated(rle(col_treat)$values)) # each treatment is one contiguous block
   treat_gaps &lt;- head(cumsum(rle(col_treat)$lengths), -1)
 
-  # square 9-pt cells, page sized to fit (as in the DESeq2 heatmaps)
+  # square 9-pt cells, page sized to fit (as in the limma script heatmaps)
   hub_heatmaps[[whichModule]] &lt;- save_plot(file=paste0(&quot;../../outputs/transcriptomics/ofav/wgcna/heatmap top&quot;, top, &quot; &quot;, whichModule, &quot;.pdf&quot;),
                                            width=(ncol(hubs)*9 + 400)/72, height=(nrow(hubs)*9 + 140)/72, {
     pheatmap(hubs,scale=&quot;row&quot;,col=contrasting2,border_color=NA,treeheight_col=0,cluster_rows=F,cluster_cols=F,
@@ -2650,7 +2678,7 @@ if (length(hub_heatmaps) &amp;&amp; isTRUE(getOption(&quot;knitr.in.progress&quo
 <pre class="r"><code>library(WGCNA)
 library(tidyverse)
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/networkdata_signed.RData&quot;)
-load(file = &quot;../../outputs/transcriptomics/ofav/deseq2/data4wgcna.RData&quot;) 
+load(file = &quot;../../outputs/transcriptomics/ofav/limma/data4wgcna.RData&quot;) 
 load(file = &quot;../../outputs/transcriptomics/ofav/wgcna/wgcnaData.RData&quot;);
 allkME =as.data.frame(signedKME(datt, MEs))
 

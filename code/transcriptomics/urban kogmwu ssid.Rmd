@@ -79,37 +79,37 @@ head(gene2kog)
 # treatment all
 
 ```{r treatment-all}
-LC_CC=load('../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.RData')
+LC_CC=load('../../outputs/transcriptomics/ssid/limma/LC_CC_lpv.RData')
 LC_CC # names of datasets in the package
 LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
 lpv.LC_CC 
 
-CH_CC=load('../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.RData')
+CH_CC=load('../../outputs/transcriptomics/ssid/limma/CH_CC_lpv.RData')
 CH_CC # names of datasets in the package
 CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog) 
 lpv.CH_CC
 
-LH_CC=load('../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.RData')
+LH_CC=load('../../outputs/transcriptomics/ssid/limma/LH_CC_lpv.RData')
 LH_CC # names of datasets in the package
 LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog) 
 lpv.LH_CC 
 
-CH_LC=load('../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.RData')
+CH_LC=load('../../outputs/transcriptomics/ssid/limma/CH_LC_lpv.RData')
 CH_LC # names of datasets in the package
 CH_LC.p <- CH_LC.p[!is.na(CH_LC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.CH_LC=kog.mwu(CH_LC.p,gene2kog) 
 lpv.CH_LC
 
-LH_LC=load('../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.RData')
+LH_LC=load('../../outputs/transcriptomics/ssid/limma/LH_LC_lpv.RData')
 LH_LC # names of datasets in the package
 LH_LC.p <- LH_LC.p[!is.na(LH_LC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LH_LC=kog.mwu(LH_LC.p,gene2kog) 
 lpv.LH_LC
 
-LH_CH=load('../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.RData')
+LH_CH=load('../../outputs/transcriptomics/ssid/limma/LH_CH_lpv.RData')
 LH_CH # names of datasets in the package
 LH_CH.p <- LH_CH.p[!is.na(LH_CH.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LH_CH=kog.mwu(LH_CH.p,gene2kog) 
@@ -159,19 +159,19 @@ corrPlot(x="LH_LC",y="LH_CH",ktable)
 # treatment filtered
 
 ```{r treatment-filtered}
-LC_CC=load('../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.RData')
+LC_CC=load('../../outputs/transcriptomics/ssid/limma/LC_CC_lpv.RData')
 LC_CC # names of datasets in the package
 LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
 lpv.LC_CC 
 
-CH_CC=load('../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.RData')
+CH_CC=load('../../outputs/transcriptomics/ssid/limma/CH_CC_lpv.RData')
 CH_CC # names of datasets in the package
 CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog) 
 lpv.CH_CC
 
-LH_CC=load('../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.RData')
+LH_CC=load('../../outputs/transcriptomics/ssid/limma/LH_CC_lpv.RData')
 LH_CC # names of datasets in the package
 LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog) 
@@ -207,21 +207,21 @@ corrPlot(x="CH_CC",y="LH_CC",ktable)
 # urban vs reef
 
 ```{r urban-vs-reef}
-# urban vs reef DEGs come from the colony-level limma test in the DESeq2 script (urban_reef_lpv)
-urban_reef=load('../../outputs/transcriptomics/ssid/deseq2/urban_reef_lpv.RData')
+# urban vs reef DEGs come from the planned contrast from the site model in the limma script (urban_reef_lpv)
+urban_reef=load('../../outputs/transcriptomics/ssid/limma/urban_reef_lpv.RData')
 urban_reef # names of datasets in the package
 urban_reef.p <- urban_reef.p[!is.na(urban_reef.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.urban_reef=kog.mwu(urban_reef.p,gene2kog)
 lpv.urban_reef
 
 # loading stress treatment results for comparison
-LC_CC=load('../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.RData')
+LC_CC=load('../../outputs/transcriptomics/ssid/limma/LC_CC_lpv.RData')
 LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog)
-CH_CC=load('../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.RData')
+CH_CC=load('../../outputs/transcriptomics/ssid/limma/CH_CC_lpv.RData')
 CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog)
-LH_CC=load('../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.RData')
+LH_CC=load('../../outputs/transcriptomics/ssid/limma/LH_CC_lpv.RData')
 LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
 lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog)
 
@@ -249,3 +249,38 @@ corrPlot(x="urban_reef",y="CH_CC",ktable)
 corrPlot(x="urban_reef",y="LH_CC",ktable)
 })
 ```
+
+
+# sites
+
+```{r site-pairwise}
+# KOG enrichment for the site contrasts of the site model in the limma script: urban vs reef, each urban site vs the
+# reef sites, and the six pairwise site comparisons (first site minus second). KOG-MWU ranks all genes, so it can be
+# run for contrasts with few or no individually significant genes.
+site_sets <- c("urban_reef", "MacN_reef", "Star_reef", "Rainbow_Emerald", "Star_Emerald", "MacN_Emerald",
+               "Star_Rainbow", "MacN_Rainbow", "MacN_Star")
+site_kog <- lapply(setNames(site_sets, site_sets), function(k) {
+  d <- read.csv(paste0("../../outputs/transcriptomics/ssid/limma/", k, "_lpv.csv"))
+  d <- d[!is.na(d$lpv), c("gene", "lpv")]
+  kog.mwu(d, gene2kog)
+})
+ktable_site=makeDeltaRanksTable(site_kog)
+ktable_site
+
+library(RColorBrewer)
+color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
+
+# heatmap with hierarchical clustering trees
+save_plot(file="../../outputs/transcriptomics/ssid/kogmwu/KOG_urbanstress_ssid_host_sites_lpv.pdf", width=8, height=8, {
+  pheatmap(as.matrix(ktable_site),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white")
+})
+
+# KOG classes significant in each site contrast (adjusted p < 0.05)
+site_kog_sig <- do.call(rbind, lapply(names(site_kog), function(k) {
+  x <- site_kog[[k]]; x <- x[x$padj < 0.05, ]
+  if (nrow(x)) data.frame(contrast = k, x, row.names = NULL) else NULL
+}))
+site_kog_sig
+write.csv(ktable_site, file="../../outputs/transcriptomics/ssid/kogmwu/KOG_urbanstress_ssid_host_sites_delta_ranks.csv")
+```
+

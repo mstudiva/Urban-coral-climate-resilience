@@ -83,51 +83,51 @@ orthologs <- read.table(file = orthologs_file, sep = "\t", header = TRUE, quote=
 # DESEQ IMPORT TREATMENT
 
 ```{r deseq-import-treatment}
-ofav_LC_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/LC_CC_lpv.csv") %>%
+ofav_LC_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/LC_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ofav_CH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/CH_CC_lpv.csv") %>%
+ofav_CH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/CH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ofav_LH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/LH_CC_lpv.csv") %>%
+ofav_LH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/LH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ofav_CH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/CH_LC_lpv.csv") %>%
+ofav_CH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/CH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ofav_LH_CH_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/LH_CH_lpv.csv") %>%
+ofav_LH_CH_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/LH_CH_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ofav_LH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/LH_LC_lpv.csv") %>%
+ofav_LH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/LH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ssid_LC_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/LC_CC_lpv.csv") %>%
+ssid_LC_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/LC_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 
-ssid_CH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/CH_CC_lpv.csv") %>%
+ssid_CH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/CH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 
-ssid_LH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/LH_CC_lpv.csv") %>%
+ssid_LH_CC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/LH_CC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 
-ssid_CH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/CH_LC_lpv.csv") %>%
+ssid_CH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/CH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 
-ssid_LH_CH_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/LH_CH_lpv.csv") %>%
+ssid_LH_CH_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/LH_CH_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 
-ssid_LH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/LH_LC_lpv.csv") %>%
+ssid_LH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/LH_LC_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 ```
@@ -136,12 +136,12 @@ ssid_LH_LC_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/LH_
 # DESEQ IMPORT URBAN vs REEF
 
 ```{r deseq-import-site}
-# urban vs reef (colony-level limma test from the DESeq2 scripts)
-ofav_urban_reef_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/deseq2/urban_reef_lpv.csv") %>%
+# urban vs reef (planned contrast from the site model in the limma scripts)
+ofav_urban_reef_lpv <- read.csv(file = "../../outputs/transcriptomics/ofav/limma/urban_reef_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ofav" = lpv)
 
-ssid_urban_reef_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/deseq2/urban_reef_lpv.csv") %>%
+ssid_urban_reef_lpv <- read.csv(file = "../../outputs/transcriptomics/ssid/limma/urban_reef_lpv.csv") %>%
   select(gene, lpv) %>%
   rename("lpv_ssid" = lpv)
 ```
@@ -760,10 +760,10 @@ if (nrow(treatment_filtered_genes) > 0) {
   cat("Rows total:", nrow(treatment_filtered_genes), "\n")
   print(table(treatment_filtered_genes$relationship_category, useNA = "ifany"))
   print(table(treatment_filtered_genes$treatment, useNA = "ifany"))
+  print(dplyr::count(treatment_filtered_genes, treatment, relationship_category))
 } else {
-  warning("treatment_filtered_genes is empty with current strict thresholds.")
+  cat("No treatment orthologs pass the inverse / discordant filters: the table below is written empty.\n")
 }
-dplyr::count(treatment_filtered_genes, treatment, relationship_category)
 write.csv(treatment_filtered_genes,
           file = "../../outputs/transcriptomics/orthofinder/orthogroup correlation discordant treatment.csv")
 ```
@@ -792,10 +792,12 @@ if (nrow(site_filtered_genes) > 0) {
   cat("Rows total:", nrow(site_filtered_genes), "\n")
   print(table(site_filtered_genes$relationship_category, useNA = "ifany"))
   print(table(site_filtered_genes$site, useNA = "ifany"))
+  print(dplyr::count(site_filtered_genes, site, relationship_category))
 } else {
-  warning("site_filtered_genes is empty with current strict thresholds.")
+  # no ortholog is differentially expressed between urban and reef colonies in both species (or none passes the
+  # filters); an empty table is still written so that an older file is not read by the sections below
+  cat("No urban vs reef orthologs pass the inverse / discordant filters: the table below is written empty.\n")
 }
-dplyr::count(site_filtered_genes, site, relationship_category)
 write.csv(site_filtered_genes,
           file = "../../outputs/transcriptomics/orthofinder/orthogroup correlation discordant site.csv")
 ```
@@ -817,11 +819,11 @@ one2one <- orthologs %>%
   transmute(Orthogroup, Protein_ofav = trimws(Ofaveolata_out_PRO), Protein_ssid = trimws(Ssiderea_out_PRO))
 nrow(one2one) # number of one-to-one ortholog pairs
 
-# test statistics for each species: limma t for urban vs reef, DESeq2 Wald statistic for treatments
+# test statistics for each species: moderated t from the site model (urban vs reef contrast and treatment contrasts)
 get_stats <- function(sp) {
   e <- new.env()
-  load(sprintf("../../outputs/transcriptomics/%s/deseq2/urban_reef.RData", sp), envir = e)
-  load(sprintf("../../outputs/transcriptomics/%s/deseq2/pvals.RData", sp), envir = e)
+  load(sprintf("../../outputs/transcriptomics/%s/limma/urban_reef.RData", sp), envir = e)
+  load(sprintf("../../outputs/transcriptomics/%s/limma/pvals.RData", sp), envir = e)
   out <- list(urban_reef = data.frame(gene = rownames(e$urban_reef), stat = e$urban_reef$t,
                                       padj = e$urban_reef$adj.P.Val))
   for (n in c("LC_CC", "CH_CC", "LH_CC", "CH_LC", "LH_LC", "LH_CH")) {
@@ -1107,11 +1109,11 @@ safe_ggsave_pdf <- function(plot, filename, width, height, limitsize = TRUE) {
 ```
 
 
-## 0) Load DESeq2 objects
+## 0) Load normalised count objects
 
 ```{r 0-load-deseq2-objects}
-load("../../outputs/transcriptomics/ofav/deseq2/realModels.RData"); dds_ofav <- dds
-load("../../outputs/transcriptomics/ssid/deseq2/realModels.RData"); dds_ssid <- dds
+load("../../outputs/transcriptomics/ofav/limma/realModels.RData"); dds_ofav <- dds
+load("../../outputs/transcriptomics/ssid/limma/realModels.RData"); dds_ssid <- dds
 message("ofav colData: ", paste(colnames(SummarizedExperiment::colData(dds_ofav)), collapse=", "))
 message("ssid colData: ", paste(colnames(SummarizedExperiment::colData(dds_ssid)), collapse=", "))
 ```
@@ -1545,7 +1547,7 @@ compute_stats_habitat <- function(df_grp){
 }
 
 # Treatment panels: fragment-level one-way ANOVA + Tukey across the four treatments. Fragments from the same
-# colony are not independent, so these tests are descriptive; inference on treatment comes from the DESeq2 model
+# colony are not independent, so these tests are descriptive; inference on treatment comes from the site model (dream) in the limma scripts
 # (~ genotype + treat). Site panels use colony means (compute_stats_habitat).
 compute_stats_for <- function(df_grp, fac) {
   if (fac == "Site") compute_stats_habitat(df_grp) else compute_stats(df_grp)
@@ -2023,7 +2025,7 @@ for (k in seq_len(nrow(targets))) {
     
     # Fixed-grid, no-shrink, legend-in-empty-cell (LANDSCAPE), NO page title
     # grid size from the number of panels (+1 cell for the stress-family legend)
-    # one composite per stress family, so the panels stay readable
+    # three sets of composites: one per stress family; all panels together; and, for inverse, two halves
     for (sf in names(stress_family_palette)) {
       ogs_sf <- ogs[ogs %in% unique(dat_sub$orthogroup_ID[dat_sub$stress_family == sf])]
       if (!length(ogs_sf)) next
@@ -2032,6 +2034,26 @@ for (k in seq_len(nrow(targets))) {
       grid_rows <- ceiling(n_cells / grid_cols)
       onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub[dat_sub$stress_family == sf, ], fac, rel, ogs_sf, out_dir,
                                                                          rows = grid_rows, cols = grid_cols, tag = sf))
+    }
+
+    # all panels of this subset in one composite, ordered by stress family (file tag "all")
+    fam_idx <- match(dat_sub$stress_family[match(ogs, dat_sub$orthogroup_ID)], names(stress_family_palette))
+    ogs_all <- ogs[order(fam_idx)][!is.na(sort(fam_idx, na.last = TRUE))] # panels without a stress family are left out
+    grid_for <- function(n) { cells <- n + 1L; gc_ <- ceiling(sqrt(cells)); c(rows = ceiling(cells / gc_), cols = gc_) }
+    if (length(ogs_all)) {
+      g <- grid_for(length(ogs_all))
+      onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub, fac, rel, ogs_all, out_dir,
+                                                                         rows = g[["rows"]], cols = g[["cols"]], tag = "all"))
+      # inverse subset: also split into two composites (same order), so each has about half the panels
+      if (rel == "Inverse" && length(ogs_all) > 1) {
+        half <- ceiling(length(ogs_all) / 2)
+        parts <- list(part1of2 = ogs_all[seq_len(half)], part2of2 = ogs_all[-seq_len(half)])
+        for (pn in names(parts)) {
+          g <- grid_for(length(parts[[pn]]))
+          onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub, fac, rel, parts[[pn]], out_dir,
+                                                                             rows = g[["rows"]], cols = g[["cols"]], tag = pn))
+        }
+      }
     }
   }
   
