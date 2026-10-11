@@ -9,7 +9,8 @@ RULES=[
         r"|Transcriptional regulator\. Recognizes and binds to the DNA sequence|brca1 gene 1|Component of the BLOC-1 complex|Concanavalin A-like"
         r"|B cell (affinity|differentiation)|germinal center|T cell (differentiation|polarity)|CD8-positive|establishment of T cell|Immunoglobulin (C-2|domain)|immunoglobulin domain"
         r"|Interleukin enhancer-binding|Interleukin-like EMT|interleukin-\d+ (production|biosynthetic)|regulation of interleukin|Interleukin 2 receptor"
-        r"|Leukocyte cysteine proteinase|macrophage erythroblast attacher|fat cell proliferation|into host cell cytoplasm|iron-sulfur cluster co-chaperone|cytochrome P450"),
+        r"|Leukocyte cysteine proteinase|macrophage erythroblast attacher|fat cell proliferation|into host cell cytoplasm|iron-sulfur cluster co-chaperone|cytochrome P450"
+        r"|post-chaperonin|tubulin folding|non-autophag|mature B cell|chemokine \(C-C motif\) ligand"),
  # --- immune signalling that would otherwise match the apoptosis rule
  (I, r"TNF receptor-associated factor|\bTRAF\d?\b|lipopolysaccharide-induced|LPS-induced tumor necrosis factor|Tumor necrosis factor, alpha-induced protein 3"),
  # --- oxidative stress that would otherwise match another rule
@@ -30,7 +31,10 @@ RULES=[
  (S, r"universal stress protein|stress response|response to stress|stress-induced|stress-activated|unfolded protein|ER overload|endoplasmic reticulum stress|ER-associated misfolded|mis-folding|eukaryotic translation initiation factor 2-alpha kinase|hypoxia|Egl-9|MAP kinase|mitogen-activated protein kinase|peptidyl-prolyl cis-trans isomerase|PPIases accelerate|\bFKBP|protein disulfide isomerase|protein folding|calreticulin|calnexin|prefoldin|plasma membrane repair|osmotic stress|autophag"),
 ]
 RULES=[(f,re.compile(p,re.I)) for f,p in RULES]
-def classify(annot):
+# gene-level exclusions where the annotation text is misleading (checked against KEGG; Michael, 2026-10-10)
+GENE_EXCLUDE={"Ofaveolata036020":"KEGG K04593 latrophilin (adhesion GPCR), not an immune lectin"}
+def classify(annot, gene=None):
+    if gene in GENE_EXCLUDE: return None
     if annot is None or annot in ("","NA","-"): return None
     for fam,rx in RULES:
         if rx.search(annot): return fam
