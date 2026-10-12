@@ -108,3 +108,7 @@ outputs/transcriptomics/orthofinder/orthofinder_DEGs.RData
 # macOS folder metadata and local Claude settings
 .DS_Store
 .claude/
+
+# Python bytecode
+__pycache__/
+code/transcriptomics/__pycache__/stress family rules.cpython-310.pyc

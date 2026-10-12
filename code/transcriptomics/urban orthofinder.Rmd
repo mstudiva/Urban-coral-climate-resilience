@@ -1076,10 +1076,10 @@ options(ggplot2.useDingbats = FALSE)
   
   seg_df <- data.frame(x1=pmin(x1,x2), x2=pmax(x1,x2), y=y, y0=y0, xm=xm, lab=lab, ylbl=ylbl)
   p +
-    geom_segment(data=seg_df, aes(x=x1, xend=x2, y=y, yend=y), linewidth=0.5, inherit.aes=FALSE) +
-    geom_segment(data=seg_df, aes(x=x1, xend=x1, y=y0, yend=y), linewidth=0.5, inherit.aes=FALSE) +
-    geom_segment(data=seg_df, aes(x=x2, xend=x2, y=y0, yend=y), linewidth=0.5, inherit.aes=FALSE) +
-    annotate("text", x=seg_df$xm, y=seg_df$ylbl, label=seg_df$lab, size=3, vjust=0, hjust=0.5)
+    geom_segment(data=seg_df, aes(x=x1, xend=x2, y=y, yend=y), linewidth=if (isTRUE(getOption("orthofinder.compact"))) 0.25 else 0.5, inherit.aes=FALSE) +
+    geom_segment(data=seg_df, aes(x=x1, xend=x1, y=y0, yend=y), linewidth=if (isTRUE(getOption("orthofinder.compact"))) 0.25 else 0.5, inherit.aes=FALSE) +
+    geom_segment(data=seg_df, aes(x=x2, xend=x2, y=y0, yend=y), linewidth=if (isTRUE(getOption("orthofinder.compact"))) 0.25 else 0.5, inherit.aes=FALSE) +
+    annotate("text", x=seg_df$xm, y=seg_df$ylbl, label=seg_df$lab, size=if (isTRUE(getOption("orthofinder.compact"))) 1.8 else 3, vjust=0, hjust=0.5)
 }
 
 # ---- Crash-guard helpers ----
@@ -1415,24 +1415,29 @@ treat_labels <- c(
 )
 
 panel_with_colored_title <- function(left_plot, right_plot, title_text, stress_family){
+  cmp <- isTRUE(getOption("orthofinder.compact"))
   fill_col <- if (!is.null(stress_family) && stress_family %in% names(stress_family_palette)) {
     stress_family_palette[stress_family]
   } else "#6B7280"
   
   gL <- ggplotGrob(left_plot); gR <- ggplotGrob(right_plot)
-  maxw <- grid::unit.pmax(gL$widths[2:5], gR$widths[2:5])
-  gL$widths[2:5] <- maxw; gR$widths[2:5] <- maxw
-  
-  core <- cowplot::plot_grid(cowplot::as_grob(gL), cowplot::as_grob(gR), ncol = 2, rel_widths = c(1, 0.92))
+  if (!cmp) { # compact: S. siderea has no y axis, so its axis space is not padded to the O. faveolata width
+    maxw <- grid::unit.pmax(gL$widths[2:5], gR$widths[2:5])
+    gL$widths[2:5] <- maxw; gR$widths[2:5] <- maxw
+  }
+  core <- cowplot::plot_grid(cowplot::as_grob(gL), cowplot::as_grob(gR), ncol = 2,
+                             rel_widths = if (cmp) c(1.13, 1) else c(1, 0.92))
   
   title_strip <- ggplot() +
     geom_rect(aes(xmin=-Inf,xmax=Inf,ymin=-Inf,ymax=Inf), fill=fill_col, color=NA) +
     annotate("text", x=0, y=0, label=title_text, color="white", fontface="bold",
-             size=if (nchar(title_text) > 65) 4.2 * 65 / nchar(title_text) else 4.2, # long gene-pair titles are shrunk to fit the bar
+             # long titles are shrunk to fit the bar (compact = letter-size composites)
+             size=if (cmp) { if (nchar(title_text) > 46) 2.1 * 46 / nchar(title_text) else 2.1 }
+                  else if (nchar(title_text) > 65) 4.2 * 65 / nchar(title_text) else 4.2,
              hjust=0.5, vjust=0.5) +
     coord_cartesian(xlim=c(-1,1), ylim=c(-1,1), expand=FALSE) + theme_void()
   
-  cowplot::plot_grid(title_strip, core, ncol=1, rel_heights=c(0.12, 1))
+  cowplot::plot_grid(title_strip, core, ncol=1, rel_heights=if (cmp) c(0.11, 1) else c(0.12, 1))
 }
 
 compute_stats <- function(df_grp){
@@ -1453,11 +1458,12 @@ compute_stats <- function(df_grp){
       dplyr::mutate(across(where(is.numeric), ~ round(.x, 4)))
     term_names <- attr(terms(aov_res), "term.labels")
     term <- if (length(term_names)) term_names[1] else "grp"
-    row_idx <- which(rownames(sm) == term)
-    if (!length(row_idx)) row_idx <- which(grepl(paste0("^", term, "$"), rownames(sm)))
+    # summary.aov pads the row names ("grp        "), so they are trimmed before matching; without this the
+    # term was never found and every label fell back to Welch's ANOVA
+    row_idx <- which(trimws(rownames(sm)) == term)
     if (length(row_idx)) {
       df1     <- sm[row_idx, "Df"]
-      df2res  <- sm["Residuals", "Df"]
+      df2res  <- nrow(df2) - 1L # label convention: F(numerator df, n - 1), as in the physiology figures
       Fv      <- sm[row_idx, "F value"]
       pv      <- sm[row_idx, "Pr(>F)"]
     }
@@ -1483,31 +1489,31 @@ compute_stats <- function(df_grp){
   out$aov_p <- pv
   
   # --- Plain text label (CSV/logs) with star when p<0.05 ---
-  pv_str_plain <- if (is.finite(pv)) formatC(pv, format = "g", digits = 3) else "NA"
+  pv_str_plain <- if (!is.finite(pv)) "NA" else if (pv < 0.001) "<0.001" else formatC(pv, format = "g", digits = 3)
   star_plain   <- if (is.finite(pv) && pv < 0.05) "*" else ""
   if (is.finite(Fv) && is.finite(pv) && is.finite(as.numeric(df1)) && is.finite(as.numeric(df2res))) {
-    out$aov_text <- sprintf("ANOVA: F(%s,%s)=%.2f, p=%s%s", df1, df2res, as.numeric(Fv), pv_str_plain, star_plain)
+    out$aov_text <- sprintf("ANOVA: F(%s,%s)=%.2f, p%s%s%s", df1, df2res, as.numeric(Fv),
+                            if (pv < 0.001) "" else "=", pv_str_plain, star_plain)
   } else if (is.finite(pv)) {
-    out$aov_text <- sprintf("ANOVA: p=%s%s", pv_str_plain, star_plain)
+    out$aov_text <- sprintf("ANOVA: p%s%s%s", if (pv < 0.001) "" else "=", pv_str_plain, star_plain)
   } else {
     out$aov_text <- "ANOVA: p=NA"
   }
   
   # --- Plotmath label with star when p<0.05 ---
   if (is.finite(pv)) {
-    pretty_p <- if (pv < 1e-4) "'< 1e-4'"
-    else if (pv < 0.001) "'< 0.001'"
-    else formatC(pv, format = "g", digits = 3)
+    p_op  <- if (pv < 0.001) "' < '" else "' = '"
+    pretty_p <- if (pv < 0.001) "'0.001'" else sprintf("'%s'", formatC(pv, format = "g", digits = 3))
     star_plot <- if (pv < 0.05) ", '*'" else ""  # appended as another paste() arg
     
     Fv_str <- if (is.finite(Fv)) formatC(as.numeric(Fv), format = "f", digits = 2) else "NA"
     if (is.finite(Fv) && is.finite(as.numeric(df1)) && is.finite(as.numeric(df2res))) {
       out$aov_label <- sprintf(
-        "paste(italic(F)[%s*','*%s], ' = ', %s, ', ', italic(p), ' = ', %s%s)",
-        df1, df2res, Fv_str, pretty_p, star_plot
+        "paste(italic(F)[%s*','*%s], ' = ', %s, ', ', italic(p), %s, %s%s)",
+        df1, df2res, Fv_str, p_op, pretty_p, star_plot
       )
     } else {
-      out$aov_label <- sprintf("paste(italic(p), ' = ', %s%s)", pretty_p, star_plot)
+      out$aov_label <- sprintf("paste(italic(p), %s, %s%s)", p_op, pretty_p, star_plot)
     }
   } else {
     out$aov_label <- NULL
@@ -1540,9 +1546,10 @@ compute_stats_habitat <- function(df_grp){
                               t = round(tv, 4), df = round(dfv, 2), p = signif(pv, 4))
   star <- if (is.finite(pv) && pv < 0.05) "*" else ""
   out$aov_text <- sprintf("Welch t(%.1f)=%.2f, p=%s%s", dfv, tv, formatC(pv, format = "g", digits = 3), star)
-  pretty_p <- if (pv < 1e-4) "'< 1e-4'" else if (pv < 0.001) "'< 0.001'" else sprintf("'%s'", formatC(pv, format = "g", digits = 3))
-  out$aov_label <- sprintf("paste(italic(t)['%.1f'], ' = ', '%.2f', ', ', italic(p), ' = ', %s%s)",
-                           dfv, tv, pretty_p, if (nzchar(star)) ", '*'" else "")
+  p_op <- if (pv < 0.001) "' < '" else "' = '"
+  pretty_p <- if (pv < 0.001) "'0.001'" else sprintf("'%s'", formatC(pv, format = "g", digits = 3))
+  out$aov_label <- sprintf("paste(italic(t)['%.1f'], ' = ', '%.2f', ', ', italic(p), %s, %s%s)",
+                           dfv, tv, p_op, pretty_p, if (nzchar(star)) ", '*'" else "")
   out
 }
 
@@ -1585,9 +1592,11 @@ make_boxplot <- function(df, factor_name, species_label,
   df$grp <- factor(df$grp, levels = lvls)
   
   # base plot
+  cmp <- isTRUE(getOption("orthofinder.compact")) # compact styling for the letter-size composites
   p <- ggpubr::ggboxplot(df, x = "grp", y = "count", color = "grey30", fill = "grp",
-                         add = "jitter", add.params = list(size = 1, jitter = 0.25),
-                         width = 0.7, size = 0.5) +
+                         add = "jitter", add.params = list(size = if (cmp) 0.2 else 1, jitter = 0.25),
+                         width = 0.7, size = if (cmp) 0.2 else 0.5,
+                         outlier.shape = if (cmp) NA else 19) + # compact: outliers already shown as jittered points
     labs(
       title = species_label,
       x = NULL,
@@ -1668,14 +1677,27 @@ make_boxplot <- function(df, factor_name, species_label,
   use_parse <- !is.null(aov_label) && nzchar(aov_label)
   center_x  <- mean(seq_along(lvls))
   bottom_y  <- 10^(log10(ylims_used[1]) - 0.03)
-  if (!is.null(lab_text) && nzchar(lab_text)) {
+  if (cmp && !is.null(lab_text) && nzchar(lab_text)) {
+    p <- p + labs(caption = if (use_parse) parse(text = lab_text)[[1]] else lab_text) +
+      theme(plot.caption = element_text(size = 4.8, hjust = 0.5, margin = margin(t = 0.5)))
+  } else if (!is.null(lab_text) && nzchar(lab_text)) {
     p <- p + annotate("text", x = center_x, y = bottom_y, label = lab_text,
-                      size = 3.3, vjust = 0, hjust = 0.5, parse = use_parse)
+                      size = if (cmp) 1.6 else 3.3, vjust = 0, hjust = 0.5, parse = use_parse)
   }
   
   # --- NEW: per-position axis suppression for one-pagers ---
   if (isTRUE(suppress_y_title)) p <- p + theme(axis.title.y = element_blank())
   if (isTRUE(suppress_x_text))  p <- p + theme(axis.text.x  = element_blank())
+  # compact (letter-size composites): treatments shown by fill colour (key in the legend cell), one shared y title per page
+  if (cmp) p <- p + theme(
+    text = element_text(size = 6),
+    plot.title = element_text(size = 6, hjust = 0.5, margin = margin(b = 1)),
+    axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = if (species_name == "Ssiderea") element_blank() else element_text(size = 5),
+    axis.ticks.length = unit(1, "pt"), axis.ticks = element_line(linewidth = 0.25),
+    plot.margin = margin(t = 1, r = 2, b = 1, l = 2),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.4))
   
   list(plot = p)
 }
@@ -1861,6 +1883,68 @@ export_subset_fixed_grid_no_shrink <- function(dat_sub, fac, rel, ogs, out_dir,
   suppressWarnings(rm(list = intersect(c("final_panels", "grid_core"), ls()))); gc()
   invisible(if (file.exists(png_file)) png_file else NULL) # PNG path, shown in the knitted HTML
 }
+# ===== Letter-size composite (11 x 8.5 in landscape) =====
+# Same panels as the no-shrink composites, drawn at final size with compact styling (6-pt text): no x-axis
+# labels (treatments are identified by fill colour, with a key in the legend cell), one y-axis title for the page,
+# panel titles = gene name + orthogroup (gene IDs are in the discordance tables / Dataset S4).
+# Grid: `cols` columns, rows from the number of panels + 1 legend cell.
+export_subset_letter <- function(dat_sub, fac, rel, ogs, out_dir, tag = "letter", cols = 4L,
+                                 page_w = 11, page_h = 8.5, margin = 0.3, ylab_w = 0.18) {
+  if (!length(ogs)) return(invisible(NULL))
+  old_opt <- options(orthofinder.compact = TRUE); on.exit(options(old_opt), add = TRUE)
+  lvls <- if (fac == "Site") habitat_levels else treat_levels
+  rows <- ceiling((length(ogs) + 1L) / cols)
+  panels <- list(); fams <- character(0)
+  for (og in ogs) {
+    of_df <- dat_sub %>% dplyr::filter(orthogroup_ID == og, species == "Ofaveolata")
+    ss_df <- dat_sub %>% dplyr::filter(orthogroup_ID == og, species == "Ssiderea")
+    if (!nrow(of_df) || !nrow(ss_df)) next
+    meta <- dat_sub %>% dplyr::filter(orthogroup_ID == og) %>% dplyr::slice(1)
+    pos <- c(of_df$count, ss_df$count); pos <- pos[is.finite(pos) & pos > 0]
+    ylims <- if (length(pos)) c(max(min(pos)/1.3, min(pos)*0.5, .Machine$double.eps), max(pos)*1.3) else c(0.1, 1)
+    of_stats <- compute_stats_for(of_df, fac); ss_stats <- compute_stats_for(ss_df, fac)
+    tuk <- function(st) if (is.finite(st$aov_p) && st$aov_p < 0.05) order_tukey_by_levels(st$tukey, lvls) else NULL
+    of_plot <- make_boxplot(of_df, fac, species_titles$Ofaveolata, species_name = "Ofaveolata", tukey_tbl = tuk(of_stats),
+                            aov_label = of_stats$aov_label, aov_text = of_stats$aov_text, y_limits = ylims)$plot
+    ss_plot <- make_boxplot(ss_df, fac, species_titles$Ssiderea, species_name = "Ssiderea", tukey_tbl = tuk(ss_stats),
+                            aov_label = ss_stats$aov_label, aov_text = ss_stats$aov_text, y_limits = ylims)$plot
+    panels[[length(panels) + 1L]] <- panel_with_colored_title(of_plot, ss_plot,
+                                       paste0(meta$gene_name[1], " (", sub(":.*$", "", og), ")"), meta$stress_family[1])
+    fams <- c(fams, meta$stress_family[1])
+  }
+  if (!length(panels)) return(invisible(NULL))
+  # legend cell: stress families on this page + treatment (or habitat) fill key
+  pal <- stress_family_palette[names(stress_family_palette) %in% fams]
+  leg_fam <- cowplot::get_legend(
+    ggplot(data.frame(f = factor(names(pal), levels = names(pal))), aes(f, 1, fill = f)) + geom_col() +
+      scale_fill_manual(values = pal, name = "Stress family") + guides(fill = guide_legend(ncol = 1)) + theme_void() +
+      theme(legend.title = element_text(size = 6.5, face = "bold"), legend.text = element_text(size = 6),
+            legend.key.size = unit(7, "pt")))
+  grp_lab <- if (fac == "Site") habitat_labels else treat_labels
+  grp_col <- if (fac == "Site") habitat_colors else treat_colors
+  leg_grp <- cowplot::get_legend(
+    ggplot(data.frame(g = factor(lvls, levels = lvls)), aes(g, 1, fill = g)) + geom_col(colour = "grey30", linewidth = 0.2) +
+      scale_fill_manual(values = setNames(grp_col, lvls), labels = gsub("\n", " ", grp_lab[lvls]),
+                        name = if (fac == "Site") "Habitat" else "Treatment") +
+      guides(fill = guide_legend(ncol = 1)) + theme_void() +
+      theme(legend.title = element_text(size = 6.5, face = "bold"), legend.text = element_text(size = 6),
+            legend.key.size = unit(7, "pt")))
+  n_free <- rows * cols - length(panels)
+  legend_cells <- if (n_free >= 2) list(cowplot::ggdraw() + cowplot::draw_grob(leg_grp),
+                                        cowplot::ggdraw() + cowplot::draw_grob(leg_fam))
+                  else list(cowplot::plot_grid(leg_grp, leg_fam, ncol = 1, rel_heights = c(0.8, 1)))
+  cells <- c(panels, legend_cells,
+             replicate(n_free - length(legend_cells), ggplot() + theme_void(), simplify = FALSE))
+  grid_core <- cowplot::plot_grid(plotlist = lapply(cells, .as_grob_safe), nrow = rows, ncol = cols)
+  ylab <- cowplot::ggdraw() + cowplot::draw_label("Normalized counts (log scale)", angle = 90, size = 7)
+  page <- cowplot::plot_grid(ylab, grid_core, nrow = 1, rel_widths = c(ylab_w, page_w - 2 * margin - ylab_w)) +
+    theme(plot.margin = unit(rep(margin, 4), "in"))
+  outfile <- file.path(out_dir, sprintf("ONEPAGE_%s_%s_%s.pdf", fac, rel, tag))
+  invisible(safe_ggsave_pdf(page, outfile, width = page_w, height = page_h))
+  png_file <- file.path(tempdir(), sub("\\.pdf$", ".png", basename(outfile)))
+  try(ggsave(png_file, plot = page, width = page_w, height = page_h, units = "in", dpi = 150), silent = TRUE)
+  invisible(if (file.exists(png_file)) png_file else NULL)
+}
 ```
 
 
@@ -1930,6 +2014,7 @@ for (k in seq_len(nrow(targets))) {
     dplyr::arrange(stress_family, orthogroup_ID) %>%
     dplyr::pull(orthogroup_ID)
   ogs <- intersect(ogs, unique(dat_sub$orthogroup_ID))
+  ogs_all <- character(0) # set below once panels exist; used for the letter-size composites
   
   panel_list <- list()
   p_i <- 0L
@@ -2023,38 +2108,21 @@ for (k in seq_len(nrow(targets))) {
              filename = file.path(out_dir, paste0("ALL_panels_", fac, "_", rel, ".pdf")),
              nrow = 1, ncol = 1, width = 8, height = 4.5, dpi = 300)
     
-    # Fixed-grid, no-shrink, legend-in-empty-cell (LANDSCAPE), NO page title
-    # grid size from the number of panels (+1 cell for the stress-family legend)
-    # three sets of composites: one per stress family; all panels together; and, for inverse, two halves
-    for (sf in names(stress_family_palette)) {
-      ogs_sf <- ogs[ogs %in% unique(dat_sub$orthogroup_ID[dat_sub$stress_family == sf])]
-      if (!length(ogs_sf)) next
-      n_cells   <- length(ogs_sf) + 1L
-      grid_cols <- ceiling(sqrt(n_cells))
-      grid_rows <- ceiling(n_cells / grid_cols)
-      onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub[dat_sub$stress_family == sf, ], fac, rel, ogs_sf, out_dir,
-                                                                         rows = grid_rows, cols = grid_cols, tag = sf))
-    }
-
-    # all panels of this subset in one composite, ordered by stress family (file tag "all")
+    # all panels of this subset, ordered by stress family (panels without a stress family are left out);
+    # composites are drawn letter-size only (export_subset_letter, below). The large no-shrink composites
+    # (one per stress family, all panels, inverse halves) were dropped on 2026-10-12 (Michael).
     fam_idx <- match(dat_sub$stress_family[match(ogs, dat_sub$orthogroup_ID)], names(stress_family_palette))
-    ogs_all <- ogs[order(fam_idx)][!is.na(sort(fam_idx, na.last = TRUE))] # panels without a stress family are left out
-    grid_for <- function(n) { cells <- n + 1L; gc_ <- ceiling(sqrt(cells)); c(rows = ceiling(cells / gc_), cols = gc_) }
-    if (length(ogs_all)) {
-      g <- grid_for(length(ogs_all))
-      onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub, fac, rel, ogs_all, out_dir,
-                                                                         rows = g[["rows"]], cols = g[["cols"]], tag = "all"))
-      # inverse subset: also split into two composites (same order), so each has about half the panels
-      if (rel == "Inverse" && length(ogs_all) > 1) {
-        half <- ceiling(length(ogs_all) / 2)
-        parts <- list(part1of2 = ogs_all[seq_len(half)], part2of2 = ogs_all[-seq_len(half)])
-        for (pn in names(parts)) {
-          g <- grid_for(length(parts[[pn]]))
-          onepage_imgs <- c(onepage_imgs, export_subset_fixed_grid_no_shrink(dat_sub, fac, rel, parts[[pn]], out_dir,
-                                                                             rows = g[["rows"]], cols = g[["cols"]], tag = pn))
-        }
-      }
-    }
+    ogs_all <- ogs[order(fam_idx)][!is.na(sort(fam_idx, na.last = TRUE))]
+  }
+  
+  # letter-size composites (11 x 8.5 in landscape): direct = all panels on one page; inverse = two pages
+  if (length(ogs_all)) {
+    letter_sets <- if (rel == "Inverse" && length(ogs_all) > 1) {
+      half <- ceiling(length(ogs_all) / 2)
+      list(letter_part1of2 = ogs_all[seq_len(half)], letter_part2of2 = ogs_all[-seq_len(half)])
+    } else list(letter = ogs_all)
+    for (pn in names(letter_sets))
+      onepage_imgs <- c(onepage_imgs, export_subset_letter(dat_sub, fac, rel, letter_sets[[pn]], out_dir, tag = pn))
   }
   
   # ✅ per-subset panel summary
