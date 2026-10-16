@@ -72,223 +72,167 @@ library(pheatmap) # pheatmap() is used for the delta-rank heatmaps below
 
 # loading KOG annotations
 gene2kog=read.table("../../../Orbicella-faveolata-annotated-transcriptome/Ofaveolata_iso2kogClass.tab",sep="\t", fill=T)
+# genes without a KOG annotation (empty class) are dropped: they are not a functional category (mostly short or
+# unannotated transcripts), so they are not tested as a KOG class
+gene2kog <- gene2kog[!is.na(gene2kog[, 2]) & trimws(gene2kog[, 2]) != "", ]
 head(gene2kog)
+```
+
+
+# gene rankings
+
+```{r gene-rankings}
+# -----------------------------------------------------------------------------
+# KOG-MWU ranks all genes by a continuous measure and tests, for each KOG class, whether its genes rank higher or
+# lower than the rest (Mann-Whitney U); the Benjamini-Hochberg correction is applied across KOG classes. Two measures
+# are run for every comparison:
+#   rawp: signed -log10 of the unadjusted p-value (sign of the effect), as in the GO_MWU / KOG-MWU examples
+#         (Matz lab). Unadjusted p is used because the BH adjustment ties many genes when few are significant.
+#   lfc:  log2 fold change (as in the KOGMWU package examples); dream estimates are not shrunk, so noisy
+#         low-expression genes can rank high (filterByExpr has removed the least expressed genes).
+# Gene-level DEG calls elsewhere (Table S8, Venn diagrams, datasets) still use adjusted p (the *_lpv exports).
+# Inputs are the full results tables saved by the limma script (no re-fitting):
+#   treatments: pvals.RData (LC_CC ... LH_LC; log2FoldChange, stat, pvalue)
+#   urban vs reef and site contrasts: urban_reef.RData (site_tt; logFC, t, P.Value)
+# -----------------------------------------------------------------------------
+treat_env <- new.env()
+load("../../outputs/transcriptomics/ofav/limma/pvals.RData", envir = treat_env)
+site_env <- new.env()
+load("../../outputs/transcriptomics/ofav/limma/urban_reef.RData", envir = site_env)
+
+treat_sets <- c("LC_CC", "CH_CC", "LH_CC", "CH_LC", "LH_LC", "LH_CH")
+site_sets  <- c("urban_reef", "MacN_reef", "Star_reef", "Rainbow_Emerald", "Star_Emerald", "MacN_Emerald",
+                "Star_Rainbow", "MacN_Rainbow", "MacN_Star")
+stopifnot(all(treat_sets %in% ls(treat_env)), all(site_sets %in% names(site_env$site_tt)))
+measures <- c(rawp = "signed -log10 p (unadjusted)", lfc = "log2 fold change")
+
+# one ranking per contrast and measure: data frame of gene and value (the two columns kog.mwu() expects)
+kog_input <- function(contrast, measure) {
+  if (contrast %in% site_sets) {
+    x <- site_env$site_tt[[contrast]]; lfc <- x$logFC; stat <- x$t; p <- x$P.Value
+  } else {
+    x <- get(contrast, envir = treat_env); lfc <- x$log2FoldChange; stat <- x$stat; p <- x$pvalue
+  }
+  value <- if (measure == "rawp") -log10(p) * sign(stat) else lfc
+  d <- data.frame(gene = rownames(x), value = value)
+  d[is.finite(d$value), ]
+}
+
+# KOG-MWU for every contrast x measure (15 contrasts x 2 measures)
+kog_res <- lapply(setNames(names(measures), names(measures)), function(m)
+  lapply(setNames(c(treat_sets, site_sets), c(treat_sets, site_sets)), function(k) kog.mwu(kog_input(k, m), gene2kog)))
+
+# all KOG-MWU results in one table
+kog_all <- do.call(rbind, lapply(names(kog_res), function(m) do.call(rbind, lapply(names(kog_res[[m]]), function(k)
+  data.frame(measure = m, contrast = k, kog_res[[m]][[k]], row.names = NULL)))))
+write.csv(kog_all, "../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_kog_results.csv", row.names = FALSE)
+
+# does the measure matter? per contrast: correlation of delta ranks between measures, and KOG classes significant
+# (adjusted p < 0.05) under both, only raw p, or only log fold change
+measure_comparison <- do.call(rbind, lapply(c(treat_sets, site_sets), function(k) {
+  a <- kog_res$rawp[[k]]; b <- kog_res$lfc[[k]]
+  ab <- merge(a, b, by = "term", suffixes = c("_rawp", "_lfc"))
+  sa <- ab$term[ab$padj_rawp < 0.05]; sb <- ab$term[ab$padj_lfc < 0.05]
+  data.frame(contrast = k,
+             delta_rank_r = round(cor(ab$delta.rank_rawp, ab$delta.rank_lfc), 3),
+             sig_rawp = length(sa), sig_lfc = length(sb), sig_both = length(intersect(sa, sb)),
+             only_rawp = paste(setdiff(sa, sb), collapse = "; "), only_lfc = paste(setdiff(sb, sa), collapse = "; "))
+}))
+measure_comparison
+write.csv(measure_comparison, "../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_measure_comparison.csv", row.names = FALSE)
+
+library(RColorBrewer)
+# diverging palette with white fixed at zero: breaks run symmetrically from -max|delta rank| to +max
+color = colorRampPalette(rev(brewer.pal(n = 11, name = "RdBu")))(100)
+sym_breaks <- function(m) { lim <- max(abs(m), na.rm = TRUE); seq(-lim, lim, length.out = length(color) + 1) }
+kog_dir <- "../../outputs/transcriptomics/ofav/kogmwu"
+
+# delta-rank heatmap for a set of contrasts under one measure (file tag = measure);
+# * = KOG class significant in that contrast (adjusted p < 0.05, BH across classes)
+# flip dendrogram leaves towards a preferred column order without changing the tree (clustering is unchanged);
+# row trees (KOG terms) pass through untouched
+rotate_cols <- function(col_order) function(hc, mat) {
+  if (is.null(col_order) || !all(hc$labels %in% col_order)) return(hc)
+  out <- as.hclust(reorder(as.dendrogram(hc), wts = match(hc$labels, col_order), agglo.FUN = mean))
+  got <- out$labels[out$order]
+  if (!identical(got, col_order[col_order %in% got])) message("tree does not allow column order; closest: ", paste(got, collapse = ", "))
+  out
+}
+kog_heatmap <- function(contrasts, stem, measure, width = 7, height = 8, col_order = NULL) {
+  kt <- makeDeltaRanksTable(kog_res[[measure]][contrasts])
+  sig <- sapply(colnames(kt), function(k) {
+    x <- kog_res[[measure]][[k]]
+    ifelse(x$padj[match(rownames(kt), x$term)] < 0.05, "*", "")
+  })
+  sig[is.na(sig)] <- ""
+  save_plot(file = file.path(kog_dir, sprintf("KOG_urbanstress_ofav_host_%s_%s.pdf", stem, measure)), width = width, height = height, {
+    pheatmap(as.matrix(kt), clustering_distance_cols = "correlation", color = color, breaks = sym_breaks(as.matrix(kt)), clustering_callback = rotate_cols(col_order), cellwidth = 15, cellheight = 15,
+             border_color = "white", main = measures[[measure]],
+             display_numbers = matrix(sig, nrow = nrow(kt), dimnames = dimnames(kt)), number_color = "black", fontsize_number = 10)
+  })
+}
+# delta-rank correlation plots between pairs of contrasts
+kog_corr <- function(contrasts, pairs, stem, measure, mfrow, width, height) {
+  kt <- makeDeltaRanksTable(kog_res[[measure]][contrasts])
+  save_plot(file = file.path(kog_dir, sprintf("KOG_urbanstress_ofav_host_%s_corr_%s.pdf", stem, measure)), width = width, height = height, {
+    par(mfrow = mfrow)
+    for (pr in pairs) corrPlot(x = pr[1], y = pr[2], kt)
+  })
+}
+filtered_sets <- c("LC_CC", "CH_CC", "LH_CC")
+urban_sets    <- c("urban_reef", filtered_sets)
 ```
 
 
 # treatment all
 
 ```{r treatment-all}
-LC_CC=load('../../outputs/transcriptomics/ofav/limma/LC_CC_lpv.RData')
-LC_CC # names of datasets in the package
-LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
-lpv.LC_CC 
-
-CH_CC=load('../../outputs/transcriptomics/ofav/limma/CH_CC_lpv.RData')
-CH_CC # names of datasets in the package
-CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog) 
-lpv.CH_CC
-
-LH_CC=load('../../outputs/transcriptomics/ofav/limma/LH_CC_lpv.RData')
-LH_CC # names of datasets in the package
-LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog) 
-lpv.LH_CC 
-
-CH_LC=load('../../outputs/transcriptomics/ofav/limma/CH_LC_lpv.RData')
-CH_LC # names of datasets in the package
-CH_LC.p <- CH_LC.p[!is.na(CH_LC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.CH_LC=kog.mwu(CH_LC.p,gene2kog) 
-lpv.CH_LC
-
-LH_LC=load('../../outputs/transcriptomics/ofav/limma/LH_LC_lpv.RData')
-LH_LC # names of datasets in the package
-LH_LC.p <- LH_LC.p[!is.na(LH_LC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LH_LC=kog.mwu(LH_LC.p,gene2kog) 
-lpv.LH_LC
-
-LH_CH=load('../../outputs/transcriptomics/ofav/limma/LH_CH_lpv.RData')
-LH_CH # names of datasets in the package
-LH_CH.p <- LH_CH.p[!is.na(LH_CH.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LH_CH=kog.mwu(LH_CH.p,gene2kog) 
-lpv.LH_CH
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("LC_CC"=lpv.LC_CC,"CH_CC"=lpv.CH_CC,"LH_CC"=lpv.LH_CC,"CH_LC"=lpv.CH_LC,"LH_LC"=lpv.LH_LC,"LH_CH"=lpv.LH_CH))
-
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# Making a heatmap with hierarchical clustering trees: 
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_treatment_lpv.pdf", width=7, height=8, {
-  pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white")
-})
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_treatment_corr_lpv.pdf", width=10, height=10, {
-par(mfrow=c(4,4))
-corrPlot(x="LC_CC",y="CH_CC",ktable)
-corrPlot(x="LC_CC",y="LH_CC",ktable)
-corrPlot(x="LC_CC",y="CH_LC",ktable)
-corrPlot(x="LC_CC",y="LH_LC",ktable)
-corrPlot(x="LC_CC",y="LH_CH",ktable)
-corrPlot(x="CH_CC",y="LH_CC",ktable)
-corrPlot(x="CH_CC",y="CH_LC",ktable)
-corrPlot(x="CH_CC",y="LH_LC",ktable)
-corrPlot(x="CH_CC",y="LH_CH",ktable)
-corrPlot(x="LH_CC",y="CH_LC",ktable)
-corrPlot(x="LH_CC",y="LH_LC",ktable)
-corrPlot(x="LH_CC",y="LH_CH",ktable)
-corrPlot(x="CH_LC",y="LH_LC",ktable)
-corrPlot(x="CH_LC",y="LH_CH",ktable)
-corrPlot(x="LH_LC",y="LH_CH",ktable)
-})
+treat_pairs <- combn(treat_sets, 2, simplify = FALSE)
+kog_heatmap(treat_sets, "treatment", "rawp")
+kog_heatmap(treat_sets, "treatment", "lfc")
+kog_corr(treat_sets, treat_pairs, "treatment", "rawp", mfrow = c(4, 4), width = 10, height = 10)
+kog_corr(treat_sets, treat_pairs, "treatment", "lfc", mfrow = c(4, 4), width = 10, height = 10)
 ```
-
-
 
 
 # treatment filtered
 
 ```{r treatment-filtered}
-LC_CC=load('../../outputs/transcriptomics/ofav/limma/LC_CC_lpv.RData')
-LC_CC # names of datasets in the package
-LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog) 
-lpv.LC_CC 
-
-CH_CC=load('../../outputs/transcriptomics/ofav/limma/CH_CC_lpv.RData')
-CH_CC # names of datasets in the package
-CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog) 
-lpv.CH_CC
-
-LH_CC=load('../../outputs/transcriptomics/ofav/limma/LH_CC_lpv.RData')
-LH_CC # names of datasets in the package
-LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog) 
-lpv.LH_CC 
-
-# compiling a table of delta-ranks to compare these results:
-ktable=makeDeltaRanksTable(list("LC_CC"=lpv.LC_CC,"CH_CC"=lpv.CH_CC,"LH_CC"=lpv.LH_CC))
-
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# Making a heatmap with hierarchical clustering trees: 
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_treatment_filtered_lpv.pdf", width=7, height=8, {
-  pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white")
-})
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-#scatterplots between pairs
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_treatment_filtered_corr_lpv.pdf", width=7, height=2.5, {
-par(mfrow=c(1,3))
-corrPlot(x="LC_CC",y="CH_CC",ktable)
-corrPlot(x="LC_CC",y="LH_CC",ktable)
-corrPlot(x="CH_CC",y="LH_CC",ktable)
-})
+# stress treatments vs control only
+filtered_pairs <- combn(filtered_sets, 2, simplify = FALSE)
+kog_heatmap(filtered_sets, "treatment_filtered", "rawp")
+kog_heatmap(filtered_sets, "treatment_filtered", "lfc")
+kog_corr(filtered_sets, filtered_pairs, "treatment_filtered", "rawp", mfrow = c(1, 3), width = 7, height = 2.5)
+kog_corr(filtered_sets, filtered_pairs, "treatment_filtered", "lfc", mfrow = c(1, 3), width = 7, height = 2.5)
 ```
 
 
 # urban vs reef
 
 ```{r urban-vs-reef}
-# urban vs reef DEGs come from the planned contrast from the site model in the limma script (urban_reef_lpv)
-urban_reef=load('../../outputs/transcriptomics/ofav/limma/urban_reef_lpv.RData')
-urban_reef # names of datasets in the package
-urban_reef.p <- urban_reef.p[!is.na(urban_reef.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.urban_reef=kog.mwu(urban_reef.p,gene2kog)
-lpv.urban_reef
-
-# loading stress treatment results for comparison
-LC_CC=load('../../outputs/transcriptomics/ofav/limma/LC_CC_lpv.RData')
-LC_CC.p <- LC_CC.p[!is.na(LC_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LC_CC=kog.mwu(LC_CC.p,gene2kog)
-CH_CC=load('../../outputs/transcriptomics/ofav/limma/CH_CC_lpv.RData')
-CH_CC.p <- CH_CC.p[!is.na(CH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.CH_CC=kog.mwu(CH_CC.p,gene2kog)
-LH_CC=load('../../outputs/transcriptomics/ofav/limma/LH_CC_lpv.RData')
-LH_CC.p <- LH_CC.p[!is.na(LH_CC.p$lpv), ] # drop genes with NA lpv (e.g. padj = NA from independent filtering)
-lpv.LH_CC=kog.mwu(LH_CC.p,gene2kog)
-
-# compiling a table of delta-ranks: does being urban resemble a stress response?
-ktable=makeDeltaRanksTable(list("urban_reef"=lpv.urban_reef,"LC_CC"=lpv.LC_CC,"CH_CC"=lpv.CH_CC,"LH_CC"=lpv.LH_CC))
-
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# Making a heatmap with hierarchical clustering trees: 
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_urban_reef_lpv.pdf", width=7, height=8, {
-  pheatmap(as.matrix(ktable),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white")
-})
-
-# exploring correlations between datasets
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor)
-# p-values of these correlations in the upper panel:
-pairs(ktable, lower.panel = panel.smooth, upper.panel = panel.cor.pval)
-
-# creating a pub-ready corr plot
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_urban_reef_corr_lpv.pdf", width=7, height=2.5, {
-par(mfrow=c(1,3))
-corrPlot(x="urban_reef",y="LC_CC",ktable)
-corrPlot(x="urban_reef",y="CH_CC",ktable)
-corrPlot(x="urban_reef",y="LH_CC",ktable)
-})
+# urban vs reef (planned contrast of the site model) next to the three stress-vs-control contrasts:
+# does being urban resemble a stress response?
+urban_pairs <- lapply(filtered_sets, function(k) c("urban_reef", k))
+# Figure 4 column order, shared by both species (urban, OA, OA + Bleaching, Bleaching)
+fig4_order <- c("urban_reef", "LC_CC", "LH_CC", "CH_CC")
+kog_heatmap(urban_sets, "urban_reef", "rawp", col_order = fig4_order)
+kog_heatmap(urban_sets, "urban_reef", "lfc", col_order = fig4_order)
+kog_corr(urban_sets, urban_pairs, "urban_reef", "rawp", mfrow = c(1, 3), width = 7, height = 2.5)
+kog_corr(urban_sets, urban_pairs, "urban_reef", "lfc", mfrow = c(1, 3), width = 7, height = 2.5)
 ```
 
 
 # sites
 
 ```{r site-pairwise}
-# KOG enrichment for the site contrasts of the site model in the limma script: urban vs reef, each urban site vs the
-# reef sites, and the six pairwise site comparisons (first site minus second). KOG-MWU ranks all genes, so it can be
-# run for contrasts with few or no individually significant genes.
-site_sets <- c("urban_reef", "MacN_reef", "Star_reef", "Rainbow_Emerald", "Star_Emerald", "MacN_Emerald",
-               "Star_Rainbow", "MacN_Rainbow", "MacN_Star")
-# Genes are ranked here by the signed -log10 of the unadjusted p-value. The ranking is the same as with adjusted
-# p-values wherever those differ, but the BH adjustment gives many genes the same value when a contrast has few or
-# no significant genes (in the extreme, one value for every gene, which KOG-MWU cannot rank), so the unadjusted
-# p-values keep the full ranking.
-site_env <- new.env()
-load("../../outputs/transcriptomics/ofav/limma/urban_reef.RData", envir = site_env) # site_tt: one table per site contrast
-stopifnot(all(site_sets %in% names(site_env$site_tt)))
-site_kog <- lapply(setNames(site_sets, site_sets), function(k) {
-  x <- site_env$site_tt[[k]]
-  d <- data.frame(gene = rownames(x), lpv = -log10(x$P.Value) * sign(x$t))
-  d <- d[is.finite(d$lpv), ]
-  kog.mwu(d, gene2kog)
-})
-ktable_site=makeDeltaRanksTable(site_kog)
-ktable_site
+# urban vs reef, each urban site vs the reef sites, and the six pairwise site comparisons (first site minus second).
+# KOG-MWU ranks all genes, so it can be run for contrasts with few or no individually significant genes.
+kog_heatmap(site_sets, "sites", "rawp", width = 8)
+kog_heatmap(site_sets, "sites", "lfc", width = 8)
+for (m in names(measures))
+  write.csv(makeDeltaRanksTable(kog_res[[m]][site_sets]),
+            file = file.path(kog_dir, sprintf("KOG_urbanstress_ofav_host_sites_delta_ranks_%s.csv", m)))
 
-library(RColorBrewer)
-color = colorRampPalette(rev(c(brewer.pal(n = 7, name ="RdBu"),"royalblue","darkblue")))(100)
-
-# heatmap with hierarchical clustering trees
-save_plot(file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_sites_lpv.pdf", width=8, height=8, {
-  pheatmap(as.matrix(ktable_site),clustering_distance_cols="correlation",color=color, cellwidth=15, cellheight=15, border_color="white")
-})
-
-# KOG classes significant in each site contrast (adjusted p < 0.05)
-site_kog_sig <- do.call(rbind, lapply(names(site_kog), function(k) {
-  x <- site_kog[[k]]; x <- x[x$padj < 0.05, ]
-  if (nrow(x)) data.frame(contrast = k, x, row.names = NULL) else NULL
-}))
-site_kog_sig
-write.csv(ktable_site, file="../../outputs/transcriptomics/ofav/kogmwu/KOG_urbanstress_ofav_host_sites_delta_ranks.csv")
+# KOG classes significant in each site contrast (adjusted p < 0.05), by measure
+subset(kog_all, contrast %in% site_sets & padj < 0.05)
 ```
-

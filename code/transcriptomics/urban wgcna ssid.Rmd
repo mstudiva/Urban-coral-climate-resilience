@@ -440,6 +440,8 @@ module_trait_plots = function(MEs, moduleColors, label) {
   modLabels = sub("ME", "", names(MEs))
   # page size scales with the number of traits (width) and modules (height): ~0.55 x 0.3 in per cell
   hm_w = 2.5 + 0.55 * ncol(traits); hm_h = 1.5 + 0.3 * ncol(MEs)
+  # significant-only version (manuscript figure): narrower cells, ~0.38 in per trait (single-line labels)
+  hm_w_sig = 2.5 + 0.38 * ncol(traits)
   text_all = paste(signif(cor_m, 2), "\n(", signif(p_m, 1), ")", sep = "")
   dim(text_all) = dim(cor_m)
   text_sig = signif(cor_m, 2)
@@ -459,12 +461,19 @@ module_trait_plots = function(MEs, moduleColors, label) {
                      setStdMargins = FALSE, cex.text = 0.5, zlim = c(-1, 1),
                      main = paste0("Module-trait relationships (", label, ")"))
     }),
-    save_plot(paste0("../../outputs/transcriptomics/ssid/wgcna/module trait correlations ", label, " sig.pdf"), width = hm_w, height = hm_h, {
+    save_plot(paste0("../../outputs/transcriptomics/ssid/wgcna/module trait correlations ", label, " sig.pdf"), width = hm_w_sig, height = hm_h, {
       par(mar = c(6, 8.5, 3, 3))
-      labeledHeatmap(Matrix = cor_m, xLabels = names(traits), ySymbols = modLabels, yLabels = modLabels,
+      # colour limit +/-0.9 covers the strongest correlation (O. faveolata purple, -0.86); same scale for both species.
+      # Labels on dark cells (|r| >= 0.55) are drawn in white: blank them in the black layer, then overlay at the
+      # cell centres labeledHeatmap returns (xMid, yMid).
+      dark = abs(cor_m) >= 0.55 & text_sig != "-"
+      text_black = text_sig; text_black[dark] = ""
+      lp = labeledHeatmap(Matrix = cor_m, xLabels = names(traits), ySymbols = modLabels, yLabels = modLabels,
                      colorLabels = FALSE, colors = colorRampPalette(c("blue","lightblue","white","coral","red"))(50),
-                     textMatrix = text_sig, setStdMargins = FALSE, cex.text = 0.7, zlim = c(-0.7,0.7),
+                     textMatrix = text_black, setStdMargins = FALSE, cex.text = 0.7, zlim = c(-0.9, 0.9),
                      main = paste0("S. siderea Module-Trait correlations (", label, ")"))
+      if (any(dark)) text(lp$xMid[col(cor_m)[dark]], lp$yMid[row(cor_m)[dark]], text_sig[dark],
+                          col = "white", cex = 0.7, xpd = TRUE)
     }),
     save_plot(paste0("../../outputs/transcriptomics/ssid/wgcna/module size barplot ", label, ".pdf"), width = 7, height = 2 + 0.3 * length(modLabels), {
       par(mar = c(6, 8.5, 3, 3))

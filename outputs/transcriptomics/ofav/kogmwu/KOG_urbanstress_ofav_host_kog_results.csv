@@ -1,0 +1,691 @@
+"measure","contrast","term","nseqs","delta.rank","pval","padj"
+"rawp","LC_CC","Translation, ribosomal structure and biogenesis",405,-815,1.44207983292018e-11,3.31678361571641e-10
+"rawp","LC_CC","Amino acid transport and metabolism",379,543,1.32790494737911e-05,0.000152709068948598
+"rawp","LC_CC","Intracellular trafficking, secretion, and vesicular transport",516,-436,5.15294422695735e-05,0.000395059057400064
+"rawp","LC_CC","Energy production and conversion",269,-483,0.00100095185960676,0.00575547319273887
+"rawp","LC_CC","Inorganic ion transport and metabolism",317,398,0.00338750503802632,0.0155825231749211
+"rawp","LC_CC","Signal transduction mechanisms",1601,170,0.0100221056097625,0.0384180715040896
+"rawp","LC_CC","Cell motility",6,-2418,0.0124304537768252,0.0408429195524257
+"rawp","LC_CC","Carbohydrate transport and metabolism",425,238,0.0435624584558822,0.125242068060661
+"rawp","LC_CC","RNA processing and modification",385,-235,0.0575726641568726,0.139206282509244
+"rawp","LC_CC","Cytoskeleton",309,258,0.0605244706561929,0.139206282509244
+"rawp","LC_CC","Coenzyme transport and metabolism",75,-441,0.108135696593657,0.226101911059465
+"rawp","LC_CC","Secondary metabolites biosynthesis, transport and catabolism",312,173,0.205256945807925,0.37600766015198
+"rawp","LC_CC","Cell wall/membrane/envelope biogenesis",103,293,0.212526068781554,0.37600766015198
+"rawp","LC_CC","Nuclear structure",6,807,0.404392348193171,0.664358857745924
+"rawp","LC_CC","Cell cycle control, cell division, chromosome partitioning",147,-153,0.438514601762968,0.672389056036551
+"rawp","LC_CC","Nucleotide transport and metabolism",124,-153,0.474790813288254,0.682511794101865
+"rawp","LC_CC","Defense mechanisms",67,-163,0.57459673956437,0.775843450089346
+"rawp","LC_CC","Replication, recombination and repair",319,67,0.621403091507867,0.775843450089346
+"rawp","LC_CC","Extracellular structures",77,126,0.640914154421634,0.775843450089346
+"rawp","LC_CC","Chromatin structure and dynamics",82,66,0.802058660612983,0.900495080287179
+"rawp","LC_CC","Transcription",666,22,0.822191160262207,0.900495080287179
+"rawp","LC_CC","Lipid transport and metabolism",304,-12,0.930553428794091,0.948460676204428
+"rawp","LC_CC","Posttranslational modification, protein turnover, chaperones",1310,-5,0.948460676204428,0.948460676204428
+"rawp","CH_CC","Replication, recombination and repair",319,869,1.32087007997939e-10,3.0380011839526e-09
+"rawp","CH_CC","Translation, ribosomal structure and biogenesis",405,-734,1.1847746814018e-09,1.36249088361207e-08
+"rawp","CH_CC","Energy production and conversion",269,-495,0.000752921583597544,0.00577239880758117
+"rawp","CH_CC","Inorganic ion transport and metabolism",317,-441,0.00116536100389359,0.00670082577238814
+"rawp","CH_CC","Signal transduction mechanisms",1601,163,0.0134202576725231,0.0617331852936063
+"rawp","CH_CC","Cytoskeleton",309,330,0.0164127553481792,0.0629155621680203
+"rawp","CH_CC","Chromatin structure and dynamics",82,508,0.0532998692717035,0.17512814189274
+"rawp","CH_CC","Coenzyme transport and metabolism",75,-503,0.0673644210624127,0.193672710554436
+"rawp","CH_CC","Secondary metabolites biosynthesis, transport and catabolism",312,232,0.09038204303279,0.217143645357609
+"rawp","CH_CC","Lipid transport and metabolism",304,-232,0.0944102805902649,0.217143645357609
+"rawp","CH_CC","Transcription",666,126,0.187808967384782,0.384032935998912
+"rawp","CH_CC","Intracellular trafficking, secretion, and vesicular transport",516,-138,0.200365010086389,0.384032935998912
+"rawp","CH_CC","Cell motility",6,-1041,0.281664002528524,0.498328619858158
+"rawp","CH_CC","Defense mechanisms",67,263,0.365245176128693,0.600045646497139
+"rawp","CH_CC","Posttranslational modification, protein turnover, chaperones",1310,-55,0.437070746345494,0.6120613038815
+"rawp","CH_CC","Extracellular structures",77,195,0.473173342815901,0.6120613038815
+"rawp","CH_CC","Nucleotide transport and metabolism",124,-149,0.4864862137665,0.6120613038815
+"rawp","CH_CC","Cell cycle control, cell division, chromosome partitioning",147,133,0.501098816308987,0.6120613038815
+"rawp","CH_CC","Nuclear structure",6,644,0.505615859728196,0.6120613038815
+"rawp","CH_CC","Amino acid transport and metabolism",379,62,0.619586058015694,0.706760402064393
+"rawp","CH_CC","RNA processing and modification",385,-57,0.645302975797924,0.706760402064393
+"rawp","CH_CC","Carbohydrate transport and metabolism",425,-31,0.795589149436049,0.831752292592233
+"rawp","CH_CC","Cell wall/membrane/envelope biogenesis",103,-40,0.866213909629885,0.866213909629885
+"rawp","LH_CC","Translation, ribosomal structure and biogenesis",405,-971,8.48760380439899e-16,1.95214887501177e-14
+"rawp","LH_CC","Signal transduction mechanisms",1601,391,3.20753645866034e-09,3.68866692745939e-08
+"rawp","LH_CC","Replication, recombination and repair",319,657,1.19683638777346e-06,9.17574563959653e-06
+"rawp","LH_CC","Energy production and conversion",269,-634,1.58176483758234e-05,9.09514781609846e-05
+"rawp","LH_CC","RNA processing and modification",385,-410,0.000925261281175825,0.00425620189340879
+"rawp","LH_CC","Intracellular trafficking, secretion, and vesicular transport",516,-351,0.00112593888520839,0.0043160990599655
+"rawp","LH_CC","Secondary metabolites biosynthesis, transport and catabolism",312,406,0.00295249847333046,0.00970106641237151
+"rawp","LH_CC","Amino acid transport and metabolism",379,323,0.00944146683232439,0.0271442171429326
+"rawp","LH_CC","Coenzyme transport and metabolism",75,-601,0.0286054691902706,0.0731028657084693
+"rawp","LH_CC","Cell motility",6,-1980,0.0406536871401326,0.093503480422305
+"rawp","LH_CC","Nucleotide transport and metabolism",124,-324,0.131021915344574,0.273954913902291
+"rawp","LH_CC","Transcription",666,-139,0.145131616524936,0.278168931672794
+"rawp","LH_CC","Carbohydrate transport and metabolism",425,166,0.159488773680508,0.282172445742437
+"rawp","LH_CC","Lipid transport and metabolism",304,-183,0.185516428399488,0.298757758518059
+"rawp","LH_CC","Extracellular structures",77,352,0.194842016424821,0.298757758518059
+"rawp","LH_CC","Chromatin structure and dynamics",82,240,0.360961432104749,0.518524673214965
+"rawp","LH_CC","Nuclear structure",6,843,0.383257367158887,0.518524673214965
+"rawp","LH_CC","Defense mechanisms",67,-240,0.407855975312708,0.52114930178846
+"rawp","LH_CC","Cell wall/membrane/envelope biogenesis",103,154,0.513279006253578,0.621337744412226
+"rawp","LH_CC","Cell cycle control, cell division, chromosome partitioning",147,96,0.62515594859947,0.691020605035585
+"rawp","LH_CC","Cytoskeleton",309,66,0.630931856771621,0.691020605035585
+"rawp","LH_CC","Inorganic ion transport and metabolism",317,23,0.863238335169163,0.902476441313216
+"rawp","LH_CC","Posttranslational modification, protein turnover, chaperones",1310,-8,0.91630058774993,0.91630058774993
+"rawp","CH_LC","Replication, recombination and repair",319,788,5.59918200693232e-09,1.28781186159443e-07
+"rawp","CH_LC","Inorganic ion transport and metabolism",317,-688,3.98603480514879e-07,4.58394002592111e-06
+"rawp","CH_LC","Amino acid transport and metabolism",379,-325,0.00908931369156475,0.06865445614936
+"rawp","CH_LC","Intracellular trafficking, secretion, and vesicular transport",516,271,0.01193990541728,0.06865445614936
+"rawp","CH_LC","Translation, ribosomal structure and biogenesis",405,-287,0.017297933496705,0.079570494084843
+"rawp","CH_LC","Carbohydrate transport and metabolism",425,-225,0.0569203616537582,0.21819471967274
+"rawp","CH_LC","Transcription",666,173,0.0706486605993315,0.232131313397803
+"rawp","CH_LC","Chromatin structure and dynamics",82,442,0.0924396461473842,0.26576398267373
+"rawp","CH_LC","Lipid transport and metabolism",304,-209,0.130935569239093,0.334613121388793
+"rawp","CH_LC","Cell motility",6,1329,0.169483832421547,0.389812814569558
+"rawp","CH_LC","Posttranslational modification, protein turnover, chaperones",1310,-85,0.236226323265127,0.483735795695846
+"rawp","CH_LC","Secondary metabolites biosynthesis, transport and catabolism",312,149,0.276111121089672,0.483735795695846
+"rawp","CH_LC","Cell cycle control, cell division, chromosome partitioning",147,212,0.281677101051838,0.483735795695846
+"rawp","CH_LC","Cytoskeleton",309,137,0.316963635425413,0.483735795695846
+"rawp","CH_LC","Defense mechanisms",67,283,0.330318060870808,0.483735795695846
+"rawp","CH_LC","Cell wall/membrane/envelope biogenesis",103,-226,0.336511857875371,0.483735795695846
+"rawp","CH_LC","Signal transduction mechanisms",1601,37,0.579179779742462,0.712068299284894
+"rawp","CH_LC","Energy production and conversion",269,-81,0.582116316010989,0.712068299284894
+"rawp","CH_LC","Extracellular structures",77,147,0.588230334191869,0.712068299284894
+"rawp","CH_LC","Coenzyme transport and metabolism",75,-107,0.695911499009612,0.800298223861054
+"rawp","CH_LC","Nuclear structure",6,278,0.773704291025826,0.81309120214344
+"rawp","CH_LC","RNA processing and modification",385,35,0.777739410745899,0.81309120214344
+"rawp","CH_LC","Nucleotide transport and metabolism",124,35,0.871656080078456,0.871656080078456
+"rawp","LH_LC","Signal transduction mechanisms",1601,346,1.54987639389148e-07,3.5647157059504e-06
+"rawp","LH_LC","Translation, ribosomal structure and biogenesis",405,-605,5.39151756166807e-07,6.20024519591828e-06
+"rawp","LH_LC","Replication, recombination and repair",319,636,2.55527857251359e-06,1.95904690559375e-05
+"rawp","LH_LC","RNA processing and modification",385,-356,0.0039707356396393,0.022831729927926
+"rawp","LH_LC","Energy production and conversion",269,-412,0.00503886012679412,0.023178756583253
+"rawp","LH_LC","Secondary metabolites biosynthesis, transport and catabolism",312,358,0.008866491255348,0.033988216478834
+"rawp","LH_LC","Transcription",666,-173,0.0701161070907804,0.23038149472685
+"rawp","LH_LC","Coenzyme transport and metabolism",75,-400,0.145616942506087,0.380418126027185
+"rawp","LH_LC","Extracellular structures",77,380,0.160722073779376,0.380418126027185
+"rawp","LH_LC","Inorganic ion transport and metabolism",317,-179,0.186301095748311,0.380418126027185
+"rawp","LH_LC","Lipid transport and metabolism",304,-179,0.195537167544044,0.380418126027185
+"rawp","LH_LC","Nucleotide transport and metabolism",124,-273,0.202322401060372,0.380418126027185
+"rawp","LH_LC","Intracellular trafficking, secretion, and vesicular transport",516,-131,0.223890773628552,0.380418126027185
+"rawp","LH_LC","Cell cycle control, cell division, chromosome partitioning",147,236,0.231558859320895,0.380418126027185
+"rawp","LH_LC","Nuclear structure",6,658,0.496618924115053,0.692317163683982
+"rawp","LH_LC","Cell motility",6,-642,0.507050042599793,0.692317163683982
+"rawp","LH_LC","Chromatin structure and dynamics",82,172,0.511712686201204,0.692317163683982
+"rawp","LH_LC","Defense mechanisms",67,-166,0.56832915938593,0.726198370326466
+"rawp","LH_LC","Cytoskeleton",309,-42,0.758571415127608,0.870820352742098
+"rawp","LH_LC","Carbohydrate transport and metabolism",425,-30,0.797634562343159,0.870820352742098
+"rawp","LH_LC","Cell wall/membrane/envelope biogenesis",103,57,0.807558077591353,0.870820352742098
+"rawp","LH_LC","Posttranslational modification, protein turnover, chaperones",1310,15,0.83295859827505,0.870820352742098
+"rawp","LH_LC","Amino acid transport and metabolism",379,-5,0.965937468991392,0.965937468991392
+"rawp","LH_CH","Signal transduction mechanisms",1601,325,8.57391588171552e-07,1.97200065279457e-05
+"rawp","LH_CH","RNA processing and modification",385,-523,2.29623325631201e-05,0.000264066824475881
+"rawp","LH_CH","Translation, ribosomal structure and biogenesis",405,-483,6.36821834975624e-05,0.000488230073481312
+"rawp","LH_CH","Energy production and conversion",269,-518,0.000421763067440504,0.0024251376377829
+"rawp","LH_CH","Inorganic ion transport and metabolism",317,447,0.000989251637659283,0.0045505575332327
+"rawp","LH_CH","Amino acid transport and metabolism",379,397,0.00142869892508957,0.00547667921284335
+"rawp","LH_CH","Transcription",666,-285,0.00291344297912669,0.00957274121713055
+"rawp","LH_CH","Secondary metabolites biosynthesis, transport and catabolism",312,363,0.0078490900376158,0.0225661338581454
+"rawp","LH_CH","Intracellular trafficking, secretion, and vesicular transport",516,-281,0.00918577036226715,0.0234747464813494
+"rawp","LH_CH","Defense mechanisms",67,-732,0.0117909001212662,0.0271190702789123
+"rawp","LH_CH","Carbohydrate transport and metabolism",425,239,0.0428601564901565,0.0896166908430545
+"rawp","LH_CH","Nucleotide transport and metabolism",124,-350,0.101965031227901,0.183374091397472
+"rawp","LH_CH","Cytoskeleton",309,-222,0.106233147614512,0.183374091397472
+"rawp","LH_CH","Cell motility",6,-1539,0.111619012154983,0.183374091397472
+"rawp","LH_CH","Cell wall/membrane/envelope biogenesis",103,324,0.167266696512249,0.256475601318782
+"rawp","LH_CH","Nuclear structure",6,1228,0.204370781298846,0.293782998117091
+"rawp","LH_CH","Extracellular structures",77,326,0.229299443231857,0.310228658490159
+"rawp","LH_CH","Coenzyme transport and metabolism",75,-253,0.357084027067984,0.456274034586868
+"rawp","LH_CH","Cell cycle control, cell division, chromosome partitioning",147,137,0.485665424046109,0.587910776476869
+"rawp","LH_CH","Lipid transport and metabolism",304,-73,0.597730870115312,0.687390500632609
+"rawp","LH_CH","Posttranslational modification, protein turnover, chaperones",1310,32,0.65311556919448,0.710597299235022
+"rawp","LH_CH","Chromatin structure and dynamics",82,-109,0.679701764485673,0.710597299235022
+"rawp","LH_CH","Replication, recombination and repair",319,47,0.7289436685674,0.7289436685674
+"rawp","urban_reef","RNA processing and modification",385,454,0.000237650765479103,0.00546596760601937
+"rawp","urban_reef","Signal transduction mechanisms",1601,-165,0.0123395673129245,0.138897272995863
+"rawp","urban_reef","Defense mechanisms",67,-687,0.018117035608156,0.138897272995863
+"rawp","urban_reef","Transcription",666,197,0.0394266455001111,0.197410770407418
+"rawp","urban_reef","Posttranslational modification, protein turnover, chaperones",1310,-139,0.0515310038607364,0.197410770407418
+"rawp","urban_reef","Amino acid transport and metabolism",379,-236,0.058123359616855,0.197410770407418
+"rawp","urban_reef","Coenzyme transport and metabolism",75,501,0.0680419426547174,0.197410770407418
+"rawp","urban_reef","Replication, recombination and repair",319,-246,0.0686646157938844,0.197410770407418
+"rawp","urban_reef","Translation, ribosomal structure and biogenesis",405,199,0.0994127843008137,0.254054893213191
+"rawp","urban_reef","Nucleotide transport and metabolism",124,310,0.147542524334364,0.339347805969037
+"rawp","urban_reef","Cytoskeleton",309,157,0.253273304173661,0.485696402420751
+"rawp","urban_reef","Nuclear structure",6,-1105,0.253406818654305,0.485696402420751
+"rawp","urban_reef","Inorganic ion transport and metabolism",317,134,0.323483424118673,0.49134646351966
+"rawp","urban_reef","Chromatin structure and dynamics",82,255,0.331555056018634,0.49134646351966
+"rawp","urban_reef","Cell wall/membrane/envelope biogenesis",103,-218,0.353187389850327,0.49134646351966
+"rawp","urban_reef","Extracellular structures",77,250,0.356521759926391,0.49134646351966
+"rawp","urban_reef","Cell motility",6,866,0.370870558514913,0.49134646351966
+"rawp","urban_reef","Lipid transport and metabolism",304,-117,0.398444788284937,0.49134646351966
+"rawp","urban_reef","Cell cycle control, cell division, chromosome partitioning",147,164,0.405894904646676,0.49134646351966
+"rawp","urban_reef","Carbohydrate transport and metabolism",425,70,0.550456492420463,0.633024966283532
+"rawp","urban_reef","Intracellular trafficking, secretion, and vesicular transport",516,38,0.726236210014815,0.765646111825
+"rawp","urban_reef","Secondary metabolites biosynthesis, transport and catabolism",312,-47,0.732357150441304,0.765646111825
+"rawp","urban_reef","Energy production and conversion",269,28,0.847372938897682,0.847372938897682
+"rawp","MacN_reef","Replication, recombination and repair",319,-447,0.000944935242601825,0.021733510579842
+"rawp","MacN_reef","Defense mechanisms",67,-881,0.00242951153734647,0.0279393826794844
+"rawp","MacN_reef","Translation, ribosomal structure and biogenesis",405,317,0.00866172206279114,0.0664065358147321
+"rawp","MacN_reef","RNA processing and modification",385,265,0.0320348531495331,0.184200405609815
+"rawp","MacN_reef","Amino acid transport and metabolism",379,-240,0.0542305993571704,0.249460757042984
+"rawp","MacN_reef","Posttranslational modification, protein turnover, chaperones",1310,-106,0.138856349319229,0.532282672390378
+"rawp","MacN_reef","Coenzyme transport and metabolism",75,354,0.197736677186849,0.536346821450766
+"rawp","MacN_reef","Inorganic ion transport and metabolism",317,169,0.212650774838625,0.536346821450766
+"rawp","MacN_reef","Signal transduction mechanisms",1601,-79,0.231542774483529,0.536346821450766
+"rawp","MacN_reef","Cell motility",6,1084,0.262475467831775,0.536346821450766
+"rawp","MacN_reef","Extracellular structures",77,300,0.269036360174492,0.536346821450766
+"rawp","MacN_reef","Nuclear structure",6,-956,0.323004353255278,0.536346821450766
+"rawp","MacN_reef","Cytoskeleton",309,134,0.328222059413627,0.536346821450766
+"rawp","MacN_reef","Nucleotide transport and metabolism",124,202,0.345823643678781,0.536346821450766
+"rawp","MacN_reef","Cell wall/membrane/envelope biogenesis",103,-204,0.384334568583893,0.536346821450766
+"rawp","MacN_reef","Transcription",666,82,0.390916999703126,0.536346821450766
+"rawp","MacN_reef","Intracellular trafficking, secretion, and vesicular transport",516,91,0.396430259333175,0.536346821450766
+"rawp","MacN_reef","Energy production and conversion",269,99,0.499261307325488,0.63794500380479
+"rawp","MacN_reef","Carbohydrate transport and metabolism",425,62,0.597320809056072,0.723072558331034
+"rawp","MacN_reef","Chromatin structure and dynamics",82,69,0.793880966021722,0.900370685755221
+"rawp","MacN_reef","Lipid transport and metabolism",304,-31,0.822077582646071,0.900370685755221
+"rawp","MacN_reef","Secondary metabolites biosynthesis, transport and catabolism",312,-16,0.908544519252859,0.949841997400716
+"rawp","MacN_reef","Cell cycle control, cell division, chromosome partitioning",147,-9,0.963703400651075,0.963703400651075
+"rawp","Star_reef","RNA processing and modification",385,593,1.64564622084917e-06,3.78498630795309e-05
+"rawp","Star_reef","Signal transduction mechanisms",1601,-235,0.000368105948211385,0.00423321840443093
+"rawp","Star_reef","Transcription",666,295,0.00206617656346753,0.0158406869865844
+"rawp","Star_reef","Nucleotide transport and metabolism",124,406,0.0584306773168475,0.320579468952983
+"rawp","Star_reef","Coenzyme transport and metabolism",75,498,0.0699870253793169,0.320579468952983
+"rawp","Star_reef","Chromatin structure and dynamics",82,446,0.0898107326936506,0.320579468952983
+"rawp","Star_reef","Cell cycle control, cell division, chromosome partitioning",147,327,0.0975676644639512,0.320579468952983
+"rawp","Star_reef","Amino acid transport and metabolism",379,-189,0.129703725789287,0.34173418665098
+"rawp","Star_reef","Posttranslational modification, protein turnover, chaperones",1310,-107,0.13372207303734,0.34173418665098
+"rawp","Star_reef","Defense mechanisms",67,-301,0.30093271348241,0.660849933498352
+"rawp","Star_reef","Cell wall/membrane/envelope biogenesis",103,-234,0.319943925198968,0.660849933498352
+"rawp","Star_reef","Lipid transport and metabolism",304,-131,0.344791269651314,0.660849933498352
+"rawp","Star_reef","Extracellular structures",77,232,0.393108684080004,0.66769229159626
+"rawp","Star_reef","Nuclear structure",6,-797,0.409758583745049,0.66769229159626
+"rawp","Star_reef","Secondary metabolites biosynthesis, transport and catabolism",312,-107,0.4354514945193,0.66769229159626
+"rawp","Star_reef","Carbohydrate transport and metabolism",425,83,0.483251273770778,0.694673706045493
+"rawp","Star_reef","Cytoskeleton",309,69,0.612872258339462,0.794609870679581
+"rawp","Star_reef","Intracellular trafficking, secretion, and vesicular transport",516,-48,0.653749113955559,0.794609870679581
+"rawp","Star_reef","Translation, ribosomal structure and biogenesis",405,-54,0.656416849691828,0.794609870679581
+"rawp","Star_reef","Inorganic ion transport and metabolism",317,49,0.717573931863403,0.804461145933592
+"rawp","Star_reef","Energy production and conversion",269,-50,0.734508002808932,0.804461145933592
+"rawp","Star_reef","Replication, recombination and repair",319,30,0.821941430144481,0.859302404241957
+"rawp","Star_reef","Cell motility",6,157,0.871169033879289,0.871169033879289
+"rawp","Rainbow_Emerald","Transcription",666,-501,1.71372740916861e-07,3.9415730410878e-06
+"rawp","Rainbow_Emerald","Translation, ribosomal structure and biogenesis",405,-538,8.32877752216939e-06,9.5780941504948e-05
+"rawp","Rainbow_Emerald","Signal transduction mechanisms",1601,177,0.00739913453816943,0.0567266981259656
+"rawp","Rainbow_Emerald","Posttranslational modification, protein turnover, chaperones",1310,176,0.013659890928589,0.0785443728393868
+"rawp","Rainbow_Emerald","Nuclear structure",6,2236,0.0208115762252079,0.0957332506359563
+"rawp","Rainbow_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,303,0.0268852998525997,0.103060316101632
+"rawp","Rainbow_Emerald","Energy production and conversion",269,-267,0.0686936129333097,0.225707585352303
+"rawp","Rainbow_Emerald","Lipid transport and metabolism",304,216,0.11804430855123,0.338990104477653
+"rawp","Rainbow_Emerald","Amino acid transport and metabolism",379,183,0.141179605803773,0.338990104477653
+"rawp","Rainbow_Emerald","Cell wall/membrane/envelope biogenesis",103,336,0.152362175076582,0.338990104477653
+"rawp","Rainbow_Emerald","Cytoskeleton",309,-192,0.162125702141486,0.338990104477653
+"rawp","Rainbow_Emerald","Defense mechanisms",67,-377,0.194014882238015,0.361785523321957
+"rawp","Rainbow_Emerald","RNA processing and modification",385,-153,0.214926225768917,0.361785523321957
+"rawp","Rainbow_Emerald","Extracellular structures",77,-332,0.220217275065539,0.361785523321957
+"rawp","Rainbow_Emerald","Nucleotide transport and metabolism",124,-208,0.332579875242393,0.502294419171308
+"rawp","Rainbow_Emerald","Cell motility",6,-905,0.34942220464091,0.502294419171308
+"rawp","Rainbow_Emerald","Replication, recombination and repair",319,113,0.405298706596684,0.542213870404849
+"rawp","Rainbow_Emerald","Chromatin structure and dynamics",82,210,0.424341289882056,0.542213870404849
+"rawp","Rainbow_Emerald","Carbohydrate transport and metabolism",425,-82,0.486169815149674,0.588521355181184
+"rawp","Rainbow_Emerald","Inorganic ion transport and metabolism",317,89,0.511980081661563,0.588777093910797
+"rawp","Rainbow_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,59,0.583928535915893,0.639540777431692
+"rawp","Rainbow_Emerald","Coenzyme transport and metabolism",75,123,0.653550314400741,0.683257146873502
+"rawp","Rainbow_Emerald","Cell cycle control, cell division, chromosome partitioning",147,33,0.866385068179749,0.866385068179749
+"rawp","Star_Emerald","RNA processing and modification",385,532,1.65916489429652e-05,0.0003816079256882
+"rawp","Star_Emerald","Translation, ribosomal structure and biogenesis",405,-359,0.00291748819151419,0.0335511142024132
+"rawp","Star_Emerald","Chromatin structure and dynamics",82,553,0.0353829541547355,0.229769073975698
+"rawp","Star_Emerald","Cell cycle control, cell division, chromosome partitioning",147,405,0.0399598389522953,0.229769073975698
+"rawp","Star_Emerald","Defense mechanisms",67,-569,0.0503358849826127,0.231545070920018
+"rawp","Star_Emerald","Coenzyme transport and metabolism",75,504,0.0666052223556608,0.255320019030033
+"rawp","Star_Emerald","Signal transduction mechanisms",1601,-103,0.119580205518197,0.381470290616283
+"rawp","Star_Emerald","Energy production and conversion",269,-221,0.132685318475229,0.381470290616283
+"rawp","Star_Emerald","Nucleotide transport and metabolism",124,274,0.201512164491711,0.514975531478817
+"rawp","Star_Emerald","Transcription",666,-107,0.262778081352612,0.604389587111008
+"rawp","Star_Emerald","Inorganic ion transport and metabolism",317,120,0.376734398932252,0.78593395866759
+"rawp","Star_Emerald","Nuclear structure",6,797,0.410052500174395,0.78593395866759
+"rawp","Star_Emerald","Replication, recombination and repair",319,86,0.522650244624157,0.924688894335047
+"rawp","Star_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,78,0.569960588673519,0.936363824249352
+"rawp","Star_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,-44,0.68304238957971,0.94629983574291
+"rawp","Star_Emerald","Cell motility",6,-388,0.688043571915845,0.94629983574291
+"rawp","Star_Emerald","Lipid transport and metabolism",304,43,0.754357974443689,0.94629983574291
+"rawp","Star_Emerald","Carbohydrate transport and metabolism",425,30,0.797244852280463,0.94629983574291
+"rawp","Star_Emerald","Cytoskeleton",309,-33,0.811241715317653,0.94629983574291
+"rawp","Star_Emerald","Cell wall/membrane/envelope biogenesis",103,-45,0.84958040706872,0.94629983574291
+"rawp","Star_Emerald","Posttranslational modification, protein turnover, chaperones",1310,-12,0.864012893504396,0.94629983574291
+"rawp","Star_Emerald","Amino acid transport and metabolism",379,-10,0.937817608702127,0.97354392508131
+"rawp","Star_Emerald","Extracellular structures",77,9,0.97354392508131,0.97354392508131
+"rawp","MacN_Emerald","Defense mechanisms",67,-1016,0.000468435312913233,0.0107740121970044
+"rawp","MacN_Emerald","Replication, recombination and repair",319,-357,0.00831690676473745,0.0956444277944807
+"rawp","MacN_Emerald","Transcription",666,-198,0.0386816569035679,0.272895265969929
+"rawp","MacN_Emerald","Inorganic ion transport and metabolism",317,269,0.0474600462556398,0.272895265969929
+"rawp","MacN_Emerald","RNA processing and modification",385,206,0.0957351888194955,0.440381868569679
+"rawp","MacN_Emerald","Coenzyme transport and metabolism",75,308,0.261991304799323,0.926531886058374
+"rawp","MacN_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,96,0.373235866469443,0.926531886058374
+"rawp","MacN_Emerald","Amino acid transport and metabolism",379,-105,0.399228854082939,0.926531886058374
+"rawp","MacN_Emerald","Nucleotide transport and metabolism",124,169,0.431264093153701,0.926531886058374
+"rawp","MacN_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,102,0.457157908235885,0.926531886058374
+"rawp","MacN_Emerald","Cell motility",6,700,0.469194798031243,0.926531886058374
+"rawp","MacN_Emerald","Chromatin structure and dynamics",82,184,0.483407940552195,0.926531886058374
+"rawp","MacN_Emerald","Carbohydrate transport and metabolism",425,56,0.637426023158106,0.949717158713604
+"rawp","MacN_Emerald","Lipid transport and metabolism",304,45,0.743974794889819,0.949717158713604
+"rawp","MacN_Emerald","Nuclear structure",6,271,0.779519046134656,0.949717158713604
+"rawp","MacN_Emerald","Cytoskeleton",309,-32,0.814661118506472,0.949717158713604
+"rawp","MacN_Emerald","Cell cycle control, cell division, chromosome partitioning",147,43,0.827064874224558,0.949717158713604
+"rawp","MacN_Emerald","Energy production and conversion",269,30,0.835663078955914,0.949717158713604
+"rawp","MacN_Emerald","Extracellular structures",77,-52,0.847952503394957,0.949717158713604
+"rawp","MacN_Emerald","Cell wall/membrane/envelope biogenesis",103,-35,0.88188261296251,0.949717158713604
+"rawp","MacN_Emerald","Signal transduction mechanisms",1601,5,0.939441828168746,0.949717158713604
+"rawp","MacN_Emerald","Translation, ribosomal structure and biogenesis",405,8,0.945479488012904,0.949717158713604
+"rawp","MacN_Emerald","Posttranslational modification, protein turnover, chaperones",1310,-5,0.949717158713604,0.949717158713604
+"rawp","Star_Rainbow","Transcription",666,448,2.89817517540314e-06,6.66580290342722e-05
+"rawp","Star_Rainbow","RNA processing and modification",385,522,2.43114773865738e-05,0.000279581989945599
+"rawp","Star_Rainbow","Signal transduction mechanisms",1601,-260,8.08411326437786e-05,0.000619782016935636
+"rawp","Star_Rainbow","Translation, ribosomal structure and biogenesis",405,323,0.00748916460114146,0.0430626964565634
+"rawp","Star_Rainbow","Posttranslational modification, protein turnover, chaperones",1310,-164,0.0214430305482575,0.0986379405219845
+"rawp","Star_Rainbow","Amino acid transport and metabolism",379,-244,0.0504688272219547,0.188790057478662
+"rawp","Star_Rainbow","Secondary metabolites biosynthesis, transport and catabolism",312,-260,0.0574578435804623,0.188790057478662
+"rawp","Star_Rainbow","Nucleotide transport and metabolism",124,383,0.0736717930086386,0.199728639292876
+"rawp","Star_Rainbow","Nuclear structure",6,-1704,0.0781546849406905,0.199728639292876
+"rawp","Star_Rainbow","Cell wall/membrane/envelope biogenesis",103,-389,0.0972191881615029,0.223604132771457
+"rawp","Star_Rainbow","Lipid transport and metabolism",304,-198,0.153618857777993,0.321203066263076
+"rawp","Star_Rainbow","Cell cycle control, cell division, chromosome partitioning",147,232,0.239129132971965,0.444595219209446
+"rawp","Star_Rainbow","Coenzyme transport and metabolism",75,315,0.251292949987948,0.444595219209446
+"rawp","Star_Rainbow","Extracellular structures",77,279,0.304413018015681,0.494556759868145
+"rawp","Star_Rainbow","Chromatin structure and dynamics",82,252,0.337705479360567,0.494556759868145
+"rawp","Star_Rainbow","Cytoskeleton",309,130,0.344039485125666,0.494556759868145
+"rawp","Star_Rainbow","Cell motility",6,682,0.480491769242383,0.650077099563224
+"rawp","Star_Rainbow","Carbohydrate transport and metabolism",425,77,0.515695781208531,0.658944609322012
+"rawp","Star_Rainbow","Intracellular trafficking, secretion, and vesicular transport",516,-64,0.553034628136457,0.669462970902027
+"rawp","Star_Rainbow","Energy production and conversion",269,75,0.61114424532444,0.702815882123106
+"rawp","Star_Rainbow","Replication, recombination and repair",319,-16,0.907435447492948,0.965757078331522
+"rawp","Star_Rainbow","Defense mechanisms",67,-20,0.945945872304078,0.965757078331522
+"rawp","Star_Rainbow","Inorganic ion transport and metabolism",317,-6,0.965757078331522,0.965757078331522
+"rawp","MacN_Rainbow","Translation, ribosomal structure and biogenesis",405,531,1.09598617525908e-05,0.000252076820309588
+"rawp","MacN_Rainbow","Transcription",666,296,0.00197590366227662,0.016637940761513
+"rawp","MacN_Rainbow","Replication, recombination and repair",319,-415,0.00217016618628431,0.016637940761513
+"rawp","MacN_Rainbow","Amino acid transport and metabolism",379,-314,0.0117761345341454,0.067712773571336
+"rawp","MacN_Rainbow","RNA processing and modification",385,300,0.0152107618729684,0.0699695046156546
+"rawp","MacN_Rainbow","Posttranslational modification, protein turnover, chaperones",1310,-163,0.0224588064444141,0.0860920913702541
+"rawp","MacN_Rainbow","Signal transduction mechanisms",1601,-139,0.0351906620755947,0.115626461105525
+"rawp","MacN_Rainbow","Defense mechanisms",67,-559,0.0544712979672163,0.156604981655747
+"rawp","MacN_Rainbow","Nuclear structure",6,-1747,0.0709749294380499,0.181380375230572
+"rawp","MacN_Rainbow","Cytoskeleton",309,236,0.0855515682401644,0.196768606952378
+"rawp","MacN_Rainbow","Extracellular structures",77,352,0.193961184402184,0.375363298278478
+"rawp","MacN_Rainbow","Cell wall/membrane/envelope biogenesis",103,-295,0.209607343369822,0.375363298278478
+"rawp","MacN_Rainbow","Cell motility",6,1207,0.212161864244357,0.375363298278478
+"rawp","MacN_Rainbow","Lipid transport and metabolism",304,-145,0.294892808898142,0.465243049939167
+"rawp","MacN_Rainbow","Coenzyme transport and metabolism",75,283,0.303419380395109,0.465243049939167
+"rawp","MacN_Rainbow","Nucleotide transport and metabolism",124,205,0.33804173582068,0.485934995242227
+"rawp","MacN_Rainbow","Energy production and conversion",269,124,0.39722862070037,0.537426957418148
+"rawp","MacN_Rainbow","Inorganic ion transport and metabolism",317,93,0.494047116829072,0.605768789489976
+"rawp","MacN_Rainbow","Secondary metabolites biosynthesis, transport and catabolism",312,-92,0.500417695665632,0.605768789489976
+"rawp","MacN_Rainbow","Intracellular trafficking, secretion, and vesicular transport",516,43,0.691561443693755,0.759206771435312
+"rawp","MacN_Rainbow","Carbohydrate transport and metabolism",425,47,0.693188791310502,0.759206771435312
+"rawp","MacN_Rainbow","Chromatin structure and dynamics",82,9,0.97194474963375,0.991953248730834
+"rawp","MacN_Rainbow","Cell cycle control, cell division, chromosome partitioning",147,-2,0.991953248730834,0.991953248730834
+"rawp","MacN_Star","Replication, recombination and repair",319,-452,0.000839185447488692,0.0193012652922399
+"rawp","MacN_Star","Translation, ribosomal structure and biogenesis",405,354,0.00335092914337731,0.0385356851488391
+"rawp","MacN_Star","Defense mechanisms",67,-641,0.02746962303483,0.21060044326703
+"rawp","MacN_Star","Inorganic ion transport and metabolism",317,190,0.161155079548814,0.676614926488697
+"rawp","MacN_Star","Cell cycle control, cell division, chromosome partitioning",147,-269,0.172576263085622,0.676614926488697
+"rawp","MacN_Star","Amino acid transport and metabolism",379,-166,0.182977951485199,0.676614926488697
+"rawp","MacN_Star","Signal transduction mechanisms",1601,81,0.221542992522898,0.676614926488697
+"rawp","MacN_Star","Intracellular trafficking, secretion, and vesicular transport",516,125,0.246984898477326,0.676614926488697
+"rawp","MacN_Star","RNA processing and modification",385,-124,0.317646877576101,0.676614926488697
+"rawp","MacN_Star","Energy production and conversion",269,145,0.322597026211976,0.676614926488697
+"rawp","MacN_Star","Cell motility",6,906,0.348800920451471,0.676614926488697
+"rawp","MacN_Star","Transcription",666,-89,0.353016483385407,0.676614926488697
+"rawp","MacN_Star","Chromatin structure and dynamics",82,-152,0.562024949270035,0.879956899392158
+"rawp","MacN_Star","Secondary metabolites biosynthesis, transport and catabolism",312,79,0.564166520793346,0.879956899392158
+"rawp","MacN_Star","Nucleotide transport and metabolism",124,-121,0.57388493438619,0.879956899392158
+"rawp","MacN_Star","Carbohydrate transport and metabolism",425,-51,0.662510624356181,0.95235902251201
+"rawp","MacN_Star","Coenzyme transport and metabolism",75,81,0.769382243996403,0.952469170984041
+"rawp","MacN_Star","Cell wall/membrane/envelope biogenesis",103,-68,0.77338070322533,0.952469170984041
+"rawp","MacN_Star","Nuclear structure",6,-213,0.825784384298108,0.952469170984041
+"rawp","MacN_Star","Extracellular structures",77,-59,0.828234061725253,0.952469170984041
+"rawp","MacN_Star","Cytoskeleton",309,20,0.883725985841096,0.966414427994726
+"rawp","MacN_Star","Lipid transport and metabolism",304,13,0.92439640938626,0.966414427994726
+"rawp","MacN_Star","Posttranslational modification, protein turnover, chaperones",1310,-1,0.988877090107178,0.988877090107178
+"lfc","LC_CC","Translation, ribosomal structure and biogenesis",405,-731,1.39402630758658e-09,3.20626050744913e-08
+"lfc","LC_CC","Amino acid transport and metabolism",379,478,0.000125989609931487,0.0014488805142121
+"lfc","LC_CC","Intracellular trafficking, secretion, and vesicular transport",516,-353,0.00104398778161439,0.00800390632571032
+"lfc","LC_CC","Energy production and conversion",269,-410,0.00519273867606076,0.0295441143823662
+"lfc","LC_CC","Inorganic ion transport and metabolism",317,370,0.00642263356138395,0.0295441143823662
+"lfc","LC_CC","Signal transduction mechanisms",1601,157,0.0176682245917998,0.0677281942685659
+"lfc","LC_CC","Cell motility",6,-2088,0.0309206804462802,0.101596521466349
+"lfc","LC_CC","Carbohydrate transport and metabolism",425,218,0.0642628930701232,0.173281105981142
+"lfc","LC_CC","Coenzyme transport and metabolism",75,-502,0.0678056501665338,0.173281105981142
+"lfc","LC_CC","Cytoskeleton",309,226,0.100544836039468,0.231253122890776
+"lfc","LC_CC","Cell wall/membrane/envelope biogenesis",103,292,0.214405683048657,0.44830279182901
+"lfc","LC_CC","RNA processing and modification",385,-144,0.243282178402453,0.466290841938035
+"lfc","LC_CC","Nucleotide transport and metabolism",124,-225,0.294050050657762,0.520242397317579
+"lfc","LC_CC","Secondary metabolites biosynthesis, transport and catabolism",312,113,0.408095009387036,0.668394773153571
+"lfc","LC_CC","Cell cycle control, cell division, chromosome partitioning",147,-148,0.451330889575554,0.668394773153571
+"lfc","LC_CC","Nuclear structure",6,707,0.464970276976397,0.668394773153571
+"lfc","LC_CC","Defense mechanisms",67,-196,0.500213218612243,0.676759060475388
+"lfc","LC_CC","Extracellular structures",77,142,0.599271218403134,0.765735445737338
+"lfc","LC_CC","Replication, recombination and repair",319,-28,0.838147939600981,0.954491568941589
+"lfc","LC_CC","Lipid transport and metabolism",304,17,0.90237676255294,0.954491568941589
+"lfc","LC_CC","Chromatin structure and dynamics",82,-23,0.929332476266555,0.954491568941589
+"lfc","LC_CC","Posttranslational modification, protein turnover, chaperones",1310,4,0.950649468646023,0.954491568941589
+"lfc","LC_CC","Transcription",666,5,0.954491568941589,0.954491568941589
+"lfc","CH_CC","Replication, recombination and repair",319,892,4.31203961426263e-11,9.91769111280405e-10
+"lfc","CH_CC","Translation, ribosomal structure and biogenesis",405,-609,4.61995353052687e-07,5.3129465601059e-06
+"lfc","CH_CC","Inorganic ion transport and metabolism",317,-472,0.000504424120568099,0.00386725159102209
+"lfc","CH_CC","Energy production and conversion",269,-477,0.00114652884783299,0.00659254087503969
+"lfc","CH_CC","Cytoskeleton",309,312,0.022988168155607,0.105745573515792
+"lfc","CH_CC","Signal transduction mechanisms",1601,134,0.0416327193928214,0.159592091005815
+"lfc","CH_CC","Chromatin structure and dynamics",82,510,0.0522966063140764,0.171831706460537
+"lfc","CH_CC","Coenzyme transport and metabolism",75,-498,0.0700475903463685,0.201386822245809
+"lfc","CH_CC","Lipid transport and metabolism",304,-236,0.087986610750446,0.206082979821824
+"lfc","CH_CC","Secondary metabolites biosynthesis, transport and catabolism",312,232,0.0896012955747061,0.206082979821824
+"lfc","CH_CC","Transcription",666,128,0.180452722982764,0.377310238963961
+"lfc","CH_CC","Cell motility",6,-1146,0.236338909809142,0.452982910467522
+"lfc","CH_CC","Intracellular trafficking, secretion, and vesicular transport",516,-107,0.318320745502218,0.551845617747609
+"lfc","CH_CC","Defense mechanisms",67,280,0.335906028194197,0.551845617747609
+"lfc","CH_CC","Posttranslational modification, protein turnover, chaperones",1310,-60,0.397484555595694,0.609476318580064
+"lfc","CH_CC","Nucleotide transport and metabolism",124,-165,0.440535430496957,0.633269681339376
+"lfc","CH_CC","Cell cycle control, cell division, chromosome partitioning",147,116,0.557709997258811,0.695297507949918
+"lfc","CH_CC","Nuclear structure",6,537,0.579028101530463,0.695297507949918
+"lfc","CH_CC","Extracellular structures",77,147,0.58723129601654,0.695297507949918
+"lfc","CH_CC","Carbohydrate transport and metabolism",425,-57,0.631057041388654,0.695297507949918
+"lfc","CH_CC","Cell wall/membrane/envelope biogenesis",103,-112,0.634836855084708,0.695297507949918
+"lfc","CH_CC","Amino acid transport and metabolism",379,23,0.850594746636055,0.889258144210421
+"lfc","CH_CC","RNA processing and modification",385,3,0.983188317704248,0.983188317704248
+"lfc","LH_CC","Translation, ribosomal structure and biogenesis",405,-830,6.09242416841795e-12,1.40125755873613e-10
+"lfc","LH_CC","Signal transduction mechanisms",1601,396,1.92513183172593e-09,2.21390160648482e-08
+"lfc","LH_CC","Replication, recombination and repair",319,628,3.40471950055488e-06,2.61028495042541e-05
+"lfc","LH_CC","Energy production and conversion",269,-574,9.20464732932983e-05,0.000529267221436465
+"lfc","LH_CC","Intracellular trafficking, secretion, and vesicular transport",516,-309,0.00412552280964125,0.018656164398712
+"lfc","LH_CC","RNA processing and modification",385,-348,0.00486682549531617,0.018656164398712
+"lfc","LH_CC","Secondary metabolites biosynthesis, transport and catabolism",312,354,0.00967232312980881,0.0317804902836575
+"lfc","LH_CC","Amino acid transport and metabolism",379,278,0.0254991343617135,0.0672123944288746
+"lfc","LH_CC","Coenzyme transport and metabolism",75,-610,0.0263005021678205,0.0672123944288746
+"lfc","LH_CC","Cell motility",6,-2037,0.0352028704802643,0.0809666021046079
+"lfc","LH_CC","Transcription",666,-187,0.0504691640957536,0.105526434018394
+"lfc","LH_CC","Nucleotide transport and metabolism",124,-343,0.109500528099416,0.209876012190547
+"lfc","LH_CC","Lipid transport and metabolism",304,-205,0.13802033870994,0.244189830025278
+"lfc","LH_CC","Carbohydrate transport and metabolism",425,165,0.162441343964352,0.26686792222715
+"lfc","LH_CC","Extracellular structures",77,362,0.181650287641865,0.27853044105086
+"lfc","LH_CC","Chromatin structure and dynamics",82,202,0.443025902056387,0.636849734206056
+"lfc","LH_CC","Defense mechanisms",67,-202,0.486486510102096,0.6581876313146
+"lfc","LH_CC","Nuclear structure",6,610,0.52847816828737,0.675277659478306
+"lfc","LH_CC","Cell wall/membrane/envelope biogenesis",103,133,0.57108825255484,0.691317358355859
+"lfc","LH_CC","Posttranslational modification, protein turnover, chaperones",1310,-11,0.875072201300239,0.963249563903996
+"lfc","LH_CC","Cytoskeleton",309,17,0.90209800493674,0.963249563903996
+"lfc","LH_CC","Cell cycle control, cell division, chromosome partitioning",147,19,0.921369148082083,0.963249563903996
+"lfc","LH_CC","Inorganic ion transport and metabolism",317,3,0.983733155095834,0.983733155095834
+"lfc","CH_LC","Replication, recombination and repair",319,829,8.65758131851635e-10,1.99124370325876e-08
+"lfc","CH_LC","Inorganic ion transport and metabolism",317,-673,7.16564822181324e-07,8.24049545508523e-06
+"lfc","CH_LC","Amino acid transport and metabolism",379,-303,0.014907513246902,0.103179185115563
+"lfc","CH_LC","Carbohydrate transport and metabolism",425,-279,0.0179442061070544,0.103179185115563
+"lfc","CH_LC","Intracellular trafficking, secretion, and vesicular transport",516,222,0.0390321099472539,0.179547705757368
+"lfc","CH_LC","Chromatin structure and dynamics",82,492,0.0610078780524947,0.219690928295865
+"lfc","CH_LC","Transcription",666,175,0.0668624564378719,0.219690928295865
+"lfc","CH_LC","Lipid transport and metabolism",304,-224,0.105027654490901,0.30195450666134
+"lfc","CH_LC","Translation, ribosomal structure and biogenesis",405,-172,0.153698999070952,0.3927863309591
+"lfc","CH_LC","Secondary metabolites biosynthesis, transport and catabolism",312,175,0.201189382321006,0.433833573890662
+"lfc","CH_LC","Defense mechanisms",67,346,0.233955032804154,0.433833573890662
+"lfc","CH_LC","Cell motility",6,1150,0.234365727252065,0.433833573890662
+"lfc","CH_LC","Posttranslational modification, protein turnover, chaperones",1310,-83,0.245210280894722,0.433833573890662
+"lfc","CH_LC","Cell wall/membrane/envelope biogenesis",103,-249,0.288949641501799,0.469260451905637
+"lfc","CH_LC","Cell cycle control, cell division, chromosome partitioning",147,202,0.30603942515585,0.469260451905637
+"lfc","CH_LC","Cytoskeleton",309,123,0.368844436150262,0.530213876966002
+"lfc","CH_LC","Energy production and conversion",269,-98,0.506469847110591,0.685223910796682
+"lfc","CH_LC","Nucleotide transport and metabolism",124,86,0.688593279924993,0.879869191015269
+"lfc","CH_LC","RNA processing and modification",385,33,0.78779624194205,0.915979453304347
+"lfc","CH_LC","Nuclear structure",6,250,0.796503872438563,0.915979453304347
+"lfc","CH_LC","Signal transduction mechanisms",1601,13,0.841754356882563,0.921921438490426
+"lfc","CH_LC","Extracellular structures",77,33,0.901849706049906,0.94284287450672
+"lfc","CH_LC","Coenzyme transport and metabolism",75,1,0.99667830410685,0.99667830410685
+"lfc","LH_LC","Signal transduction mechanisms",1601,364,3.354729627425e-08,7.7158781430775e-07
+"lfc","LH_LC","Replication, recombination and repair",319,641,2.15062631281349e-06,2.47322025973551e-05
+"lfc","LH_LC","Translation, ribosomal structure and biogenesis",405,-521,1.60658012536473e-05,0.000123171142944629
+"lfc","LH_LC","RNA processing and modification",385,-363,0.00333846705841628,0.0191961855858936
+"lfc","LH_LC","Energy production and conversion",269,-389,0.00809051733764317,0.0330936988783952
+"lfc","LH_LC","Secondary metabolites biosynthesis, transport and catabolism",312,359,0.00863313883784222,0.0330936988783952
+"lfc","LH_LC","Transcription",666,-213,0.0257908703025566,0.0847414309941145
+"lfc","LH_LC","Intracellular trafficking, secretion, and vesicular transport",516,-167,0.121992813249992,0.350729338093727
+"lfc","LH_LC","Coenzyme transport and metabolism",75,-389,0.156888348856864,0.383883935210988
+"lfc","LH_LC","Lipid transport and metabolism",304,-188,0.173966251918056,0.383883935210988
+"lfc","LH_LC","Nucleotide transport and metabolism",124,-283,0.187279188609858,0.383883935210988
+"lfc","LH_LC","Inorganic ion transport and metabolism",317,-172,0.203985633682156,0.383883935210988
+"lfc","LH_LC","Extracellular structures",77,335,0.216977876423602,0.383883935210988
+"lfc","LH_LC","Cell motility",6,-1108,0.251833592976424,0.413726617032697
+"lfc","LH_LC","Cell cycle control, cell division, chromosome partitioning",147,197,0.317060949905206,0.486160123187983
+"lfc","LH_LC","Cytoskeleton",309,-86,0.5310405780007,0.713280186582981
+"lfc","LH_LC","Nuclear structure",6,587,0.544159559804452,0.713280186582981
+"lfc","LH_LC","Chromatin structure and dynamics",82,143,0.587708262991966,0.713280186582981
+"lfc","LH_LC","Defense mechanisms",67,-147,0.61403591377941,0.713280186582981
+"lfc","LH_LC","Posttranslational modification, protein turnover, chaperones",1310,35,0.62024364050694,0.713280186582981
+"lfc","LH_LC","Carbohydrate transport and metabolism",425,-53,0.652456561111767,0.71459528121765
+"lfc","LH_LC","Cell wall/membrane/envelope biogenesis",103,17,0.941061560985018,0.943454181320769
+"lfc","LH_LC","Amino acid transport and metabolism",379,-9,0.943454181320769,0.943454181320769
+"lfc","LH_CH","Signal transduction mechanisms",1601,342,2.14188621505684e-07,4.92633829463073e-06
+"lfc","LH_CH","Translation, ribosomal structure and biogenesis",405,-439,0.000272563917640856,0.00256429307666092
+"lfc","LH_CH","RNA processing and modification",385,-444,0.000334473009999251,0.00256429307666092
+"lfc","LH_CH","Inorganic ion transport and metabolism",317,438,0.0012466012868535,0.00649598708957225
+"lfc","LH_CH","Energy production and conversion",269,-467,0.00145407163723512,0.00649598708957225
+"lfc","LH_CH","Transcription",666,-301,0.0016946053277145,0.00649598708957225
+"lfc","LH_CH","Amino acid transport and metabolism",379,345,0.00558675540704545,0.0183564820517208
+"lfc","LH_CH","Defense mechanisms",67,-725,0.0125908338335081,0.0361986472713358
+"lfc","LH_CH","Intracellular trafficking, secretion, and vesicular transport",516,-242,0.0246225434568983,0.0629242777231845
+"lfc","LH_CH","Carbohydrate transport and metabolism",425,251,0.0337046638642138,0.0775207268876917
+"lfc","LH_CH","Secondary metabolites biosynthesis, transport and catabolism",312,269,0.0492981070393488,0.103077860173184
+"lfc","LH_CH","Nucleotide transport and metabolism",124,-371,0.0834530063835794,0.159951595568527
+"lfc","LH_CH","Cytoskeleton",309,-215,0.1181309468481,0.209000905962023
+"lfc","LH_CH","Cell motility",6,-1422,0.141679643854878,0.232759414904442
+"lfc","LH_CH","Cell wall/membrane/envelope biogenesis",103,305,0.193505015172799,0.296707689931625
+"lfc","LH_CH","Extracellular structures",77,334,0.218403303871674,0.313954749315531
+"lfc","LH_CH","Nuclear structure",6,1137,0.239975365132832,0.324672552826773
+"lfc","LH_CH","Coenzyme transport and metabolism",75,-236,0.390352477297158,0.498783720990813
+"lfc","LH_CH","Lipid transport and metabolism",304,-76,0.583843938044198,0.706758451316661
+"lfc","LH_CH","Cell cycle control, cell division, chromosome partitioning",147,85,0.665755788290602,0.765619156534192
+"lfc","LH_CH","Chromatin structure and dynamics",82,-76,0.772497320310154,0.830054447712217
+"lfc","LH_CH","Posttranslational modification, protein turnover, chaperones",1310,17,0.812383337600348,0.830054447712217
+"lfc","LH_CH","Replication, recombination and repair",319,-29,0.830054447712217,0.830054447712217
+"lfc","urban_reef","RNA processing and modification",385,354,0.00414687750521381,0.0953781826199176
+"lfc","urban_reef","Defense mechanisms",67,-578,0.046740815291159,0.24767304978815
+"lfc","urban_reef","Replication, recombination and repair",319,-263,0.0517580332527036,0.24767304978815
+"lfc","urban_reef","Signal transduction mechanisms",1601,-127,0.0534704103673245,0.24767304978815
+"lfc","urban_reef","Transcription",666,182,0.0573503546452834,0.24767304978815
+"lfc","urban_reef","Coenzyme transport and metabolism",75,508,0.0646103608143,0.24767304978815
+"lfc","urban_reef","Posttranslational modification, protein turnover, chaperones",1310,-118,0.0983868509336061,0.323271081638991
+"lfc","urban_reef","Nucleotide transport and metabolism",124,325,0.129943381079886,0.357795620593948
+"lfc","urban_reef","Amino acid transport and metabolism",379,-184,0.140006981971545,0.357795620593948
+"lfc","urban_reef","Cell wall/membrane/envelope biogenesis",103,-296,0.207214925053019,0.476594327621944
+"lfc","urban_reef","Inorganic ion transport and metabolism",317,156,0.250372851041002,0.485453457533272
+"lfc","urban_reef","Translation, ribosomal structure and biogenesis",405,138,0.253280064799968,0.485453457533272
+"lfc","urban_reef","Carbohydrate transport and metabolism",425,124,0.293682038956176,0.500927434354903
+"lfc","urban_reef","Nuclear structure",6,-974,0.314053374044091,0.500927434354903
+"lfc","urban_reef","Extracellular structures",77,266,0.326691805014067,0.500927434354903
+"lfc","urban_reef","Cytoskeleton",309,110,0.42394309515833,0.6094181992901
+"lfc","urban_reef","Lipid transport and metabolism",304,-99,0.47557440189108,0.638621808295342
+"lfc","urban_reef","Cell motility",6,653,0.49979098040505,0.638621808295342
+"lfc","urban_reef","Chromatin structure and dynamics",82,148,0.573234421381057,0.693915352198122
+"lfc","urban_reef","Cell cycle control, cell division, chromosome partitioning",147,83,0.675129270503281,0.776398661078773
+"lfc","urban_reef","Secondary metabolites biosynthesis, transport and catabolism",312,-41,0.76172465804563,0.834269863573785
+"lfc","urban_reef","Intracellular trafficking, secretion, and vesicular transport",516,14,0.896293659779882,0.937034280678967
+"lfc","urban_reef","Energy production and conversion",269,0,0.999310783490276,0.999310783490276
+"lfc","MacN_reef","Replication, recombination and repair",319,-463,0.00062554199120426,0.014387465797698
+"lfc","MacN_reef","Defense mechanisms",67,-791,0.00650925346159807,0.0748564148083778
+"lfc","MacN_reef","Translation, ribosomal structure and biogenesis",405,212,0.0786581441045029,0.470158103636777
+"lfc","MacN_reef","Amino acid transport and metabolism",379,-195,0.118310155070295,0.470158103636777
+"lfc","MacN_reef","Extracellular structures",77,418,0.123373883739821,0.470158103636777
+"lfc","MacN_reef","Inorganic ion transport and metabolism",317,188,0.165073299046671,0.470158103636777
+"lfc","MacN_reef","RNA processing and modification",385,171,0.167753397239181,0.470158103636777
+"lfc","MacN_reef","Cell wall/membrane/envelope biogenesis",103,-314,0.180745887286015,0.470158103636777
+"lfc","MacN_reef","Posttranslational modification, protein turnover, chaperones",1310,-95,0.183974910118739,0.470158103636777
+"lfc","MacN_reef","Coenzyme transport and metabolism",75,341,0.215019345217477,0.494544494000197
+"lfc","MacN_reef","Carbohydrate transport and metabolism",425,126,0.286385514516731,0.59880607580771
+"lfc","MacN_reef","Cell motility",6,794,0.411818628742156,0.673402593259874
+"lfc","MacN_reef","Cytoskeleton",309,111,0.418148330527356,0.673402593259874
+"lfc","MacN_reef","Nucleotide transport and metabolism",124,167,0.436808747845276,0.673402593259874
+"lfc","MacN_reef","Transcription",666,73,0.447570012978779,0.673402593259874
+"lfc","MacN_reef","Nuclear structure",6,-701,0.468453977919912,0.673402593259874
+"lfc","MacN_reef","Signal transduction mechanisms",1601,-43,0.514228636072369,0.695721095862617
+"lfc","MacN_reef","Intracellular trafficking, secretion, and vesicular transport",516,65,0.547191091431171,0.699188616828718
+"lfc","MacN_reef","Energy production and conversion",269,78,0.59539756902847,0.720744425666043
+"lfc","MacN_reef","Cell cycle control, cell division, chromosome partitioning",147,-64,0.744373488906028,0.856029512241932
+"lfc","MacN_reef","Lipid transport and metabolism",304,22,0.875294892911632,0.958656311284169
+"lfc","MacN_reef","Chromatin structure and dynamics",82,-3,0.990372363889073,0.999445801454544
+"lfc","MacN_reef","Secondary metabolites biosynthesis, transport and catabolism",312,0,0.999445801454544,0.999445801454544
+"lfc","Star_reef","RNA processing and modification",385,521,2.50543460540431e-05,0.000576249959242991
+"lfc","Star_reef","Signal transduction mechanisms",1601,-226,0.000615555737890394,0.00707889098573953
+"lfc","Star_reef","Transcription",666,278,0.00367647207182942,0.0281862858840256
+"lfc","Star_reef","Nucleotide transport and metabolism",124,427,0.0465748255133889,0.267805246701986
+"lfc","Star_reef","Coenzyme transport and metabolism",75,510,0.063603588392549,0.292576506605725
+"lfc","Star_reef","Cell wall/membrane/envelope biogenesis",103,-360,0.124788285104982,0.423131544074292
+"lfc","Star_reef","Chromatin structure and dynamics",82,399,0.128779165587828,0.423131544074292
+"lfc","Star_reef","Cell cycle control, cell division, chromosome partitioning",147,262,0.183116116819302,0.526458835855493
+"lfc","Star_reef","Amino acid transport and metabolism",379,-150,0.22905496403483,0.53926903966236
+"lfc","Star_reef","Lipid transport and metabolism",304,-164,0.235072060162971,0.53926903966236
+"lfc","Star_reef","Extracellular structures",77,307,0.25791127983852,0.53926903966236
+"lfc","Star_reef","Secondary metabolites biosynthesis, transport and catabolism",312,-144,0.293514052995945,0.555193083239224
+"lfc","Star_reef","Nuclear structure",6,-974,0.313804786178692,0.555193083239224
+"lfc","Star_reef","Defense mechanisms",67,-238,0.413098479075013,0.657025072092266
+"lfc","Star_reef","Posttranslational modification, protein turnover, chaperones",1310,-55,0.444645202113712,0.657025072092266
+"lfc","Star_reef","Carbohydrate transport and metabolism",425,88,0.457060919716359,0.657025072092266
+"lfc","Star_reef","Energy production and conversion",269,-94,0.521780681767989,0.693814844776256
+"lfc","Star_reef","Inorganic ion transport and metabolism",317,83,0.542985530694461,0.693814844776256
+"lfc","Star_reef","Translation, ribosomal structure and biogenesis",405,-51,0.674838114144841,0.816909296070071
+"lfc","Star_reef","Cytoskeleton",309,45,0.741192137003597,0.838589876146087
+"lfc","Star_reef","Intracellular trafficking, secretion, and vesicular transport",516,-32,0.765669017350775,0.838589876146087
+"lfc","Star_reef","Replication, recombination and repair",319,-14,0.915083595078482,0.956678303945686
+"lfc","Star_reef","Cell motility",6,-35,0.971457812537322,0.971457812537322
+"lfc","Rainbow_Emerald","Transcription",666,-488,3.43312963866108e-07,7.89619816892048e-06
+"lfc","Rainbow_Emerald","Translation, ribosomal structure and biogenesis",405,-465,0.00011587552994407,0.0013325685943568
+"lfc","Rainbow_Emerald","Signal transduction mechanisms",1601,202,0.00223735223699828,0.0171530338169868
+"lfc","Rainbow_Emerald","Nuclear structure",6,1899,0.0495780114718123,0.230356055832581
+"lfc","Rainbow_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,268,0.0500774034418654,0.230356055832581
+"lfc","Rainbow_Emerald","Defense mechanisms",67,-522,0.072639993357535,0.249053803595073
+"lfc","Rainbow_Emerald","Extracellular structures",77,-467,0.0849720782566974,0.249053803595073
+"lfc","Rainbow_Emerald","Posttranslational modification, protein turnover, chaperones",1310,120,0.0931563341565314,0.249053803595073
+"lfc","Rainbow_Emerald","Cell wall/membrane/envelope biogenesis",103,389,0.0974558361893765,0.249053803595073
+"lfc","Rainbow_Emerald","Energy production and conversion",269,-226,0.124544267514504,0.273813847487166
+"lfc","Rainbow_Emerald","Lipid transport and metabolism",304,209,0.13095444879821,0.273813847487166
+"lfc","Rainbow_Emerald","Nucleotide transport and metabolism",124,-258,0.229427076863993,0.439735230655987
+"lfc","Rainbow_Emerald","Amino acid transport and metabolism",379,117,0.346296001756569,0.489382961242143
+"lfc","Rainbow_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,97,0.367594215620374,0.489382961242143
+"lfc","Rainbow_Emerald","RNA processing and modification",385,-110,0.372177035165355,0.489382961242143
+"lfc","Rainbow_Emerald","Cytoskeleton",309,-120,0.38058219354638,0.489382961242143
+"lfc","Rainbow_Emerald","Carbohydrate transport and metabolism",425,-103,0.38297040469225,0.489382961242143
+"lfc","Rainbow_Emerald","Chromatin structure and dynamics",82,229,0.382995360972112,0.489382961242143
+"lfc","Rainbow_Emerald","Coenzyme transport and metabolism",75,180,0.512887806755218,0.579294401314976
+"lfc","Rainbow_Emerald","Replication, recombination and repair",319,88,0.513050536568023,0.579294401314976
+"lfc","Rainbow_Emerald","Cell motility",6,-581,0.548288078148374,0.579294401314976
+"lfc","Rainbow_Emerald","Inorganic ion transport and metabolism",317,80,0.554107688214325,0.579294401314976
+"lfc","Rainbow_Emerald","Cell cycle control, cell division, chromosome partitioning",147,15,0.937958623172086,0.937958623172086
+"lfc","Star_Emerald","RNA processing and modification",385,487,8.13916737074649e-05,0.00187200849527169
+"lfc","Star_Emerald","Translation, ribosomal structure and biogenesis",405,-307,0.0108588796377461,0.12487711583408
+"lfc","Star_Emerald","Defense mechanisms",67,-624,0.0316305855849648,0.242501156151397
+"lfc","Star_Emerald","Chromatin structure and dynamics",82,492,0.0610014126321816,0.350758122635044
+"lfc","Star_Emerald","Coenzyme transport and metabolism",75,456,0.0967734694842721,0.394750995050908
+"lfc","Star_Emerald","Cell cycle control, cell division, chromosome partitioning",147,321,0.102978520448063,0.394750995050908
+"lfc","Star_Emerald","Nucleotide transport and metabolism",124,293,0.171744539124822,0.493956020405808
+"lfc","Star_Emerald","Energy production and conversion",269,-201,0.171810789706368,0.493956020405808
+"lfc","Star_Emerald","Signal transduction mechanisms",1601,-81,0.21791466048419,0.556893021237374
+"lfc","Star_Emerald","Inorganic ion transport and metabolism",317,145,0.28504729980357,0.655608789548211
+"lfc","Star_Emerald","Transcription",666,-94,0.326592853110503,0.682875965594688
+"lfc","Star_Emerald","Nuclear structure",6,615,0.524650275614094,0.995748076720915
+"lfc","Star_Emerald","Cell wall/membrane/envelope biogenesis",103,-96,0.683191755667159,0.995748076720915
+"lfc","Star_Emerald","Extracellular structures",77,107,0.693722322716546,0.995748076720915
+"lfc","Star_Emerald","Lipid transport and metabolism",304,40,0.769874308044564,0.995748076720915
+"lfc","Star_Emerald","Cell motility",6,-240,0.803965675806924,0.995748076720915
+"lfc","Star_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,-24,0.822244404867809,0.995748076720915
+"lfc","Star_Emerald","Amino acid transport and metabolism",379,-21,0.86842130737888,0.995748076720915
+"lfc","Star_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,19,0.889371309137618,0.995748076720915
+"lfc","Star_Emerald","Carbohydrate transport and metabolism",425,-12,0.917097275185,0.995748076720915
+"lfc","Star_Emerald","Cytoskeleton",309,11,0.93503653287045,0.995748076720915
+"lfc","Star_Emerald","Posttranslational modification, protein turnover, chaperones",1310,-2,0.975843197493683,0.995748076720915
+"lfc","Star_Emerald","Replication, recombination and repair",319,1,0.995748076720915,0.995748076720915
+"lfc","MacN_Emerald","Defense mechanisms",67,-973,0.00081554552864633,0.0187575471588656
+"lfc","MacN_Emerald","Replication, recombination and repair",319,-378,0.00520956908585541,0.0599100444873372
+"lfc","MacN_Emerald","Inorganic ion transport and metabolism",317,321,0.0181238370578718,0.138949417443684
+"lfc","MacN_Emerald","Transcription",666,-180,0.060741810138559,0.349265408296714
+"lfc","MacN_Emerald","RNA processing and modification",385,170,0.169896167564755,0.781522370797873
+"lfc","MacN_Emerald","Coenzyme transport and metabolism",75,321,0.242715539716108,0.930409568911747
+"lfc","MacN_Emerald","Nucleotide transport and metabolism",124,175,0.414112216469146,0.945061237121872
+"lfc","MacN_Emerald","Secondary metabolites biosynthesis, transport and catabolism",312,105,0.441081749026906,0.945061237121872
+"lfc","MacN_Emerald","Cell motility",6,657,0.497274329811451,0.945061237121872
+"lfc","MacN_Emerald","Carbohydrate transport and metabolism",425,76,0.51719136509478,0.945061237121872
+"lfc","MacN_Emerald","Amino acid transport and metabolism",379,-79,0.52503178705513,0.945061237121872
+"lfc","MacN_Emerald","Chromatin structure and dynamics",82,142,0.588321719281591,0.945061237121872
+"lfc","MacN_Emerald","Intracellular trafficking, secretion, and vesicular transport",516,56,0.60344738797216,0.945061237121872
+"lfc","MacN_Emerald","Nuclear structure",6,425,0.660712562574541,0.945061237121872
+"lfc","MacN_Emerald","Cell wall/membrane/envelope biogenesis",103,-100,0.670421361816858,0.945061237121872
+"lfc","MacN_Emerald","Lipid transport and metabolism",304,58,0.676759464256134,0.945061237121872
+"lfc","MacN_Emerald","Signal transduction mechanisms",1601,26,0.698523523090079,0.945061237121872
+"lfc","MacN_Emerald","Posttranslational modification, protein turnover, chaperones",1310,-23,0.744241888860128,0.95097574687683
+"lfc","MacN_Emerald","Cell cycle control, cell division, chromosome partitioning",147,53,0.787686844341227,0.953515653676222
+"lfc","MacN_Emerald","Translation, ribosomal structure and biogenesis",405,-25,0.838309466066042,0.9596666940252
+"lfc","MacN_Emerald","Cytoskeleton",309,-17,0.90209800493674,0.9596666940252
+"lfc","MacN_Emerald","Extracellular structures",77,14,0.959554494445558,0.9596666940252
+"lfc","MacN_Emerald","Energy production and conversion",269,-7,0.9596666940252,0.9596666940252
+"lfc","Star_Rainbow","Transcription",666,430,7.24589501310824e-06,0.00016665558530149
+"lfc","Star_Rainbow","Signal transduction mechanisms",1601,-247,0.000178404689273103,0.00205165392664068
+"lfc","Star_Rainbow","RNA processing and modification",385,436,0.000426134805011857,0.0032670335050909
+"lfc","Star_Rainbow","Cell wall/membrane/envelope biogenesis",103,-554,0.0183701751950425,0.105628507371494
+"lfc","Star_Rainbow","Translation, ribosomal structure and biogenesis",405,244,0.0431481487901373,0.170639837558878
+"lfc","Star_Rainbow","Nucleotide transport and metabolism",124,431,0.0445147402327508,0.170639837558878
+"lfc","Star_Rainbow","Secondary metabolites biosynthesis, transport and catabolism",312,-254,0.0636808519772076,0.209237085067968
+"lfc","Star_Rainbow","Nuclear structure",6,-1564,0.105990955338061,0.304723996596925
+"lfc","Star_Rainbow","Lipid transport and metabolism",304,-212,0.125914882495986,0.321782477489742
+"lfc","Star_Rainbow","Extracellular structures",77,377,0.164754933277393,0.347676930476576
+"lfc","Star_Rainbow","Amino acid transport and metabolism",379,-172,0.167399488982424,0.347676930476576
+"lfc","Star_Rainbow","Posttranslational modification, protein turnover, chaperones",1310,-95,0.181396659379083,0.347676930476576
+"lfc","Star_Rainbow","Coenzyme transport and metabolism",75,336,0.220892175477891,0.390809233537807
+"lfc","Star_Rainbow","Cell cycle control, cell division, chromosome partitioning",147,201,0.308186459300179,0.506306325993151
+"lfc","Star_Rainbow","Chromatin structure and dynamics",82,231,0.378513730455021,0.580387720031032
+"lfc","Star_Rainbow","Intracellular trafficking, secretion, and vesicular transport",516,-81,0.450165298610753,0.647112616752957
+"lfc","Star_Rainbow","Cytoskeleton",309,87,0.526458760146949,0.71226773431646
+"lfc","Star_Rainbow","Carbohydrate transport and metabolism",425,68,0.564571547014399,0.721396976740621
+"lfc","Star_Rainbow","Cell motility",6,408,0.673254059620912,0.814991756383209
+"lfc","Star_Rainbow","Replication, recombination and repair",319,-50,0.708963521998862,0.815308050298691
+"lfc","Star_Rainbow","Defense mechanisms",67,73,0.802939372574563,0.879409789010236
+"lfc","Star_Rainbow","Inorganic ion transport and metabolism",317,25,0.855392628355654,0.883728150201577
+"lfc","Star_Rainbow","Energy production and conversion",269,21,0.883728150201577,0.883728150201577
+"lfc","MacN_Rainbow","Translation, ribosomal structure and biogenesis",405,375,0.00191709484653613,0.0285651453668819
+"lfc","MacN_Rainbow","Transcription",666,278,0.00363003256916139,0.0285651453668819
+"lfc","MacN_Rainbow","Replication, recombination and repair",319,-392,0.00372588852611503,0.0285651453668819
+"lfc","MacN_Rainbow","Amino acid transport and metabolism",379,-262,0.0357441807064917,0.205529039062327
+"lfc","MacN_Rainbow","Posttranslational modification, protein turnover, chaperones",1310,-131,0.0666102799324269,0.252176414134439
+"lfc","MacN_Rainbow","Cell wall/membrane/envelope biogenesis",103,-426,0.0699781194035475,0.252176414134439
+"lfc","MacN_Rainbow","Extracellular structures",77,480,0.0767493434322206,0.252176414134439
+"lfc","MacN_Rainbow","Nuclear structure",6,-1554,0.108244861257226,0.282689302086458
+"lfc","MacN_Rainbow","Signal transduction mechanisms",1601,-105,0.110617552990353,0.282689302086458
+"lfc","MacN_Rainbow","RNA processing and modification",385,183,0.139772020587201,0.320320325110684
+"lfc","MacN_Rainbow","Defense mechanisms",67,-415,0.153196677226849,0.320320325110684
+"lfc","MacN_Rainbow","Cytoskeleton",309,182,0.184783863750663,0.354169072188771
+"lfc","MacN_Rainbow","Inorganic ion transport and metabolism",317,144,0.287407780655368,0.508490688851805
+"lfc","MacN_Rainbow","Coenzyme transport and metabolism",75,274,0.318194921362626,0.522748799381457
+"lfc","MacN_Rainbow","Carbohydrate transport and metabolism",425,111,0.346218564069209,0.526279414889924
+"lfc","MacN_Rainbow","Nucleotide transport and metabolism",124,194,0.36610741905386,0.526279414889924
+"lfc","MacN_Rainbow","Cell motility",6,815,0.399357685350455,0.540307456650616
+"lfc","MacN_Rainbow","Lipid transport and metabolism",304,-106,0.44354318480498,0.566749625028586
+"lfc","MacN_Rainbow","Energy production and conversion",269,76,0.60466266350571,0.731960066349017
+"lfc","MacN_Rainbow","Chromatin structure and dynamics",82,-102,0.696708413313718,0.783916141253748
+"lfc","MacN_Rainbow","Secondary metabolites biosynthesis, transport and catabolism",312,-50,0.715749520275161,0.783916141253748
+"lfc","MacN_Rainbow","Cell cycle control, cell division, chromosome partitioning",147,-52,0.79058151277082,0.826517036078585
+"lfc","MacN_Rainbow","Intracellular trafficking, secretion, and vesicular transport",516,14,0.895822774195391,0.895822774195391
+"lfc","MacN_Star","Replication, recombination and repair",319,-374,0.00575248736766122,0.132307209456208
+"lfc","MacN_Star","Translation, ribosomal structure and biogenesis",405,227,0.060361373537797,0.529455477798947
+"lfc","MacN_Star","Defense mechanisms",67,-528,0.0690594101476887,0.529455477798947
+"lfc","MacN_Star","Signal transduction mechanisms",1601,98,0.139036005757452,0.76120165400939
+"lfc","MacN_Star","Inorganic ion transport and metabolism",317,188,0.165478620436824,0.76120165400939
+"lfc","MacN_Star","RNA processing and modification",385,-147,0.235744780490025,0.820590908910552
+"lfc","MacN_Star","Amino acid transport and metabolism",379,-136,0.276561766896059,0.820590908910552
+"lfc","MacN_Star","Cell cycle control, cell division, chromosome partitioning",147,-194,0.325824484181778,0.820590908910552
+"lfc","MacN_Star","Intracellular trafficking, secretion, and vesicular transport",516,95,0.379794857422149,0.820590908910552
+"lfc","MacN_Star","Nucleotide transport and metabolism",124,-169,0.430079689395342,0.820590908910552
+"lfc","MacN_Star","Energy production and conversion",269,110,0.452644878369311,0.820590908910552
+"lfc","MacN_Star","Secondary metabolites biosynthesis, transport and catabolism",312,101,0.461061030359778,0.820590908910552
+"lfc","MacN_Star","Cell motility",6,709,0.463812252862486,0.820590908910552
+"lfc","MacN_Star","Transcription",666,-55,0.566353783531135,0.846780928368345
+"lfc","MacN_Star","Coenzyme transport and metabolism",75,149,0.58677854923171,0.846780928368345
+"lfc","MacN_Star","Chromatin structure and dynamics",82,-131,0.617151630983113,0.846780928368345
+"lfc","MacN_Star","Cell wall/membrane/envelope biogenesis",103,-115,0.625881555750516,0.846780928368345
+"lfc","MacN_Star","Extracellular structures",77,-96,0.72321394112051,0.902171668307036
+"lfc","MacN_Star","Posttranslational modification, protein turnover, chaperones",1310,-23,0.745272247731899,0.902171668307036
+"lfc","MacN_Star","Lipid transport and metabolism",304,29,0.835349086369197,0.931343072854964
+"lfc","MacN_Star","Carbohydrate transport and metabolism",425,-22,0.850356718693663,0.931343072854964
+"lfc","MacN_Star","Nuclear structure",6,41,0.966096231159701,0.993631325199942
+"lfc","MacN_Star","Cytoskeleton",309,-1,0.993631325199942,0.993631325199942

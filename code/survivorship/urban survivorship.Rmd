@@ -36,9 +36,93 @@ knitr::opts_chunk$set(
 library(ggplot2)
 library(ggpubr)
 library(survival)
-library(survminer) # requires ggplot2 < 4.0: under ggplot2 4.x, ggsurvplot() panels draw blank (survminer issue #694)
 library(dplyr)
 library(lme4)
+
+# ---- plotting helpers (ggplot2 only) ----
+# survminer's ggsurvplot() and ggforest() draw blank panels under ggplot2 >= 4.0 (survminer issue #694),
+# so the Kaplan-Meier curves, risk tables and hazard-ratio plots are drawn with ggplot2 directly.
+
+# Kaplan-Meier curves (step lines, 95% CI bands, censoring marks) + number-at-risk table.
+# Returns list(plot, table) like ggsurvplot(), so the multi-panel figures below are built the same way.
+# labels: named vector, factor level -> display label (in plotting order)
+km_plot <- function(fit, pval, palette, title, labels, legend_title, xmax = 36, by = 5) {
+  lev <- sub("^.*=", "", names(fit$strata))
+  st  <- factor(rep(lev, fit$strata), levels = lev)
+  d <- data.frame(level = st, time = fit$time, surv = fit$surv, lower = fit$lower, upper = fit$upper,
+                  n.censor = fit$n.censor)
+  d <- rbind(data.frame(level = factor(lev, levels = lev), time = 0, surv = 1, lower = 1, upper = 1, n.censor = 0), d)
+  d <- d[order(d$level, d$time), ]
+  d$group <- factor(labels[as.character(d$level)], levels = labels)
+  # step-shaped confidence band: one rectangle per interval between event times
+  d <- do.call(rbind, lapply(split(d, d$level), function(x) { x$time_end <- c(x$time[-1], x$time[nrow(x)]); x }))
+  d$lower[is.na(d$lower)] <- d$surv[is.na(d$lower)]; d$upper[is.na(d$upper)] <- d$surv[is.na(d$upper)]
+  cols <- setNames(palette, labels)
+  p <- ggplot(d, aes(x = time, y = surv, colour = group)) +
+    geom_rect(aes(xmin = time, xmax = time_end, ymin = lower, ymax = upper, fill = group),
+              colour = NA, alpha = 0.25, inherit.aes = FALSE) +
+    geom_step(linewidth = 0.8) +
+    geom_point(data = d[d$n.censor > 0, ], shape = 3, size = 2, show.legend = FALSE) +
+    annotate("text", x = 1, y = 0.08, label = pval, hjust = 0, size = 4.5) +
+    scale_colour_manual(values = cols, name = legend_title) +
+    scale_fill_manual(values = cols, name = legend_title) +
+    scale_x_continuous(limits = c(0, xmax), breaks = seq(0, xmax, by), expand = expansion(mult = c(0.03, 0.02))) +
+    scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25), expand = expansion(mult = c(0.03, 0.02))) +
+    labs(x = "Days", y = "Survival Probability", title = title) +
+    theme_classic(base_size = 12) +
+    theme(legend.position = "top", plot.title = element_text(face = "italic")) +
+    guides(colour = guide_legend(nrow = 2), fill = guide_legend(nrow = 2))
+  # number at risk at each axis break
+  tt <- seq(0, xmax, by)
+  sm <- summary(fit, times = tt, extend = TRUE)
+  r <- data.frame(level = sub("^.*=", "", as.character(sm$strata)), time = sm$time, n = sm$n.risk)
+  r$group <- factor(labels[r$level], levels = rev(labels))
+  tab <- ggplot(r, aes(x = time, y = group, label = n, colour = group)) +
+    geom_text(size = 3.8, show.legend = FALSE) +
+    scale_colour_manual(values = cols) +
+    scale_x_continuous(limits = c(0, xmax), breaks = tt, expand = expansion(mult = c(0.03, 0.02))) +
+    labs(x = "Days", y = NULL, title = "Number at risk") +
+    theme_classic(base_size = 12) +
+    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.line.y = element_blank(),
+          plot.title = element_text(size = 11, margin = margin(b = 2)),
+          plot.margin = margin(2, 5.5, 2, 5.5))
+  list(plot = p, table = tab)
+}
+
+# Hazard-ratio (forest) plot for one factor of a Cox model: hazard ratios with robust 95% CIs (the model's
+# genotype-clustered standard errors) and robust p-values; the reference level is shown at HR = 1.
+hr_plot <- function(model, factor_name, labels) {
+  s <- summary(model)
+  ci <- s$conf.int; co <- s$coefficients
+  rows <- grep(paste0("^", factor_name), rownames(ci))
+  lv <- sub(paste0("^", factor_name), "", rownames(ci)[rows])
+  ref <- setdiff(names(labels), lv)[1]
+  d <- data.frame(level = c(ref, lv), HR = c(1, ci[rows, "exp(coef)"]),
+                  lo = c(NA, ci[rows, "lower .95"]), hi = c(NA, ci[rows, "upper .95"]),
+                  p = c(NA, co[rows, "Pr(>|z|)"]))
+  d$label <- factor(labels[d$level], levels = rev(labels))
+  d$txt <- ifelse(is.na(d$lo), "reference",
+                  sprintf("%.2f (%.2f, %.2f)", d$HR, d$lo, d$hi))
+  d$ptxt <- ifelse(is.na(d$p), "", ifelse(d$p < 0.001, "p < 0.001", sprintf("p = %s", formatC(signif(d$p, 2), digits = 2, format = "fg", flag = "#"))))
+  rng <- range(c(d$lo, d$hi, 1), na.rm = TRUE)
+  ci <- ggplot(d, aes(y = label, x = HR)) +
+    geom_vline(xintercept = 1, linetype = "dashed", colour = "grey50") +
+    geom_errorbar(aes(xmin = lo, xmax = hi), width = 0.15, orientation = "y", na.rm = TRUE) +
+    geom_point(shape = 15, size = 3) +
+    scale_x_log10(breaks = c(0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20), limits = c(rng[1] / 1.3, rng[2] * 1.3)) +
+    labs(x = "Hazard ratio (robust 95% CI)", y = NULL) +
+    theme_classic(base_size = 12) +
+    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank())
+  # text columns (same rows): HR (95% CI) and robust p
+  txt <- ggplot(d, aes(y = label)) +
+    geom_text(aes(x = 0, label = txt), hjust = 0, size = 3.6) +
+    geom_text(aes(x = 1, label = ptxt), hjust = 0, size = 3.6) +
+    scale_x_continuous(limits = c(0, 1.6), breaks = c(0.35, 1.25), labels = c("HR (95% CI)", "p"), position = "top") +
+    labs(x = NULL, y = NULL) +
+    theme_void(base_size = 12) +
+    theme(axis.text.x.top = element_text(face = "bold", size = 10), plot.margin = margin(5.5, 5.5, 25, 0))
+  ggpubr::ggarrange(ci, txt, ncol = 2, widths = c(1.3, 1), align = "h")
+}
 ```
 
 
@@ -103,9 +187,8 @@ summary(fit_ofav_treat)
 fit_ssid_treat <- survfit(Surv(days, status) ~ treat, data = urban_ssid_treat)
 summary(fit_ssid_treat)
 
-# display a ggsurvplot object (survival curves + risk table) as a single figure; printing ggsurvplot
-# objects directly can output "NULL" when knitting with newer survminer versions
-show_km <- function(p) ggarrange(p$plot, p$table, heights = c(2, 1), ncol = 1, nrow = 2)
+# display a Kaplan-Meier plot (survival curves + number-at-risk table) as a single figure
+show_km <- function(p) ggarrange(p$plot, p$table, heights = c(2.2, 0.55), ncol = 1, nrow = 2)
 
 # p-values for Kaplan-Meier plots: robust score (log-rank) test from the genotype-clustered Cox model
 # always 2 significant figures, keeping trailing zeros (e.g. 0.080, not 0.08), so all panels show the same precision
@@ -131,48 +214,21 @@ summary(hazard_ssid_treat)
 
 # Kaplan-Meier plots for each species
 fill.color2<-c("#f4a582","#ca0020")
+treat_labels <- c(CH = "Contemporary pH + Bleaching", LH = "Acidified + Bleaching")
 
-survival_ofav_treat<-ggsurvplot(fit_ofav_treat, data = urban_ofav_treat, pval = robust_score_p(hazard_ofav_treat), xlab="Days", ylab="Survival Probability",
-                                conf.int = T, risk.table=T, palette=fill.color2,
-                                break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Orbicella faveolata") 
+survival_ofav_treat <- km_plot(fit_ofav_treat, pval = robust_score_p(hazard_ofav_treat), palette = fill.color2,
+                               title = "Orbicella faveolata", labels = treat_labels, legend_title = "Treatment")
 show_km(survival_ofav_treat)
 
-survival_ssid_treat<-ggsurvplot(fit_ssid_treat, data = urban_ssid_treat, pval = robust_score_p(hazard_ssid_treat), xlab="Days", ylab="Survival Probability",
-                                conf.int = T, risk.table=T, palette=fill.color2,
-                                break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Siderastrea siderea") 
+survival_ssid_treat <- km_plot(fit_ssid_treat, pval = robust_score_p(hazard_ssid_treat), palette = fill.color2,
+                               title = "Siderastrea siderea", labels = treat_labels, legend_title = "Treatment")
 show_km(survival_ssid_treat)
 
-# ggforest() cannot handle the genotype cluster or treatment strata terms, so they are hidden from the plotting copy of the model.
-# Hazard ratios, CIs, and p-values in the plots remain genotype-adjusted (robust standard errors).
-# The ggforest() footer (events, unadjusted likelihood ratio p-value, AIC, concordance) overlaps the x-axis labels,
-# so it is removed; the genotype-adjusted p-value is shown on the Kaplan-Meier plot above each hazard ratio plot.
-drop_footer <- function(g) {
-  if (inherits(g, "gtable")) {
-    g$grobs <- lapply(g$grobs, drop_footer)
-    return(g)
-  }
-  if (inherits(g, "gTree") && length(g$children) > 0) {
-    kids <- g$children
-    keep <- !vapply(kids, function(k) inherits(k, "text") && any(grepl("# Events", k$label, fixed = TRUE)), logical(1))
-    g <- grid::setChildren(g, do.call(grid::gList, lapply(kids[keep], drop_footer)))
-  }
-  g
-}
-
-forest_clustered <- function(model, data, ...) {
-  dc <- attr(model$terms, "dataClasses")
-  attr(model$terms, "dataClasses") <- dc[names(dc) != "(cluster)" & !grepl("^strata\\(", names(dc))]
-  p <- ggforest(model, data = data, ...)
-  grob <- p$layers[[1]]$geom_params$grob
-  if (is.null(grob)) return(p) # fall back to the unmodified plot if the plot structure differs
-  ggpubr::as_ggplot(drop_footer(grob))
-}
-
-# hazard ratio plots
-hazplot_ofav_treat <- forest_clustered(hazard_ofav_treat, data = urban_ofav_treat)
+# hazard ratio plots: robust (genotype-clustered) hazard ratios, 95% CIs and p-values; reference level at HR = 1
+hazplot_ofav_treat <- hr_plot(hazard_ofav_treat, "treat", treat_labels)
 hazplot_ofav_treat
 
-hazplot_ssid_treat <- forest_clustered(hazard_ssid_treat, data = urban_ssid_treat)
+hazplot_ssid_treat <- hr_plot(hazard_ssid_treat, "treat", treat_labels)
 hazplot_ssid_treat
 
 # survivorship by treatment figure
@@ -182,11 +238,11 @@ urban_treatment_multiplot<-ggarrange(survival_ofav_treat$plot,
                                      survival_ssid_treat$table,
                                      hazplot_ofav_treat,
                                      hazplot_ssid_treat,
-                                     heights = c(2, 0.5, 0.8),
+                                     heights = c(2.2, 0.42, 0.72),
                                      ncol = 2, nrow = 3)
 urban_treatment_multiplot
 
-ggsave("../../outputs/survivorship/urban survivorship treatment.pdf", urban_treatment_multiplot, width=10, height=11,dpi = 300)
+ggsave("../../outputs/survivorship/urban survivorship treatment.pdf", urban_treatment_multiplot, width=10, height=8.5,dpi = 300)
 ```
 
 
@@ -252,22 +308,21 @@ summary(hazard_ssid_site)
 
 # Kaplan-Meier plots for each species
 fill.color3<-c("#018571","#80cdc1","#dfc27d","#a6611a")
+site_labels <- c(Emerald = "Emerald Reef", Rainbow = "Rainbow Reef", Star = "Star Island", MacN = "MacArthur North")
 
-survival_ofav_site<-ggsurvplot(fit_ofav_site, data = urban_ofav_treat, pval = robust_score_p(hazard_ofav_site), xlab="Days", ylab="Survival Probability",
-                               conf.int = T, risk.table=T, palette=fill.color3,
-                               break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Orbicella faveolata") 
+survival_ofav_site <- km_plot(fit_ofav_site, pval = robust_score_p(hazard_ofav_site), palette = fill.color3,
+                              title = "Orbicella faveolata", labels = site_labels, legend_title = "Site")
 show_km(survival_ofav_site)
 
-survival_ssid_site<-ggsurvplot(fit_ssid_site, data = urban_ssid_treat, pval = robust_score_p(hazard_ssid_site), xlab="Days", ylab="Survival Probability",
-                               conf.int = T, risk.table=T, palette=fill.color3,
-                               break.time.by=5, xlim=c(0,36), risk.table.y.text = FALSE) + ggtitle("Siderastrea siderea") 
+survival_ssid_site <- km_plot(fit_ssid_site, pval = robust_score_p(hazard_ssid_site), palette = fill.color3,
+                              title = "Siderastrea siderea", labels = site_labels, legend_title = "Site")
 show_km(survival_ssid_site)
 
-# hazard ratio plots
-hazplot_ofav_site <- forest_clustered(hazard_ofav_site, data = urban_ofav_treat)
+# hazard ratio plots: robust (genotype-clustered) hazard ratios, 95% CIs and p-values; reference level at HR = 1
+hazplot_ofav_site <- hr_plot(hazard_ofav_site, "site", site_labels)
 hazplot_ofav_site
 
-hazplot_ssid_site <- forest_clustered(hazard_ssid_site, data = urban_ssid_treat)
+hazplot_ssid_site <- hr_plot(hazard_ssid_site, "site", site_labels)
 hazplot_ssid_site
 
 # survivorship by site figure
@@ -277,11 +332,11 @@ urban_site_multiplot<-ggarrange(survival_ofav_site$plot,
                                 survival_ssid_site$table,
                                 hazplot_ofav_site,
                                 hazplot_ssid_site,
-                                heights = c(2, 0.6, 1.1),
+                                heights = c(2.2, 0.55, 0.95),
                                 ncol = 2, nrow = 3)
 urban_site_multiplot
 
-ggsave("../../outputs/survivorship/urban survivorship site.pdf", urban_site_multiplot, width=10, height=12,dpi = 300)
+ggsave("../../outputs/survivorship/urban survivorship site.pdf", urban_site_multiplot, width=10, height=9.5,dpi = 300)
 ```
 
 
