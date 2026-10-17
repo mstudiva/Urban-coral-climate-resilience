@@ -1143,7 +1143,7 @@ make_panel <- function(df, title, col_x, col_y, x_lab, y_lab, global_lim) {
   lab_text <- if (is.na(st$r)) {
     sprintf("n = %d", st$n)
   } else {
-    sprintf("r = %.2f, p = %s, n = %d", st$r, fmt_num(st$p), st$n)
+    sprintf("r = %.2f, p %s, n = %d", st$r, if (isTRUE(st$p < 0.001)) "< 0.001" else paste("=", sprintf("%.3f", st$p)), st$n)
   }
 
   ref_levels <- c("Direct 1:1", "Inverse 1:1")
@@ -1271,7 +1271,7 @@ build_panels <- function(comparisons, ncol = 3) {
   for (i in seq_along(panels)) {
     row <- ceiling(i / ncol)
     col <- i - (row - 1) * ncol
-    if (col != 1) panels[[i]] <- panels[[i]] + theme(axis.title.y = element_blank())
+    # every panel keeps its own y-axis title: the y variable differs between panels
     if (row != nrow_grid) panels[[i]] <- panels[[i]] + theme(axis.title.x = element_blank())
   }
   one_legend  <- cowplot::get_legend(panels[[1]] + theme(legend.position = "right"))
@@ -1334,15 +1334,15 @@ filter_discordant <- function(comparisons, group_col) {
 
 ```{r correlation-plots-treatment}
 treatment_comparisons <- list(
-  "Bleaching vs OA" = list(
+  "OA & Bleaching" = list(
     df    = bleaching_oa,
     col_x = "lpv.LC_CC", col_y = "lpv.CH_CC",
     x_lab = "OA",         y_lab = "Bleaching"),
-  "OA + Bleaching vs OA" = list(
+  "OA & OA + Bleaching" = list(
     df    = oableaching_oa,
     col_x = "lpv.LC_CC", col_y = "lpv.LH_CC",
     x_lab = "OA",         y_lab = "OA + Bleaching"),
-  "OA + Bleaching vs Bleaching" = list(
+  "Bleaching & OA + Bleaching" = list(
     df    = bleaching_oableaching,
     col_x = "lpv.CH_CC", col_y = "lpv.LH_CC",
     x_lab = "Bleaching",  y_lab = "OA + Bleaching")

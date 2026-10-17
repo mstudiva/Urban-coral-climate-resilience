@@ -889,40 +889,73 @@ ortholog_stats$urban_reef %>%
   arrange(sig, -abs(stat_ofav) - abs(stat_ssid)) -> urban_reef_orthologs
 write.csv(urban_reef_orthologs, file = "../../outputs/transcriptomics/orthofinder/ortholog correlation urban_reef 1to1.csv", row.names = FALSE)
 
-# scatterplot of urban vs reef statistics across all one-to-one orthologs
-ur <- ortholog_stats$urban_reef %>%
-  mutate(sig = factor(sig, levels = c("neither", "O. faveolata only", "S. siderea only", "both species"))) %>%
-  arrange(sig)
-ur_rho <- ortholog_summary$spearman_rho[ortholog_summary$comparison == "Urban vs Reef"]
-p_ur <- ggplot(ur, aes(x = stat_ofav, y = stat_ssid)) +
-  geom_hline(yintercept = 0, color = "grey85") +
-  geom_vline(xintercept = 0, color = "grey85") +
-  geom_point(aes(color = sig, alpha = sig), size = 1) +
-  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
-  scale_color_manual(values = c("neither" = "grey70", "O. faveolata only" = "#E69F00",
-                                "S. siderea only" = "#56B4E9", "both species" = "#D55E00"), name = "padj < 0.1") +
-  scale_alpha_manual(values = c("neither" = 0.25, "O. faveolata only" = 0.8, "S. siderea only" = 0.8, "both species" = 1),
-                     guide = "none") +
-  annotate("text", x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5,
-           label = sprintf("Spearman rho = %.2f, n = %d orthologs", ur_rho, nrow(ur))) +
-  labs(x = "O. faveolata urban vs reef (t)", y = "S. siderea urban vs reef (t)",
-       title = "Urban vs reef across one-to-one orthologs") +
-  theme_classic(base_size = 12)
+# ---- Figure S10: cross-species agreement across all one-to-one orthologs ----
+# (a-c) test statistics of every one-to-one ortholog pair for urban vs reef, OA and Bleaching; (d) Spearman rho for
+# every comparison. Unlike Figure 5 (orthologs significant in both species only), every ortholog is used, so rho is
+# not inflated by selection. Genes are not independent, so p-values are not shown (approximate values in the summary CSV).
+# Labels use the values in ortholog_summary, so the figure and the CSV always agree.
+sig_labels <- c("neither"           = "'Neither'",
+                "O. faveolata only" = "italic('O. faveolata')~'only'",
+                "S. siderea only"   = "italic('S. siderea')~'only'",
+                "both species"      = "'Both species'")
+sig_cols  <- c("neither" = "grey75", "O. faveolata only" = "#E69F00", "S. siderea only" = "#56B4E9", "both species" = "#D55E00")
+sig_alpha <- c("neither" = 0.3, "O. faveolata only" = 0.8, "S. siderea only" = 0.8, "both species" = 1)
+sig_size  <- c("neither" = 0.5, "O. faveolata only" = 1.1, "S. siderea only" = 1.1, "both species" = 1.3)
+fmt2 <- function(x) sprintf("%.2f", round(x + sign(x) * 1e-9, 2)) # round half up (0.065 -> 0.07)
 
-# species agreement for each comparison (benchmark for the urban vs reef correlation)
-p_rho <- ortholog_summary %>%
-  mutate(comparison = factor(comparison, levels = rev(comparison))) %>%
-  ggplot(aes(x = spearman_rho, y = comparison)) +
+ortholog_scatter <- function(n, show_legend = FALSE) {
+  lab <- comparison_labels[[n]]
+  sm  <- ortholog_summary[ortholog_summary$comparison == lab, ]
+  d <- ortholog_stats[[n]] %>%
+    mutate(sig = factor(sig, levels = names(sig_labels))) %>%
+    arrange(sig) # significant points drawn last (on top)
+  lab1 <- sprintf("rho == '%s'*','~~italic(n) == '%s'", fmt2(sm$spearman_rho), format(sm$orthologs, big.mark = ","))
+  lab2 <- sprintf("'%.0f%% same direction ('*italic(n) == '%s'*')'", sm$pct_same_direction, format(sm$sig_either, big.mark = ","))
+  ggplot(d, aes(x = stat_ofav, y = stat_ssid)) +
+    geom_hline(yintercept = 0, color = "grey85") +
+    geom_vline(xintercept = 0, color = "grey85") +
+    geom_point(aes(color = sig, alpha = sig, size = sig)) +
+    scale_color_manual(values = sig_cols, breaks = names(sig_labels), labels = parse(text = sig_labels),
+                       name = "Adjusted p < 0.1", drop = FALSE, guide = if (show_legend) "legend" else "none") +
+    scale_alpha_manual(values = sig_alpha, guide = "none", drop = FALSE) +
+    scale_size_manual(values = sig_size, guide = "none", drop = FALSE) +
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.18))) + # headroom for the two labels
+    annotate("text", x = -Inf, y = Inf, hjust = -0.05, vjust = 1.3, size = 3.6, label = lab1, parse = TRUE) +
+    annotate("text", x = -Inf, y = Inf, hjust = -0.05, vjust = 2.9, size = 3.6, label = lab2, parse = TRUE) +
+    labs(x = expression(italic("O. faveolata") ~ "(" * italic(t) * ")"),
+         y = expression(italic("S. siderea") ~ "(" * italic(t) * ")"), title = lab) +
+    theme_classic(base_size = 12) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5),
+          legend.position = c(0.99, 0.01), # numeric position: works in ggplot2 3.4 and 4.x (4.x may warn)
+          legend.justification = c(1, 0),
+          legend.background = element_rect(fill = alpha("white", 0.85), color = NA),
+          legend.key.size = unit(0.35, "cm"), legend.text = element_text(hjust = 0, size = 9),
+          legend.title = element_text(size = 10))
+}
+p_ur  <- ortholog_scatter("urban_reef", show_legend = TRUE)
+p_oa  <- ortholog_scatter("LC_CC")
+p_bl  <- ortholog_scatter("CH_CC")
+
+# (d) same comparison order and names as Figure 5; the three plotted comparisons in black
+rho_df <- ortholog_summary %>%
+  mutate(comparison = factor(comparison, levels = rev(comparison)),
+         plotted = comparison %in% comparison_labels[c("urban_reef", "LC_CC", "CH_CC")])
+p_rho <- ggplot(rho_df, aes(x = spearman_rho, y = comparison)) +
   geom_vline(xintercept = 0, color = "grey70") +
   geom_segment(aes(x = 0, xend = spearman_rho, yend = comparison), color = "grey50") +
-  geom_point(size = 3) +
-  labs(x = "Spearman rho (O. faveolata vs S. siderea)", y = NULL,
-       title = "Cross-species agreement") +
-  theme_classic(base_size = 12)
+  geom_point(aes(color = plotted), size = 3) +
+  geom_text(aes(label = fmt2(spearman_rho), hjust = ifelse(spearman_rho < 0, 1.4, -0.4)), size = 3.5) +
+  scale_color_manual(values = c("FALSE" = "grey55", "TRUE" = "black"), guide = "none") +
+  scale_x_continuous(expand = expansion(mult = 0.25)) +
+  labs(x = expression("Spearman's" ~ rho ~ "between species"), y = NULL, title = "All comparisons") +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5),
+        axis.text.y = element_text(color = "black"))
 
-p_orth_all <- p_ur + p_rho + plot_layout(widths = c(1.3, 1))
+p_orth_all <- (p_ur | p_oa) / (p_bl | p_rho) + plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(face = "bold", size = 16))
 print(p_orth_all)
-ggsave("../../outputs/transcriptomics/orthofinder/ortholog correlation all 1to1.pdf", p_orth_all, width = 13, height = 5.5)
+ggsave("../../outputs/transcriptomics/orthofinder/ortholog correlation all 1to1.pdf", p_orth_all, width = 10.5, height = 9)
 ```
 
 
@@ -1003,6 +1036,36 @@ options(ggplot2.useDingbats = FALSE)
   y_log   <- base_log + pad_dex + (lane_id - 1)*gap_dex + (within_lane_idx - 1)*pmax(micro_dex, min_sep_dex)
   lbl_log <- y_log + lbl_dex
   10^(max(lbl_log, na.rm=TRUE) + 0.010)
+}
+
+# ---- Compact letter display from a Tukey table (insert-absorb algorithm, Piepho 2004) ----
+# Returns a named character vector (one entry per level, e.g. c(CC = "a", LC = "a", CH = "b", LH = "b")).
+# Levels sharing a letter do not differ at adjusted p < alpha. Replaces the significance brackets in the boxplots.
+.cld_letters <- function(tukey_tbl, lvls, alpha = 0.05) {
+  if (is.null(tukey_tbl) || !nrow(tukey_tbl)) return(NULL)
+  g1 <- as.character(tukey_tbl$group1); g2 <- as.character(tukey_tbl$group2)
+  padj <- if ("p.adj" %in% names(tukey_tbl)) tukey_tbl$p.adj else tukey_tbl$p
+  keep <- g1 %in% lvls & g2 %in% lvls & is.finite(padj) & padj < alpha
+  m <- matrix(TRUE, nrow = length(lvls), ncol = 1, dimnames = list(lvls, NULL))
+  for (k in which(keep)) {
+    i <- g1[k]; j <- g2[k]
+    both <- which(m[i, ] & m[j, ])
+    for (cc in both) {               # insert: split every column that joins the two differing groups
+      dup <- m[, cc]; dup[i] <- FALSE
+      m[j, cc] <- FALSE
+      m <- cbind(m, dup)
+    }
+    # absorb: drop columns that are empty or contained in another column
+    m <- m[, colSums(m) > 0, drop = FALSE]
+    m <- m[, !duplicated(t(m)), drop = FALSE]
+    redundant <- vapply(seq_len(ncol(m)), function(a) any(vapply(seq_len(ncol(m)), function(b)
+      b != a && all(m[m[, a], b]), logical(1))), logical(1))
+    m <- m[, !redundant, drop = FALSE]
+  }
+  # letters in order of first appearance along the levels
+  first <- apply(m, 2, function(col) which(col)[1])
+  m <- m[, order(first), drop = FALSE]
+  setNames(apply(m, 1, function(row) paste(letters[which(row)], collapse = "")), lvls)
 }
 
 # ---- Draw significant Tukey brackets ----
@@ -1639,39 +1702,33 @@ make_boxplot <- function(df, factor_name, species_label,
     ylims_used <- c(ymin, ymax)
   }
   
-  # ensure room for Tukey if present
-  if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
-    need_top <- .bracket_required_top(
-      df, tukey_tbl, lvls,
-      pad_dex   = 0.15,
-      gap_dex   = 0.15,
-      lbl_dex   = 0.005,
-      min_sep_dex = 0.08,
-      micro_dex = 0.020
-    )
-    if (is.finite(need_top)) ylims_used[2] <- max(ylims_used[2], need_top)
-  }
-  
+  # headroom for the Tukey letters. Added from the y limits alone (not from the letters), so the two species panels
+  # of an orthogroup, which share y limits and only the left one shows the axis, stay on the same scale
+  log_rng <- diff(log10(ylims_used))
+  ylims_used[2] <- ylims_used[2] * 10^(0.10 * log_rng)
+
   p <- p +
     scale_y_log10(
-      breaks = scales::trans_breaks("log10", function(x) 10^x),
-      labels = scales::trans_format("log10", scales::math_format(10^.x)),
-      expand = expansion(mult = c(0.02, 0.12))
+      breaks = scales::breaks_log(n = 5),
+      labels = function(x) format(x, big.mark = ",", scientific = FALSE, drop0trailing = TRUE, trim = TRUE),
+      expand = expansion(mult = c(0.02, 0.04))
     ) +
     coord_cartesian(ylim = ylims_used, clip = "off")
-  
-  # --- Tukey brackets ---
-  top_y <- ylims_used[2] * 0.98
+
+  # --- Tukey compact letters (shown only when the ANOVA is significant; the caller passes tukey_tbl = NULL otherwise) ---
+  # groups sharing a letter do not differ (Tukey HSD, adjusted p >= 0.05); placed just above each group's highest point
   if (!is.null(tukey_tbl) && nrow(tukey_tbl)) {
-    p <- .add_sig_brackets(
-      p, tukey_tbl, lvls, top_y, df,
-      pad_dex = 0.2,
-      gap_dex = 0.15,
-      tip_dex = 0.025,
-      lbl_dex = 0.005
-    )
+    let <- .cld_letters(tukey_tbl, lvls)
+    if (!is.null(let) && length(unique(let)) > 1) {
+      df_pos <- df %>% dplyr::filter(is.finite(count), count > 0)
+      gmax <- tapply(df_pos$count, factor(df_pos$grp, levels = lvls), max, na.rm = TRUE)
+      gmax[!is.finite(gmax)] <- ylims_used[1]
+      lab_df <- data.frame(grp = factor(lvls, levels = lvls), y = gmax * 10^(0.04 * log_rng), lab = let[lvls])
+      p <- p + geom_text(data = lab_df, aes(x = grp, y = y, label = lab), inherit.aes = FALSE,
+                         vjust = 0, size = if (cmp) 5.5 / .pt else 3.5)
+    }
   }
-  
+
   # --- ANOVA label (bottom-center) ---
   lab_text  <- if (!is.null(aov_label) && nzchar(aov_label)) aov_label else aov_text
   use_parse <- !is.null(aov_label) && nzchar(aov_label)
@@ -1679,7 +1736,7 @@ make_boxplot <- function(df, factor_name, species_label,
   bottom_y  <- 10^(log10(ylims_used[1]) - 0.03)
   if (cmp && !is.null(lab_text) && nzchar(lab_text)) {
     p <- p + labs(caption = if (use_parse) parse(text = lab_text)[[1]] else lab_text) +
-      theme(plot.caption = element_text(size = 4.8, hjust = 0.5, margin = margin(t = 0.5)))
+      theme(plot.caption = element_text(size = 5.5, hjust = 0.5, margin = margin(t = 0.5)))
   } else if (!is.null(lab_text) && nzchar(lab_text)) {
     p <- p + annotate("text", x = center_x, y = bottom_y, label = lab_text,
                       size = if (cmp) 1.6 else 3.3, vjust = 0, hjust = 0.5, parse = use_parse)
