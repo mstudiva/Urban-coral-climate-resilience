@@ -1,0 +1,48 @@
+---
+title: "Front-loading panel (Figure 4c)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+Figure 4c: share of heat-responsive genes expressed more highly in urban than reef colonies under control conditions
+(contemporary pH, ambient temperature), compared with the permutation null (habitat labels shuffled among colonies,
+5,000 times). Inputs are the colony-level permutation tables written by the front-loading chunks of the two limma
+scripts; nothing is refitted here.
+
+```{r frontloading-panel, fig.width=7, fig.height=3.2}
+library(ggplot2)
+
+read_fl <- function(sp, label) {
+  d <- read.csv(sprintf("../../outputs/transcriptomics/%s/limma/frontloading_permutation.csv", sp))
+  d$species <- label
+  d
+}
+fl <- rbind(read_fl("ofav", "O. faveolata"), read_fl("ssid", "S. siderea"))
+fl$gene_set <- factor(fl$gene_set, levels = c("heat_up", "heat_down"),
+                      labels = c("Heat-upregulated", "Heat-downregulated"))
+fl$species <- factor(fl$species, levels = c("O. faveolata", "S. siderea"))
+fl$p_lab <- ifelse(fl$p < 0.001, "p < 0.001", paste("p =", signif(fl$p, 2)))
+fl$n_lab <- sprintf("%s genes", format(fl$genes, big.mark = ","))
+fl
+
+p_fl <- ggplot(fl, aes(x = gene_set)) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", colour = "grey60") +
+  geom_linerange(aes(ymin = null_2.5, ymax = null_97.5), linewidth = 6, colour = "grey85") + # permutation null, 95% range
+  geom_point(aes(y = share_higher_in_urban_at_control), size = 3, colour = "#a6611a") +
+  geom_text(aes(y = share_higher_in_urban_at_control, label = sprintf("%.0f%%", 100 * share_higher_in_urban_at_control)),
+            nudge_x = 0.28, size = 3.5) +
+  geom_text(aes(y = 0.07, label = p_lab), size = 3.2) +
+  geom_text(aes(y = 0.01, label = n_lab), size = 2.8, colour = "grey40") +
+  facet_wrap(~ species, nrow = 1) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25), labels = function(x) 100 * x) +
+  labs(x = NULL, y = "Urban > reef (% genes)") +
+  theme_classic(base_size = 12) +
+  theme(strip.background = element_blank(), strip.text = element_text(face = "bold.italic", size = 12),
+        axis.text.x = element_text(colour = "black"))
+print(p_fl)
+dir.create("../../outputs/transcriptomics/frontloading", showWarnings = FALSE)
+ggsave("../../outputs/transcriptomics/frontloading/frontloading_panel.pdf", p_fl, width = 7, height = 3.2)
+```
