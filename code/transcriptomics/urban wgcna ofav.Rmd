@@ -175,6 +175,13 @@ traits <- data.frame(
 )
 # measured traits NA for any remaining samples of survivorship-excluded fragments
 traits[rownames(traits) %in% excl_samples, c("growthrate","fvfm","fvfm_ratio","survival","propB","propD","temp_actual","ph_actual")] <- NA
+# symbiont proportions: samples with no Tag-Seq reads aligning to any Symbiodiniaceae 28S reference carry no
+# information on symbiont composition (the design file records them as 0 for both genera), so they are set to NA
+zoox <- read.csv("../../data/transcriptomics/symbiont alignment counts.csv", check.names = FALSE)
+stopifnot(all(rownames(traits) %in% zoox$id))
+no_zoox <- zoox$id[zoox$symbiont_reads == 0]
+intersect(rownames(traits), no_zoox) # samples without symbiont reads
+traits[rownames(traits) %in% no_zoox, c("propB","propD")] <- NA
 summary(traits)
 colSums(is.na(traits)) # missing values per trait
 ```
